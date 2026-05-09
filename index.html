@@ -610,7 +610,7 @@
     .tree-line:hover .tree-copy-btn { opacity: 1; }
 
     /* ── COLOR PICKER (Figma-style) ── */
-    .cp-wrap { display:grid; grid-template-columns:1fr 300px; gap:24px; align-items:start; max-width:780px; }
+    .cp-wrap { display:grid; grid-template-columns:1fr 300px; gap:24px; align-items:start; max-width:100%; }
     @media(max-width:680px){ .cp-wrap { grid-template-columns:1fr; } }
     .cp-left { display:flex; flex-direction:column; gap:10px; }
     .cp-right { display:flex; flex-direction:column; gap:10px; }
@@ -646,6 +646,439 @@
     .cp-swatches { display:flex; flex-wrap:wrap; gap:5px; }
     .cp-swatch { width:24px; height:24px; border-radius:5px; cursor:pointer; border:1px solid rgba(255,255,255,.1); transition:transform .15s; flex-shrink:0; }
     .cp-swatch:hover { transform:scale(1.2); border-color:rgba(255,255,255,.4); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       IMAGE COLOR PICKER
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .icp-section {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    .icp-section-title {
+      font-size: .68rem;
+      font-family: var(--mono);
+      color: var(--accent);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icp-layout {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 16px;
+      align-items: start;
+      width: 100%;
+    }
+    @media(max-width: 680px) {
+      .icp-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Drop Zone */
+    .image-drop-zone {
+      position: relative;
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius);
+      background: var(--surface2);
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      overflow: hidden;
+      user-select: none;
+    }
+    .image-drop-zone:hover,
+    .image-drop-zone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .image-drop-zone.has-image {
+      border-style: solid;
+      border-color: var(--border-strong);
+      cursor: crosshair;
+      padding: 0;
+      align-items: stretch;
+      justify-content: flex-start;
+      min-height: unset;
+    }
+    .image-drop-zone.has-image:hover {
+      border-color: var(--accent);
+      background: transparent;
+    }
+
+    /* Placeholder */
+    .icp-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 20px;
+      pointer-events: none;
+    }
+    .icp-placeholder-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 12px var(--accent-glow));
+    }
+    .icp-placeholder-primary {
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .icp-placeholder-secondary {
+      font-size: .74rem;
+      color: var(--text-dim);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .icp-upload-btn {
+      margin-top: 4px;
+      padding: 7px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--accent);
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-family: var(--sans);
+      font-size: .78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+      pointer-events: auto;
+    }
+    .icp-upload-btn:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Image Preview */
+    .image-preview-wrapper {
+      position: relative;
+      width: 100%;
+      line-height: 0;
+    }
+    #image-preview-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: calc(var(--radius) - 2px);
+    }
+    /* ── PICKER MARKER — desktop: small crosshair dot ── */
+    .image-picker-marker {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2.5px solid #fff;
+      box-shadow: 0 0 0 1.5px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.4);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      display: none;
+      z-index: 20;
+      overflow: visible;
+      background: transparent;
+      transition: background .05s, border-color .05s;
+    }
+    /* center dot on desktop */
+    .image-picker-marker::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.5);
+      transform: translate(-50%,-50%);
+      z-index: 3;
+    }
+    /* hide loupe parts on desktop */
+    .image-picker-marker canvas,
+    .icp-loupe-hex { display: none; }
+
+    /* ── PICKER MARKER — mobile: big floating loupe ── */
+    @media (hover: none) and (pointer: coarse) {
+      .image-picker-marker {
+        width: 84px;
+        height: 84px;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px rgba(0,0,0,.5), 0 10px 28px rgba(0,0,0,.55);
+        /* positioned by JS: top = dispY - 84 - 20  (above finger) */
+        transform: translate(-50%, 0);
+        overflow: hidden;
+        background: #111;
+      }
+      /* ring overlay */
+      .image-picker-marker::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1.5px solid rgba(255,255,255,.35);
+        z-index: 2;
+        pointer-events: none;
+      }
+      /* crosshair center */
+      .image-picker-marker::after {
+        width: 8px; height: 8px;
+        background: rgba(255,255,255,.9);
+        box-shadow: 0 0 0 1.5px rgba(0,0,0,.6);
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        z-index: 4;
+      }
+      /* show zoomed canvas */
+      .image-picker-marker canvas {
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+      }
+      /* hex badge below loupe */
+      .icp-loupe-hex {
+        display: block;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -26px;
+        font-family: var(--mono);
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: .05em;
+        padding: 3px 10px;
+        border-radius: 10px;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 21;
+        box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      }
+    }
+
+    /* Toolbar below image */
+    .icp-img-toolbar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 10px;
+      background: rgba(0,0,0,.25);
+      align-items: center;
+    }
+    .icp-img-toolbar span {
+      font-size: .7rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      flex: 1;
+    }
+
+    /* Color Info Panel */
+    .image-color-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .image-color-preview {
+      width: 100%;
+      height: 64px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-strong);
+      background: #1c1f2a;
+      transition: background .1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .image-color-preview::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.06) 0%, transparent 60%);
+      border-radius: inherit;
+    }
+    .icp-values {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .image-color-value {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .image-color-value:hover { border-color: var(--accent); }
+    .icp-val-label {
+      font-size: .62rem;
+      font-family: var(--mono);
+      color: var(--accent);
+      letter-spacing: .06em;
+      min-width: 28px;
+      flex-shrink: 0;
+    }
+    .icp-val-text {
+      font-family: var(--mono);
+      font-size: .76rem;
+      color: var(--text);
+      flex: 1;
+      word-break: break-all;
+    }
+    .icp-val-copy {
+      font-size: .6rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .image-color-value:hover .icp-val-copy { color: var(--accent); }
+
+    .icp-action-row {
+      display: flex;
+      gap: 6px;
+    }
+    .icp-btn-apply {
+      flex: 1;
+      padding: 9px 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+      display: none;
+    }
+    .icp-btn-apply:hover { opacity: .85; }
+    .icp-btn-clear {
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-dim);
+      font-family: var(--sans);
+      font-size: .78rem;
+      cursor: pointer;
+      transition: all .15s;
+      display: none;
+    }
+    .icp-btn-clear:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── ICP: Copy format toggle ── */
+    .icp-copy-fmt {
+      display: flex;
+      gap: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+    }
+    .icp-fmt-btn {
+      flex: 1;
+      padding: 4px 0;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: .65rem;
+      cursor: pointer;
+      transition: all .15s;
+      letter-spacing: .03em;
+    }
+    .icp-fmt-btn.active {
+      background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    /* ── ICP: Color history swatches ── */
+    .icp-history-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      min-height: 24px;
+    }
+    .icp-history-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      border: 1px solid rgba(255,255,255,.12);
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      flex-shrink: 0;
+    }
+    .icp-history-swatch:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    /* ── ICP: Zoom slider ── */
+    .icp-zoom-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icp-zoom-row span {
+      font-size: .65rem;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      min-width: 28px;
+    }
+    #icp-zoom-slider {
+      flex: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* ── ICP: EyeDropper button ── */
+    .icp-eyedropper-btn {
+      width: 100%;
+      padding: 8px 0;
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--accent);
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-family: var(--sans);
+      font-size: .78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+      display: none;
+    }
+    .icp-eyedropper-btn:hover { background: var(--accent); color: #fff; }
+
+    /* ── ICP: keyboard hint ── */
+    .icp-kbd-hint {
+      font-size: .63rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      text-align: center;
+      opacity: .7;
+    }
+    .icp-kbd-hint kbd {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: .62rem;
+    }
+
+    .icp-empty-hint {
+      font-size: .75rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 16px 8px;
+      font-family: var(--mono);
+      line-height: 1.8;
+    }
     .color-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
     .color-label { font-family:var(--mono); font-size:.71rem; color:var(--accent); min-width:36px; }
     .color-val-box { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:7px 10px; font-family:var(--mono); font-size:.76rem; color:var(--text); cursor:pointer; transition:border-color .15s; text-align:center; }
@@ -1493,6 +1926,142 @@
           <div id="opacity-variants" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;"></div>
         </div>
       </div>
+
+      <!-- ━━━ IMAGE COLOR PICKER ━━━ -->
+      <div class="icp-section">
+        <div class="icp-section-title">
+          🖼️ Image Color Picker — คลิกบนภาพเพื่อดูดสี
+        </div>
+        <div class="icp-layout">
+
+          <!-- Left: Drop Zone + Preview -->
+          <div>
+            <div class="image-drop-zone" id="image-drop-zone"
+                 ondragover="icpDragOver(event)"
+                 ondragleave="icpDragLeave(event)"
+                 ondrop="icpDrop(event)">
+
+              <!-- Placeholder (shown when no image) -->
+              <div class="icp-placeholder" id="icp-placeholder">
+                <div class="icp-placeholder-icon">🖼️</div>
+                <div class="icp-placeholder-primary">ลากภาพมาวางที่นี่</div>
+                <div class="icp-placeholder-secondary">
+                  หรือกด <kbd style="font-family:var(--mono);background:var(--surface);border:1px solid var(--border-strong);border-radius:3px;padding:1px 5px;font-size:.72rem;">Ctrl+V</kbd> วางจาก Clipboard<br>
+                  หรือเลือกไฟล์ด้านล่าง
+                </div>
+                <button class="icp-upload-btn" onclick="document.getElementById('image-upload-input').click();event.stopPropagation()">
+                  📁 เลือกไฟล์ภาพ
+                </button>
+              </div>
+
+              <!-- Image Preview (shown when image loaded) -->
+              <div class="image-preview-wrapper" id="image-preview-wrapper" style="display:none;">
+                <canvas id="image-preview-canvas"
+                  onmousedown="window._icpDragging=true;pickColorFromImage(event)"
+                  onmousemove="if(window._icpDragging)pickColorFromImage(event)"
+                  onmouseup="window._icpDragging=false"
+                  onmouseleave="window._icpDragging=false"
+                  onclick="pickColorFromImage(event)"
+                  ontouchstart="pickColorFromImage(event)"
+                  ontouchmove="event.preventDefault();pickColorFromImage(event)"
+                  style="touch-action:none;"></canvas>
+                <div class="image-picker-marker" id="image-picker-marker">
+                  <canvas id="icp-loupe-canvas"></canvas>
+                  <div class="icp-loupe-hex" id="icp-loupe-hex">#------</div>
+                </div>
+              </div>
+
+              <!-- Toolbar below image -->
+              <div class="icp-img-toolbar" id="icp-img-toolbar" style="display:none;">
+                <span id="icp-img-info">คลิกบนภาพเพื่อดูดสี</span>
+                <button class="btn btn-ghost" style="padding:4px 10px;font-size:.72rem;" onclick="document.getElementById('image-upload-input').click();event.stopPropagation()">🔄 เปลี่ยนภาพ</button>
+              </div>
+            </div>
+
+            <input type="file" id="image-upload-input" accept="image/png,image/jpeg,image/webp,image/gif"
+                   style="display:none;" onchange="icpFileInputChange(event)" />
+          </div>
+
+          <!-- Right: Color Panel -->
+          <div class="image-color-panel" id="image-color-panel">
+
+            <!-- EyeDropper API button (shown only when supported) -->
+            <button class="icp-eyedropper-btn" id="icp-eyedropper-btn" onclick="icpUseEyeDropper()">
+              🔬 ดูดสีจากหน้าจอ (EyeDropper)
+            </button>
+
+            <!-- Empty state -->
+            <div class="icp-empty-hint" id="icp-empty-hint">
+              📸 โหลดภาพก่อน<br>แล้วคลิกเพื่อดูดสี
+            </div>
+
+            <!-- Color Preview Swatch -->
+            <div class="image-color-preview" id="image-color-preview" style="display:none;"></div>
+
+            <!-- Copy format toggle -->
+            <div class="icp-copy-fmt" id="icp-copy-fmt" style="display:none;">
+              <button class="icp-fmt-btn active" data-fmt="hex" onclick="icpSetFmt('hex')">HEX</button>
+              <button class="icp-fmt-btn" data-fmt="rgb" onclick="icpSetFmt('rgb')">RGB</button>
+              <button class="icp-fmt-btn" data-fmt="hsl" onclick="icpSetFmt('hsl')">HSL</button>
+              <button class="icp-fmt-btn" data-fmt="tw" onclick="icpSetFmt('tw')">TW</button>
+            </div>
+
+            <!-- Values -->
+            <div class="icp-values" id="icp-values" style="display:none;">
+              <div class="image-color-value" onclick="icpCopyActive()" title="คัดลอกค่าสี">
+                <span class="icp-val-label" id="icp-active-label">HEX</span>
+                <span class="icp-val-text" id="icp-active-value">—</span>
+                <span class="icp-val-copy">copy</span>
+              </div>
+              <div class="image-color-value" onclick="icpCopyValue('image-color-hex')" title="คัดลอก HEX">
+                <span class="icp-val-label">HEX</span>
+                <span class="icp-val-text" id="image-color-hex">—</span>
+                <span class="icp-val-copy">copy</span>
+              </div>
+              <div class="image-color-value" onclick="icpCopyValue('image-color-rgb')" title="คัดลอก RGB">
+                <span class="icp-val-label">RGB</span>
+                <span class="icp-val-text" id="image-color-rgb">—</span>
+                <span class="icp-val-copy">copy</span>
+              </div>
+              <div class="image-color-value" onclick="icpCopyValue('image-color-hsl')" title="คัดลอก HSL">
+                <span class="icp-val-label">HSL</span>
+                <span class="icp-val-text" id="image-color-hsl">—</span>
+                <span class="icp-val-copy">copy</span>
+              </div>
+            </div>
+
+            <!-- Zoom slider (mobile: loupe zoom) -->
+            <div class="icp-zoom-row" id="icp-zoom-row" style="display:none;">
+              <span>🔍</span>
+              <input type="range" id="icp-zoom-slider" min="5" max="21" step="2" value="11" oninput="icpSetZoom(+this.value)" />
+              <span id="icp-zoom-label">11×</span>
+            </div>
+
+            <!-- Color history -->
+            <div id="icp-history-section" style="display:none;">
+              <div class="field-label" style="margin-bottom:6px;">HISTORY</div>
+              <div class="icp-history-row" id="icp-history-row"></div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="icp-action-row">
+              <button class="icp-btn-apply" id="icp-btn-apply" onclick="icpApplyToMainPicker()">
+                ✓ ใช้สีนี้
+              </button>
+              <button class="icp-btn-clear" id="icp-btn-clear" onclick="icpClearImage()">
+                ✕ ล้างภาพ
+              </button>
+            </div>
+
+            <!-- Keyboard hint (desktop only) -->
+            <div class="icp-kbd-hint" id="icp-kbd-hint" style="display:none;">
+              <kbd>C</kbd> copy · <kbd>↑↓←→</kbd> nudge 1px
+            </div>
+
+          </div><!-- /image-color-panel -->
+        </div><!-- /icp-layout -->
+      </div><!-- /icp-section -->
+
     </div>
 
     <!-- HTTP STATUS -->
@@ -2732,6 +3301,467 @@ function pwsInstall(){
   });
 })();
 
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// IMAGE COLOR PICKER  —  Vanilla JS, production-ready v3
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(function () {
+  'use strict';
+
+  // ── State ──
+  let _icpImage    = null;
+  let _icpPicked   = null;   // { r, g, b, hex, rgb, hsl }
+  let _icpCanvas   = null;
+  let _icpCtx      = null;
+  let _icpDragging = false;
+  let _icpRafId    = null;   // rAF handle
+  let _icpPendingE = null;   // queued pick coords
+  let _icpZoom     = 11;     // loupe sample size (odd number)
+  let _icpFmt      = 'hex';  // active copy format: hex | rgb | hsl | tw
+  let _icpHistory  = [];     // max 10 recent hex values
+  let _icpCursorX  = 0, _icpCursorY = 0; // last known cursor (for nudge)
+  const _icpLoupeSize = 84;
+
+  // ── Colour helpers ──
+  function icpRgbToHex(r, g, b) {
+    return '#' + [r, g, b]
+      .map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0'))
+      .join('').toUpperCase();
+  }
+
+  function icpRgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0;
+    const l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+      }
+    }
+    return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+  }
+
+  function icpFormatValue(picked, fmt) {
+    if (!picked) return '—';
+    switch (fmt) {
+      case 'rgb': return picked.rgb;
+      case 'hsl': return picked.hsl;
+      case 'tw':  return `bg-[${picked.hex.toLowerCase()}]`;
+      default:    return picked.hex;
+    }
+  }
+
+  // ── DOM helper ──
+  function $id(id) { return document.getElementById(id); }
+
+  function _icpIsMobile() {
+    return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  }
+
+  function icpShowPanel(hasPick) {
+    $id('icp-empty-hint').style.display       = hasPick ? 'none' : '';
+    $id('image-color-preview').style.display  = hasPick ? '' : 'none';
+    $id('icp-copy-fmt').style.display         = hasPick ? '' : 'none';
+    $id('icp-values').style.display           = hasPick ? '' : 'none';
+    $id('icp-btn-apply').style.display        = hasPick ? '' : 'none';
+    $id('icp-btn-clear').style.display        = _icpImage ? '' : 'none';
+    $id('icp-zoom-row').style.display         = hasPick && _icpIsMobile() ? '' : 'none';
+    $id('icp-history-section').style.display  = _icpHistory.length ? '' : 'none';
+    $id('icp-kbd-hint').style.display         = hasPick && !_icpIsMobile() ? '' : 'none';
+  }
+
+  // ── Draw image to canvas ──
+  function drawImagePreview() {
+    if (!_icpImage) return;
+    _icpCanvas = $id('image-preview-canvas');
+    _icpCtx    = _icpCanvas.getContext('2d');
+
+    _icpCanvas.width  = _icpImage.naturalWidth;
+    _icpCanvas.height = _icpImage.naturalHeight;
+    _icpCtx.drawImage(_icpImage, 0, 0);
+
+    // Pre-size loupe canvas once (avoid resize every frame)
+    const lc = $id('icp-loupe-canvas');
+    lc.width = lc.height = _icpLoupeSize;
+
+    $id('image-preview-wrapper').style.display = '';
+    $id('icp-img-toolbar').style.display       = '';
+    $id('icp-placeholder').style.display       = 'none';
+    $id('image-drop-zone').classList.add('has-image');
+    $id('icp-img-info').textContent =
+      `${_icpImage.naturalWidth} × ${_icpImage.naturalHeight}px — คลิกเพื่อดูดสี`;
+    $id('icp-btn-clear').style.display = '';
+
+    if (window.EyeDropper) $id('icp-eyedropper-btn').style.display = '';
+  }
+
+  // ── Core pick logic (called inside rAF) ──
+  function _icpDoPickAt(clientX, clientY, isTouch) {
+    const rect   = _icpCanvas.getBoundingClientRect();
+    const scaleX = _icpCanvas.width  / rect.width;
+    const scaleY = _icpCanvas.height / rect.height;
+
+    const px = Math.round((clientX - rect.left) * scaleX);
+    const py = Math.round((clientY - rect.top)  * scaleY);
+    const cx = Math.max(0, Math.min(_icpCanvas.width  - 1, px));
+    const cy = Math.max(0, Math.min(_icpCanvas.height - 1, py));
+
+    const pixel = _icpCtx.getImageData(cx, cy, 1, 1).data;
+    const r = pixel[0], g = pixel[1], b = pixel[2];
+    const hex = icpRgbToHex(r, g, b);
+    const hsl = icpRgbToHsl(r, g, b);
+
+    _icpPicked = { r, g, b, hex,
+      rgb: `rgb(${r}, ${g}, ${b})`,
+      hsl: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`
+    };
+
+    const marker = $id('image-picker-marker');
+    const dispX  = clientX - rect.left;
+    const dispY  = clientY - rect.top;
+
+    if (isTouch) {
+      // ── MOBILE: floating loupe ──
+      const sampleR = Math.floor(_icpZoom / 2);
+      const lc  = $id('icp-loupe-canvas');
+      const lCtx = lc.getContext('2d');
+      lCtx.imageSmoothingEnabled = false;
+      lCtx.clearRect(0, 0, _icpLoupeSize, _icpLoupeSize);
+      lCtx.drawImage(_icpCanvas,
+        cx - sampleR, cy - sampleR, _icpZoom, _icpZoom,
+        0, 0, _icpLoupeSize, _icpLoupeSize
+      );
+      marker.style.borderColor = hex;
+      marker.style.boxShadow =
+        `0 0 0 2px rgba(0,0,0,.5), 0 10px 28px rgba(0,0,0,.55), 0 0 0 5px ${hex}55`;
+      const luma  = 0.299*r + 0.587*g + 0.114*b;
+      const badge = $id('icp-loupe-hex');
+      badge.textContent      = hex;
+      badge.style.background = hex;
+      badge.style.color      = luma > 140 ? '#000' : '#fff';
+      const loupeTop = dispY - _icpLoupeSize - 20 < 6
+        ? dispY + 20 : dispY - _icpLoupeSize - 20;
+      marker.style.left = dispX + 'px';
+      marker.style.top  = loupeTop + 'px';
+    } else {
+      // ── DESKTOP: small coloured dot ──
+      marker.style.background  = hex;
+      marker.style.borderColor = '#fff';
+      marker.style.boxShadow   = `0 0 0 1.5px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.4)`;
+      marker.style.left = dispX + 'px';
+      marker.style.top  = dispY + 'px';
+    }
+    marker.style.display = 'block';
+
+    // Update side panel
+    $id('image-color-preview').style.background = hex;
+    $id('image-color-hex').textContent          = hex;
+    $id('image-color-rgb').textContent          = _icpPicked.rgb;
+    $id('image-color-hsl').textContent          = _icpPicked.hsl;
+    _icpUpdateActiveValue();
+    icpShowPanel(true);
+  }
+
+  // ── rAF-throttled public pick entry ──
+  function pickColorFromImage(e) {
+    if (!_icpCanvas || !_icpCtx) return;
+    e.stopPropagation();
+    const touch = e.touches?.[0] ?? e.changedTouches?.[0] ?? null;
+    const isTouch = !!touch;
+    const clientX = isTouch ? touch.clientX : e.clientX;
+    const clientY = isTouch ? touch.clientY : e.clientY;
+    _icpPendingE = { clientX, clientY, isTouch };
+    if (!_icpRafId) {
+      _icpRafId = requestAnimationFrame(() => {
+        _icpRafId = null;
+        if (_icpPendingE) {
+          const { clientX: cx, clientY: cy, isTouch: it } = _icpPendingE;
+          _icpPendingE = null;
+          _icpDoPickAt(cx, cy, it);
+        }
+      });
+    }
+  }
+
+  // ── Arrow-key nudge (desktop) ──
+  function _icpNudge(dx, dy) {
+    if (!_icpCanvas || !_icpCtx) return;
+    const rect = _icpCanvas.getBoundingClientRect();
+    _icpCursorX = Math.max(rect.left, Math.min(rect.right,  _icpCursorX + dx));
+    _icpCursorY = Math.max(rect.top,  Math.min(rect.bottom, _icpCursorY + dy));
+    _icpDoPickAt(_icpCursorX, _icpCursorY, false);
+  }
+
+  // ── Copy format ──
+  function icpSetFmt(fmt) {
+    _icpFmt = fmt;
+    $id('icp-copy-fmt').querySelectorAll('.icp-fmt-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.fmt === fmt);
+    });
+    _icpUpdateActiveValue();
+  }
+
+  function _icpUpdateActiveValue() {
+    const val = icpFormatValue(_icpPicked, _icpFmt);
+    const labels = { hex: 'HEX', rgb: 'RGB', hsl: 'HSL', tw: 'TW' };
+    $id('icp-active-label').textContent = labels[_icpFmt] || 'HEX';
+    $id('icp-active-value').textContent = val;
+  }
+
+  function icpCopyActive() {
+    const val = icpFormatValue(_icpPicked, _icpFmt);
+    if (val && val !== '—') copyPickedHex(val);
+  }
+
+  // ── Zoom slider ──
+  function icpSetZoom(v) {
+    _icpZoom = v;
+    $id('icp-zoom-label').textContent = v + '×';
+  }
+
+  // ── History ──
+  function _icpAddHistory(hex) {
+    if (_icpHistory[0] === hex) return;
+    _icpHistory = [hex, ..._icpHistory.filter(h => h !== hex)].slice(0, 10);
+    _icpRenderHistory();
+  }
+
+  function _icpRenderHistory() {
+    const row = $id('icp-history-row');
+    row.innerHTML = '';
+    _icpHistory.forEach(hex => {
+      const s = document.createElement('div');
+      s.className        = 'icp-history-swatch';
+      s.style.background = hex;
+      s.title            = hex;
+      s.onclick          = () => copyPickedHex(hex);
+      row.appendChild(s);
+    });
+    $id('icp-history-section').style.display = _icpHistory.length ? '' : 'none';
+  }
+
+  // ── EyeDropper API (desktop Chrome/Edge) ──
+  async function icpUseEyeDropper() {
+    if (!window.EyeDropper) return;
+    try {
+      const result = await new EyeDropper().open();
+      const hex = result.sRGBHex.toUpperCase();
+      const r = parseInt(hex.slice(1,3), 16);
+      const g = parseInt(hex.slice(3,5), 16);
+      const b = parseInt(hex.slice(5,7), 16);
+      const hsl = icpRgbToHsl(r, g, b);
+      _icpPicked = { r, g, b, hex,
+        rgb: `rgb(${r}, ${g}, ${b})`,
+        hsl: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`
+      };
+      $id('image-color-preview').style.background = hex;
+      $id('image-color-hex').textContent          = hex;
+      $id('image-color-rgb').textContent          = _icpPicked.rgb;
+      $id('image-color-hsl').textContent          = _icpPicked.hsl;
+      _icpUpdateActiveValue();
+      _icpAddHistory(hex);
+      icpShowPanel(true);
+      showToast('ดูดสี ' + hex + ' จากหน้าจอ ✓');
+    } catch (_) { /* user cancelled — no-op */ }
+  }
+
+  // ── Copy helpers ──
+  function icpCopyValue(elemId) {
+    const text = $id(elemId).textContent;
+    if (!text || text === '—') return;
+    copyPickedHex(text);
+  }
+
+  function copyPickedHex(text) {
+    try {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('คัดลอก ' + text + ' แล้ว ✓'))
+        .catch(() => fallbackCopy(text));
+    } catch (_) { fallbackCopy(text); }
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showToast('คัดลอก ' + text + ' แล้ว ✓'); }
+    catch (_) { showToast('⚠️ คัดลอกไม่ได้'); }
+    ta.remove();
+  }
+
+  // ── Apply to main Color Picker ──
+  function icpApplyToMainPicker() {
+    if (!_icpPicked) return;
+    if (typeof updateColorUI === 'function') {
+      updateColorUI({ r: _icpPicked.r, g: _icpPicked.g, b: _icpPicked.b });
+      showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker ✓');
+    } else {
+      const hexInput = $id('color-hex');
+      if (hexInput) {
+        hexInput.value = _icpPicked.hex;
+        hexInput.dispatchEvent(new Event('input', { bubbles: true }));
+        showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker ✓');
+      }
+    }
+  }
+
+  // ── Clear ──
+  function icpClearImage() {
+    _icpImage = _icpPicked = null;
+    _icpDragging = false;
+    if (_icpCanvas && _icpCtx)
+      _icpCtx.clearRect(0, 0, _icpCanvas.width, _icpCanvas.height);
+    $id('image-preview-wrapper').style.display = 'none';
+    $id('icp-img-toolbar').style.display       = 'none';
+    $id('icp-placeholder').style.display       = '';
+    $id('image-picker-marker').style.display   = 'none';
+    $id('image-drop-zone').classList.remove('has-image');
+    $id('image-upload-input').value            = '';
+    $id('icp-eyedropper-btn').style.display    = 'none';
+    icpShowPanel(false);
+    showToast('ล้างภาพแล้ว');
+  }
+
+  // ── File handling ──
+  function handleImageFile(file) {
+    if (!file) return;
+    const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    if (!allowed.includes(file.type)) {
+      showToast('⚠️ รองรับเฉพาะ PNG, JPG, WEBP, GIF');
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      _icpImage  = img;
+      _icpPicked = null;
+      URL.revokeObjectURL(url);
+      drawImagePreview();
+      icpShowPanel(false);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      showToast('⚠️ โหลดภาพไม่ได้ กรุณาลองใหม่');
+    };
+    img.src = url;
+  }
+
+  // ── Drag & Drop ──
+  function icpDragOver(e)  { e.preventDefault(); $id('image-drop-zone').classList.add('dragover'); }
+  function icpDragLeave()  { $id('image-drop-zone').classList.remove('dragover'); }
+  function icpDrop(e) {
+    e.preventDefault();
+    $id('image-drop-zone').classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) handleImageFile(file);
+    else showToast('⚠️ ไม่พบไฟล์ในที่วาง');
+  }
+
+  function icpFileInputChange(e) {
+    const file = e.target.files[0];
+    if (file) handleImageFile(file);
+  }
+
+  // ── Clipboard paste ──
+  function handleImagePaste(e) {
+    const colorTab = $id('color-tab');
+    if (!colorTab?.classList.contains('active')) return;
+    const items = (e.clipboardData || window.clipboardData).items;
+    for (const item of items) {
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
+        e.preventDefault();
+        handleImageFile(item.getAsFile());
+        return;
+      }
+    }
+  }
+
+  // ── Init ──
+  function initImageColorPicker() {
+    document.addEventListener('paste', handleImagePaste);
+
+    // FIX: global mouseup resets drag even if cursor leaves canvas
+    document.addEventListener('mouseup', () => { _icpDragging = false; });
+
+    // Track cursor for nudge baseline
+    document.addEventListener('mousemove', (e) => {
+      _icpCursorX = e.clientX;
+      _icpCursorY = e.clientY;
+    });
+
+    // Keyboard shortcuts (desktop)
+    document.addEventListener('keydown', (e) => {
+      const colorTab = $id('color-tab');
+      if (!colorTab?.classList.contains('active')) return;
+      if (!_icpPicked) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+      // C = copy in active format
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        icpCopyActive();
+        _icpAddHistory(_icpPicked.hex);
+        return;
+      }
+      // Arrow keys = nudge 1px (Shift = 10px)
+      const step = e.shiftKey ? 10 : 1;
+      const nudgeMap = {
+        ArrowLeft:  [-step, 0],
+        ArrowRight: [ step, 0],
+        ArrowUp:    [0, -step],
+        ArrowDown:  [0,  step],
+      };
+      if (nudgeMap[e.key]) {
+        e.preventDefault();
+        const [dx, dy] = nudgeMap[e.key];
+        _icpNudge(dx, dy);
+      }
+    });
+
+    // Add to history on confirmed pick (mouseup / touchend)
+    const canvas = $id('image-preview-canvas');
+    if (canvas) {
+      canvas.addEventListener('mouseup',  () => { if (_icpPicked) _icpAddHistory(_icpPicked.hex); });
+      canvas.addEventListener('touchend', () => { if (_icpPicked) _icpAddHistory(_icpPicked.hex); });
+    }
+
+    // Expose globals for inline HTML handlers
+    window.icpDragOver          = icpDragOver;
+    window.icpDragLeave         = icpDragLeave;
+    window.icpDrop              = icpDrop;
+    window.icpFileInputChange   = icpFileInputChange;
+    window.pickColorFromImage   = pickColorFromImage;
+    window.icpCopyValue         = icpCopyValue;
+    window.icpCopyActive        = icpCopyActive;
+    window.icpSetFmt            = icpSetFmt;
+    window.icpSetZoom           = icpSetZoom;
+    window.icpApplyToMainPicker = icpApplyToMainPicker;
+    window.icpClearImage        = icpClearImage;
+    window.icpUseEyeDropper     = icpUseEyeDropper;
+    window.copyPickedHex        = copyPickedHex;
+    window.handleImageFile      = handleImageFile;
+    window.handleImagePaste     = handleImagePaste;
+    window.drawImagePreview     = drawImagePreview;
+    window.rgbToHex             = icpRgbToHex;
+    window.rgbToHsl             = (r, g, b) => icpRgbToHsl(r, g, b);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initImageColorPicker);
+  } else {
+    initImageColorPicker();
+  }
+})();
+// ── END IMAGE COLOR PICKER ──
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
