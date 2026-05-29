@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Single File](https://img.shields.io/badge/Single-HTML%20File-22d3ee?style=flat-square)](./index.html)
+[![Clean Code](https://img.shields.io/badge/Structure-Clean%20%26%20Modular-22d3ee?style=flat-square)]()
 [![No Dependencies](https://img.shields.io/badge/No-Backend%20Required-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 
@@ -11,7 +11,7 @@
 
 ## ✨ Features
 
-เครื่องมือ 15 อย่างในไฟล์ HTML เดียว ทำงานได้ทั้งหมดบน client-side (browser) ไม่มี server ไม่มี API ไม่มี tracking
+เครื่องมือ 15 อย่าง ทำงานได้ทั้งหมดบน client-side (browser) ไม่มี server ไม่มี API ไม่มี tracking
 
 ### 🎲 Mock Data Generator
 สร้างข้อมูลจำลองสำหรับทดสอบระบบ รองรับข้อมูลไทย:
@@ -118,16 +118,18 @@ Decode JWT token แบบ client-side:
 
 ## 🚀 วิธีใช้งาน
 
-### เปิดใช้งานทันที
-```
-เพียงดาวน์โหลด index.html แล้วเปิดในเบราว์เซอร์
-```
+### เข้าใช้งานผ่านระบบออนไลน์ (แนะนำ)
+เข้าใช้งานได้ทันทีที่ [Live Demo](https://devgreenpink.github.io/dev-utility-toolkit/)
 
-### GitHub Pages (แนะนำ)
+### ใช้งานแบบ Local / Offline
+1. Clone หรือดาวน์โหลด Repository นี้ลงบนเครื่องของคุณ
+2. เปิดไฟล์ `index.html` ด้วยเบราว์เซอร์ หรือรันผ่าน static server (เช่น Live Server ใน VS Code)
+
+### GitHub Pages (แนะนำสำหรับการ Deploy ของตัวเอง)
 1. Fork หรือ clone repo นี้
 2. ไปที่ **Settings → Pages**
 3. เลือก Source: `Deploy from a branch → main`
-4. เข้าใช้งานที่ `https://username.github.io/isaan-devtools/`
+4. เข้าใช้งานที่ `https://username.github.io/dev-utility-toolkit/`
 
 ### ติดตั้งเป็น Desktop App (PWA)
 เมื่อเปิดผ่าน HTTPS (เช่น GitHub Pages) จะมีปุ่ม **Install** ปรากฏขึ้น:
@@ -174,13 +176,16 @@ Decode JWT token แบบ client-side:
 
 ```
 HTML + CSS + Vanilla JavaScript
+├── assets/css/style.css (สไตล์หลักของแอปพลิเคชัน)
+├── assets/js/app.js (ตรรกะและฟังก์ชันการทำงาน)
+├── manifest.json (รองรับการทำ PWA)
 └── jsdiff 5.1.0  (Text/JSON diff)
 └── Google Fonts  (IBM Plex Sans Thai, JetBrains Mono)
 └── Web Crypto API  (Hash, UUID)
 └── Canvas API  (Color Wheel)
 ```
 
-ไม่มี build step ไม่มี npm ไม่มี framework — แก้ไขและ deploy ได้ทันที
+ไม่มี build step ไม่มี npm ไม่มี framework — โครงสร้างสะอาดและถูกจัดระเบียบให้บำรุงรักษาง่ายขึ้น สามารถแก้ไขและ deploy ได้ทันที
 
 ---
 

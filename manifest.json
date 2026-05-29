@@ -1,0 +1,20 @@
+{
+  "name": "อีสาน DevTools",
+  "short_name": "DevTools",
+  "description": "Developer toolkit สำหรับนักพัฒนาไทย — 15 เครื่องมือในหน้าเดียว ทำงานใน browser ล้วน ไม่มี backend",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#6366f1",
+  "lang": "th",
+  "icons": [
+    {
+      "src": "assets/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["developer", "productivity", "utilities"],
+  "screenshots": []
+}
