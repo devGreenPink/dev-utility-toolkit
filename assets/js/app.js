@@ -1,4 +1,4 @@
-﻿// ── TOPBAR META ──
+// ── TOPBAR META ──
 const TAB_META = {
   'random-tab': { title: 'Mock Data Generator', sub: 'สร้างข้อมูลจำลองสำหรับทดสอบระบบ · รองรับภาษาไทย' },
   'sql-tab': { title: 'Java String → Clean SQL', sub: 'แยก SQL ออกจาก Java String, StringBuilder, Text Block, MyBatis' },
@@ -258,7 +258,7 @@ function compareText(){
 function clearDiff(){document.getElementById('diff-left').value='';document.getElementById('diff-right').value='';document.getElementById('diff-result').innerHTML='';document.getElementById('diff-stats').style.display='none';}
 
 // ── JSON ──
-let jsonLiveMode=false;
+let jsonLiveMode=true;
 let currentJsonView='editor';
 function switchJsonView(mode){
   currentJsonView=mode;
@@ -270,49 +270,182 @@ function switchJsonView(mode){
 }
 function toggleJsonLive(){jsonLiveMode=document.getElementById('json-live').checked;}
 function onJsonInput(){
-  const errEl=document.getElementById('json-error');errEl.style.display='none';
+  const txt = document.getElementById('json-input');
+  syncLineNumbers('json-input', 'json-gutter');
+  const errEl=document.getElementById('json-error');
+  errEl.style.display='none';
+  errEl.innerHTML='';
+  if(txt.value.trim() === '') return;
   if(jsonLiveMode){
-    try{document.getElementById('json-input').value=JSON.stringify(JSON.parse(document.getElementById('json-input').value),null,4);}
-    catch(e){errEl.textContent='⚠ '+e.message;errEl.style.display='block';}
+    try{
+      JSON.parse(txt.value);
+    } catch(e){
+      renderJsonError(e, txt.value, 'json-error');
+    }
   }
   if(currentJsonView==='tree')refreshJsonTree();
   runJsonPath();
 }
 function onJsonSplitInput(){
   const src=document.getElementById('json-input-split').value;
-  const errEl=document.getElementById('json-split-error');errEl.style.display='none';
+  syncLineNumbers('json-input-split', 'json-split-gutter');
+  const errEl=document.getElementById('json-split-error');
+  errEl.style.display='none';
+  errEl.innerHTML='';
   document.getElementById('json-input').value=src;
+  syncLineNumbers('json-input', 'json-gutter');
   try{
     const obj=JSON.parse(src);
     document.getElementById('json-tree-split').innerHTML='';
     document.getElementById('json-tree-split').appendChild(buildTree(obj,null,0));
-  }catch(e){errEl.textContent='⚠ '+e.message;errEl.style.display='block';document.getElementById('json-tree-split').innerHTML='';}
+  }catch(e){
+    renderJsonError(e, src, 'json-split-error');
+    document.getElementById('json-tree-split').innerHTML='';
+  }
 }
 function formatJSON(sp){
-  const errEl=document.getElementById('json-error');errEl.style.display='none';
+  const txt = document.getElementById('json-input');
+  const errEl=document.getElementById('json-error');
+  errEl.style.display='none';
+  errEl.innerHTML='';
   try{
-    const val=JSON.stringify(JSON.parse(document.getElementById('json-input').value),null,sp||undefined);
-    document.getElementById('json-input').value=val;
-    if(currentJsonView==='split'){document.getElementById('json-input-split').value=val;onJsonSplitInput();}
+    const val=JSON.stringify(JSON.parse(txt.value),null,sp||undefined);
+    txt.value=val;
+    syncLineNumbers('json-input', 'json-gutter');
+    if(currentJsonView==='split'){
+      document.getElementById('json-input-split').value=val;
+      syncLineNumbers('json-input-split', 'json-split-gutter');
+      onJsonSplitInput();
+    }
     refreshJsonTree();runJsonPath();
-  }catch(e){errEl.textContent='⚠ Invalid JSON: '+e.message;errEl.style.display='block';showToast('Invalid JSON ❌');}
+  }catch(e){
+    renderJsonError(e, txt.value, 'json-error');
+    showToast('Invalid JSON ❌');
+  }
 }
 function formatJSONSplit(sp){
+  const txt = document.getElementById('json-input-split');
   try{
-    const val=JSON.stringify(JSON.parse(document.getElementById('json-input-split').value),null,sp||undefined);
-    document.getElementById('json-input-split').value=val;
+    const val=JSON.stringify(JSON.parse(txt.value),null,sp||undefined);
+    txt.value=val;
+    syncLineNumbers('json-input-split', 'json-split-gutter');
     onJsonSplitInput();
-  }catch(e){showToast('Invalid JSON ❌');}
+  }catch(e){
+    renderJsonError(e, txt.value, 'json-split-error');
+    showToast('Invalid JSON ❌');
+  }
 }
 function clearJSON(){
   document.getElementById('json-input').value='';
   document.getElementById('json-error').style.display='none';
+  document.getElementById('json-error').innerHTML='';
   document.getElementById('jsonpath-input').value='';
   document.getElementById('jsonpath-result').style.display='none';
   document.getElementById('json-tree-output').innerHTML='';
   document.getElementById('json-tree-stats').textContent='';
   if(document.getElementById('json-input-split'))document.getElementById('json-input-split').value='';
   if(document.getElementById('json-tree-split'))document.getElementById('json-tree-split').innerHTML='';
+  syncLineNumbers('json-input', 'json-gutter');
+  syncLineNumbers('json-input-split', 'json-split-gutter');
+}
+// ── JSON LINE NUMBERS & RICH ERROR RENDERERS ──
+function syncLineNumbers(txtId, gutId) {
+  const txt = document.getElementById(txtId);
+  const gut = document.getElementById(gutId);
+  if (!txt || !gut) return;
+  const lines = txt.value.split('\n').length;
+  let html = '';
+  for (let i = 1; i <= lines; i++) {
+    html += `<div>${i}</div>`;
+  }
+  gut.innerHTML = html;
+  gut.scrollTop = txt.scrollTop;
+}
+function initJsonLineNumbers() {
+  const pairs = [
+    { txt: 'json-input', gut: 'json-gutter' },
+    { txt: 'json-input-split', gut: 'json-split-gutter' }
+  ];
+  pairs.forEach(p => {
+    const txt = document.getElementById(p.txt);
+    const gut = document.getElementById(p.gut);
+    if (!txt || !gut) return;
+    const update = () => syncLineNumbers(p.txt, p.gut);
+    txt.addEventListener('input', update);
+    txt.addEventListener('scroll', () => { gut.scrollTop = txt.scrollTop; });
+    txt.addEventListener('keydown', e => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = txt.selectionStart;
+        const end = txt.selectionEnd;
+        const val = txt.value;
+        txt.value = val.substring(0, start) + '  ' + val.substring(end);
+        txt.selectionStart = txt.selectionEnd = start + 2;
+        txt.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+    update();
+  });
+}
+function renderJsonError(error, jsonText, elementId) {
+  const errEl = document.getElementById(elementId);
+  if (!errEl) return;
+  if (!jsonText || !error) {
+    errEl.style.display = 'none';
+    errEl.innerHTML = '';
+    return;
+  }
+  let lineNum = null;
+  let colNum = null;
+  const lineColMatch = error.message.match(/line (\d+) column (\d+)/i);
+  if (lineColMatch) {
+    lineNum = parseInt(lineColMatch[1], 10);
+    colNum = parseInt(lineColMatch[2], 10);
+  } else {
+    const posMatch = error.message.match(/position (\d+)/i);
+    if (posMatch) {
+      const pos = parseInt(posMatch[1], 10);
+      const linesBefore = jsonText.substring(0, pos).split('\n');
+      lineNum = linesBefore.length;
+      colNum = linesBefore[linesBefore.length - 1].length + 1;
+    }
+  }
+  let html = '';
+  if (lineNum !== null) {
+    const lines = jsonText.split('\n');
+    const start = Math.max(0, lineNum - 3);
+    const end = Math.min(lines.length - 1, lineNum + 1);
+    let contextHtml = '';
+    for (let i = start; i <= end; i++) {
+      const isErrorLine = (i === lineNum - 1);
+      const lineStr = String(i + 1).padStart(5, ' ');
+      const content = escHtml(lines[i]);
+      if (isErrorLine) {
+        contextHtml += `<span class="json-error-line-active">${lineStr} | ${content}</span>`;
+        if (colNum !== null && colNum > 0) {
+          const padding = ' '.repeat(colNum - 1 + 8);
+          contextHtml += `<span class="json-error-pointer">${padding}^ ${escHtml(error.message.split(' at ')[0])}</span>\n`;
+        }
+      } else {
+        contextHtml += `${lineStr} | ${content}\n`;
+      }
+    }
+    html = `
+      <div class="json-error-card">
+        <div class="json-error-title">⚠️ JSON รูปแบบไม่ถูกต้อง (บรรทัดที่ ${lineNum}, คอลัมน์ที่ ${colNum})</div>
+        <div class="json-error-context">${contextHtml}</div>
+      </div>
+    `;
+  } else {
+    html = `
+      <div class="json-error-card">
+        <div class="json-error-title">⚠️ JSON รูปแบบไม่ถูกต้อง</div>
+        <div style="font-family:var(--mono); font-size:.76rem; color:var(--text); margin-top: 4px;">${escHtml(error.message)}</div>
+      </div>
+    `;
+  }
+  errEl.innerHTML = html;
+  errEl.style.display = 'block';
 }
 function refreshJsonTree(){
   const src=document.getElementById('json-input').value.trim();
@@ -1675,6 +1808,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   initColorWheel();
   initHttp();
+  initJsonLineNumbers();
+
+  // Sync JSON Live checkbox state
+  try {
+    const liveChk = document.getElementById('json-live');
+    if (liveChk) jsonLiveMode = liveChk.checked;
+  } catch (e) {}
 
   // Auto-generate mock data on load
   generateAll();

@@ -1,4 +1,4 @@
-﻿    :root {
+    :root {
       --bg: #0f1117;
       --surface: #16181f;
       --surface2: #1c1f2a;
@@ -1220,3 +1220,93 @@
     /* ── PWA BANNER ── */
     .pwa-banner { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius); padding: 12px 20px; z-index: 9998; align-items: center; gap: 14px; box-shadow: 0 8px 32px rgba(0,0,0,.5); max-width: 420px; width: calc(100% - 48px); }
     .pwa-banner.show { display: flex; }
+
+    /* ── TEXTAREA WITH LINE NUMBERS ── */
+    .textarea-container {
+      display: flex;
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      font-family: var(--mono);
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .textarea-container:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .textarea-gutter {
+      background: rgba(255,255,255,0.02);
+      border-right: 1px solid var(--border);
+      padding: 10px 0;
+      text-align: right;
+      color: var(--text-dim);
+      font-size: .84rem;
+      line-height: 1.5;
+      user-select: none;
+      min-width: 44px;
+      padding-right: 8px;
+      overflow: hidden;
+      box-sizing: border-box;
+      font-family: var(--mono);
+    }
+    .textarea-gutter div {
+      line-height: 1.5;
+    }
+    .textarea-main {
+      flex: 1;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      margin: 0 !important;
+      padding: 10px 13px !important;
+      font-family: var(--mono) !important;
+      font-size: .84rem !important;
+      line-height: 1.5 !important;
+      resize: vertical;
+      box-sizing: border-box;
+      box-shadow: none !important;
+    }
+
+    /* ── JSON ERROR PREVIEW ── */
+    .json-error-card {
+      background: rgba(248,113,113,0.04);
+      border: 1px solid rgba(248,113,113,0.22);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .json-error-title {
+      font-weight: 600;
+      color: var(--danger);
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .json-error-context {
+      font-family: var(--mono);
+      font-size: .76rem;
+      color: var(--text-dim);
+      background: rgba(0,0,0,0.25);
+      padding: 10px;
+      border-radius: 6px;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.5;
+      border-left: 3px solid var(--danger);
+    }
+    .json-error-line-active {
+      color: var(--text);
+      background: rgba(248,113,113,0.1);
+      display: block;
+      font-weight: 600;
+    }
+    .json-error-pointer {
+      color: var(--danger);
+      font-weight: bold;
+    }
