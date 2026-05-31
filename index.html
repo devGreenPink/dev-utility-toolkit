@@ -1,1048 +1,2182 @@
 <!doctype html>
 <html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!-- ── SEO ── -->
+    <title>อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย</title>
+    <meta
+      name="description"
+      content="เครื่องมือ 15 อย่างสำหรับนักพัฒนาในหน้าเดียว: Mock Data Generator, SQL Parser, JSON Tools, JWT Decoder, Hash, Base64, URL Encode, Regex Tester, Cron Builder, Color Picker, HTTP Status Reference, kubectl และ Linux Cheatsheet — ทำงานใน browser ล้วน ไม่มี backend ไม่มี tracking"
+    />
+    <meta
+      name="keywords"
+      content="devtools, developer toolkit, thai developer, เครื่องมือนักพัฒนา, mock data generator, sql parser, json tools, jwt decoder, hash generator, base64 encoder, url encode, regex tester, cron builder, color picker, http status codes, kubectl cheatsheet, linux commands"
+    />
+    <meta name="author" content="อีสาน DevTools" />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://devgreenpink.github.io/dev-utility-toolkit/"
+    />
 
-  <!-- ── SEO ── -->
-  <title>อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย</title>
-  <meta name="description"
-    content="เครื่องมือ 15 อย่างสำหรับนักพัฒนาในหน้าเดียว: Mock Data Generator, SQL Parser, JSON Tools, JWT Decoder, Hash, Base64, URL Encode, Regex Tester, Cron Builder, Color Picker, HTTP Status Reference, kubectl และ Linux Cheatsheet — ทำงานใน browser ล้วน ไม่มี backend ไม่มี tracking" />
-  <meta name="keywords"
-    content="devtools, developer toolkit, thai developer, เครื่องมือนักพัฒนา, mock data generator, sql parser, json tools, jwt decoder, hash generator, base64 encoder, url encode, regex tester, cron builder, color picker, http status codes, kubectl cheatsheet, linux commands" />
-  <meta name="author" content="อีสาน DevTools" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://devgreenpink.github.io/dev-utility-toolkit/" />
+    <!-- ── Open Graph ── -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย"
+    />
+    <meta
+      property="og:description"
+      content="15 เครื่องมือสำหรับนักพัฒนา: Mock Data, SQL, JSON, JWT, Hash, Base64, Regex, Cron, Color Picker และอื่นๆ — ทำงานใน browser ล้วน ไม่มี backend"
+    />
+    <meta
+      property="og:url"
+      content="https://devgreenpink.github.io/dev-utility-toolkit/"
+    />
+    <meta property="og:site_name" content="อีสาน DevTools" />
 
-  <!-- ── Open Graph ── -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย" />
-  <meta property="og:description"
-    content="15 เครื่องมือสำหรับนักพัฒนา: Mock Data, SQL, JSON, JWT, Hash, Base64, Regex, Cron, Color Picker และอื่นๆ — ทำงานใน browser ล้วน ไม่มี backend" />
-  <meta property="og:url" content="https://devgreenpink.github.io/dev-utility-toolkit/" />
-  <meta property="og:site_name" content="อีสาน DevTools" />
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย"
+    />
+    <meta
+      name="twitter:description"
+      content="15 เครื่องมือสำหรับนักพัฒนา ทำงานใน browser ล้วน ไม่มี backend ไม่มี tracking"
+    />
 
-  <!-- ── Twitter Card ── -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย" />
-  <meta name="twitter:description"
-    content="15 เครื่องมือสำหรับนักพัฒนา ทำงานใน browser ล้วน ไม่มี backend ไม่มี tracking" />
+    <!-- ── PWA ── -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="DevTools" />
 
-  <!-- ── PWA ── -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#6366f1" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="DevTools" />
+    <!-- ── Favicon ── -->
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/images/favicon.svg" />
 
-  <!-- ── Favicon ── -->
-  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="assets/images/favicon.svg" />
+    <!-- ── Fonts ── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- ── Fonts ── -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet" />
+    <!-- ── External Libraries ── -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
 
-  <!-- ── External Libraries ── -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+    <!-- ── App Styles ── -->
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
 
-  <!-- ── App Styles ── -->
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-
-<body>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="app-logo">
-        <div class="app-logo-icon" id="logo-icon">🛠️</div>
-        <div>
-          <div class="app-name">อีสาน DevTools</div>
-          <div class="app-version">v1.0</div>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="app-logo">
+          <div class="app-logo-icon" id="logo-icon">🛠️</div>
+          <div>
+            <div class="app-name">อีสาน DevTools</div>
+            <div class="app-version">v1.0</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="sidebar-search">
-      <input type="text" id="nav-search" placeholder="🔍 ค้นหาเครื่องมือ..." oninput="filterNav(this.value)" />
-    </div>
-
-    <nav class="sidebar-nav" id="sidebar-nav">
-      <div class="nav-section-label">เครื่องมือหลัก</div>
-      <div class="nav-item active" data-tab="random-tab" onclick="openTab(event,'random-tab')">
-        <span class="nav-icon">🎲</span> Mock Data Generator
-      </div>
-      <div class="nav-item" data-tab="sql-tab" onclick="openTab(event,'sql-tab')">
-        <span class="nav-icon">📜</span> SQL Parser
-      </div>
-      <div class="nav-item" data-tab="compare-tab" onclick="openTab(event,'compare-tab')">
-        <span class="nav-icon">🔍</span> Text / JSON Diff
-      </div>
-      <div class="nav-item" data-tab="json-tab" onclick="openTab(event,'json-tab')">
-        <span class="nav-icon">📦</span> JSON Tools
+      <div class="sidebar-search">
+        <input
+          type="text"
+          id="nav-search"
+          placeholder="🔍 ค้นหาเครื่องมือ..."
+          oninput="filterNav(this.value)"
+        />
       </div>
 
-      <div class="nav-section-label">Encode / Decode</div>
-      <div class="nav-item" data-tab="unix-tab" onclick="openTab(event,'unix-tab')">
-        <span class="nav-icon">🕒</span> Unix Timestamp
-      </div>
-      <div class="nav-item" data-tab="base64-tab" onclick="openTab(event,'base64-tab')">
-        <span class="nav-icon">🔐</span> Base64
-      </div>
-      <div class="nav-item" data-tab="url-tab" onclick="openTab(event,'url-tab')">
-        <span class="nav-icon">🔗</span> URL Encode
-      </div>
-      <div class="nav-item" data-tab="hash-tab" onclick="openTab(event,'hash-tab')">
-        <span class="nav-icon">🔑</span> Hash Generator
-      </div>
-      <div class="nav-item" data-tab="jwt-tab" onclick="openTab(event,'jwt-tab')">
-        <span class="nav-icon">🪪</span> JWT Decoder
-      </div>
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <div class="nav-section-label">เครื่องมือหลัก</div>
+        <div
+          class="nav-item active"
+          data-tab="random-tab"
+          onclick="openTab(event, 'random-tab')"
+        >
+          <span class="nav-icon">🎲</span> Mock Data Generator
+        </div>
+        <div
+          class="nav-item"
+          data-tab="sql-tab"
+          onclick="openTab(event, 'sql-tab')"
+        >
+          <span class="nav-icon">📜</span> SQL Parser
+        </div>
+        <div
+          class="nav-item"
+          data-tab="compare-tab"
+          onclick="openTab(event, 'compare-tab')"
+        >
+          <span class="nav-icon">🔍</span> Text / JSON Diff
+        </div>
+        <div
+          class="nav-item"
+          data-tab="json-tab"
+          onclick="openTab(event, 'json-tab')"
+        >
+          <span class="nav-icon">📦</span> JSON Tools
+        </div>
 
-      <div class="nav-section-label">ตัวช่วยนักพัฒนา</div>
-      <div class="nav-item" data-tab="cron-tab" onclick="openTab(event,'cron-tab')">
-        <span class="nav-icon">⏰</span> Cron Builder
-      </div>
-      <div class="nav-item" data-tab="regex-tab" onclick="openTab(event,'regex-tab')">
-        <span class="nav-icon">🔎</span> Regex Tester
-      </div>
-      <div class="nav-item" data-tab="color-tab" onclick="openTab(event,'color-tab')">
-        <span class="nav-icon">🎨</span> Color Picker
-      </div>
-      <div class="nav-item" data-tab="http-tab" onclick="openTab(event,'http-tab')">
-        <span class="nav-icon">🌐</span> HTTP Status
-      </div>
+        <div class="nav-section-label">Encode / Decode</div>
+        <div
+          class="nav-item"
+          data-tab="unix-tab"
+          onclick="openTab(event, 'unix-tab')"
+        >
+          <span class="nav-icon">🕒</span> Unix Timestamp
+        </div>
+        <div
+          class="nav-item"
+          data-tab="base64-tab"
+          onclick="openTab(event, 'base64-tab')"
+        >
+          <span class="nav-icon">🔐</span> Base64
+        </div>
+        <div
+          class="nav-item"
+          data-tab="url-tab"
+          onclick="openTab(event, 'url-tab')"
+        >
+          <span class="nav-icon">🔗</span> URL Encode
+        </div>
+        <div
+          class="nav-item"
+          data-tab="hash-tab"
+          onclick="openTab(event, 'hash-tab')"
+        >
+          <span class="nav-icon">🔑</span> Hash Generator
+        </div>
+        <div
+          class="nav-item"
+          data-tab="jwt-tab"
+          onclick="openTab(event, 'jwt-tab')"
+        >
+          <span class="nav-icon">🪪</span> JWT Decoder
+        </div>
 
-      <div class="nav-section-label">อ้างอิงคำสั่ง</div>
-      <div class="nav-item" data-tab="kubectl-tab" onclick="openTab(event,'kubectl-tab')">
-        <span class="nav-icon">☸️</span> kubectl Cheatsheet
-      </div>
-      <div class="nav-item" data-tab="linux-tab" onclick="openTab(event,'linux-tab')">
-        <span class="nav-icon">🐧</span> Linux Commands
-      </div>
-    </nav>
+        <div class="nav-section-label">ตัวช่วยนักพัฒนา</div>
+        <div
+          class="nav-item"
+          data-tab="cron-tab"
+          onclick="openTab(event, 'cron-tab')"
+        >
+          <span class="nav-icon">⏰</span> Cron Builder
+        </div>
+        <div
+          class="nav-item"
+          data-tab="regex-tab"
+          onclick="openTab(event, 'regex-tab')"
+        >
+          <span class="nav-icon">🔎</span> Regex Tester
+        </div>
+        <div
+          class="nav-item"
+          data-tab="color-tab"
+          onclick="openTab(event, 'color-tab')"
+        >
+          <span class="nav-icon">🎨</span> Color Picker
+        </div>
+        <div
+          class="nav-item"
+          data-tab="http-tab"
+          onclick="openTab(event, 'http-tab')"
+        >
+          <span class="nav-icon">🌐</span> HTTP Status
+        </div>
 
-    <div class="sidebar-footer">
-      <div class="field-label" style="margin-bottom:8px;">🎨 ธีม</div>
-      <div class="theme-row">
-        <div class="theme-dot active" style="background:#6366f1;" data-theme-id="default"
-          onclick="setTheme('default',this)" title="Indigo (Default)"></div>
-        <div class="theme-dot" style="background:#00ff41;" data-theme-id="matrix" onclick="setTheme('matrix',this)"
-          title="Matrix"></div>
-        <div class="theme-dot" style="background:#88c0d0;" data-theme-id="nord" onclick="setTheme('nord',this)"
-          title="Nord"></div>
-        <div class="theme-dot" style="background:#bd93f9;" data-theme-id="dracula" onclick="setTheme('dracula',this)"
-          title="Dracula"></div>
-        <div class="theme-dot" style="background:#f8fafc;border:2px solid #94a3b8;" data-theme-id="light"
-          onclick="setTheme('light',this)" title="☀️ Light"></div>
-      </div>
-    </div>
-  </aside>
+        <div class="nav-section-label">อ้างอิงคำสั่ง</div>
+        <div
+          class="nav-item"
+          data-tab="kubectl-tab"
+          onclick="openTab(event, 'kubectl-tab')"
+        >
+          <span class="nav-icon">☸️</span> kubectl Cheatsheet
+        </div>
+        <div
+          class="nav-item"
+          data-tab="linux-tab"
+          onclick="openTab(event, 'linux-tab')"
+        >
+          <span class="nav-icon">🐧</span> Linux Commands
+        </div>
+        <div class="nav-section-label">เครื่องมือเพิ่มเติม</div>
+        <div
+          class="nav-item"
+          data-tab="kopwang-tab"
+          onclick="openTab(event, 'kopwang-tab')"
+        >
+          <span class="nav-icon">🫷</span> ก๊อปวาง เอนจิ้น
+        </div>
+      </nav>
 
-  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
-
-  <!-- MAIN -->
-  <main class="main">
-    <div class="top-bar">
-      <button class="menu-toggle" onclick="toggleSidebar()" aria-label="เมนู">☰</button>
-      <div>
-        <div class="page-title" id="topbar-title">Mock Data Generator</div>
-        <div class="page-sub" id="topbar-sub">สร้างข้อมูลจำลองสำหรับทดสอบระบบ · รองรับภาษาไทย</div>
-      </div>
-      <div class="top-bar-actions">
-        <span style="font-size:.72rem;color:var(--text-dim);font-family:var(--mono);">Ctrl+Enter = Run</span>
-      </div>
-    </div>
-
-    <div class="content-area">
-
-      <!-- MOCK DATA -->
-      <div id="random-tab" class="tab-content active">
-        <!-- Action Bar -->
-        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
-          <button class="btn btn-primary" style="flex:1;min-width:160px;padding:11px 20px;font-size:.9rem;"
-            onclick="generateAll()">
-            <span style="font-size:1.1em;">🎲</span> สุ่มข้อมูลใหม่
-          </button>
-          <button class="btn btn-ghost" onclick="clearMock()" style="padding:11px 16px;">
-            <span>✖</span> ล้าง
-          </button>
+      <div class="sidebar-footer">
+        <div class="field-label" style="margin-bottom: 8px">🎨 ธีม</div>
+        <div class="theme-row">
           <div
-            style="margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 4px 4px 12px;">
-            <span style="font-size:.75rem;color:var(--text-dim);white-space:nowrap;">จำนวน records</span>
-            <input type="number" id="bulk-count" value="10" min="1" max="500"
-              style="width:64px;padding:5px 8px;font-size:.82rem;" />
-            <button class="btn btn-green" style="padding:6px 12px;font-size:.78rem;" onclick="exportBulkJSON()">⬇
-              Export</button>
+            class="theme-dot active"
+            style="background: #6366f1"
+            data-theme-id="default"
+            onclick="setTheme('default', this)"
+            title="Indigo (Default)"
+          ></div>
+          <div
+            class="theme-dot"
+            style="background: #00ff41"
+            data-theme-id="matrix"
+            onclick="setTheme('matrix', this)"
+            title="Matrix"
+          ></div>
+          <div
+            class="theme-dot"
+            style="background: #88c0d0"
+            data-theme-id="nord"
+            onclick="setTheme('nord', this)"
+            title="Nord"
+          ></div>
+          <div
+            class="theme-dot"
+            style="background: #bd93f9"
+            data-theme-id="dracula"
+            onclick="setTheme('dracula', this)"
+            title="Dracula"
+          ></div>
+          <div
+            class="theme-dot"
+            style="background: #f8fafc; border: 2px solid #94a3b8"
+            data-theme-id="light"
+            onclick="setTheme('light', this)"
+            title="☀️ Light"
+          ></div>
+        </div>
+      </div>
+    </aside>
+
+    <div
+      class="sidebar-overlay"
+      id="sidebar-overlay"
+      onclick="closeSidebar()"
+    ></div>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="top-bar">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="เมนู">
+          ☰
+        </button>
+        <div>
+          <div class="page-title" id="topbar-title">Mock Data Generator</div>
+          <div class="page-sub" id="topbar-sub">
+            สร้างข้อมูลจำลองสำหรับทดสอบระบบ · รองรับภาษาไทย
+          </div>
+        </div>
+        <div class="top-bar-actions">
+          <span
+            style="
+              font-size: 0.72rem;
+              color: var(--text-dim);
+              font-family: var(--mono);
+            "
+            >Ctrl+Enter = Run</span
+          >
+        </div>
+      </div>
+
+      <div class="content-area">
+        <!-- MOCK DATA -->
+        <div id="random-tab" class="tab-content active">
+          <!-- Action Bar -->
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              margin-bottom: 20px;
+              flex-wrap: wrap;
+              align-items: center;
+            "
+          >
+            <button
+              class="btn btn-primary"
+              style="
+                flex: 1;
+                min-width: 160px;
+                padding: 11px 20px;
+                font-size: 0.9rem;
+              "
+              onclick="generateAll()"
+            >
+              <span style="font-size: 1.1em">🎲</span> สุ่มข้อมูลใหม่
+            </button>
+            <button
+              class="btn btn-ghost"
+              onclick="clearMock()"
+              style="padding: 11px 16px"
+            >
+              <span>✖</span> ล้าง
+            </button>
+            <div
+              style="
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: var(--surface2);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-sm);
+                padding: 4px 4px 4px 12px;
+              "
+            >
+              <span
+                style="
+                  font-size: 0.75rem;
+                  color: var(--text-dim);
+                  white-space: nowrap;
+                "
+                >จำนวน records</span
+              >
+              <input
+                type="number"
+                id="bulk-count"
+                value="10"
+                min="1"
+                max="500"
+                style="width: 64px; padding: 5px 8px; font-size: 0.82rem"
+              />
+              <button
+                class="btn btn-green"
+                style="padding: 6px 12px; font-size: 0.78rem"
+                onclick="exportBulkJSON()"
+              >
+                ⬇ Export
+              </button>
+            </div>
+          </div>
+
+          <div class="grid-2" style="align-items: start; gap: 14px">
+            <!-- Left: Data fields -->
+            <div>
+              <!-- Identity card -->
+              <div class="mock-section-card">
+                <div class="mock-section-header">
+                  <span class="mock-section-icon">🪪</span>
+                  <span class="mock-section-title">ข้อมูลส่วนตัว</span>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">บัตรประชาชน</span>
+                    <span class="mock-field-hint">13 หลัก + checksum</span>
+                  </div>
+                  <span class="mock-field-value mono-sm" id="out-id">—</span>
+                  <button
+                    class="mock-copy-btn"
+                    onclick="copyVal('out-id')"
+                    title="Copy"
+                  >
+                    ⎘
+                  </button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">ชื่อ–นามสกุล</span>
+                    <span class="mock-field-hint">ภาษาไทย</span>
+                  </div>
+                  <span class="mock-field-value" id="out-name">—</span>
+                  <button
+                    class="mock-copy-btn"
+                    onclick="copyVal('out-name')"
+                    title="Copy"
+                  >
+                    ⎘
+                  </button>
+                </div>
+              </div>
+
+              <!-- Contact card -->
+              <div class="mock-section-card">
+                <div class="mock-section-header">
+                  <span class="mock-section-icon">📱</span>
+                  <span class="mock-section-title">ติดต่อ</span>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">เบอร์โทรศัพท์</span>
+                    <span class="mock-field-hint">มือถือไทย</span>
+                  </div>
+                  <span class="mock-field-value mono-sm" id="out-phone">—</span>
+                  <button
+                    class="mock-copy-btn"
+                    onclick="copyVal('out-phone')"
+                    title="Copy"
+                  >
+                    ⎘
+                  </button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">อีเมล</span>
+                    <span class="mock-field-hint">สุ่ม domain</span>
+                  </div>
+                  <span
+                    class="mock-field-value mono-sm"
+                    id="out-email"
+                    style="font-size: 0.78rem"
+                    >—</span
+                  >
+                  <button
+                    class="mock-copy-btn"
+                    onclick="copyVal('out-email')"
+                    title="Copy"
+                  >
+                    ⎘
+                  </button>
+                </div>
+              </div>
+
+              <!-- System card -->
+              <div class="mock-section-card">
+                <div class="mock-section-header">
+                  <span class="mock-section-icon">⚙️</span>
+                  <span class="mock-section-title">ระบบ</span>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">UUID v4</span>
+                    <span class="mock-field-hint">crypto random</span>
+                  </div>
+                  <span
+                    class="mock-field-value mono-sm"
+                    id="out-uuid"
+                    style="font-size: 0.68rem; letter-spacing: 0.02em"
+                    >—</span
+                  >
+                  <button
+                    class="mock-copy-btn"
+                    onclick="copyVal('out-uuid')"
+                    title="Copy"
+                  >
+                    ⎘
+                  </button>
+                </div>
+              </div>
+
+              <!-- Copy all -->
+              <button
+                class="btn btn-ghost btn-full"
+                onclick="copyAllMock()"
+                style="margin-top: 4px"
+              >
+                📋 Copy ทั้งหมดเป็น JSON
+              </button>
+            </div>
+
+            <!-- Right: Bulk output -->
+            <div id="bulk-output-area" style="display: none">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 8px;
+                "
+              >
+                <div>
+                  <span class="field-label">JSON OUTPUT</span>
+                  <span
+                    id="bulk-count-badge"
+                    style="
+                      font-size: 0.68rem;
+                      color: var(--accent2);
+                      font-family: var(--mono);
+                      margin-left: 8px;
+                    "
+                  ></span>
+                </div>
+                <button
+                  class="btn btn-ghost"
+                  onclick="copyArea('bulk-json-output')"
+                >
+                  📋 Copy All
+                </button>
+              </div>
+              <textarea
+                id="bulk-json-output"
+                rows="22"
+                readonly
+                style="color: var(--accent2); font-size: 0.75rem"
+              ></textarea>
+            </div>
           </div>
         </div>
 
-        <div class="grid-2" style="align-items:start;gap:14px;">
-          <!-- Left: Data fields -->
-          <div>
-            <!-- Identity card -->
-            <div class="mock-section-card">
-              <div class="mock-section-header">
-                <span class="mock-section-icon">🪪</span>
-                <span class="mock-section-title">ข้อมูลส่วนตัว</span>
+        <!-- SQL -->
+        <div id="sql-tab" class="tab-content">
+          <div class="section-header">
+            <div class="toolbar">
+              <button class="btn btn-ghost" onclick="copyArea('sql-output')">
+                📋 Copy
+              </button>
+              <button class="btn btn-danger" onclick="clearSQL()">
+                ✖ ล้าง
+              </button>
+            </div>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              margin-bottom: 10px;
+              flex-wrap: wrap;
+            "
+          >
+            <span class="field-label">โหมดที่ตรวจจับได้:</span>
+            <span
+              id="sql-detect-badge"
+              style="
+                font-size: 0.72rem;
+                font-family: var(--mono);
+                padding: 3px 10px;
+                border-radius: 20px;
+                border: 1px solid var(--border);
+                color: var(--text-dim);
+                background: var(--surface2);
+              "
+              >—</span
+            >
+            <label class="mode-label" style="margin-left: auto"
+              ><input type="checkbox" id="sql-format-check" /> จัดรูปแบบ SQL
+              ผลลัพธ์</label
+            >
+          </div>
+          <textarea
+            id="sql-input"
+            rows="8"
+            placeholder='วาง Java code หรือ SQL ได้เลย เช่น&#10;String sql = "SELECT u.id " +&#10;             "FROM users u " +&#10;             "WHERE u.active = 1";'
+            oninput="detectSqlMode(this.value)"
+          ></textarea>
+          <div style="margin-top: 10px">
+            <button class="btn btn-green btn-full" onclick="convertSQL()">
+              ▶ แยก SQL
+            </button>
+          </div>
+          <div id="sql-error"></div>
+          <textarea
+            id="sql-output"
+            rows="10"
+            readonly
+            style="margin-top: 10px; color: var(--accent2)"
+          ></textarea>
+        </div>
+
+        <!-- DIFF -->
+        <div id="compare-tab" class="tab-content">
+          <div class="section-header">
+            <div class="toolbar">
+              <label class="mode-label"
+                ><input
+                  type="radio"
+                  name="diff-mode"
+                  value="char"
+                  checked
+                  onchange="diffModeChange()"
+                />
+                ระดับตัวอักษร</label
+              >
+              <label class="mode-label"
+                ><input
+                  type="radio"
+                  name="diff-mode"
+                  value="line"
+                  onchange="diffModeChange()"
+                />
+                ระดับบรรทัด</label
+              >
+              <button class="btn btn-danger" onclick="clearDiff()">
+                ✖ ล้าง
+              </button>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="field-label">ต้นฉบับ (Original)</div>
+              <textarea
+                id="diff-left"
+                rows="8"
+                placeholder="ต้นฉบับ"
+              ></textarea>
+            </div>
+            <div>
+              <div class="field-label">ฉบับแก้ไข (Modified)</div>
+              <textarea
+                id="diff-right"
+                rows="8"
+                placeholder="ฉบับแก้ไข"
+              ></textarea>
+            </div>
+          </div>
+          <div style="margin-top: 10px">
+            <button class="btn btn-primary btn-full" onclick="compareText()">
+              ⚖ เปรียบเทียบ
+            </button>
+          </div>
+          <div
+            id="diff-stats"
+            style="
+              margin-top: 8px;
+              font-size: 0.76rem;
+              font-family: var(--mono);
+              display: none;
+            "
+          >
+            <span style="color: var(--success)" id="diff-added-count"></span>
+            <span
+              style="color: var(--danger); margin-left: 12px"
+              id="diff-removed-count"
+            ></span>
+          </div>
+          <div
+            id="diff-result"
+            class="output-mono"
+            style="
+              margin-top: 8px;
+              min-height: 80px;
+              color: var(--text);
+              white-space: pre-wrap;
+            "
+          ></div>
+        </div>
+
+        <!-- JSON -->
+        <div id="json-tab" class="tab-content">
+          <div class="section-header">
+            <div class="toolbar">
+              <div class="json-view-toggle">
+                <button
+                  class="json-view-btn active"
+                  id="json-btn-editor"
+                  onclick="switchJsonView('editor')"
+                >
+                  ✏️ Editor
+                </button>
+                <button
+                  class="json-view-btn"
+                  id="json-btn-tree"
+                  onclick="switchJsonView('tree')"
+                >
+                  🌲 Tree
+                </button>
+                <button
+                  class="json-view-btn"
+                  id="json-btn-split"
+                  onclick="switchJsonView('split')"
+                >
+                  ⬛⬛ Split
+                </button>
               </div>
-              <div class="mock-field-row">
-                <div class="mock-field-meta">
-                  <span class="mock-field-label">บัตรประชาชน</span>
-                  <span class="mock-field-hint">13 หลัก + checksum</span>
+              <label class="mode-label"
+                ><input
+                  type="checkbox"
+                  id="json-live"
+                  onchange="toggleJsonLive()"
+                  checked
+                />
+                Live</label
+              >
+              <button class="btn btn-danger" onclick="clearJSON()">
+                ✖ ล้าง
+              </button>
+            </div>
+          </div>
+
+          <div id="json-editor-pane">
+            <div class="textarea-container">
+              <div class="textarea-gutter" id="json-gutter"><div>1</div></div>
+              <textarea
+                id="json-input"
+                class="textarea-main"
+                rows="10"
+                placeholder="วาง JSON ที่นี่..."
+                style="color: var(--accent2)"
+                oninput="onJsonInput()"
+              ></textarea>
+            </div>
+            <div class="flex-row" style="margin-top: 10px">
+              <button
+                class="btn btn-primary"
+                style="flex: 1"
+                onclick="formatJSON(4)"
+              >
+                Prettify (4 spaces)
+              </button>
+              <button
+                class="btn btn-ghost"
+                style="flex: 1"
+                onclick="formatJSON(2)"
+              >
+                2 spaces
+              </button>
+              <button
+                class="btn btn-ghost"
+                style="flex: 1"
+                onclick="formatJSON(0)"
+              >
+                Minify
+              </button>
+              <button class="btn btn-ghost" onclick="copyArea('json-input')">
+                Copy
+              </button>
+            </div>
+            <div id="json-error" style="display: none"></div>
+          </div>
+
+          <div id="json-tree-pane" style="display: none">
+            <div
+              style="
+                display: flex;
+                gap: 8px;
+                margin-bottom: 8px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
+              <button class="btn btn-ghost" onclick="jsonTreeExpandAll()">
+                ▼ Expand All
+              </button>
+              <button class="btn btn-ghost" onclick="jsonTreeCollapseAll()">
+                ▶ Collapse All
+              </button>
+              <span
+                id="json-tree-stats"
+                style="
+                  font-size: 0.72rem;
+                  color: var(--text-dim);
+                  font-family: var(--mono);
+                  margin-left: auto;
+                "
+              ></span>
+            </div>
+            <div
+              id="json-tree-output"
+              class="output-mono tree-root"
+              style="
+                min-height: 200px;
+                max-height: 520px;
+                overflow: auto;
+                padding: 12px;
+              "
+            ></div>
+          </div>
+
+          <div id="json-split-pane" style="display: none">
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+            >
+              <div>
+                <div class="field-label">EDITOR</div>
+                <div class="textarea-container">
+                  <div class="textarea-gutter" id="json-split-gutter">
+                    <div>1</div>
+                  </div>
+                  <textarea
+                    id="json-input-split"
+                    class="textarea-main"
+                    rows="16"
+                    placeholder="วาง JSON ที่นี่..."
+                    style="color: var(--accent2); resize: none"
+                    oninput="onJsonSplitInput()"
+                  ></textarea>
                 </div>
-                <span class="mock-field-value mono-sm" id="out-id">—</span>
-                <button class="mock-copy-btn" onclick="copyVal('out-id')" title="Copy">⎘</button>
+                <div class="flex-row" style="margin-top: 6px">
+                  <button
+                    class="btn btn-ghost"
+                    style="flex: 1"
+                    onclick="formatJSONSplit(4)"
+                  >
+                    Prettify
+                  </button>
+                  <button
+                    class="btn btn-ghost"
+                    style="flex: 1"
+                    onclick="formatJSONSplit(0)"
+                  >
+                    Minify
+                  </button>
+                </div>
               </div>
-              <div class="mock-field-row">
-                <div class="mock-field-meta">
-                  <span class="mock-field-label">ชื่อ–นามสกุล</span>
-                  <span class="mock-field-hint">ภาษาไทย</span>
+              <div>
+                <div class="field-label" style="color: var(--accent)">
+                  TREE VIEW
                 </div>
-                <span class="mock-field-value" id="out-name">—</span>
-                <button class="mock-copy-btn" onclick="copyVal('out-name')" title="Copy">⎘</button>
+                <div
+                  id="json-tree-split"
+                  class="output-mono tree-root"
+                  style="
+                    min-height: 300px;
+                    max-height: 400px;
+                    overflow: auto;
+                    padding: 10px;
+                    font-size: 0.76rem;
+                  "
+                ></div>
               </div>
             </div>
+            <div id="json-split-error" style="display: none"></div>
+          </div>
 
-            <!-- Contact card -->
-            <div class="mock-section-card">
-              <div class="mock-section-header">
-                <span class="mock-section-icon">📱</span>
-                <span class="mock-section-title">ติดต่อ</span>
+          <div style="margin-top: 16px" class="card">
+            <div class="card-title">🔎 JSONPath Query</div>
+            <div class="flex-row">
+              <input
+                type="text"
+                id="jsonpath-input"
+                placeholder="$.users[0].name  หรือ  $.items[*].price"
+                style="flex: 1"
+                oninput="runJsonPath()"
+              />
+              <button
+                class="btn btn-ghost"
+                onclick="
+                  document.getElementById('jsonpath-input').value = '';
+                  runJsonPath();
+                "
+              >
+                ✖
+              </button>
+            </div>
+            <div
+              class="jsonpath-result"
+              id="jsonpath-result"
+              style="display: none"
+            ></div>
+          </div>
+        </div>
+
+        <!-- UNIX -->
+        <div id="unix-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearUnix()">✖ ล้าง</button>
+          </div>
+          <div class="flex-row">
+            <input
+              type="number"
+              id="unix-input"
+              placeholder="เช่น 1705568400"
+              style="flex: 1"
+              oninput="convertUnix()"
+            />
+            <button class="btn btn-primary" onclick="convertUnix()">
+              แปลง
+            </button>
+            <button class="btn btn-ghost" onclick="nowUnix()">ตอนนี้</button>
+          </div>
+          <div class="cron-result" style="margin-top: 14px; padding: 22px">
+            <div class="cron-expr" id="unix-result">—</div>
+            <div class="cron-next" id="unix-ms"></div>
+          </div>
+        </div>
+
+        <!-- BASE64 -->
+        <div id="base64-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearBase64()">
+              ✖ ล้างทั้งหมด
+            </button>
+          </div>
+          <div class="space-y">
+            <div>
+              <div class="field-label">ข้อความ INPUT</div>
+              <textarea
+                id="b64-input"
+                rows="5"
+                placeholder="วางข้อความหรือ Base64 ที่ต้องการแปลง..."
+              ></textarea>
+            </div>
+            <div class="flex-row">
+              <button
+                class="btn btn-primary"
+                style="flex: 1"
+                onclick="b64Encode()"
+              >
+                🔒 Encode → Base64
+              </button>
+              <button
+                class="btn btn-green"
+                style="flex: 1"
+                onclick="b64Decode()"
+              >
+                🔓 Decode → Text
+              </button>
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 14px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
+              <label class="mode-label"
+                ><input type="checkbox" id="b64-urlsafe" /> URL-safe (แทน +→-
+                และ /→_)</label
+              >
+              <label class="mode-label"
+                ><input type="checkbox" id="b64-nopad" /> ไม่มี padding
+                (=)</label
+              >
+            </div>
+            <div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 6px;
+                "
+              >
+                <span class="field-label">OUTPUT</span>
+                <button
+                  class="btn btn-ghost"
+                  onclick="copyElText('b64-output')"
+                >
+                  Copy
+                </button>
               </div>
-              <div class="mock-field-row">
-                <div class="mock-field-meta">
-                  <span class="mock-field-label">เบอร์โทรศัพท์</span>
-                  <span class="mock-field-hint">มือถือไทย</span>
-                </div>
-                <span class="mock-field-value mono-sm" id="out-phone">—</span>
-                <button class="mock-copy-btn" onclick="copyVal('out-phone')" title="Copy">⎘</button>
-              </div>
-              <div class="mock-field-row">
-                <div class="mock-field-meta">
-                  <span class="mock-field-label">อีเมล</span>
-                  <span class="mock-field-hint">สุ่ม domain</span>
-                </div>
-                <span class="mock-field-value mono-sm" id="out-email" style="font-size:.78rem;">—</span>
-                <button class="mock-copy-btn" onclick="copyVal('out-email')" title="Copy">⎘</button>
+              <div id="b64-output" class="output-mono" style="min-height: 80px">
+                —
               </div>
             </div>
+            <div
+              id="b64-error"
+              style="color: var(--danger); font-size: 0.8rem; display: none"
+            ></div>
+          </div>
+        </div>
 
-            <!-- System card -->
-            <div class="mock-section-card">
-              <div class="mock-section-header">
-                <span class="mock-section-icon">⚙️</span>
-                <span class="mock-section-title">ระบบ</span>
-              </div>
-              <div class="mock-field-row">
-                <div class="mock-field-meta">
-                  <span class="mock-field-label">UUID v4</span>
-                  <span class="mock-field-hint">crypto random</span>
-                </div>
-                <span class="mock-field-value mono-sm" id="out-uuid"
-                  style="font-size:.68rem;letter-spacing:.02em;">—</span>
-                <button class="mock-copy-btn" onclick="copyVal('out-uuid')" title="Copy">⎘</button>
-              </div>
-            </div>
-
-            <!-- Copy all -->
-            <button class="btn btn-ghost btn-full" onclick="copyAllMock()" style="margin-top:4px;">
-              📋 Copy ทั้งหมดเป็น JSON
+        <!-- CRON -->
+        <div id="cron-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearCron()">
+              ↺ รีเซ็ต
             </button>
           </div>
 
-          <!-- Right: Bulk output -->
-          <div id="bulk-output-area" style="display:none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-              <div>
-                <span class="field-label">JSON OUTPUT</span>
-                <span id="bulk-count-badge"
-                  style="font-size:.68rem;color:var(--accent2);font-family:var(--mono);margin-left:8px;"></span>
-              </div>
-              <button class="btn btn-ghost" onclick="copyArea('bulk-json-output')">📋 Copy All</button>
+          <div class="card" style="margin-bottom: 14px">
+            <div class="card-title">🌏 Timezone</div>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
+              <select
+                id="cron-tz"
+                onchange="onCronTzChange()"
+                style="
+                  flex: 1;
+                  min-width: 200px;
+                  padding: 8px 12px;
+                  background: var(--surface2);
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-sm);
+                  color: var(--text);
+                  font-family: var(--mono);
+                  font-size: 0.82rem;
+                "
+              >
+                <optgroup label="🌏 Asia">
+                  <option value="Asia/Bangkok">🇹🇭 Asia/Bangkok (UTC+7)</option>
+                  <option value="Asia/Tokyo">🇯🇵 Asia/Tokyo (UTC+9)</option>
+                  <option value="Asia/Singapore">
+                    🇸🇬 Asia/Singapore (UTC+8)
+                  </option>
+                  <option value="Asia/Shanghai">
+                    🇨🇳 Asia/Shanghai (UTC+8)
+                  </option>
+                  <option value="Asia/Seoul">🇰🇷 Asia/Seoul (UTC+9)</option>
+                  <option value="Asia/Jakarta">🇮🇩 Asia/Jakarta (UTC+7)</option>
+                  <option value="Asia/Ho_Chi_Minh">
+                    🇻🇳 Asia/Ho_Chi_Minh (UTC+7)
+                  </option>
+                  <option value="Asia/Kolkata">
+                    🇮🇳 Asia/Kolkata (UTC+5:30)
+                  </option>
+                  <option value="Asia/Dubai">🇦🇪 Asia/Dubai (UTC+4)</option>
+                  <option value="Asia/Karachi">🇵🇰 Asia/Karachi (UTC+5)</option>
+                  <option value="Asia/Dhaka">🇧🇩 Asia/Dhaka (UTC+6)</option>
+                  <option value="Asia/Yangon">🇲🇲 Asia/Yangon (UTC+6:30)</option>
+                  <option value="Asia/Kuala_Lumpur">
+                    🇲🇾 Asia/Kuala_Lumpur (UTC+8)
+                  </option>
+                  <option value="Asia/Manila">🇵🇭 Asia/Manila (UTC+8)</option>
+                  <option value="Asia/Taipei">🇹🇼 Asia/Taipei (UTC+8)</option>
+                  <option value="Asia/Colombo">
+                    🇱🇰 Asia/Colombo (UTC+5:30)
+                  </option>
+                  <option value="Asia/Kabul">🇦🇫 Asia/Kabul (UTC+4:30)</option>
+                  <option value="Asia/Tashkent">
+                    🇺🇿 Asia/Tashkent (UTC+5)
+                  </option>
+                  <option value="Asia/Almaty">🇰🇿 Asia/Almaty (UTC+6)</option>
+                </optgroup>
+                <optgroup label="🌍 Europe">
+                  <option value="Europe/London">
+                    🇬🇧 Europe/London (UTC+0/+1)
+                  </option>
+                  <option value="Europe/Berlin">
+                    🇩🇪 Europe/Berlin (UTC+1/+2)
+                  </option>
+                  <option value="Europe/Paris">
+                    🇫🇷 Europe/Paris (UTC+1/+2)
+                  </option>
+                  <option value="Europe/Rome">🇮🇹 Europe/Rome (UTC+1/+2)</option>
+                  <option value="Europe/Madrid">
+                    🇪🇸 Europe/Madrid (UTC+1/+2)
+                  </option>
+                  <option value="Europe/Amsterdam">
+                    🇳🇱 Europe/Amsterdam (UTC+1/+2)
+                  </option>
+                  <option value="Europe/Stockholm">
+                    🇸🇪 Europe/Stockholm (UTC+1/+2)
+                  </option>
+                  <option value="Europe/Warsaw">
+                    🇵🇱 Europe/Warsaw (UTC+1/+2)
+                  </option>
+                  <option value="Europe/Istanbul">
+                    🇹🇷 Europe/Istanbul (UTC+3)
+                  </option>
+                  <option value="Europe/Moscow">
+                    🇷🇺 Europe/Moscow (UTC+3)
+                  </option>
+                  <option value="Europe/Kiev">🇺🇦 Europe/Kiev (UTC+2/+3)</option>
+                  <option value="Europe/Zurich">
+                    🇨🇭 Europe/Zurich (UTC+1/+2)
+                  </option>
+                  <option value="Europe/Helsinki">
+                    🇫🇮 Europe/Helsinki (UTC+2/+3)
+                  </option>
+                  <option value="Europe/Bucharest">
+                    🇷🇴 Europe/Bucharest (UTC+2/+3)
+                  </option>
+                </optgroup>
+                <optgroup label="🌎 Americas">
+                  <option value="America/New_York">
+                    🇺🇸 America/New_York (UTC-5/-4)
+                  </option>
+                  <option value="America/Chicago">
+                    🇺🇸 America/Chicago (UTC-6/-5)
+                  </option>
+                  <option value="America/Denver">
+                    🇺🇸 America/Denver (UTC-7/-6)
+                  </option>
+                  <option value="America/Los_Angeles">
+                    🇺🇸 America/Los_Angeles (UTC-8/-7)
+                  </option>
+                  <option value="America/Anchorage">
+                    🇺🇸 America/Anchorage (UTC-9/-8)
+                  </option>
+                  <option value="America/Toronto">
+                    🇨🇦 America/Toronto (UTC-5/-4)
+                  </option>
+                  <option value="America/Vancouver">
+                    🇨🇦 America/Vancouver (UTC-8/-7)
+                  </option>
+                  <option value="America/Mexico_City">
+                    🇲🇽 America/Mexico_City (UTC-6/-5)
+                  </option>
+                  <option value="America/Sao_Paulo">
+                    🇧🇷 America/Sao_Paulo (UTC-3)
+                  </option>
+                  <option value="America/Buenos_Aires">
+                    🇦🇷 America/Buenos_Aires (UTC-3)
+                  </option>
+                  <option value="America/Santiago">
+                    🇨🇱 America/Santiago (UTC-4/-3)
+                  </option>
+                  <option value="America/Bogota">
+                    🇨🇴 America/Bogota (UTC-5)
+                  </option>
+                  <option value="America/Lima">🇵🇪 America/Lima (UTC-5)</option>
+                </optgroup>
+                <optgroup label="🌏 Oceania">
+                  <option value="Australia/Sydney">
+                    🇦🇺 Australia/Sydney (UTC+10/+11)
+                  </option>
+                  <option value="Australia/Melbourne">
+                    🇦🇺 Australia/Melbourne (UTC+10/+11)
+                  </option>
+                  <option value="Australia/Perth">
+                    🇦🇺 Australia/Perth (UTC+8)
+                  </option>
+                  <option value="Australia/Brisbane">
+                    🇦🇺 Australia/Brisbane (UTC+10)
+                  </option>
+                  <option value="Pacific/Auckland">
+                    🇳🇿 Pacific/Auckland (UTC+12/+13)
+                  </option>
+                  <option value="Pacific/Fiji">🇫🇯 Pacific/Fiji (UTC+12)</option>
+                  <option value="Pacific/Honolulu">
+                    🇺🇸 Pacific/Honolulu (UTC-10)
+                  </option>
+                </optgroup>
+                <optgroup label="🌍 Africa & Middle East">
+                  <option value="Africa/Cairo">🇪🇬 Africa/Cairo (UTC+2)</option>
+                  <option value="Africa/Johannesburg">
+                    🇿🇦 Africa/Johannesburg (UTC+2)
+                  </option>
+                  <option value="Africa/Lagos">🇳🇬 Africa/Lagos (UTC+1)</option>
+                  <option value="Africa/Nairobi">
+                    🇰🇪 Africa/Nairobi (UTC+3)
+                  </option>
+                  <option value="Asia/Riyadh">🇸🇦 Asia/Riyadh (UTC+3)</option>
+                  <option value="Asia/Tehran">🇮🇷 Asia/Tehran (UTC+3:30)</option>
+                  <option value="Asia/Jerusalem">
+                    🇮🇱 Asia/Jerusalem (UTC+2/+3)
+                  </option>
+                </optgroup>
+                <optgroup label="🌐 Universal">
+                  <option value="UTC">🌐 UTC (UTC+0)</option>
+                </optgroup>
+              </select>
+              <div
+                id="cron-tz-now"
+                style="
+                  font-family: var(--mono);
+                  font-size: 0.82rem;
+                  color: var(--accent2);
+                  white-space: nowrap;
+                  background: var(--surface2);
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-sm);
+                  padding: 8px 12px;
+                  min-width: 180px;
+                  text-align: center;
+                  letter-spacing: 0.02em;
+                "
+              ></div>
             </div>
-            <textarea id="bulk-json-output" rows="22" readonly
-              style="color:var(--accent2);font-size:.75rem;"></textarea>
           </div>
-        </div>
-      </div>
 
-      <!-- SQL -->
-      <div id="sql-tab" class="tab-content">
-        <div class="section-header">
-          <div class="toolbar">
-            <button class="btn btn-ghost" onclick="copyArea('sql-output')">📋 Copy</button>
-            <button class="btn btn-danger" onclick="clearSQL()">✖ ล้าง</button>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-          <span class="field-label">โหมดที่ตรวจจับได้:</span>
-          <span id="sql-detect-badge"
-            style="font-size:.72rem;font-family:var(--mono);padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--text-dim);background:var(--surface2);">—</span>
-          <label class="mode-label" style="margin-left:auto;"><input type="checkbox" id="sql-format-check" /> จัดรูปแบบ
-            SQL ผลลัพธ์</label>
-        </div>
-        <textarea id="sql-input" rows="8"
-          placeholder='วาง Java code หรือ SQL ได้เลย เช่น&#10;String sql = "SELECT u.id " +&#10;             "FROM users u " +&#10;             "WHERE u.active = 1";'
-          oninput="detectSqlMode(this.value)"></textarea>
-        <div style="margin-top:10px;">
-          <button class="btn btn-green btn-full" onclick="convertSQL()">▶ แยก SQL</button>
-        </div>
-        <div id="sql-error"></div>
-        <textarea id="sql-output" rows="10" readonly style="margin-top:10px;color:var(--accent2);"></textarea>
-      </div>
-
-      <!-- DIFF -->
-      <div id="compare-tab" class="tab-content">
-        <div class="section-header">
-          <div class="toolbar">
-            <label class="mode-label"><input type="radio" name="diff-mode" value="char" checked
-                onchange="diffModeChange()" /> ระดับตัวอักษร</label>
-            <label class="mode-label"><input type="radio" name="diff-mode" value="line" onchange="diffModeChange()" />
-              ระดับบรรทัด</label>
-            <button class="btn btn-danger" onclick="clearDiff()">✖ ล้าง</button>
-          </div>
-        </div>
-        <div class="grid-2">
-          <div>
-            <div class="field-label">ต้นฉบับ (Original)</div>
-            <textarea id="diff-left" rows="8" placeholder="ต้นฉบับ"></textarea>
-          </div>
-          <div>
-            <div class="field-label">ฉบับแก้ไข (Modified)</div>
-            <textarea id="diff-right" rows="8" placeholder="ฉบับแก้ไข"></textarea>
-          </div>
-        </div>
-        <div style="margin-top:10px;">
-          <button class="btn btn-primary btn-full" onclick="compareText()">⚖ เปรียบเทียบ</button>
-        </div>
-        <div id="diff-stats" style="margin-top:8px;font-size:.76rem;font-family:var(--mono);display:none;">
-          <span style="color:var(--success);" id="diff-added-count"></span>
-          <span style="color:var(--danger);margin-left:12px;" id="diff-removed-count"></span>
-        </div>
-        <div id="diff-result" class="output-mono"
-          style="margin-top:8px;min-height:80px;color:var(--text);white-space:pre-wrap;"></div>
-      </div>
-
-      <!-- JSON -->
-      <div id="json-tab" class="tab-content">
-        <div class="section-header">
-          <div class="toolbar">
-            <div class="json-view-toggle">
-              <button class="json-view-btn active" id="json-btn-editor" onclick="switchJsonView('editor')">✏️
-                Editor</button>
-              <button class="json-view-btn" id="json-btn-tree" onclick="switchJsonView('tree')">🌲 Tree</button>
-              <button class="json-view-btn" id="json-btn-split" onclick="switchJsonView('split')">⬛⬛ Split</button>
+          <div style="margin-bottom: 14px">
+            <div class="field-label">⚡ PRESETS ยอดนิยม</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <button class="btn btn-ghost" onclick="loadPreset('0 0 * * *')">
+                ทุกวัน เที่ยงคืน
+              </button>
+              <button class="btn btn-ghost" onclick="loadPreset('0 8 * * 1-5')">
+                ทุกวันทำงาน 08:00
+              </button>
+              <button class="btn btn-ghost" onclick="loadPreset('0 */1 * * *')">
+                ทุก 1 ชั่วโมง
+              </button>
+              <button class="btn btn-ghost" onclick="loadPreset('*/5 * * * *')">
+                ทุก 5 นาที
+              </button>
+              <button class="btn btn-ghost" onclick="loadPreset('0 0 1 * *')">
+                วันที่ 1 ของเดือน
+              </button>
+              <button class="btn btn-ghost" onclick="loadPreset('0 0 * * 0')">
+                ทุกวันอาทิตย์
+              </button>
+              <button
+                class="btn btn-ghost"
+                onclick="loadPreset('0 6,12,18 * * *')"
+              >
+                06:00 12:00 18:00
+              </button>
             </div>
-            <label class="mode-label"><input type="checkbox" id="json-live" onchange="toggleJsonLive()" checked /> Live</label>
-            <button class="btn btn-danger" onclick="clearJSON()">✖ ล้าง</button>
+          </div>
+
+          <div style="margin-bottom: 14px">
+            <div class="field-label">พิมพ์ Expression เอง (5-field cron)</div>
+            <div style="display: flex; gap: 8px">
+              <input
+                type="text"
+                id="cron-manual"
+                placeholder="*/5 * * * *"
+                style="flex: 1; font-size: 1rem"
+                oninput="parseCronManual()"
+                onkeydown="if (event.key === 'Enter') parseCronManual();"
+              />
+              <button class="btn btn-primary" onclick="parseCronManual()">
+                Parse
+              </button>
+            </div>
+          </div>
+
+          <div class="cron-grid" style="margin-bottom: 14px">
+            <div class="cron-field">
+              <label>MINUTE</label
+              ><select id="c-min" onchange="buildCron()">
+                <option value="*">* (ทุกนาที)</option>
+                <option value="0">0</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+                <option value="*/5">*/5</option>
+                <option value="*/10">*/10</option>
+                <option value="*/15">*/15</option>
+                <option value="*/30">*/30</option>
+              </select>
+            </div>
+            <div class="cron-field">
+              <label>HOUR</label
+              ><select id="c-hr" onchange="buildCron()">
+                <option value="*">* (ทุกชั่วโมง)</option>
+                <option value="0">0 (เที่ยงคืน)</option>
+                <option value="6">6</option>
+                <option value="8">8</option>
+                <option value="12">12 (เที่ยง)</option>
+                <option value="18">18</option>
+                <option value="*/1">*/1</option>
+                <option value="*/2">*/2</option>
+                <option value="*/6">*/6</option>
+                <option value="0,6,12,18">0,6,12,18</option>
+              </select>
+            </div>
+            <div class="cron-field">
+              <label>DAY (เดือน)</label
+              ><select id="c-dom" onchange="buildCron()">
+                <option value="*">* (ทุกวัน)</option>
+                <option value="1">1</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="28">28</option>
+                <option value="L">L (สุดท้าย)</option>
+              </select>
+            </div>
+            <div class="cron-field">
+              <label>MONTH</label
+              ><select id="c-mon" onchange="buildCron()">
+                <option value="*">* (ทุกเดือน)</option>
+                <option value="1">1 ม.ค.</option>
+                <option value="3">3 มี.ค.</option>
+                <option value="6">6 มิ.ย.</option>
+                <option value="12">12 ธ.ค.</option>
+              </select>
+            </div>
+            <div class="cron-field">
+              <label>DAY (สัปดาห์)</label
+              ><select id="c-dow" onchange="buildCron()">
+                <option value="*">* (ทุกวัน)</option>
+                <option value="0">0 อาทิตย์</option>
+                <option value="1">1 จันทร์</option>
+                <option value="5">5 ศุกร์</option>
+                <option value="1-5">1-5 วันทำงาน</option>
+                <option value="0,6">0,6 วันหยุด</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cron-result">
+            <div id="cron-expr-display" class="cron-expr">* * * * *</div>
+            <div id="cron-human" class="cron-human">ทุกนาที</div>
+            <div id="cron-next" class="cron-next"></div>
+            <div
+              style="
+                margin-top: 14px;
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+                flex-wrap: wrap;
+              "
+            >
+              <button
+                class="btn btn-ghost"
+                onclick="copyElText('cron-expr-display')"
+              >
+                Copy cron
+              </button>
+              <button class="btn btn-ghost" onclick="copySpring()">
+                Copy @Scheduled
+              </button>
+              <button class="btn btn-ghost" onclick="copyQuartz()">
+                Copy Quartz
+              </button>
+            </div>
+          </div>
+
+          <div class="next-runs-box">
+            <div class="next-runs-title">🕐 รอบรัน 5 ครั้งถัดไป</div>
+            <div id="next-runs-list"></div>
+          </div>
+
+          <div class="ref-box" style="margin-top: 14px">
+            <div class="ref-box-title">FORMAT REFERENCE</div>
+            <div class="ref-box-body">
+              <span style="color: var(--accent2)">┌──── minute (0-59)</span
+              ><br />
+              <span style="color: var(--accent2)">│ ┌── hour (0-23)</span><br />
+              <span style="color: var(--accent2)"
+                >│ │ ┌─ day/month (1-31, L)</span
+              ><br />
+              <span style="color: var(--accent2)">│ │ │ ┌ month (1-12)</span
+              ><br />
+              <span style="color: var(--accent2)"
+                >│ │ │ │ ┌ day/week (0-7, 0=Sun)</span
+              ><br />
+              <span style="color: var(--text)">* * * * *</span>
+            </div>
           </div>
         </div>
 
-        <div id="json-editor-pane">
-          <div class="textarea-container">
-            <div class="textarea-gutter" id="json-gutter"><div>1</div></div>
-            <textarea id="json-input" class="textarea-main" rows="10" placeholder="วาง JSON ที่นี่..." style="color:var(--accent2);" oninput="onJsonInput()"></textarea>
+        <!-- REGEX -->
+        <div id="regex-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearRegex()">
+              ✖ ล้างทั้งหมด
+            </button>
           </div>
-          <div class="flex-row" style="margin-top:10px;">
-            <button class="btn btn-primary" style="flex:1;" onclick="formatJSON(4)">Prettify (4 spaces)</button>
-            <button class="btn btn-ghost" style="flex:1;" onclick="formatJSON(2)">2 spaces</button>
-            <button class="btn btn-ghost" style="flex:1;" onclick="formatJSON(0)">Minify</button>
-            <button class="btn btn-ghost" onclick="copyArea('json-input')">Copy</button>
-          </div>
-          <div id="json-error" style="display:none;"></div>
-        </div>
-
-        <div id="json-tree-pane" style="display:none;">
-          <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap;">
-            <button class="btn btn-ghost" onclick="jsonTreeExpandAll()">▼ Expand All</button>
-            <button class="btn btn-ghost" onclick="jsonTreeCollapseAll()">▶ Collapse All</button>
-            <span id="json-tree-stats"
-              style="font-size:.72rem;color:var(--text-dim);font-family:var(--mono);margin-left:auto;"></span>
-          </div>
-          <div id="json-tree-output" class="output-mono tree-root"
-            style="min-height:200px;max-height:520px;overflow:auto;padding:12px;"></div>
-        </div>
-
-        <div id="json-split-pane" style="display:none;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="space-y">
             <div>
-              <div class="field-label">EDITOR</div>
-              <div class="textarea-container">
-                <div class="textarea-gutter" id="json-split-gutter"><div>1</div></div>
-                <textarea id="json-input-split" class="textarea-main" rows="16" placeholder="วาง JSON ที่นี่..."
-                  style="color:var(--accent2);resize:none;" oninput="onJsonSplitInput()"></textarea>
+              <div class="field-label">PATTERN</div>
+              <div class="regex-input-wrap">
+                <span class="regex-slash">/</span>
+                <input
+                  type="text"
+                  id="regex-pattern"
+                  placeholder="(\d+)-(\w+)"
+                  oninput="runRegex()"
+                />
+                <span class="regex-slash">/</span>
+                <input
+                  type="text"
+                  id="regex-flags"
+                  class="regex-flag-input"
+                  placeholder="gi"
+                  maxlength="6"
+                  oninput="runRegex()"
+                  style="width: 70px"
+                />
               </div>
-              <div class="flex-row" style="margin-top:6px;">
-                <button class="btn btn-ghost" style="flex:1;" onclick="formatJSONSplit(4)">Prettify</button>
-                <button class="btn btn-ghost" style="flex:1;" onclick="formatJSONSplit(0)">Minify</button>
+              <div
+                id="regex-error"
+                style="
+                  font-size: 0.76rem;
+                  color: var(--danger);
+                  margin-top: 4px;
+                  min-height: 18px;
+                "
+              ></div>
+            </div>
+            <div>
+              <div class="field-label">⚡ PATTERN สำเร็จรูป</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                <button class="btn btn-ghost" onclick="loadRegex('\\d+', 'g')">
+                  ตัวเลข
+                </button>
+                <button
+                  class="btn btn-ghost"
+                  onclick="loadRegex('[\\w.+-]+@[\\w-]+\\.[a-z]{2,}', 'gi')"
+                >
+                  Email
+                </button>
+                <button
+                  class="btn btn-ghost"
+                  onclick="loadRegex('https?:\\/\\/[^\\s]+', 'gi')"
+                >
+                  URL
+                </button>
+                <button
+                  class="btn btn-ghost"
+                  onclick="loadRegex('^0[689]\\d{8}$', 'gm')"
+                >
+                  เบอร์โทรไทย
+                </button>
+                <button
+                  class="btn btn-ghost"
+                  onclick="loadRegex('\\d{13}', 'g')"
+                >
+                  บัตรประชาชน
+                </button>
+                <button
+                  class="btn btn-ghost"
+                  onclick="loadRegex('\\d{4}-\\d{2}-\\d{2}', 'g')"
+                >
+                  วันที่ ISO
+                </button>
+                <button
+                  class="btn btn-ghost"
+                  onclick="loadRegex('[A-Z]{2,3}-\\d+', 'g')"
+                >
+                  Jira Key
+                </button>
               </div>
             </div>
             <div>
-              <div class="field-label" style="color:var(--accent);">TREE VIEW</div>
-              <div id="json-tree-split" class="output-mono tree-root"
-                style="min-height:300px;max-height:400px;overflow:auto;padding:10px;font-size:.76rem;"></div>
+              <div class="field-label">ข้อความที่ต้องการทดสอบ</div>
+              <textarea
+                id="regex-input"
+                rows="5"
+                placeholder="วางข้อความที่ต้องการทดสอบที่นี่..."
+                oninput="runRegex()"
+              ></textarea>
             </div>
-          </div>
-          <div id="json-split-error" style="display:none;"></div>
-        </div>
-
-        <div style="margin-top:16px;" class="card">
-          <div class="card-title">🔎 JSONPath Query</div>
-          <div class="flex-row">
-            <input type="text" id="jsonpath-input" placeholder="$.users[0].name  หรือ  $.items[*].price" style="flex:1;"
-              oninput="runJsonPath()" />
-            <button class="btn btn-ghost"
-              onclick="document.getElementById('jsonpath-input').value='';runJsonPath();">✖</button>
-          </div>
-          <div class="jsonpath-result" id="jsonpath-result" style="display:none;"></div>
-        </div>
-      </div>
-
-      <!-- UNIX -->
-      <div id="unix-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearUnix()">✖ ล้าง</button>
-        </div>
-        <div class="flex-row">
-          <input type="number" id="unix-input" placeholder="เช่น 1705568400" style="flex:1;" oninput="convertUnix()" />
-          <button class="btn btn-primary" onclick="convertUnix()">แปลง</button>
-          <button class="btn btn-ghost" onclick="nowUnix()">ตอนนี้</button>
-        </div>
-        <div class="cron-result" style="margin-top:14px;padding:22px;">
-          <div class="cron-expr" id="unix-result">—</div>
-          <div class="cron-next" id="unix-ms"></div>
-        </div>
-      </div>
-
-      <!-- BASE64 -->
-      <div id="base64-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearBase64()">✖ ล้างทั้งหมด</button>
-        </div>
-        <div class="space-y">
-          <div>
-            <div class="field-label">ข้อความ INPUT</div>
-            <textarea id="b64-input" rows="5" placeholder="วางข้อความหรือ Base64 ที่ต้องการแปลง..."></textarea>
-          </div>
-          <div class="flex-row">
-            <button class="btn btn-primary" style="flex:1;" onclick="b64Encode()">🔒 Encode → Base64</button>
-            <button class="btn btn-green" style="flex:1;" onclick="b64Decode()">🔓 Decode → Text</button>
-          </div>
-          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-            <label class="mode-label"><input type="checkbox" id="b64-urlsafe" /> URL-safe (แทน +→- และ /→_)</label>
-            <label class="mode-label"><input type="checkbox" id="b64-nopad" /> ไม่มี padding (=)</label>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <span class="field-label">OUTPUT</span>
-              <button class="btn btn-ghost" onclick="copyElText('b64-output')">Copy</button>
+            <div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 6px;
+                "
+              >
+                <span class="field-label">ผลลัพธ์ที่ match</span>
+                <span
+                  id="regex-count"
+                  style="
+                    font-size: 0.76rem;
+                    color: var(--accent);
+                    font-family: var(--mono);
+                  "
+                  >0 matches</span
+                >
+              </div>
+              <div
+                id="regex-highlight"
+                class="output-mono highlighted-text"
+                style="min-height: 60px"
+              ></div>
             </div>
-            <div id="b64-output" class="output-mono" style="min-height:80px;">—</div>
+            <div
+              id="regex-groups"
+              class="match-info"
+              style="min-height: 40px"
+            ></div>
           </div>
-          <div id="b64-error" style="color:var(--danger);font-size:.8rem;display:none;"></div>
-        </div>
-      </div>
-
-      <!-- CRON -->
-      <div id="cron-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearCron()">↺ รีเซ็ต</button>
         </div>
 
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">🌏 Timezone</div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-            <select id="cron-tz" onchange="onCronTzChange()"
-              style="flex:1;min-width:200px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--mono);font-size:.82rem;">
-              <optgroup label="🌏 Asia">
-                <option value="Asia/Bangkok">🇹🇭 Asia/Bangkok (UTC+7)</option>
-                <option value="Asia/Tokyo">🇯🇵 Asia/Tokyo (UTC+9)</option>
-                <option value="Asia/Singapore">🇸🇬 Asia/Singapore (UTC+8)</option>
-                <option value="Asia/Shanghai">🇨🇳 Asia/Shanghai (UTC+8)</option>
-                <option value="Asia/Seoul">🇰🇷 Asia/Seoul (UTC+9)</option>
-                <option value="Asia/Jakarta">🇮🇩 Asia/Jakarta (UTC+7)</option>
-                <option value="Asia/Ho_Chi_Minh">🇻🇳 Asia/Ho_Chi_Minh (UTC+7)</option>
-                <option value="Asia/Kolkata">🇮🇳 Asia/Kolkata (UTC+5:30)</option>
-                <option value="Asia/Dubai">🇦🇪 Asia/Dubai (UTC+4)</option>
-                <option value="Asia/Karachi">🇵🇰 Asia/Karachi (UTC+5)</option>
-                <option value="Asia/Dhaka">🇧🇩 Asia/Dhaka (UTC+6)</option>
-                <option value="Asia/Yangon">🇲🇲 Asia/Yangon (UTC+6:30)</option>
-                <option value="Asia/Kuala_Lumpur">🇲🇾 Asia/Kuala_Lumpur (UTC+8)</option>
-                <option value="Asia/Manila">🇵🇭 Asia/Manila (UTC+8)</option>
-                <option value="Asia/Taipei">🇹🇼 Asia/Taipei (UTC+8)</option>
-                <option value="Asia/Colombo">🇱🇰 Asia/Colombo (UTC+5:30)</option>
-                <option value="Asia/Kabul">🇦🇫 Asia/Kabul (UTC+4:30)</option>
-                <option value="Asia/Tashkent">🇺🇿 Asia/Tashkent (UTC+5)</option>
-                <option value="Asia/Almaty">🇰🇿 Asia/Almaty (UTC+6)</option>
-              </optgroup>
-              <optgroup label="🌍 Europe">
-                <option value="Europe/London">🇬🇧 Europe/London (UTC+0/+1)</option>
-                <option value="Europe/Berlin">🇩🇪 Europe/Berlin (UTC+1/+2)</option>
-                <option value="Europe/Paris">🇫🇷 Europe/Paris (UTC+1/+2)</option>
-                <option value="Europe/Rome">🇮🇹 Europe/Rome (UTC+1/+2)</option>
-                <option value="Europe/Madrid">🇪🇸 Europe/Madrid (UTC+1/+2)</option>
-                <option value="Europe/Amsterdam">🇳🇱 Europe/Amsterdam (UTC+1/+2)</option>
-                <option value="Europe/Stockholm">🇸🇪 Europe/Stockholm (UTC+1/+2)</option>
-                <option value="Europe/Warsaw">🇵🇱 Europe/Warsaw (UTC+1/+2)</option>
-                <option value="Europe/Istanbul">🇹🇷 Europe/Istanbul (UTC+3)</option>
-                <option value="Europe/Moscow">🇷🇺 Europe/Moscow (UTC+3)</option>
-                <option value="Europe/Kiev">🇺🇦 Europe/Kiev (UTC+2/+3)</option>
-                <option value="Europe/Zurich">🇨🇭 Europe/Zurich (UTC+1/+2)</option>
-                <option value="Europe/Helsinki">🇫🇮 Europe/Helsinki (UTC+2/+3)</option>
-                <option value="Europe/Bucharest">🇷🇴 Europe/Bucharest (UTC+2/+3)</option>
-              </optgroup>
-              <optgroup label="🌎 Americas">
-                <option value="America/New_York">🇺🇸 America/New_York (UTC-5/-4)</option>
-                <option value="America/Chicago">🇺🇸 America/Chicago (UTC-6/-5)</option>
-                <option value="America/Denver">🇺🇸 America/Denver (UTC-7/-6)</option>
-                <option value="America/Los_Angeles">🇺🇸 America/Los_Angeles (UTC-8/-7)</option>
-                <option value="America/Anchorage">🇺🇸 America/Anchorage (UTC-9/-8)</option>
-                <option value="America/Toronto">🇨🇦 America/Toronto (UTC-5/-4)</option>
-                <option value="America/Vancouver">🇨🇦 America/Vancouver (UTC-8/-7)</option>
-                <option value="America/Mexico_City">🇲🇽 America/Mexico_City (UTC-6/-5)</option>
-                <option value="America/Sao_Paulo">🇧🇷 America/Sao_Paulo (UTC-3)</option>
-                <option value="America/Buenos_Aires">🇦🇷 America/Buenos_Aires (UTC-3)</option>
-                <option value="America/Santiago">🇨🇱 America/Santiago (UTC-4/-3)</option>
-                <option value="America/Bogota">🇨🇴 America/Bogota (UTC-5)</option>
-                <option value="America/Lima">🇵🇪 America/Lima (UTC-5)</option>
-              </optgroup>
-              <optgroup label="🌏 Oceania">
-                <option value="Australia/Sydney">🇦🇺 Australia/Sydney (UTC+10/+11)</option>
-                <option value="Australia/Melbourne">🇦🇺 Australia/Melbourne (UTC+10/+11)</option>
-                <option value="Australia/Perth">🇦🇺 Australia/Perth (UTC+8)</option>
-                <option value="Australia/Brisbane">🇦🇺 Australia/Brisbane (UTC+10)</option>
-                <option value="Pacific/Auckland">🇳🇿 Pacific/Auckland (UTC+12/+13)</option>
-                <option value="Pacific/Fiji">🇫🇯 Pacific/Fiji (UTC+12)</option>
-                <option value="Pacific/Honolulu">🇺🇸 Pacific/Honolulu (UTC-10)</option>
-              </optgroup>
-              <optgroup label="🌍 Africa & Middle East">
-                <option value="Africa/Cairo">🇪🇬 Africa/Cairo (UTC+2)</option>
-                <option value="Africa/Johannesburg">🇿🇦 Africa/Johannesburg (UTC+2)</option>
-                <option value="Africa/Lagos">🇳🇬 Africa/Lagos (UTC+1)</option>
-                <option value="Africa/Nairobi">🇰🇪 Africa/Nairobi (UTC+3)</option>
-                <option value="Asia/Riyadh">🇸🇦 Asia/Riyadh (UTC+3)</option>
-                <option value="Asia/Tehran">🇮🇷 Asia/Tehran (UTC+3:30)</option>
-                <option value="Asia/Jerusalem">🇮🇱 Asia/Jerusalem (UTC+2/+3)</option>
-              </optgroup>
-              <optgroup label="🌐 Universal">
-                <option value="UTC">🌐 UTC (UTC+0)</option>
-              </optgroup>
-            </select>
-            <div id="cron-tz-now"
-              style="font-family:var(--mono);font-size:.82rem;color:var(--accent2);white-space:nowrap;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;min-width:180px;text-align:center;letter-spacing:.02em;">
+        <!-- HASH -->
+        <div id="hash-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearHash()">✖ ล้าง</button>
+          </div>
+          <textarea
+            id="hash-input"
+            rows="6"
+            placeholder="วางข้อความที่ต้องการสร้าง hash ที่นี่..."
+            oninput="computeHash()"
+          ></textarea>
+          <div
+            style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap"
+          >
+            <button
+              class="btn btn-primary"
+              style="flex: 1"
+              onclick="computeHash()"
+            >
+              🔑 สร้าง Hash
+            </button>
+            <label class="mode-label"
+              ><input
+                type="checkbox"
+                id="hash-uppercase"
+                onchange="computeHash()"
+              />
+              ตัวพิมพ์ใหญ่</label
+            >
+          </div>
+          <div id="hash-results" style="margin-top: 14px"></div>
+        </div>
+
+        <!-- JWT -->
+        <div id="jwt-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearJWT()">✖ ล้าง</button>
+          </div>
+          <textarea
+            id="jwt-input"
+            rows="4"
+            placeholder="วาง JWT token ที่นี่... eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+            oninput="decodeJWT_UI()"
+          ></textarea>
+          <div id="jwt-result" style="margin-top: 12px"></div>
+        </div>
+
+        <!-- URL ENCODE/DECODE -->
+        <div id="url-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearURL()">
+              ✖ ล้างทั้งหมด
+            </button>
+          </div>
+          <div class="space-y">
+            <div>
+              <div class="field-label">INPUT</div>
+              <textarea
+                id="url-input"
+                rows="5"
+                placeholder="วางข้อความหรือ URL ที่ต้องการ encode/decode..."
+              ></textarea>
             </div>
-          </div>
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <div class="field-label">⚡ PRESETS ยอดนิยม</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            <button class="btn btn-ghost" onclick="loadPreset('0 0 * * *')">ทุกวัน เที่ยงคืน</button>
-            <button class="btn btn-ghost" onclick="loadPreset('0 8 * * 1-5')">ทุกวันทำงาน 08:00</button>
-            <button class="btn btn-ghost" onclick="loadPreset('0 */1 * * *')">ทุก 1 ชั่วโมง</button>
-            <button class="btn btn-ghost" onclick="loadPreset('*/5 * * * *')">ทุก 5 นาที</button>
-            <button class="btn btn-ghost" onclick="loadPreset('0 0 1 * *')">วันที่ 1 ของเดือน</button>
-            <button class="btn btn-ghost" onclick="loadPreset('0 0 * * 0')">ทุกวันอาทิตย์</button>
-            <button class="btn btn-ghost" onclick="loadPreset('0 6,12,18 * * *')">06:00 12:00 18:00</button>
-          </div>
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <div class="field-label">พิมพ์ Expression เอง (5-field cron)</div>
-          <div style="display:flex;gap:8px;">
-            <input type="text" id="cron-manual" placeholder="*/5 * * * *" style="flex:1;font-size:1rem;"
-              oninput="parseCronManual()" onkeydown="if(event.key==='Enter')parseCronManual();" />
-            <button class="btn btn-primary" onclick="parseCronManual()">Parse</button>
-          </div>
-        </div>
-
-        <div class="cron-grid" style="margin-bottom:14px;">
-          <div class="cron-field"><label>MINUTE</label><select id="c-min" onchange="buildCron()">
-              <option value="*">* (ทุกนาที)</option>
-              <option value="0">0</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="30">30</option>
-              <option value="45">45</option>
-              <option value="*/5">*/5</option>
-              <option value="*/10">*/10</option>
-              <option value="*/15">*/15</option>
-              <option value="*/30">*/30</option>
-            </select></div>
-          <div class="cron-field"><label>HOUR</label><select id="c-hr" onchange="buildCron()">
-              <option value="*">* (ทุกชั่วโมง)</option>
-              <option value="0">0 (เที่ยงคืน)</option>
-              <option value="6">6</option>
-              <option value="8">8</option>
-              <option value="12">12 (เที่ยง)</option>
-              <option value="18">18</option>
-              <option value="*/1">*/1</option>
-              <option value="*/2">*/2</option>
-              <option value="*/6">*/6</option>
-              <option value="0,6,12,18">0,6,12,18</option>
-            </select></div>
-          <div class="cron-field"><label>DAY (เดือน)</label><select id="c-dom" onchange="buildCron()">
-              <option value="*">* (ทุกวัน)</option>
-              <option value="1">1</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="28">28</option>
-              <option value="L">L (สุดท้าย)</option>
-            </select></div>
-          <div class="cron-field"><label>MONTH</label><select id="c-mon" onchange="buildCron()">
-              <option value="*">* (ทุกเดือน)</option>
-              <option value="1">1 ม.ค.</option>
-              <option value="3">3 มี.ค.</option>
-              <option value="6">6 มิ.ย.</option>
-              <option value="12">12 ธ.ค.</option>
-            </select></div>
-          <div class="cron-field"><label>DAY (สัปดาห์)</label><select id="c-dow" onchange="buildCron()">
-              <option value="*">* (ทุกวัน)</option>
-              <option value="0">0 อาทิตย์</option>
-              <option value="1">1 จันทร์</option>
-              <option value="5">5 ศุกร์</option>
-              <option value="1-5">1-5 วันทำงาน</option>
-              <option value="0,6">0,6 วันหยุด</option>
-            </select></div>
-        </div>
-
-        <div class="cron-result">
-          <div id="cron-expr-display" class="cron-expr">* * * * *</div>
-          <div id="cron-human" class="cron-human">ทุกนาที</div>
-          <div id="cron-next" class="cron-next"></div>
-          <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-            <button class="btn btn-ghost" onclick="copyElText('cron-expr-display')">Copy cron</button>
-            <button class="btn btn-ghost" onclick="copySpring()">Copy @Scheduled</button>
-            <button class="btn btn-ghost" onclick="copyQuartz()">Copy Quartz</button>
-          </div>
-        </div>
-
-        <div class="next-runs-box">
-          <div class="next-runs-title">🕐 รอบรัน 5 ครั้งถัดไป</div>
-          <div id="next-runs-list"></div>
-        </div>
-
-        <div class="ref-box" style="margin-top:14px;">
-          <div class="ref-box-title">FORMAT REFERENCE</div>
-          <div class="ref-box-body">
-            <span style="color:var(--accent2);">┌──── minute (0-59)</span><br />
-            <span style="color:var(--accent2);">│ ┌── hour (0-23)</span><br />
-            <span style="color:var(--accent2);">│ │ ┌─ day/month (1-31, L)</span><br />
-            <span style="color:var(--accent2);">│ │ │ ┌ month (1-12)</span><br />
-            <span style="color:var(--accent2);">│ │ │ │ ┌ day/week (0-7, 0=Sun)</span><br />
-            <span style="color:var(--text);">* * * * *</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- REGEX -->
-      <div id="regex-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearRegex()">✖ ล้างทั้งหมด</button>
-        </div>
-        <div class="space-y">
-          <div>
-            <div class="field-label">PATTERN</div>
-            <div class="regex-input-wrap">
-              <span class="regex-slash">/</span>
-              <input type="text" id="regex-pattern" placeholder="(\d+)-(\w+)" oninput="runRegex()" />
-              <span class="regex-slash">/</span>
-              <input type="text" id="regex-flags" class="regex-flag-input" placeholder="gi" maxlength="6"
-                oninput="runRegex()" style="width:70px;" />
+            <div class="flex-row">
+              <button
+                class="btn btn-primary"
+                style="flex: 1"
+                onclick="urlEncode()"
+              >
+                🔒 Encode
+              </button>
+              <button
+                class="btn btn-green"
+                style="flex: 1"
+                onclick="urlDecode()"
+              >
+                🔓 Decode
+              </button>
             </div>
-            <div id="regex-error" style="font-size:.76rem;color:var(--danger);margin-top:4px;min-height:18px;"></div>
-          </div>
-          <div>
-            <div class="field-label">⚡ PATTERN สำเร็จรูป</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              <button class="btn btn-ghost" onclick="loadRegex('\\d+','g')">ตัวเลข</button>
-              <button class="btn btn-ghost" onclick="loadRegex('[\\w.+-]+@[\\w-]+\\.[a-z]{2,}','gi')">Email</button>
-              <button class="btn btn-ghost" onclick="loadRegex('https?:\\/\\/[^\\s]+','gi')">URL</button>
-              <button class="btn btn-ghost" onclick="loadRegex('^0[689]\\d{8}$','gm')">เบอร์โทรไทย</button>
-              <button class="btn btn-ghost" onclick="loadRegex('\\d{13}','g')">บัตรประชาชน</button>
-              <button class="btn btn-ghost" onclick="loadRegex('\\d{4}-\\d{2}-\\d{2}','g')">วันที่ ISO</button>
-              <button class="btn btn-ghost" onclick="loadRegex('[A-Z]{2,3}-\\d+','g')">Jira Key</button>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap">
+              <label class="mode-label"
+                ><input
+                  type="radio"
+                  name="url-mode"
+                  value="component"
+                  checked
+                />
+                encodeURIComponent (แนะนำ)</label
+              >
+              <label class="mode-label"
+                ><input type="radio" name="url-mode" value="full" /> encodeURI
+                (เก็บ / ? # &amp;)</label
+              >
             </div>
-          </div>
-          <div>
-            <div class="field-label">ข้อความที่ต้องการทดสอบ</div>
-            <textarea id="regex-input" rows="5" placeholder="วางข้อความที่ต้องการทดสอบที่นี่..."
-              oninput="runRegex()"></textarea>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <span class="field-label">ผลลัพธ์ที่ match</span>
-              <span id="regex-count" style="font-size:.76rem;color:var(--accent);font-family:var(--mono);">0
-                matches</span>
-            </div>
-            <div id="regex-highlight" class="output-mono highlighted-text" style="min-height:60px;"></div>
-          </div>
-          <div id="regex-groups" class="match-info" style="min-height:40px;"></div>
-        </div>
-      </div>
-
-      <!-- HASH -->
-      <div id="hash-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearHash()">✖ ล้าง</button>
-        </div>
-        <textarea id="hash-input" rows="6" placeholder="วางข้อความที่ต้องการสร้าง hash ที่นี่..."
-          oninput="computeHash()"></textarea>
-        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary" style="flex:1;" onclick="computeHash()">🔑 สร้าง Hash</button>
-          <label class="mode-label"><input type="checkbox" id="hash-uppercase" onchange="computeHash()" />
-            ตัวพิมพ์ใหญ่</label>
-        </div>
-        <div id="hash-results" style="margin-top:14px;"></div>
-      </div>
-
-      <!-- JWT -->
-      <div id="jwt-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearJWT()">✖ ล้าง</button>
-        </div>
-        <textarea id="jwt-input" rows="4"
-          placeholder="วาง JWT token ที่นี่... eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-          oninput="decodeJWT_UI()"></textarea>
-        <div id="jwt-result" style="margin-top:12px;"></div>
-      </div>
-
-      <!-- URL ENCODE/DECODE -->
-      <div id="url-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearURL()">✖ ล้างทั้งหมด</button>
-        </div>
-        <div class="space-y">
-          <div>
-            <div class="field-label">INPUT</div>
-            <textarea id="url-input" rows="5" placeholder="วางข้อความหรือ URL ที่ต้องการ encode/decode..."></textarea>
-          </div>
-          <div class="flex-row">
-            <button class="btn btn-primary" style="flex:1;" onclick="urlEncode()">🔒 Encode</button>
-            <button class="btn btn-green" style="flex:1;" onclick="urlDecode()">🔓 Decode</button>
-          </div>
-          <div style="display:flex;gap:14px;flex-wrap:wrap;">
-            <label class="mode-label"><input type="radio" name="url-mode" value="component" checked />
-              encodeURIComponent (แนะนำ)</label>
-            <label class="mode-label"><input type="radio" name="url-mode" value="full" /> encodeURI (เก็บ / ? #
-              &amp;)</label>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <span class="field-label">OUTPUT</span>
-              <button class="btn btn-ghost" onclick="copyElText('url-output')">Copy</button>
-            </div>
-            <div id="url-output" class="output-mono" style="min-height:80px;">—</div>
-          </div>
-          <div id="url-error" style="color:var(--danger);font-size:.8rem;display:none;"></div>
-        </div>
-      </div>
-
-      <!-- COLOR PICKER -->
-      <div id="color-tab" class="tab-content">
-        <div class="section-header" style="margin-bottom:16px;">
-          <div class="toolbar">
-            <button class="btn btn-ghost" onclick="pickRandom()">🎲 Random</button>
-            <button class="btn btn-danger" onclick="resetColor()">↺ Reset</button>
-          </div>
-        </div>
-        <div class="cp-wrap">
-          <!-- LEFT: SV square + sliders -->
-          <div class="cp-left">
-            <!-- Saturation/Value square -->
-            <div class="cp-sv-wrap" id="cp-sv-wrap">
-              <canvas id="cp-sv-canvas" onmousedown="svDown(event)" ontouchstart="svTouchDown(event)"></canvas>
-              <div class="cp-sv-cursor" id="cp-sv-cursor"></div>
-            </div>
-            <!-- Hue slider -->
-            <div class="cp-slider-row">
-              <span class="cp-slider-label">H</span>
-              <div class="cp-slider-track" id="cp-hue-track" onmousedown="hueDown(event)"
-                ontouchstart="hueTouchDown(event)">
-                <canvas id="cp-hue-canvas"></canvas>
-                <div class="cp-thumb" id="cp-hue-thumb"></div>
+            <div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 6px;
+                "
+              >
+                <span class="field-label">OUTPUT</span>
+                <button
+                  class="btn btn-ghost"
+                  onclick="copyElText('url-output')"
+                >
+                  Copy
+                </button>
+              </div>
+              <div id="url-output" class="output-mono" style="min-height: 80px">
+                —
               </div>
             </div>
-            <!-- Alpha slider -->
-            <div class="cp-slider-row">
-              <span class="cp-slider-label">A</span>
-              <div class="cp-slider-track" id="cp-alpha-track" onmousedown="alphaDown(event)"
-                ontouchstart="alphaTouchDown(event)">
-                <canvas id="cp-alpha-canvas"></canvas>
-                <div class="cp-thumb" id="cp-alpha-thumb"></div>
-              </div>
+            <div
+              id="url-error"
+              style="color: var(--danger); font-size: 0.8rem; display: none"
+            ></div>
+          </div>
+        </div>
+
+        <!-- COLOR PICKER -->
+        <div id="color-tab" class="tab-content">
+          <div class="section-header" style="margin-bottom: 16px">
+            <div class="toolbar">
+              <button class="btn btn-ghost" onclick="pickRandom()">
+                🎲 Random
+              </button>
+              <button class="btn btn-danger" onclick="resetColor()">
+                ↺ Reset
+              </button>
             </div>
-            <!-- Preview + Hex -->
-            <div class="cp-preview-row">
-              <div class="cp-preview-swatch" id="cp-swatch"></div>
-              <div class="cp-hex-wrap">
-                <div style="display:flex;gap:6px;">
-                  <input type="text" id="color-hex" class="cp-hex-input" value="#6366F1"
-                    oninput="onHexInput(this.value)" maxlength="7" />
-                  <input type="color" id="color-picker" class="cp-native" value="#6366f1"
-                    oninput="onPickerInput(this.value)" />
+          </div>
+          <div class="cp-wrap">
+            <!-- LEFT: SV square + sliders -->
+            <div class="cp-left">
+              <!-- Saturation/Value square -->
+              <div class="cp-sv-wrap" id="cp-sv-wrap">
+                <canvas
+                  id="cp-sv-canvas"
+                  onmousedown="svDown(event)"
+                  ontouchstart="svTouchDown(event)"
+                ></canvas>
+                <div class="cp-sv-cursor" id="cp-sv-cursor"></div>
+              </div>
+              <!-- Hue slider -->
+              <div class="cp-slider-row">
+                <span class="cp-slider-label">H</span>
+                <div
+                  class="cp-slider-track"
+                  id="cp-hue-track"
+                  onmousedown="hueDown(event)"
+                  ontouchstart="hueTouchDown(event)"
+                >
+                  <canvas id="cp-hue-canvas"></canvas>
+                  <div class="cp-thumb" id="cp-hue-thumb"></div>
                 </div>
               </div>
-            </div>
-            <!-- Preset swatches -->
-            <div>
-              <div class="field-label" style="margin-bottom:6px;">PRESETS</div>
-              <div class="cp-swatches" id="cp-swatches"></div>
-            </div>
-          </div>
-
-          <!-- RIGHT: channels + copy values -->
-          <div class="cp-right">
-            <!-- RGB channels -->
-            <div class="field-label">RGB</div>
-            <div class="cp-channels">
-              <div class="cp-channel">
-                <div class="cp-channel-label" style="color:#f87171;">R</div><input type="number" id="rgb-r-n" min="0"
-                  max="255" value="99" oninput="onRgbNumInput()" />
+              <!-- Alpha slider -->
+              <div class="cp-slider-row">
+                <span class="cp-slider-label">A</span>
+                <div
+                  class="cp-slider-track"
+                  id="cp-alpha-track"
+                  onmousedown="alphaDown(event)"
+                  ontouchstart="alphaTouchDown(event)"
+                >
+                  <canvas id="cp-alpha-canvas"></canvas>
+                  <div class="cp-thumb" id="cp-alpha-thumb"></div>
+                </div>
               </div>
-              <div class="cp-channel">
-                <div class="cp-channel-label" style="color:#86efac;">G</div><input type="number" id="rgb-g-n" min="0"
-                  max="255" value="102" oninput="onRgbNumInput()" />
-              </div>
-              <div class="cp-channel">
-                <div class="cp-channel-label" style="color:#93c5fd;">B</div><input type="number" id="rgb-b-n" min="0"
-                  max="255" value="241" oninput="onRgbNumInput()" />
-              </div>
-            </div>
-            <!-- HSL channels -->
-            <div class="field-label" style="margin-top:4px;">HSL</div>
-            <div class="cp-channels">
-              <div class="cp-channel">
-                <div class="cp-channel-label">H°</div><input type="number" id="hsl-h-n" min="0" max="360" value="239"
-                  oninput="onHslNumInput()" />
-              </div>
-              <div class="cp-channel">
-                <div class="cp-channel-label">S%</div><input type="number" id="hsl-s-n" min="0" max="100" value="84"
-                  oninput="onHslNumInput()" />
-              </div>
-              <div class="cp-channel">
-                <div class="cp-channel-label">L%</div><input type="number" id="hsl-l-n" min="0" max="100" value="67"
-                  oninput="onHslNumInput()" />
-              </div>
-            </div>
-            <!-- Copy values -->
-            <div class="field-label" style="margin-top:8px;">📋 Click to Copy</div>
-            <div class="cp-vals">
-              <div class="cp-val-btn full" id="cv-hex" onclick="copyColorVal('cv-hex')">#6366F1</div>
-              <div class="cp-val-btn" id="cv-rgb" onclick="copyColorVal('cv-rgb')">rgb(99,102,241)</div>
-              <div class="cp-val-btn" id="cv-hsl" onclick="copyColorVal('cv-hsl')">hsl(239,84%,67%)</div>
-              <div class="cp-val-btn full" id="cv-rgba" onclick="copyColorVal('cv-rgba')">rgba(99,102,241,1.00)</div>
-              <div class="cp-val-btn full" id="cv-css" onclick="copyColorVal('cv-css')" style="color:var(--accent2);">
-                --color: #6366F1;</div>
-            </div>
-            <!-- Opacity variants -->
-            <div class="field-label" style="margin-top:8px;">OPACITY VARIANTS</div>
-            <div id="opacity-variants" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;"></div>
-          </div>
-        </div>
-
-        <!-- ━━━ IMAGE COLOR PICKER ━━━ -->
-        <div class="icp-section">
-          <div class="icp-section-title">
-            🖼️ Image Color Picker — คลิกบนภาพเพื่อดูดสี
-          </div>
-          <div class="icp-layout">
-
-            <!-- Left: Drop Zone + Preview -->
-            <div>
-              <div class="image-drop-zone" id="image-drop-zone" ondragover="icpDragOver(event)"
-                ondragleave="icpDragLeave(event)" ondrop="icpDrop(event)">
-
-                <!-- Placeholder (shown when no image) -->
-                <div class="icp-placeholder" id="icp-placeholder">
-                  <div class="icp-placeholder-icon">🖼️</div>
-                  <div class="icp-placeholder-primary">ลากภาพมาวางที่นี่</div>
-                  <div class="icp-placeholder-secondary">
-                    หรือกด <kbd
-                      style="font-family:var(--mono);background:var(--surface);border:1px solid var(--border-strong);border-radius:3px;padding:1px 5px;font-size:.72rem;">Ctrl+V</kbd>
-                    วางจาก Clipboard<br>
-                    หรือเลือกไฟล์ด้านล่าง
+              <!-- Preview + Hex -->
+              <div class="cp-preview-row">
+                <div class="cp-preview-swatch" id="cp-swatch"></div>
+                <div class="cp-hex-wrap">
+                  <div style="display: flex; gap: 6px">
+                    <input
+                      type="text"
+                      id="color-hex"
+                      class="cp-hex-input"
+                      value="#6366F1"
+                      oninput="onHexInput(this.value)"
+                      maxlength="7"
+                    />
+                    <input
+                      type="color"
+                      id="color-picker"
+                      class="cp-native"
+                      value="#6366f1"
+                      oninput="onPickerInput(this.value)"
+                    />
                   </div>
-                  <button class="icp-upload-btn"
-                    onclick="document.getElementById('image-upload-input').click();event.stopPropagation()">
-                    📁 เลือกไฟล์ภาพ
+                </div>
+              </div>
+              <!-- Preset swatches -->
+              <div>
+                <div class="field-label" style="margin-bottom: 6px">
+                  PRESETS
+                </div>
+                <div class="cp-swatches" id="cp-swatches"></div>
+              </div>
+            </div>
+
+            <!-- RIGHT: channels + copy values -->
+            <div class="cp-right">
+              <!-- RGB channels -->
+              <div class="field-label">RGB</div>
+              <div class="cp-channels">
+                <div class="cp-channel">
+                  <div class="cp-channel-label" style="color: #f87171">R</div>
+                  <input
+                    type="number"
+                    id="rgb-r-n"
+                    min="0"
+                    max="255"
+                    value="99"
+                    oninput="onRgbNumInput()"
+                  />
+                </div>
+                <div class="cp-channel">
+                  <div class="cp-channel-label" style="color: #86efac">G</div>
+                  <input
+                    type="number"
+                    id="rgb-g-n"
+                    min="0"
+                    max="255"
+                    value="102"
+                    oninput="onRgbNumInput()"
+                  />
+                </div>
+                <div class="cp-channel">
+                  <div class="cp-channel-label" style="color: #93c5fd">B</div>
+                  <input
+                    type="number"
+                    id="rgb-b-n"
+                    min="0"
+                    max="255"
+                    value="241"
+                    oninput="onRgbNumInput()"
+                  />
+                </div>
+              </div>
+              <!-- HSL channels -->
+              <div class="field-label" style="margin-top: 4px">HSL</div>
+              <div class="cp-channels">
+                <div class="cp-channel">
+                  <div class="cp-channel-label">H°</div>
+                  <input
+                    type="number"
+                    id="hsl-h-n"
+                    min="0"
+                    max="360"
+                    value="239"
+                    oninput="onHslNumInput()"
+                  />
+                </div>
+                <div class="cp-channel">
+                  <div class="cp-channel-label">S%</div>
+                  <input
+                    type="number"
+                    id="hsl-s-n"
+                    min="0"
+                    max="100"
+                    value="84"
+                    oninput="onHslNumInput()"
+                  />
+                </div>
+                <div class="cp-channel">
+                  <div class="cp-channel-label">L%</div>
+                  <input
+                    type="number"
+                    id="hsl-l-n"
+                    min="0"
+                    max="100"
+                    value="67"
+                    oninput="onHslNumInput()"
+                  />
+                </div>
+              </div>
+              <!-- Copy values -->
+              <div class="field-label" style="margin-top: 8px">
+                📋 Click to Copy
+              </div>
+              <div class="cp-vals">
+                <div
+                  class="cp-val-btn full"
+                  id="cv-hex"
+                  onclick="copyColorVal('cv-hex')"
+                >
+                  #6366F1
+                </div>
+                <div
+                  class="cp-val-btn"
+                  id="cv-rgb"
+                  onclick="copyColorVal('cv-rgb')"
+                >
+                  rgb(99,102,241)
+                </div>
+                <div
+                  class="cp-val-btn"
+                  id="cv-hsl"
+                  onclick="copyColorVal('cv-hsl')"
+                >
+                  hsl(239,84%,67%)
+                </div>
+                <div
+                  class="cp-val-btn full"
+                  id="cv-rgba"
+                  onclick="copyColorVal('cv-rgba')"
+                >
+                  rgba(99,102,241,1.00)
+                </div>
+                <div
+                  class="cp-val-btn full"
+                  id="cv-css"
+                  onclick="copyColorVal('cv-css')"
+                  style="color: var(--accent2)"
+                >
+                  --color: #6366F1;
+                </div>
+              </div>
+              <!-- Opacity variants -->
+              <div class="field-label" style="margin-top: 8px">
+                OPACITY VARIANTS
+              </div>
+              <div
+                id="opacity-variants"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px"
+              ></div>
+            </div>
+          </div>
+
+          <!-- ━━━ IMAGE COLOR PICKER ━━━ -->
+          <div class="icp-section">
+            <div class="icp-section-title">
+              🖼️ Image Color Picker — คลิกบนภาพเพื่อดูดสี
+            </div>
+            <div class="icp-layout">
+              <!-- Left: Drop Zone + Preview -->
+              <div>
+                <div
+                  class="image-drop-zone"
+                  id="image-drop-zone"
+                  ondragover="icpDragOver(event)"
+                  ondragleave="icpDragLeave(event)"
+                  ondrop="icpDrop(event)"
+                >
+                  <!-- Placeholder (shown when no image) -->
+                  <div class="icp-placeholder" id="icp-placeholder">
+                    <div class="icp-placeholder-icon">🖼️</div>
+                    <div class="icp-placeholder-primary">ลากภาพมาวางที่นี่</div>
+                    <div class="icp-placeholder-secondary">
+                      หรือกด
+                      <kbd
+                        style="
+                          font-family: var(--mono);
+                          background: var(--surface);
+                          border: 1px solid var(--border-strong);
+                          border-radius: 3px;
+                          padding: 1px 5px;
+                          font-size: 0.72rem;
+                        "
+                        >Ctrl+V</kbd
+                      >
+                      วางจาก Clipboard<br />
+                      หรือเลือกไฟล์ด้านล่าง
+                    </div>
+                    <button
+                      class="icp-upload-btn"
+                      onclick="
+                        document.getElementById('image-upload-input').click();
+                        event.stopPropagation();
+                      "
+                    >
+                      📁 เลือกไฟล์ภาพ
+                    </button>
+                  </div>
+
+                  <!-- Image Preview (shown when image loaded) -->
+                  <div
+                    class="image-preview-wrapper"
+                    id="image-preview-wrapper"
+                    style="display: none"
+                  >
+                    <canvas
+                      id="image-preview-canvas"
+                      onmousedown="
+                        window._icpDragging = true;
+                        pickColorFromImage(event);
+                      "
+                      onmousemove="
+                        if (window._icpDragging) pickColorFromImage(event);
+                      "
+                      onmouseup="window._icpDragging = false"
+                      onmouseleave="window._icpDragging = false"
+                      onclick="pickColorFromImage(event)"
+                      ontouchstart="pickColorFromImage(event)"
+                      ontouchmove="event.preventDefault();pickColorFromImage(event)"
+                      style="touch-action: none"
+                    ></canvas>
+                    <div class="image-picker-marker" id="image-picker-marker">
+                      <canvas id="icp-loupe-canvas"></canvas>
+                      <div class="icp-loupe-hex" id="icp-loupe-hex">
+                        #------
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Toolbar below image -->
+                  <div
+                    class="icp-img-toolbar"
+                    id="icp-img-toolbar"
+                    style="display: none"
+                  >
+                    <span id="icp-img-info">คลิกบนภาพเพื่อดูดสี</span>
+                    <button
+                      class="btn btn-ghost"
+                      style="padding: 4px 10px; font-size: 0.72rem"
+                      onclick="
+                        document.getElementById('image-upload-input').click();
+                        event.stopPropagation();
+                      "
+                    >
+                      🔄 เปลี่ยนภาพ
+                    </button>
+                  </div>
+                </div>
+
+                <input
+                  type="file"
+                  id="image-upload-input"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  style="display: none"
+                  onchange="icpFileInputChange(event)"
+                />
+              </div>
+
+              <!-- Right: Color Panel -->
+              <div class="image-color-panel" id="image-color-panel">
+                <!-- EyeDropper API button (shown only when supported) -->
+                <button
+                  class="icp-eyedropper-btn"
+                  id="icp-eyedropper-btn"
+                  onclick="icpUseEyeDropper()"
+                >
+                  🔬 ดูดสีจากหน้าจอ (EyeDropper)
+                </button>
+
+                <!-- Empty state -->
+                <div class="icp-empty-hint" id="icp-empty-hint">
+                  📸 โหลดภาพก่อน<br />แล้วคลิกเพื่อดูดสี
+                </div>
+
+                <!-- Color Preview Swatch -->
+                <div
+                  class="image-color-preview"
+                  id="image-color-preview"
+                  style="display: none"
+                ></div>
+
+                <!-- Copy format toggle -->
+                <div
+                  class="icp-copy-fmt"
+                  id="icp-copy-fmt"
+                  style="display: none"
+                >
+                  <button
+                    class="icp-fmt-btn active"
+                    data-fmt="hex"
+                    onclick="icpSetFmt('hex')"
+                  >
+                    HEX
+                  </button>
+                  <button
+                    class="icp-fmt-btn"
+                    data-fmt="rgb"
+                    onclick="icpSetFmt('rgb')"
+                  >
+                    RGB
+                  </button>
+                  <button
+                    class="icp-fmt-btn"
+                    data-fmt="hsl"
+                    onclick="icpSetFmt('hsl')"
+                  >
+                    HSL
+                  </button>
+                  <button
+                    class="icp-fmt-btn"
+                    data-fmt="tw"
+                    onclick="icpSetFmt('tw')"
+                  >
+                    TW
                   </button>
                 </div>
 
-                <!-- Image Preview (shown when image loaded) -->
-                <div class="image-preview-wrapper" id="image-preview-wrapper" style="display:none;">
-                  <canvas id="image-preview-canvas" onmousedown="window._icpDragging=true;pickColorFromImage(event)"
-                    onmousemove="if(window._icpDragging)pickColorFromImage(event)" onmouseup="window._icpDragging=false"
-                    onmouseleave="window._icpDragging=false" onclick="pickColorFromImage(event)"
-                    ontouchstart="pickColorFromImage(event)"
-                    ontouchmove="event.preventDefault();pickColorFromImage(event)" style="touch-action:none;"></canvas>
-                  <div class="image-picker-marker" id="image-picker-marker">
-                    <canvas id="icp-loupe-canvas"></canvas>
-                    <div class="icp-loupe-hex" id="icp-loupe-hex">#------</div>
+                <!-- Values -->
+                <div class="icp-values" id="icp-values" style="display: none">
+                  <div
+                    class="image-color-value"
+                    onclick="icpCopyActive()"
+                    title="คัดลอกค่าสี"
+                  >
+                    <span class="icp-val-label" id="icp-active-label">HEX</span>
+                    <span class="icp-val-text" id="icp-active-value">—</span>
+                    <span class="icp-val-copy">copy</span>
+                  </div>
+                  <div
+                    class="image-color-value"
+                    onclick="icpCopyValue('image-color-hex')"
+                    title="คัดลอก HEX"
+                  >
+                    <span class="icp-val-label">HEX</span>
+                    <span class="icp-val-text" id="image-color-hex">—</span>
+                    <span class="icp-val-copy">copy</span>
+                  </div>
+                  <div
+                    class="image-color-value"
+                    onclick="icpCopyValue('image-color-rgb')"
+                    title="คัดลอก RGB"
+                  >
+                    <span class="icp-val-label">RGB</span>
+                    <span class="icp-val-text" id="image-color-rgb">—</span>
+                    <span class="icp-val-copy">copy</span>
+                  </div>
+                  <div
+                    class="image-color-value"
+                    onclick="icpCopyValue('image-color-hsl')"
+                    title="คัดลอก HSL"
+                  >
+                    <span class="icp-val-label">HSL</span>
+                    <span class="icp-val-text" id="image-color-hsl">—</span>
+                    <span class="icp-val-copy">copy</span>
                   </div>
                 </div>
 
-                <!-- Toolbar below image -->
-                <div class="icp-img-toolbar" id="icp-img-toolbar" style="display:none;">
-                  <span id="icp-img-info">คลิกบนภาพเพื่อดูดสี</span>
-                  <button class="btn btn-ghost" style="padding:4px 10px;font-size:.72rem;"
-                    onclick="document.getElementById('image-upload-input').click();event.stopPropagation()">🔄
-                    เปลี่ยนภาพ</button>
+                <!-- Zoom slider (mobile: loupe zoom) -->
+                <div
+                  class="icp-zoom-row"
+                  id="icp-zoom-row"
+                  style="display: none"
+                >
+                  <span>🔍</span>
+                  <input
+                    type="range"
+                    id="icp-zoom-slider"
+                    min="5"
+                    max="21"
+                    step="2"
+                    value="11"
+                    oninput="icpSetZoom(+this.value)"
+                  />
+                  <span id="icp-zoom-label">11×</span>
+                </div>
+
+                <!-- Color history -->
+                <div id="icp-history-section" style="display: none">
+                  <div class="field-label" style="margin-bottom: 6px">
+                    HISTORY
+                  </div>
+                  <div class="icp-history-row" id="icp-history-row"></div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="icp-action-row">
+                  <button
+                    class="icp-btn-apply"
+                    id="icp-btn-apply"
+                    onclick="icpApplyToMainPicker()"
+                  >
+                    ✓ ใช้สีนี้
+                  </button>
+                  <button
+                    class="icp-btn-clear"
+                    id="icp-btn-clear"
+                    onclick="icpClearImage()"
+                  >
+                    ✕ ล้างภาพ
+                  </button>
+                </div>
+
+                <!-- Keyboard hint (desktop only) -->
+                <div
+                  class="icp-kbd-hint"
+                  id="icp-kbd-hint"
+                  style="display: none"
+                >
+                  <kbd>C</kbd> copy · <kbd>↑↓←→</kbd> nudge 1px
                 </div>
               </div>
-
-              <input type="file" id="image-upload-input" accept="image/png,image/jpeg,image/webp,image/gif"
-                style="display:none;" onchange="icpFileInputChange(event)" />
+              <!-- /image-color-panel -->
             </div>
+            <!-- /icp-layout -->
+          </div>
+          <!-- /icp-section -->
+        </div>
 
-            <!-- Right: Color Panel -->
-            <div class="image-color-panel" id="image-color-panel">
+        <!-- HTTP STATUS -->
+        <div id="http-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearHttp()">
+              ✖ ล้างการค้นหา
+            </button>
+          </div>
+          <div style="margin-bottom: 14px">
+            <input
+              type="text"
+              id="http-search"
+              placeholder="🔍 ค้นหา... เช่น 404, unauthorized, redirect"
+              oninput="filterHttp(this.value)"
+            />
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+              margin-bottom: 14px;
+            "
+            id="http-group-btns"
+          ></div>
+          <div id="http-list"></div>
+        </div>
 
-              <!-- EyeDropper API button (shown only when supported) -->
-              <button class="icp-eyedropper-btn" id="icp-eyedropper-btn" onclick="icpUseEyeDropper()">
-                🔬 ดูดสีจากหน้าจอ (EyeDropper)
-              </button>
+        <!-- KUBECTL -->
+        <div id="kubectl-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearKubectl()">
+              ✖ ล้างการค้นหา
+            </button>
+          </div>
+          <div style="margin-bottom: 16px">
+            <input
+              type="text"
+              id="kubectl-search"
+              placeholder="🔍 ค้นหาคำสั่ง... เช่น pod, log, exec, deploy"
+              oninput="filterKubectl(this.value)"
+            />
+          </div>
+          <div id="kubectl-list"></div>
+        </div>
 
-              <!-- Empty state -->
-              <div class="icp-empty-hint" id="icp-empty-hint">
-                📸 โหลดภาพก่อน<br>แล้วคลิกเพื่อดูดสี
-              </div>
+        <!-- LINUX -->
+        <div id="linux-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearLinux()">
+              ✖ ล้างการค้นหา
+            </button>
+          </div>
+          <div style="margin-bottom: 16px">
+            <input
+              type="text"
+              id="linux-search"
+              placeholder="🔍 ค้นหาคำสั่ง... เช่น find, grep, service, port, network"
+              oninput="filterLinux(this.value)"
+            />
+          </div>
+          <div id="linux-list"></div>
+        </div>
 
-              <!-- Color Preview Swatch -->
-              <div class="image-color-preview" id="image-color-preview" style="display:none;"></div>
+        <!-- fallback: ถ้า iframe ไม่ได้ ใช้ redirect แทน -->
 
-              <!-- Copy format toggle -->
-              <div class="icp-copy-fmt" id="icp-copy-fmt" style="display:none;">
-                <button class="icp-fmt-btn active" data-fmt="hex" onclick="icpSetFmt('hex')">HEX</button>
-                <button class="icp-fmt-btn" data-fmt="rgb" onclick="icpSetFmt('rgb')">RGB</button>
-                <button class="icp-fmt-btn" data-fmt="hsl" onclick="icpSetFmt('hsl')">HSL</button>
-                <button class="icp-fmt-btn" data-fmt="tw" onclick="icpSetFmt('tw')">TW</button>
-              </div>
-
-              <!-- Values -->
-              <div class="icp-values" id="icp-values" style="display:none;">
-                <div class="image-color-value" onclick="icpCopyActive()" title="คัดลอกค่าสี">
-                  <span class="icp-val-label" id="icp-active-label">HEX</span>
-                  <span class="icp-val-text" id="icp-active-value">—</span>
-                  <span class="icp-val-copy">copy</span>
-                </div>
-                <div class="image-color-value" onclick="icpCopyValue('image-color-hex')" title="คัดลอก HEX">
-                  <span class="icp-val-label">HEX</span>
-                  <span class="icp-val-text" id="image-color-hex">—</span>
-                  <span class="icp-val-copy">copy</span>
-                </div>
-                <div class="image-color-value" onclick="icpCopyValue('image-color-rgb')" title="คัดลอก RGB">
-                  <span class="icp-val-label">RGB</span>
-                  <span class="icp-val-text" id="image-color-rgb">—</span>
-                  <span class="icp-val-copy">copy</span>
-                </div>
-                <div class="image-color-value" onclick="icpCopyValue('image-color-hsl')" title="คัดลอก HSL">
-                  <span class="icp-val-label">HSL</span>
-                  <span class="icp-val-text" id="image-color-hsl">—</span>
-                  <span class="icp-val-copy">copy</span>
-                </div>
-              </div>
-
-              <!-- Zoom slider (mobile: loupe zoom) -->
-              <div class="icp-zoom-row" id="icp-zoom-row" style="display:none;">
-                <span>🔍</span>
-                <input type="range" id="icp-zoom-slider" min="5" max="21" step="2" value="11"
-                  oninput="icpSetZoom(+this.value)" />
-                <span id="icp-zoom-label">11×</span>
-              </div>
-
-              <!-- Color history -->
-              <div id="icp-history-section" style="display:none;">
-                <div class="field-label" style="margin-bottom:6px;">HISTORY</div>
-                <div class="icp-history-row" id="icp-history-row"></div>
-              </div>
-
-              <!-- Action buttons -->
-              <div class="icp-action-row">
-                <button class="icp-btn-apply" id="icp-btn-apply" onclick="icpApplyToMainPicker()">
-                  ✓ ใช้สีนี้
-                </button>
-                <button class="icp-btn-clear" id="icp-btn-clear" onclick="icpClearImage()">
-                  ✕ ล้างภาพ
-                </button>
-              </div>
-
-              <!-- Keyboard hint (desktop only) -->
-              <div class="icp-kbd-hint" id="icp-kbd-hint" style="display:none;">
-                <kbd>C</kbd> copy · <kbd>↑↓←→</kbd> nudge 1px
-              </div>
-
-            </div><!-- /image-color-panel -->
-          </div><!-- /icp-layout -->
-        </div><!-- /icp-section -->
-
+        <div
+          id="kopwang-tab"
+          class="tab-content"
+          style="
+            display: none;
+            height: calc(100vh - 60px);
+            padding: 0;
+            overflow: hidden;
+          "
+        >
+          <iframe
+            src="https://devgreenpink.github.io/kop-wang-engine/"
+            style="width: 100%; height: 100%; border: none; display: block"
+            title="ก๊อปวาง เอนจิ้น"
+            allow="clipboard-write"
+          ></iframe>
+        </div>
       </div>
+      <!-- content-area -->
+    </main>
 
-      <!-- HTTP STATUS -->
-      <div id="http-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearHttp()">✖ ล้างการค้นหา</button>
+    <div class="toast" id="toast">✓ Copied</div>
+    <div class="kb-hint">Ctrl+Enter = Run · Ctrl+K = Search</div>
+
+    <div class="pwa-banner" id="pwa-banner">
+      <span style="font-size: 1.3rem">⚙️</span>
+      <div style="flex: 1">
+        <div style="font-weight: 600; color: var(--text); font-size: 0.87rem">
+          ติดตั้งเป็น App
         </div>
-        <div style="margin-bottom:14px;">
-          <input type="text" id="http-search" placeholder="🔍 ค้นหา... เช่น 404, unauthorized, redirect"
-            oninput="filterHttp(this.value)" />
+        <div style="font-size: 0.74rem; color: var(--text-dim)">
+          ใช้งาน offline ได้ · ไม่ต้องเปิด browser
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;" id="http-group-btns"></div>
-        <div id="http-list"></div>
       </div>
-
-      <!-- KUBECTL -->
-      <div id="kubectl-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearKubectl()">✖ ล้างการค้นหา</button>
-        </div>
-        <div style="margin-bottom:16px;">
-          <input type="text" id="kubectl-search" placeholder="🔍 ค้นหาคำสั่ง... เช่น pod, log, exec, deploy"
-            oninput="filterKubectl(this.value)" />
-        </div>
-        <div id="kubectl-list"></div>
-      </div>
-
-      <!-- LINUX -->
-      <div id="linux-tab" class="tab-content">
-        <div class="section-header">
-          <button class="btn btn-danger" onclick="clearLinux()">✖ ล้างการค้นหา</button>
-        </div>
-        <div style="margin-bottom:16px;">
-          <input type="text" id="linux-search" placeholder="🔍 ค้นหาคำสั่ง... เช่น find, grep, service, port, network"
-            oninput="filterLinux(this.value)" />
-        </div>
-        <div id="linux-list"></div>
-      </div>
-
-    </div><!-- content-area -->
-  </main>
-
-  <div class="toast" id="toast">✓ Copied</div>
-  <div class="kb-hint">Ctrl+Enter = Run · Ctrl+K = Search</div>
-
-  <div class="pwa-banner" id="pwa-banner">
-    <span style="font-size:1.3rem;">⚙️</span>
-    <div style="flex:1;">
-      <div style="font-weight:600;color:var(--text);font-size:.87rem;">ติดตั้งเป็น App</div>
-      <div style="font-size:.74rem;color:var(--text-dim);">ใช้งาน offline ได้ · ไม่ต้องเปิด browser</div>
+      <button
+        class="btn btn-primary"
+        style="padding: 7px 14px; font-size: 0.8rem"
+        onclick="pwsInstall()"
+      >
+        ติดตั้ง
+      </button>
+      <button
+        class="btn btn-ghost"
+        style="padding: 7px 10px"
+        onclick="document.getElementById('pwa-banner').classList.remove('show')"
+      >
+        ✕
+      </button>
     </div>
-    <button class="btn btn-primary" style="padding:7px 14px;font-size:.8rem;" onclick="pwsInstall()">ติดตั้ง</button>
-    <button class="btn btn-ghost" style="padding:7px 10px;"
-      onclick="document.getElementById('pwa-banner').classList.remove('show')">✕</button>
-  </div>
 
-  <!-- ── App Script ── -->
-  <script src="assets/js/app.js"></script>
-</body>
-
+    <!-- ── App Script ── -->
+    <script src="assets/js/app.js"></script>
+  </body>
 </html>
