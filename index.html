@@ -155,6 +155,13 @@
         </div>
         <div
           class="nav-item"
+          data-tab="numbase-tab"
+          onclick="openTab(event, 'numbase-tab')"
+        >
+          <span class="nav-icon">🔢</span> Number Base
+        </div>
+        <div
+          class="nav-item"
           data-tab="hash-tab"
           onclick="openTab(event, 'hash-tab')"
         >
@@ -1508,6 +1515,33 @@
             oninput="decodeJWT_UI()"
           ></textarea>
           <div id="jwt-result" style="margin-top: 12px"></div>
+
+          <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+            <div class="field-label" style="color:var(--accent);margin-bottom:12px;letter-spacing:.05em;">✏️ JWT ENCODER (HS256)</div>
+            <div class="space-y">
+              <div>
+                <div class="field-label">PAYLOAD (JSON)</div>
+                <textarea id="jwt-enc-payload" rows="5" placeholder='{"sub":"1234567890","name":"John Doe","iat":1516239022}'></textarea>
+              </div>
+              <div>
+                <div class="field-label">SECRET KEY</div>
+                <input type="password" id="jwt-enc-secret" placeholder="your-256-bit-secret" />
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-primary" style="flex:1;" onclick="jwtEncode()">🔑 Encode JWT (HS256)</button>
+                <button class="btn btn-danger" onclick="clearJwtEnc()">✖ ล้าง</button>
+              </div>
+              <div id="jwt-enc-error" style="color:var(--danger);font-size:.8rem;display:none;"></div>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span class="field-label">OUTPUT TOKEN</span>
+                  <button class="btn btn-ghost" onclick="copyElText('jwt-enc-output')">Copy</button>
+                </div>
+                <div id="jwt-enc-output" class="output-mono" style="min-height:80px;word-break:break-all;color:var(--accent2);">—</div>
+              </div>
+              <div style="font-size:.71rem;color:var(--text-dim);">⚠ ใช้สำหรับทดสอบเท่านั้น — ประมวลผลใน browser ทั้งหมด ไม่ส่งข้อมูลออกไปไหน</div>
+            </div>
+          </div>
         </div>
 
         <!-- URL ENCODE/DECODE -->
@@ -1597,19 +1631,18 @@
               </button>
             </div>
           </div>
-          <div class="cp-wrap">
-            <!-- LEFT: SV square + sliders -->
-            <div class="cp-left">
-              <!-- Saturation/Value square -->
-              <div class="cp-sv-wrap" id="cp-sv-wrap">
-                <canvas
-                  id="cp-sv-canvas"
-                  onmousedown="svDown(event)"
-                  ontouchstart="svTouchDown(event)"
-                ></canvas>
-                <div class="cp-sv-cursor" id="cp-sv-cursor"></div>
-              </div>
-              <!-- Hue slider -->
+          <div class="cp-card">
+            <!-- SV Square -->
+            <div class="cp-sv-wrap" id="cp-sv-wrap">
+              <canvas
+                id="cp-sv-canvas"
+                onmousedown="svDown(event)"
+                ontouchstart="svTouchDown(event)"
+              ></canvas>
+              <div class="cp-sv-cursor" id="cp-sv-cursor"></div>
+            </div>
+            <!-- Hue + Alpha sliders -->
+            <div class="cp-sliders-area">
               <div class="cp-slider-row">
                 <span class="cp-slider-label">H</span>
                 <div
@@ -1622,7 +1655,6 @@
                   <div class="cp-thumb" id="cp-hue-thumb"></div>
                 </div>
               </div>
-              <!-- Alpha slider -->
               <div class="cp-slider-row">
                 <span class="cp-slider-label">A</span>
                 <div
@@ -1635,164 +1667,84 @@
                   <div class="cp-thumb" id="cp-alpha-thumb"></div>
                 </div>
               </div>
-              <!-- Preview + Hex -->
-              <div class="cp-preview-row">
+            </div>
+            <!-- Preview · Hex · Channel inputs -->
+            <div class="cp-input-row">
+              <div class="cp-preview-group">
                 <div class="cp-preview-swatch" id="cp-swatch"></div>
-                <div class="cp-hex-wrap">
-                  <div style="display: flex; gap: 6px">
-                    <input
-                      type="text"
-                      id="color-hex"
-                      class="cp-hex-input"
-                      value="#6366F1"
-                      oninput="onHexInput(this.value)"
-                      maxlength="7"
-                    />
-                    <input
-                      type="color"
-                      id="color-picker"
-                      class="cp-native"
-                      value="#6366f1"
-                      oninput="onPickerInput(this.value)"
-                    />
+                <div class="cp-hex-group">
+                  <input
+                    type="text"
+                    id="color-hex"
+                    class="cp-hex-input"
+                    value="#6366F1"
+                    oninput="onHexInput(this.value)"
+                    maxlength="7"
+                  />
+                  <input
+                    type="color"
+                    id="color-picker"
+                    class="cp-native"
+                    value="#6366f1"
+                    oninput="onPickerInput(this.value)"
+                  />
+                </div>
+              </div>
+              <div class="cp-channels-group">
+                <div class="cp-mode-toggle">
+                  <button class="cp-mode-btn active" id="cp-mode-rgb" onclick="cpSetMode('rgb')">RGB</button>
+                  <button class="cp-mode-btn" id="cp-mode-hsl" onclick="cpSetMode('hsl')">HSL</button>
+                </div>
+                <div id="cp-rgb-inputs" class="cp-channels">
+                  <div class="cp-channel">
+                    <div class="cp-channel-label" style="color:#f87171">R</div>
+                    <input type="number" id="rgb-r-n" min="0" max="255" value="99" oninput="onRgbNumInput()" />
+                  </div>
+                  <div class="cp-channel">
+                    <div class="cp-channel-label" style="color:#86efac">G</div>
+                    <input type="number" id="rgb-g-n" min="0" max="255" value="102" oninput="onRgbNumInput()" />
+                  </div>
+                  <div class="cp-channel">
+                    <div class="cp-channel-label" style="color:#93c5fd">B</div>
+                    <input type="number" id="rgb-b-n" min="0" max="255" value="241" oninput="onRgbNumInput()" />
+                  </div>
+                </div>
+                <div id="cp-hsl-inputs" class="cp-channels" style="display:none">
+                  <div class="cp-channel">
+                    <div class="cp-channel-label">H°</div>
+                    <input type="number" id="hsl-h-n" min="0" max="360" value="239" oninput="onHslNumInput()" />
+                  </div>
+                  <div class="cp-channel">
+                    <div class="cp-channel-label">S%</div>
+                    <input type="number" id="hsl-s-n" min="0" max="100" value="84" oninput="onHslNumInput()" />
+                  </div>
+                  <div class="cp-channel">
+                    <div class="cp-channel-label">L%</div>
+                    <input type="number" id="hsl-l-n" min="0" max="100" value="67" oninput="onHslNumInput()" />
                   </div>
                 </div>
               </div>
-              <!-- Preset swatches -->
-              <div>
-                <div class="field-label" style="margin-bottom: 6px">
-                  PRESETS
-                </div>
-                <div class="cp-swatches" id="cp-swatches"></div>
+            </div>
+            <!-- Copy values -->
+            <div class="cp-copy-section">
+              <div class="cp-section-label">Click to copy</div>
+              <div class="cp-vals">
+                <div class="cp-val-btn full" id="cv-hex" onclick="copyColorVal('cv-hex')">#6366F1</div>
+                <div class="cp-val-btn" id="cv-rgb" onclick="copyColorVal('cv-rgb')">rgb(99,102,241)</div>
+                <div class="cp-val-btn" id="cv-hsl" onclick="copyColorVal('cv-hsl')">hsl(239,84%,67%)</div>
+                <div class="cp-val-btn full" id="cv-rgba" onclick="copyColorVal('cv-rgba')">rgba(99,102,241,1.00)</div>
+                <div class="cp-val-btn full" id="cv-css" onclick="copyColorVal('cv-css')" style="color:var(--accent2)">--color: #6366F1;</div>
               </div>
             </div>
-
-            <!-- RIGHT: channels + copy values -->
-            <div class="cp-right">
-              <!-- RGB channels -->
-              <div class="field-label">RGB</div>
-              <div class="cp-channels">
-                <div class="cp-channel">
-                  <div class="cp-channel-label" style="color: #f87171">R</div>
-                  <input
-                    type="number"
-                    id="rgb-r-n"
-                    min="0"
-                    max="255"
-                    value="99"
-                    oninput="onRgbNumInput()"
-                  />
-                </div>
-                <div class="cp-channel">
-                  <div class="cp-channel-label" style="color: #86efac">G</div>
-                  <input
-                    type="number"
-                    id="rgb-g-n"
-                    min="0"
-                    max="255"
-                    value="102"
-                    oninput="onRgbNumInput()"
-                  />
-                </div>
-                <div class="cp-channel">
-                  <div class="cp-channel-label" style="color: #93c5fd">B</div>
-                  <input
-                    type="number"
-                    id="rgb-b-n"
-                    min="0"
-                    max="255"
-                    value="241"
-                    oninput="onRgbNumInput()"
-                  />
-                </div>
-              </div>
-              <!-- HSL channels -->
-              <div class="field-label" style="margin-top: 4px">HSL</div>
-              <div class="cp-channels">
-                <div class="cp-channel">
-                  <div class="cp-channel-label">H°</div>
-                  <input
-                    type="number"
-                    id="hsl-h-n"
-                    min="0"
-                    max="360"
-                    value="239"
-                    oninput="onHslNumInput()"
-                  />
-                </div>
-                <div class="cp-channel">
-                  <div class="cp-channel-label">S%</div>
-                  <input
-                    type="number"
-                    id="hsl-s-n"
-                    min="0"
-                    max="100"
-                    value="84"
-                    oninput="onHslNumInput()"
-                  />
-                </div>
-                <div class="cp-channel">
-                  <div class="cp-channel-label">L%</div>
-                  <input
-                    type="number"
-                    id="hsl-l-n"
-                    min="0"
-                    max="100"
-                    value="67"
-                    oninput="onHslNumInput()"
-                  />
-                </div>
-              </div>
-              <!-- Copy values -->
-              <div class="field-label" style="margin-top: 8px">
-                📋 Click to Copy
-              </div>
-              <div class="cp-vals">
-                <div
-                  class="cp-val-btn full"
-                  id="cv-hex"
-                  onclick="copyColorVal('cv-hex')"
-                >
-                  #6366F1
-                </div>
-                <div
-                  class="cp-val-btn"
-                  id="cv-rgb"
-                  onclick="copyColorVal('cv-rgb')"
-                >
-                  rgb(99,102,241)
-                </div>
-                <div
-                  class="cp-val-btn"
-                  id="cv-hsl"
-                  onclick="copyColorVal('cv-hsl')"
-                >
-                  hsl(239,84%,67%)
-                </div>
-                <div
-                  class="cp-val-btn full"
-                  id="cv-rgba"
-                  onclick="copyColorVal('cv-rgba')"
-                >
-                  rgba(99,102,241,1.00)
-                </div>
-                <div
-                  class="cp-val-btn full"
-                  id="cv-css"
-                  onclick="copyColorVal('cv-css')"
-                  style="color: var(--accent2)"
-                >
-                  --color: #6366F1;
-                </div>
-              </div>
-              <!-- Opacity variants -->
-              <div class="field-label" style="margin-top: 8px">
-                OPACITY VARIANTS
-              </div>
-              <div
-                id="opacity-variants"
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px"
-              ></div>
+            <!-- Opacity variants -->
+            <div class="cp-copy-section">
+              <div class="cp-section-label">Opacity variants</div>
+              <div id="opacity-variants" class="cp-opacity-grid"></div>
+            </div>
+            <!-- Preset swatches -->
+            <div class="cp-presets-section">
+              <div class="cp-section-label">Presets</div>
+              <div class="cp-swatches" id="cp-swatches"></div>
             </div>
           </div>
 
@@ -2122,6 +2074,55 @@
             />
           </div>
           <div id="linux-list"></div>
+        </div>
+
+        <!-- NUMBER BASE CONVERTER -->
+        <div id="numbase-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearNumBase()">✖ ล้าง</button>
+          </div>
+          <div class="space-y">
+            <div>
+              <div class="field-label">DECIMAL (Base 10)</div>
+              <input type="text" id="nb-dec" placeholder="255" oninput="numBaseConvert('dec', this.value)" />
+            </div>
+            <div>
+              <div class="field-label">HEX (Base 16)</div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span style="font-family:var(--mono);color:var(--text-dim);padding:8px 4px;">0x</span>
+                <input type="text" id="nb-hex" placeholder="FF" oninput="numBaseConvert('hex', this.value)" style="flex:1;" />
+                <button class="btn btn-ghost" onclick="copyElText('nb-hex')">Copy</button>
+              </div>
+            </div>
+            <div>
+              <div class="field-label">BINARY (Base 2)</div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span style="font-family:var(--mono);color:var(--text-dim);padding:8px 4px;">0b</span>
+                <input type="text" id="nb-bin" placeholder="11111111" oninput="numBaseConvert('bin', this.value)" style="flex:1;" />
+                <button class="btn btn-ghost" onclick="copyElText('nb-bin')">Copy</button>
+              </div>
+            </div>
+            <div>
+              <div class="field-label">OCTAL (Base 8)</div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span style="font-family:var(--mono);color:var(--text-dim);padding:8px 4px;">0o</span>
+                <input type="text" id="nb-oct" placeholder="377" oninput="numBaseConvert('oct', this.value)" style="flex:1;" />
+                <button class="btn btn-ghost" onclick="copyElText('nb-oct')">Copy</button>
+              </div>
+            </div>
+            <div id="nb-error" style="color:var(--danger);font-size:.8rem;display:none;"></div>
+            <div class="card">
+              <div class="card-title">📐 ค่าอ้างอิง Bit Width</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <button class="btn btn-ghost" onclick="numBaseSet(127)">8-bit signed: 127</button>
+                <button class="btn btn-ghost" onclick="numBaseSet(255)">8-bit unsigned: 255</button>
+                <button class="btn btn-ghost" onclick="numBaseSet(32767)">16-bit signed: 32,767</button>
+                <button class="btn btn-ghost" onclick="numBaseSet(65535)">16-bit unsigned: 65,535</button>
+                <button class="btn btn-ghost" onclick="numBaseSet(2147483647)">32-bit signed max</button>
+                <button class="btn btn-ghost" onclick="numBaseSet(4294967295)">32-bit unsigned max</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div id="kopwang-tab" class="tab-content" >

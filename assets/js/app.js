@@ -15,6 +15,7 @@ const TAB_META = {
   'http-tab': { title: 'HTTP Status Code Reference', sub: '1xx · 2xx · 3xx · 4xx · 5xx — คำอธิบายและตัวอย่างการใช้งาน' },
   'kubectl-tab': { title: 'kubectl Cheatsheet', sub: 'คำสั่ง kubectl ที่ใช้บ่อย พร้อมคำอธิบายภาษาไทย' },
   'linux-tab': { title: 'Linux Command Cheatsheet', sub: 'คำสั่ง Linux ที่ใช้บ่อย — Ubuntu / Debian / RHEL' },
+  'numbase-tab': { title: 'Number Base Converter', sub: 'แปลงเลขฐาน 10 ↔ 16 ↔ 2 ↔ 8' },
 };
 
 // ── THEME ──
@@ -146,7 +147,7 @@ function genOneMock(){
   const EN_LAST=['smith','jones','brown','chen','lee','kim','garcia','miller','davis','wilson','taylor','anderson','thomas','jackson','white','harris','martin','walker','hall','allen'];
   const emailName=r(EN_FIRST)+'.'+r(EN_LAST)+Math.floor(Math.random()*999);
   const email=emailName+`@${r(MD.domain)}`;
-  const uuid=([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));
+  const uuid=crypto.randomUUID();
   return{id,name:`${first} ${last}`,phone,email,uuid};
 }
 function generateAll(){
@@ -717,6 +718,43 @@ function runRegex(){
 function clearRegex(){['regex-pattern','regex-flags','regex-input'].forEach(id=>document.getElementById(id).value='');document.getElementById('regex-highlight').innerHTML='';document.getElementById('regex-groups').innerHTML='';document.getElementById('regex-error').textContent='';document.getElementById('regex-count').textContent='0 matches';}
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+// ── NUMBER BASE CONVERTER ──
+function numBaseConvert(fromBase, rawVal) {
+  const errEl = document.getElementById('nb-error');
+  errEl.style.display = 'none';
+  const val = rawVal.trim().toUpperCase().replace(/^0[XBO]/, '').replace(/\s/g, '');
+  const setIf = (id, v) => { const el = document.getElementById(id); if (el && document.activeElement !== el) el.value = v; };
+  if (!val) {
+    ['nb-dec','nb-hex','nb-bin','nb-oct'].forEach(id => { if (id !== 'nb-' + fromBase) setIf(id, ''); });
+    return;
+  }
+  let dec;
+  try {
+    switch (fromBase) {
+      case 'dec': if (!/^\d+$/.test(val)) throw new Error('ต้องเป็นตัวเลข 0-9'); dec = parseInt(val, 10); break;
+      case 'hex': if (!/^[0-9A-F]+$/.test(val)) throw new Error('ต้องเป็น 0-9, A-F'); dec = parseInt(val, 16); break;
+      case 'bin': if (!/^[01]+$/.test(val)) throw new Error('ต้องเป็น 0 หรือ 1 เท่านั้น'); dec = parseInt(val, 2); break;
+      case 'oct': if (!/^[0-7]+$/.test(val)) throw new Error('ต้องเป็น 0-7'); dec = parseInt(val, 8); break;
+      default: return;
+    }
+    if (isNaN(dec) || dec < 0) throw new Error('ค่าไม่ถูกต้อง');
+    if (dec > Number.MAX_SAFE_INTEGER) throw new Error('ตัวเลขใหญ่เกิน MAX_SAFE_INTEGER');
+  } catch (e) {
+    errEl.textContent = '⚠ ' + e.message;
+    errEl.style.display = 'block';
+    return;
+  }
+  if (fromBase !== 'dec') setIf('nb-dec', dec.toString(10));
+  if (fromBase !== 'hex') setIf('nb-hex', dec.toString(16).toUpperCase());
+  if (fromBase !== 'bin') setIf('nb-bin', dec.toString(2));
+  if (fromBase !== 'oct') setIf('nb-oct', dec.toString(8));
+}
+function numBaseSet(n) { const el = document.getElementById('nb-dec'); if (el) el.value = n; numBaseConvert('dec', String(n)); }
+function clearNumBase() {
+  ['nb-dec','nb-hex','nb-bin','nb-oct'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const errEl = document.getElementById('nb-error'); if (errEl) errEl.style.display = 'none';
+}
+
 // ── HASH ──
 async function computeHash(){
   const input=document.getElementById('hash-input').value;
@@ -815,6 +853,45 @@ function decodeJWT_UI(){
   }
 }
 function clearJWT(){document.getElementById('jwt-input').value='';document.getElementById('jwt-result').innerHTML='';_jwtHeader=null;_jwtPayload=null;}
+
+// ── JWT ENCODER ──
+function b64urlEncodeBytes(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+async function jwtEncode() {
+  const payloadStr = document.getElementById('jwt-enc-payload').value.trim();
+  const secret = document.getElementById('jwt-enc-secret').value;
+  const outEl = document.getElementById('jwt-enc-output');
+  const errEl = document.getElementById('jwt-enc-error');
+  errEl.style.display = 'none';
+  outEl.textContent = '—';
+  if (!payloadStr) { errEl.textContent = '⚠ กรอก payload JSON'; errEl.style.display = 'block'; return; }
+  if (!secret) { errEl.textContent = '⚠ กรอก secret key'; errEl.style.display = 'block'; return; }
+  let payload;
+  try { payload = JSON.parse(payloadStr); } catch (e) { errEl.textContent = '⚠ payload ไม่ใช่ JSON ที่ถูกต้อง: ' + e.message; errEl.style.display = 'block'; return; }
+  try {
+    const enc = new TextEncoder();
+    const header = { alg: 'HS256', typ: 'JWT' };
+    const headerB64 = b64urlEncodeBytes(enc.encode(JSON.stringify(header)));
+    const payloadB64 = b64urlEncodeBytes(enc.encode(JSON.stringify(payload)));
+    const data = `${headerB64}.${payloadB64}`;
+    const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
+    outEl.textContent = `${data}.${b64urlEncodeBytes(new Uint8Array(sig))}`;
+    showToast('JWT สร้างแล้ว ✓');
+  } catch (e) {
+    errEl.textContent = '⚠ Error: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+function clearJwtEnc() {
+  document.getElementById('jwt-enc-payload').value = '';
+  document.getElementById('jwt-enc-secret').value = '';
+  document.getElementById('jwt-enc-output').textContent = '—';
+  document.getElementById('jwt-enc-error').style.display = 'none';
+}
 
 // ── URL ENCODE/DECODE ──
 function urlEncode(){
@@ -1010,6 +1087,13 @@ function initColorWheel(){
   initCpSwatches();
   // Wait for layout so canvas dimensions are correct
   requestAnimationFrame(()=>{updateColorUI(currentRGB);});
+}
+function cpSetMode(mode){
+  const isRgb=mode==='rgb';
+  document.getElementById('cp-rgb-inputs').style.display=isRgb?'':'none';
+  document.getElementById('cp-hsl-inputs').style.display=isRgb?'none':'';
+  document.getElementById('cp-mode-rgb').classList.toggle('active',isRgb);
+  document.getElementById('cp-mode-hsl').classList.toggle('active',!isRgb);
 }
 // ── KUBECTL ──
 const KUBECTL_CMDS=[
@@ -1818,4 +1902,32 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Auto-generate mock data on load
   generateAll();
+
+  // Persist last input for key tools (restore on load, save on input)
+  const PERSIST_FIELDS = [
+    {id:'sql-input',     key:'isaan-devtools-sql-last'},
+    {id:'b64-input',     key:'isaan-devtools-b64-last'},
+    {id:'url-input',     key:'isaan-devtools-url-last'},
+    {id:'hash-input',    key:'isaan-devtools-hash-last'},
+    {id:'regex-pattern', key:'isaan-devtools-regex-pat'},
+    {id:'regex-flags',   key:'isaan-devtools-regex-flg'},
+    {id:'regex-input',   key:'isaan-devtools-regex-txt'},
+  ];
+  PERSIST_FIELDS.forEach(({id, key}) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    try { const saved = localStorage.getItem(key); if (saved !== null) el.value = saved; } catch(e) {}
+    el.addEventListener('input', () => { try { localStorage.setItem(key, el.value); } catch(e) {} });
+  });
+  // Trigger post-restore reactions for tools that need it
+  try {
+    if (localStorage.getItem('isaan-devtools-sql-last')) detectSqlMode(document.getElementById('sql-input').value);
+    if (localStorage.getItem('isaan-devtools-hash-last')) computeHash();
+    if (localStorage.getItem('isaan-devtools-regex-pat') || localStorage.getItem('isaan-devtools-regex-txt')) runRegex();
+  } catch(e) {}
+
+  // Register Service Worker for PWA offline support (HTTPS only)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
 });
