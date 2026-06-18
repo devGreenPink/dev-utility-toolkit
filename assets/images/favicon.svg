@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#6366f1"/>
-      <stop offset="50%"  stop-color="#22d3ee"/>
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
       <stop offset="100%" stop-color="#f472b6"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="96" fill="#0f1117"/>
-  <rect width="512" height="512" rx="96" fill="url(#bg)" opacity="0.15"/>
-  <text x="256" y="335" font-size="260" text-anchor="middle" fill="url(#bg)">⚙</text>
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <text x="256" y="355" font-size="290" text-anchor="middle"
+    font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif">🛠️</text>
 </svg>

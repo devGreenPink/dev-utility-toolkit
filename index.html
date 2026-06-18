@@ -83,10 +83,16 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="app-logo">
-          <div class="app-logo-icon" id="logo-icon">🛠️</div>
+          <div class="app-logo-icon-wrap">
+            <div class="app-logo-icon" id="logo-icon">🛠️</div>
+            <span class="logo-star logo-star-1">✦</span>
+            <span class="logo-star logo-star-2">✧</span>
+            <span class="logo-star logo-star-3">✦</span>
+            <span class="logo-star logo-star-4">✧</span>
+          </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.3</div>
+            <div class="app-version">v1.4</div>
           </div>
         </div>
       </div>
@@ -2243,32 +2249,19 @@
         </div>
 
         <div id="kopwang-tab" class="tab-content" >
-          <div
-            style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              height: 60vh;
-              gap: 16px;
-            "
-          >
-            <div style="font-size: 48px">🫨</div>
-            <div style="font-size: 20px; font-weight: 600; color: var(--text)">
-              ก๊อปวาง เอนจิ้น
-            </div>
-            <div style="color: var(--text-dim); font-size: 0.9rem">
-              SQL → TypeScript / Java Entity Generator
-            </div>
-            <a
-              href="https://devgreenpink.github.io/kop-wang-engine/"
-              target="_blank"
-              class="btn btn-primary"
-              style="text-decoration: none;"
-            >
-              เปิดใช้งาน ↗
+          <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+            <a href="https://devgreenpink.github.io/kop-wang-engine/" target="_blank"
+               class="btn btn-ghost" style="font-size:0.78rem; text-decoration:none;">
+              เปิดในแท็บใหม่ ↗
             </a>
           </div>
+          <iframe
+            src="https://devgreenpink.github.io/kop-wang-engine/"
+            class="kopwang-frame"
+            title="ก๊อปวาง เอนจิ้น"
+            loading="lazy"
+            allowfullscreen
+          ></iframe>
         </div>
       </div>
       <!-- content-area -->

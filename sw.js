@@ -1,4 +1,4 @@
-const CACHE = 'isaan-devtools-v4';
+const CACHE = 'isaan-devtools-v5';
 const STATIC_ASSETS = [
   './',
   './index.html',

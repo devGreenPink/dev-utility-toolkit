@@ -125,7 +125,7 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 
 | Shortcut | Action |
 |---|---|
-| `Ctrl + Enter` | Run tool ปัจจุบัน |
+| `Ctrl + Enter` | Run tool ปัจจุบัน (รองรับทุก tab ที่มี action) |
 | `Ctrl + K` | Focus search (kubectl / Linux / Git tab) |
 
 กด **⌨** (ปุ่มขวาบน) เพื่อดู shortcut ทั้งหมดได้ตลอดเวลา

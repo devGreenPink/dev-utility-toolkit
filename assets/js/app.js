@@ -108,6 +108,8 @@ document.addEventListener('keydown',e=>{
       case'hash-tab':computeHash();break;
       case'jwt-tab':decodeJWT_UI();break;
       case'url-tab':urlEncode();break;
+      case'regex-tab':runRegex();break;
+      case'numbase-tab':numBaseConvert('dec',document.getElementById('nb-dec')?.value||'');break;
     }
   }
   if((e.ctrlKey||e.metaKey)&&e.key==='k'){
