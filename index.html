@@ -86,7 +86,7 @@
           <div class="app-logo-icon" id="logo-icon">🛠️</div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.2</div>
+            <div class="app-version">v1.3</div>
           </div>
         </div>
       </div>
@@ -275,6 +275,13 @@
             onclick="setTheme('light', this)"
             title="☀️ Light"
           ></div>
+          <div
+            class="theme-dot"
+            style="background: linear-gradient(135deg,#f472b6,#c084fc)"
+            data-theme-id="kitty"
+            onclick="setTheme('kitty', this)"
+            title="🐱 Kitty"
+          ></div>
         </div>
       </div>
     </aside>
@@ -298,14 +305,14 @@
           </div>
         </div>
         <div class="top-bar-actions">
-          <span
-            style="
-              font-size: 0.72rem;
-              color: var(--text-dim);
-              font-family: var(--mono);
-            "
-            >Ctrl+Enter = Run</span
-          >
+          <div class="kb-pop-wrap">
+            <button class="kb-pop-btn" id="kb-pop-btn" onclick="toggleKbPop()" title="Keyboard shortcuts">⌨</button>
+            <div class="kb-pop" id="kb-pop">
+              <div class="kb-pop-title">Keyboard Shortcuts</div>
+              <div class="kb-pop-row"><kbd>Ctrl</kbd><kbd>Enter</kbd><span>Run tool</span></div>
+              <div class="kb-pop-row"><kbd>Ctrl</kbd><kbd>K</kbd><span>Focus search</span></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -408,13 +415,23 @@
                     <span class="mock-field-hint">ภาษาไทย</span>
                   </div>
                   <span class="mock-field-value" id="out-name">—</span>
-                  <button
-                    class="mock-copy-btn"
-                    onclick="copyVal('out-name')"
-                    title="Copy"
-                  >
-                    ⎘
-                  </button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-name')" title="Copy">⎘</button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">เพศ</span>
+                    <span class="mock-field-hint">ชาย / หญิง / ไม่ระบุ</span>
+                  </div>
+                  <span class="mock-field-value" id="out-gender">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-gender')" title="Copy">⎘</button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">วันเกิด</span>
+                    <span class="mock-field-hint">พ.ศ. + อายุ</span>
+                  </div>
+                  <span class="mock-field-value mono-sm" id="out-dob">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-dob')" title="Copy">⎘</button>
                 </div>
               </div>
 
@@ -456,6 +473,87 @@
                   >
                     ⎘
                   </button>
+                </div>
+              </div>
+
+              <!-- Address card -->
+              <div class="mock-section-card">
+                <div class="mock-section-header">
+                  <span class="mock-section-icon">📍</span>
+                  <span class="mock-section-title">ที่อยู่</span>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">จังหวัด</span>
+                    <span class="mock-field-hint">30 จังหวัด</span>
+                  </div>
+                  <span class="mock-field-value" id="out-province">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-province')" title="Copy">⎘</button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">รหัสไปรษณีย์</span>
+                    <span class="mock-field-hint">5 หลัก</span>
+                  </div>
+                  <span class="mock-field-value mono-sm" id="out-zip">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-zip')" title="Copy">⎘</button>
+                </div>
+              </div>
+
+              <!-- Work card -->
+              <div class="mock-section-card">
+                <div class="mock-section-header">
+                  <span class="mock-section-icon">💼</span>
+                  <span class="mock-section-title">ข้อมูลงาน</span>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">บริษัท</span>
+                    <span class="mock-field-hint">ชื่อบริษัทไทย</span>
+                  </div>
+                  <span class="mock-field-value" id="out-company" style="font-size:0.78rem">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-company')" title="Copy">⎘</button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">เลขนิติบุคคล</span>
+                    <span class="mock-field-hint">13 หลัก</span>
+                  </div>
+                  <span class="mock-field-value mono-sm" id="out-juristic" style="font-size:0.72rem">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-juristic')" title="Copy">⎘</button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">ตำแหน่ง</span>
+                    <span class="mock-field-hint">IT / Dev roles</span>
+                  </div>
+                  <span class="mock-field-value" id="out-job">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-job')" title="Copy">⎘</button>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">เงินเดือน</span>
+                    <span class="mock-field-hint">15k–180k บาท</span>
+                  </div>
+                  <span class="mock-field-value mono-sm" id="out-salary">—</span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-salary')" title="Copy">⎘</button>
+                </div>
+              </div>
+
+              <!-- Finance card -->
+              <div class="mock-section-card">
+                <div class="mock-section-header">
+                  <span class="mock-section-icon">💳</span>
+                  <span class="mock-section-title">การเงิน</span>
+                </div>
+                <div class="mock-field-row">
+                  <div class="mock-field-meta">
+                    <span class="mock-field-label">บัตรเครดิต</span>
+                    <span class="mock-field-hint">Luhn-valid (test only)</span>
+                  </div>
+                  <span class="mock-field-value mono-sm" id="out-credit" style="font-size:0.74rem">—</span>
+                  <span id="out-card-type" style="font-size:0.62rem;color:var(--accent2);font-family:var(--mono);margin-left:4px;flex-shrink:0"></span>
+                  <button class="mock-copy-btn" onclick="copyVal('out-credit')" title="Copy">⎘</button>
                 </div>
               </div>
 
@@ -1630,6 +1728,7 @@
               </button>
             </div>
           </div>
+          <div class="cp-dual-layout">
           <div class="cp-card">
             <!-- SV Square -->
             <div class="cp-sv-wrap" id="cp-sv-wrap">
@@ -2010,6 +2109,7 @@
             <!-- /icp-layout -->
           </div>
           <!-- /icp-section -->
+          </div><!-- /cp-dual-layout -->
         </div>
 
         <!-- HTTP STATUS -->
@@ -2175,7 +2275,7 @@
     </main>
 
     <div class="toast" id="toast">✓ Copied</div>
-    <div class="kb-hint">Ctrl+Enter = Run · Ctrl+K = Search</div>
+    <button class="scroll-top-btn" id="scroll-top-btn" onclick="scrollToTop()" title="กลับขึ้นบน">↑</button>
 
     <div class="pwa-banner" id="pwa-banner">
       <span style="font-size: 1.3rem">⚙️</span>

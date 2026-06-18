@@ -11,21 +11,25 @@
 
 ## ✨ Features
 
-เครื่องมือ 16+ อย่าง ทำงานได้ทั้งหมดบน client-side ไม่มี server ไม่มี API ไม่มี tracking
+เครื่องมือ 17+ อย่าง ทำงานได้ทั้งหมดบน client-side ไม่มี server ไม่มี API ไม่มี tracking
 
 ### 🎲 Mock Data Generator
 สร้างข้อมูลจำลองสำหรับทดสอบระบบ รองรับข้อมูลไทย:
 - **บัตรประชาชน 13 หลัก** พร้อม checksum ที่ถูกต้อง
-- **ชื่อ-นามสกุลภาษาไทย** จากฐานข้อมูลชื่อจริง
-- **เบอร์โทรมือถือไทย** format ถูกต้อง (081-xxx-xxxx)
+- **ชื่อ-นามสกุลภาษาไทย** + **เพศ** + **วันเกิด / อายุ** (พ.ศ.)
+- **เบอร์โทรมือถือไทย** format ถูกต้อง (081-xxx-xxxx) + อีเมล
+- **จังหวัด + รหัสไปรษณีย์** (30 จังหวัด)
+- **ชื่อบริษัทไทย + เลขนิติบุคคล** + ตำแหน่งงาน + เงินเดือน
+- **เลขบัตรเครดิต Luhn-valid** (Visa / Mastercard — test only)
 - **UUID v4** จาก `crypto.randomUUID()`
 - **Bulk Export** เป็น JSON Array ได้สูงสุด 500 records
 
 ### 📜 SQL Parser (Java → Clean SQL)
-แยก SQL ออกจาก Java source code รองรับ:
-- `String` concat ด้วย `+`, `StringBuilder.append()`, Text Block `"""..."""`
-- **MyBatis** `#{}` และ **JPA** `:param`
-- ตรวจจับ mode อัตโนมัติ + format SQL output
+แยก SQL ออกจาก Java source code รองรับ **8 modes**:
+- `String` concat `+`, `StringBuilder.append()`, Text Block `"""..."""`
+- **MyBatis** `#{}`, **JPA** `:param`, `@Query`, `String.format()`, MyBatis XML
+- ตรวจจับ mode อัตโนมัติ, format แบบ **DBeaver-style**, highlight สีตาม table alias
+- รองรับ **หลาย SQL ต่อชุด** — แยก card, copy แยกได้ทีละชุด
 
 ### 🔍 Text / JSON Diff
 - Char-level diff และ Line-level diff (เหมือน `git diff`)
@@ -75,7 +79,7 @@
 - 7 preset patterns — Email, URL, เบอร์ไทย, บัตรประชาชน, ISO Date, Jira Key
 
 ### 🎨 Color Picker *(redesigned)*
-- **UI ใหม่** — single-column card สไตล์ Figma/VS Code
+- **Layout 2 คอลัมน์** บน desktop — Color Picker ซ้าย, Image Color Picker ขวา
 - SV Square เต็มความกว้าง + Hue/Alpha sliders
 - **RGB/HSL mode toggle** สลับ channel inputs ทันที
 - Copy: `#HEX`, `rgb()`, `hsl()`, `rgba()`, CSS variable
@@ -93,6 +97,10 @@
 คำสั่ง Linux 100+ คำสั่ง พร้อมคำอธิบายภาษาไทย
 
 ---
+
+## 🎨 Themes *(v1.3)*
+
+5 themes ให้เลือก บันทึกใน `localStorage`:
 
 ## 🚀 วิธีใช้งาน
 
@@ -118,13 +126,15 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 | Shortcut | Action |
 |---|---|
 | `Ctrl + Enter` | Run tool ปัจจุบัน |
-| `Ctrl + K` | Focus search (kubectl / Linux tab) |
+| `Ctrl + K` | Focus search (kubectl / Linux / Git tab) |
+
+กด **⌨** (ปุ่มขวาบน) เพื่อดู shortcut ทั้งหมดได้ตลอดเวลา
 
 ---
 
 ## 🎨 Themes
 
-5 themes ให้เลือก บันทึกใน `localStorage`:
+6 themes ให้เลือก บันทึกใน `localStorage`:
 
 | Theme | Accent |
 |---|---|
@@ -133,6 +143,7 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 | **Nord** | `#88c0d0` |
 | **Dracula** | `#bd93f9` |
 | **Light** | สีอ่อน |
+| **Kitty** 🐱 *(new)* | ชมพู pastel `#e8549a` + ลาเวนเดอร์ |
 
 ---
 
