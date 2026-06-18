@@ -86,7 +86,7 @@
           <div class="app-logo-icon" id="logo-icon">🛠️</div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.1</div>
+            <div class="app-version">v1.2</div>
           </div>
         </div>
       </div>
@@ -539,9 +539,6 @@
         <div id="sql-tab" class="tab-content">
           <div class="section-header">
             <div class="toolbar">
-              <button class="btn btn-ghost" onclick="copyArea('sql-output')">
-                📋 Copy
-              </button>
               <button class="btn btn-danger" onclick="clearSQL()">
                 ✖ ล้าง
               </button>
@@ -571,14 +568,14 @@
               >—</span
             >
             <label class="mode-label" style="margin-left: auto"
-              ><input type="checkbox" id="sql-format-check" /> จัดรูปแบบ SQL
+              ><input type="checkbox" id="sql-format-check" checked /> จัดรูปแบบ SQL
               ผลลัพธ์</label
             >
           </div>
           <textarea
             id="sql-input"
             rows="8"
-            placeholder='วาง Java code หรือ SQL ได้เลย เช่น&#10;String sql = "SELECT u.id " +&#10;             "FROM users u " +&#10;             "WHERE u.active = 1";'
+            placeholder='วาง Java/SQL code ได้เลย รองรับ: Text Block · StringBuilder · String concat · @Query · prepareStatement · String.format · MyBatis XML · Plain SQL'
             oninput="detectSqlMode(this.value)"
           ></textarea>
           <div style="margin-top: 10px">
@@ -587,12 +584,7 @@
             </button>
           </div>
           <div id="sql-error"></div>
-          <textarea
-            id="sql-output"
-            rows="10"
-            readonly
-            style="margin-top: 10px; color: var(--accent2)"
-          ></textarea>
+          <div id="sql-results" style="margin-top:12px;display:flex;flex-direction:column;gap:10px;"></div>
         </div>
 
         <!-- DIFF -->

@@ -533,6 +533,15 @@
     /* ── SQL ── */
     #sql-error { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); border-radius: var(--radius-sm); padding: 10px 13px; font-size: .83rem; color: var(--danger); display: none; margin-top: 8px; }
     #sql-error.visible { display: block; }
+    .sql-result-card { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .sql-result-header { display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--surface2); border-bottom:1px solid var(--border); flex-wrap:wrap; }
+    .sql-result-label { font-family:var(--mono); font-size:.63rem; color:var(--accent); letter-spacing:.08em; text-transform:uppercase; font-weight:600; flex-shrink:0; }
+    .sql-result-body { margin:0; padding:12px 14px; font-family:var(--mono); font-size:.82rem; color:var(--text); white-space:pre; overflow-x:auto; line-height:1.7; background:var(--surface); }
+    .sql-legend { display:flex; flex-wrap:wrap; gap:8px; flex:1; }
+    .sql-legend-item { display:flex; align-items:center; gap:4px; font-family:var(--mono); font-size:.62rem; color:var(--text-muted); }
+    .sql-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .sql-dup-warn { padding:5px 12px; font-size:.7rem; color:#f87171; background:rgba(248,113,113,.07); border-top:1px solid var(--border); font-family:var(--mono); }
+    .btn-sm { padding:3px 8px !important; font-size:.65rem !important; margin-left:auto; flex-shrink:0; }
 
     /* ── HASH ── */
     .hash-result-row { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 8px; }
