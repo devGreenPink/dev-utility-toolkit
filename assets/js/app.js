@@ -15,6 +15,7 @@ const TAB_META = {
   'http-tab': { title: 'HTTP Status Code Reference', sub: '1xx · 2xx · 3xx · 4xx · 5xx — คำอธิบายและตัวอย่างการใช้งาน' },
   'kubectl-tab': { title: 'kubectl Cheatsheet', sub: 'คำสั่ง kubectl ที่ใช้บ่อย พร้อมคำอธิบายภาษาไทย' },
   'linux-tab': { title: 'Linux Command Cheatsheet', sub: 'คำสั่ง Linux ที่ใช้บ่อย — Ubuntu / Debian / RHEL' },
+  'git-tab': { title: 'Git CLI Cheatsheet', sub: 'คำสั่ง Git ที่ใช้บ่อย — commit · branch · rebase · stash · undo' },
   'numbase-tab': { title: 'Number Base Converter', sub: 'แปลงเลขฐาน 10 ↔ 16 ↔ 2 ↔ 8' },
 };
 
@@ -111,7 +112,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='k'){
     e.preventDefault();
     document.getElementById('nav-search').focus();
-    const searchMap={'kubectl-tab':'kubectl-search','linux-tab':'linux-search'};
+    const searchMap={'kubectl-tab':'kubectl-search','linux-tab':'linux-search','git-tab':'git-search'};
     const el=document.getElementById(searchMap[activeTabId]);
     if(el){el.focus();el.select();}
   }
@@ -1243,6 +1244,95 @@ function filterLinux(q){
 }
 function clearLinux(){document.getElementById('linux-search').value='';renderCmdList(LINUX_CMDS,'linux-list','');}
 
+// ── GIT CLI ──
+const GIT_CMDS=[
+  // SETUP / CONFIG
+  {group:'SETUP / CONFIG',cmd:'git config --global user.name "Name"',desc:'ตั้งชื่อผู้ใช้ระดับ global'},
+  {group:'SETUP / CONFIG',cmd:'git config --global user.email "email"',desc:'ตั้งอีเมลระดับ global'},
+  {group:'SETUP / CONFIG',cmd:'git config --global pull.rebase true',desc:'ทำให้ git pull ใช้ rebase แทน merge เป็น default'},
+  {group:'SETUP / CONFIG',cmd:'git config --global push.autoSetupRemote true',desc:'push branch ใหม่โดยไม่ต้องพิมพ์ -u origin ทุกครั้ง'},
+  {group:'SETUP / CONFIG',cmd:'git config --global rerere.enabled true',desc:'จำ conflict resolution ไว้ใช้ซ้ำอัตโนมัติ'},
+  {group:'SETUP / CONFIG',cmd:'git config --global core.autocrlf input',desc:'แก้ปัญหา CRLF บน Windows (แนะนำ)'},
+  {group:'SETUP / CONFIG',cmd:'git config --list',desc:'แสดง config ทั้งหมดที่ใช้งานอยู่'},
+  {group:'SETUP / CONFIG',cmd:'git init',desc:'สร้าง Git repository ใหม่ในโฟลเดอร์ปัจจุบัน'},
+  {group:'SETUP / CONFIG',cmd:'git clone <url>',desc:'clone repository จาก remote'},
+  {group:'SETUP / CONFIG',cmd:'git clone <url> --depth 1',desc:'clone เฉพาะ commit ล่าสุด (เร็วกว่าสำหรับ repo ขนาดใหญ่)'},
+  // BASIC
+  {group:'BASIC',cmd:'git status',desc:'แสดงสถานะไฟล์ (staged / unstaged / untracked)'},
+  {group:'BASIC',cmd:'git diff',desc:'ดูการเปลี่ยนแปลงที่ยังไม่ได้ stage'},
+  {group:'BASIC',cmd:'git diff --staged',desc:'ดูการเปลี่ยนแปลงที่ stage แล้ว ก่อน commit'},
+  {group:'BASIC',cmd:'git diff main..HEAD',desc:'ดูความต่างระหว่าง branch ปัจจุบันกับ main'},
+  {group:'BASIC',cmd:'git add <file>',desc:'stage ไฟล์ที่ระบุ'},
+  {group:'BASIC',cmd:'git add -p',desc:'เลือก stage ทีละ hunk — ควบคุมได้ละเอียดกว่า git add .'},
+  {group:'BASIC',cmd:'git commit -m "message"',desc:'commit พร้อม message'},
+  {group:'BASIC',cmd:'git commit --amend --no-edit',desc:'แก้ไข commit ล่าสุดโดยไม่เปลี่ยน message (ยังไม่ push เท่านั้น)'},
+  {group:'BASIC',cmd:'git log --oneline --graph --all',desc:'แสดง history ทุก branch แบบกราฟ'},
+  {group:'BASIC',cmd:'git log --oneline -10',desc:'แสดง 10 commit ล่าสุด'},
+  {group:'BASIC',cmd:'git log -p <file>',desc:'ดู history ของไฟล์นั้นพร้อม diff ทุก commit'},
+  {group:'BASIC',cmd:'git show <hash>',desc:'แสดงรายละเอียดและ diff ของ commit นั้น'},
+  {group:'BASIC',cmd:'git blame <file>',desc:'แสดงว่าใคร / commit ไหนแก้แต่ละบรรทัด'},
+  // BRANCH
+  {group:'BRANCH',cmd:'git branch',desc:'แสดง branch ทั้งหมด (local)'},
+  {group:'BRANCH',cmd:'git branch -a',desc:'แสดง branch ทั้งหมดรวม remote'},
+  {group:'BRANCH',cmd:'git switch -c feature/xxx',desc:'สร้าง branch ใหม่แล้วสลับไปทันที (แนะนำกว่า checkout -b)'},
+  {group:'BRANCH',cmd:'git switch main',desc:'สลับไป branch main'},
+  {group:'BRANCH',cmd:'git switch -',desc:'สลับกลับ branch ก่อนหน้า'},
+  {group:'BRANCH',cmd:'git branch -d feature/xxx',desc:'ลบ branch local (ป้องกันถ้ายังไม่ merge)'},
+  {group:'BRANCH',cmd:'git branch -D feature/xxx',desc:'ลบ branch local แบบบังคับ'},
+  {group:'BRANCH',cmd:'git merge feature/xxx',desc:'merge branch เข้า branch ปัจจุบัน'},
+  {group:'BRANCH',cmd:'git merge --no-ff feature/xxx',desc:'merge พร้อมสร้าง merge commit เสมอ (เก็บ history)'},
+  {group:'BRANCH',cmd:'git cherry-pick <hash>',desc:'เอาเฉพาะ commit นั้นมาใส่ branch ปัจจุบัน'},
+  // REMOTE
+  {group:'REMOTE',cmd:'git remote -v',desc:'แสดง remote URLs ทั้งหมด'},
+  {group:'REMOTE',cmd:'git remote add origin <url>',desc:'เพิ่ม remote ชื่อ origin'},
+  {group:'REMOTE',cmd:'git fetch',desc:'ดึงข้อมูลจาก remote โดยไม่ merge'},
+  {group:'REMOTE',cmd:'git fetch --prune',desc:'ดึงข้อมูลและลบ remote-tracking branch ที่ถูกลบแล้ว'},
+  {group:'REMOTE',cmd:'git pull --rebase',desc:'pull แบบ rebase — ไม่สร้าง merge commit เพิ่มเติม'},
+  {group:'REMOTE',cmd:'git push -u origin <branch>',desc:'push และ set upstream ครั้งแรก'},
+  {group:'REMOTE',cmd:'git push',desc:'push branch ปัจจุบันไป remote'},
+  {group:'REMOTE',cmd:'git push --force-with-lease',desc:'force push แบบ safe — ยกเลิกถ้ามีคนอื่น push ก่อน'},
+  {group:'REMOTE',cmd:'git push origin --delete <branch>',desc:'ลบ branch บน remote'},
+  // UNDO / RESET
+  {group:'UNDO / RESET',cmd:'git restore <file>',desc:'ยกเลิก unstaged changes ของไฟล์นั้น'},
+  {group:'UNDO / RESET',cmd:'git restore --staged <file>',desc:'unstage ไฟล์ (เก็บการเปลี่ยนแปลงไว้)'},
+  {group:'UNDO / RESET',cmd:'git revert <hash>',desc:'undo commit โดยสร้าง commit ใหม่ — safe สำหรับ shared branch'},
+  {group:'UNDO / RESET',cmd:'git reset --soft HEAD~1',desc:'ย้อน 1 commit กลับมา staging area (เก็บ changes)'},
+  {group:'UNDO / RESET',cmd:'git reset --mixed HEAD~1',desc:'ย้อน 1 commit กลับมา working tree (unstaged)'},
+  {group:'UNDO / RESET',cmd:'git reset --hard HEAD~1',desc:'⚠️ ย้อน 1 commit และทิ้งการเปลี่ยนแปลงทั้งหมด'},
+  {group:'UNDO / RESET',cmd:'git clean -fd',desc:'⚠️ ลบไฟล์ untracked ทั้งหมด (-f force, -d รวม directory)'},
+  {group:'UNDO / RESET',cmd:'git reflog',desc:'ดู history ทุกการเคลื่อนไหวของ HEAD — ใช้กู้คืน commit ที่หายไป'},
+  // STASH
+  {group:'STASH',cmd:'git stash push -m "wip: xxx"',desc:'บันทึก work-in-progress ชั่วคราวพร้อม message'},
+  {group:'STASH',cmd:'git stash list',desc:'แสดง stash ทั้งหมด'},
+  {group:'STASH',cmd:'git stash pop',desc:'คืนค่า stash ล่าสุดแล้วลบ stash นั้น'},
+  {group:'STASH',cmd:'git stash apply stash@{1}',desc:'คืนค่า stash ที่ระบุโดยไม่ลบ'},
+  {group:'STASH',cmd:'git stash drop stash@{0}',desc:'ลบ stash ที่ระบุ'},
+  {group:'STASH',cmd:'git stash clear',desc:'ลบ stash ทั้งหมด'},
+  {group:'STASH',cmd:'git stash push --include-untracked',desc:'stash รวม untracked files ด้วย'},
+  // REBASE
+  {group:'REBASE',cmd:'git rebase main',desc:'rebase branch ปัจจุบันบน main — ทำ history เป็นเส้นตรง'},
+  {group:'REBASE',cmd:'git rebase -i HEAD~3',desc:'interactive rebase 3 commit ล่าสุด — squash / reorder / edit'},
+  {group:'REBASE',cmd:'git rebase --continue',desc:'ดำเนินต่อหลังแก้ conflict'},
+  {group:'REBASE',cmd:'git rebase --abort',desc:'ยกเลิก rebase และกลับสู่สถานะเดิม'},
+  {group:'REBASE',cmd:'git rebase --skip',desc:'ข้าม commit ที่มี conflict แล้วดำเนินต่อ'},
+  // SEARCH & INSPECT
+  {group:'SEARCH & INSPECT',cmd:'git log --all -S "keyword"',desc:'ค้นหา commit ที่เพิ่มหรือลบ keyword นั้น'},
+  {group:'SEARCH & INSPECT',cmd:'git log --all --grep="message"',desc:'ค้นหา commit ที่ message ตรงกับ pattern'},
+  {group:'SEARCH & INSPECT',cmd:'git grep "pattern"',desc:'ค้นหา pattern ใน tracked files ทั้งหมด'},
+  {group:'SEARCH & INSPECT',cmd:'git bisect start',desc:'เริ่มค้นหา commit ที่ทำให้ bug เกิด (binary search)'},
+  {group:'SEARCH & INSPECT',cmd:'git bisect good <hash>',desc:'ระบุ commit ที่ยังไม่มี bug'},
+  {group:'SEARCH & INSPECT',cmd:'git bisect bad <hash>',desc:'ระบุ commit ที่มี bug แล้ว (bisect จะ checkout กึ่งกลางให้)'},
+  {group:'SEARCH & INSPECT',cmd:'git bisect reset',desc:'จบการใช้ bisect และกลับสู่ HEAD เดิม'},
+  {group:'SEARCH & INSPECT',cmd:'git shortlog -sn',desc:'สรุปจำนวน commit ต่อคน เรียงจากมากไปน้อย'},
+  {group:'SEARCH & INSPECT',cmd:'git ls-files',desc:'แสดงไฟล์ทั้งหมดที่ Git track อยู่'},
+];
+function filterGit(q){
+  const query=(q||'').trim().toLowerCase();
+  const cmds=query?GIT_CMDS.filter(c=>c.cmd.toLowerCase().includes(query)||c.desc.toLowerCase().includes(query)||c.group.toLowerCase().includes(query)):GIT_CMDS;
+  renderCmdList(cmds,'git-list',query);
+}
+function clearGit(){document.getElementById('git-search').value='';renderCmdList(GIT_CMDS,'git-list','');}
+
 // ── HTTP STATUS CODES ──
 const HTTP_CODES=[
   {code:100,name:'Continue',group:'1xx Informational',badgeClass:'s1xx',desc:'เซิร์ฟเวอร์ได้รับ request header แล้ว client สามารถส่ง body ต่อได้',example:'ใช้กับ Expect: 100-continue header ก่อนส่ง request body ขนาดใหญ่'},
@@ -1884,6 +1974,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   renderCmdList(KUBECTL_CMDS,'kubectl-list','');
   renderCmdList(LINUX_CMDS,'linux-list','');
+  renderCmdList(GIT_CMDS,'git-list','');
   updateCronDisplay('* * * * *');
 
   // Real-time clock — update every second

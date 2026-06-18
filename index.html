@@ -86,7 +86,7 @@
           <div class="app-logo-icon" id="logo-icon">🛠️</div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.0</div>
+            <div class="app-version">v1.1</div>
           </div>
         </div>
       </div>
@@ -219,6 +219,13 @@
           onclick="openTab(event, 'linux-tab')"
         >
           <span class="nav-icon">🐧</span> Linux Commands
+        </div>
+        <div
+          class="nav-item"
+          data-tab="git-tab"
+          onclick="openTab(event, 'git-tab')"
+        >
+          <span class="nav-icon">🌿</span> Git CLI
         </div>
         <div class="nav-section-label">เครื่องมือเพิ่มเติม</div>
         <div
@@ -2074,6 +2081,24 @@
             />
           </div>
           <div id="linux-list"></div>
+        </div>
+
+        <!-- GIT CLI -->
+        <div id="git-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearGit()">
+              ✖ ล้างการค้นหา
+            </button>
+          </div>
+          <div style="margin-bottom: 16px">
+            <input
+              type="text"
+              id="git-search"
+              placeholder="🔍 ค้นหาคำสั่ง... เช่น commit, branch, rebase, stash"
+              oninput="filterGit(this.value)"
+            />
+          </div>
+          <div id="git-list"></div>
         </div>
 
         <!-- NUMBER BASE CONVERTER -->
