@@ -134,8 +134,15 @@ function highlightText(text,query){if(!query)return escHtml(text);const re=new R
 
 // ── MOCK DATA ──
 const MD={
-  first:['กิตติศักดิ์','จิราพร','นพดล','พรทิพย์','สมชาย','วิลาวัลย์','อานนท์','สุภาวดี','ธีรพัฒน์','รัตนาภรณ์','ณัฐพงศ์','ปกรณ์','ธนกร','ภาคภูมิ','กานต์','เอกภพ','ศุภชัย','นนทวัฒน์','พีรพัฒน์','เบิ้ม','โอ๊ต','บอส','เอ็ม','เจมส์','ตั้ม','เบียร์','มิกซ์','ฟลุ๊ค','ต้น','วิศรุต','ชัยพล','ณัฐกานต์','อภิสิทธิ์','สรวิชญ์','มิกค์','จ๊อบ','วิภาวี','เติ้ล','แสน','มอส','เอเทน','เจต','เจล','ข้าว','ขวัญข้าว','โอ๊ตข้าวตลอดไป'],
-  last:['มั่นคง','แสนสุข','ใจดี','รุ่งเรือง','ชาญชัย','เจริญผล','บารมีธรรม','เลิศวิจิตร','โพธิ์ทอง','สิงห์คำ','เทพโค้ด','สายฮาร์ดโค้ด','อินฟินิตลูป','ดีพลอยพัง','เมอร์จคอนฟลิกต์','แก้บั๊กวนไป','โลกล่ม','ดาต้าหาย','รีสตาร์ทเซอร์วิส','สแตกเทรซ'],
+  first:['มิกซ์', 'วิศรุต', 'ชัยพล', 'ณัฐกานต์', 'อภิสิทธิ์', 'สรวิชญ์', 'มิกค์', 'จ๊อบ', 'วิภาวี', 'เติ้ล', 'แสน', 'มอส', 'เอเทน', 'เจต', 'เจล', 'ข้าว', 'ขวัญข้าว', 'โอ๊ตข้าวตลอดไป', 'ธวัชชัย', 'แมน', 'แก๊ป', 'จิรสิน', 'จรรยพรพรหม', 'อิงค์', 'ตั้น', 'เจษฎากร', 'ศิรดา', 'สุทธิรา'],
+  last:[
+    'อินฟินิตลูป', 'ดีพลอยพัง', 'เมอร์จคอนฟลิกต์', 'แก้บั๊กวนไป', 
+    'โลกล่ม', 'ดาต้าหาย', 'รีสตาร์ทเซอร์วิส', 'สแตกเทรซ',
+    'เบิร์นเอาท์', 'เอาท์ออฟเมมโมรี่', 'ก๊อปวางอย่างเซียน', 'คีย์บอร์ดพัง', 'คอฟฟี่โอเวอร์โดส', 
+    'โนสเปซเลฟต์', 'ซินแทกซ์เออร์เรอร์', 'เซมิโคลอนหาย', 'โลคอลโฮสต์รอด', 'เซิร์ฟเวอร์บึ้ม', 
+    'เดดไลน์พรุ่งนี้', 'โนคอมเมนต์', 'สายมูเตลูโค้ด', 'ฟอนต์เพี้ยน', 'พาสเวิร์ดแฮกง่าย', 
+    'กูเกิลคัตลอก', 'สแต็คโอเวอร์โฟลว์', 'บราวน์เซอร์ค้าง', 'คุกกี้เต็มพุง', 'คิวเอส่ายหัว'
+],
   domain:['gmail.com','hotmail.com','yahoo.com','outlook.co.th','devmail.io'],
   prefix:['081','082','089','091','095','061','063','065'],
   gender:['ชาย','หญิง','ไม่ระบุ'],
@@ -169,6 +176,19 @@ const MD={
     'Security Engineer','นักพัฒนาซอฟต์แวร์','ผู้จัดการโครงการ',
   ],
   salaryRanges:[[15000,25000],[25000,40000],[40000,60000],[60000,90000],[90000,120000],[120000,180000]],
+  nicknames:[
+    'สายสู้ชีวิต แต่ชีวิตสู้กลับ','จอมขมังเวทย์ เสกโค้ดบ่ติด','นักสู้พันล้าน... บรรทัด',
+    'เทพเจ้าแห่งความว่างเปล่า (ตื่นมาพบบั๊ก)','ผู้พิทักษ์โค้ดเน่า','ร่างทองตอนตีสอง',
+    'ด็อกเตอร์ Stack Overflow','ฉลามวาฬกินคาเฟอีน','นักล้างแค้น... แก้วกาแฟ',
+    'เซียนโกปี๊ ขยี้บั๊ก','หวานเจี๊ยบเฉียบคม','ผู้เปลี่ยนชาเย็นเป็นซอร์สโค้ด',
+    'บ่าวหน้าคอม ดมกลิ่นกาแฟ','มือปราบหนอนไหม (แต่เจอหนอนยักษ์)','หมอพราหมณ์ทำพิธีล้างบั๊ก',
+    'หน่วยกู้ภัยไฟลุกลาม','บิดาแห่งการ Copy & Paste','นักเลงคีย์บอร์ด (ปุ่ม Ctrl พัง)',
+    'ผู้บ่าวโค้ดพัง ฝังใจกับบั๊ก','ร่างทรง "มันทำงานได้บนเครื่องผม"','จอมโจรลักลอก โค้ดชาวบ้าน',
+    'นักพรางตัวในห้องมืด','ผู้ดับไฟด่วน (แต่ทำไฟลาม)','เซียนคอมพิวเตอร์ ยินดีซ่อมปริ้นเตอร์',
+    'ขุนพล "ลองรีสตาร์ทดูยัง?"','ปรมาจารย์ มั่วจนรันผ่าน','เทพแห่งการ Commit สองวิสุดท้าย',
+    'นักโบราณคดี ขุดโค้ดเก่า','วิศวกรผู้สร้าง บั๊กไร้พรมแดน','เจ้าชายร้อย Git Branch',
+    'ท่านประธานบริษัท แผนกแก้คำผิด',
+  ],
 };
 function r(a){return a[Math.floor(Math.random()*a.length)];}
 function genDob(){
@@ -214,12 +234,14 @@ function genOneMock(){
   const cardType=Math.random()>0.5?{label:'Visa',prefix:'4'}:{label:'Mastercard',prefix:String(51+Math.floor(Math.random()*5))};
   const creditCard=genLuhnCard(cardType.prefix);
   const juristicId=genJuristicId();
-  return{id,name:`${first} ${last}`,gender,phone,email,uuid,dob:dob.display,dobIso:dob.iso,age:dob.age,province:prov.name,zip:prov.zip,company,juristicId,job,salary,creditCard,creditCardType:cardType.label};
+  const nickname=r(MD.nicknames);
+  return{id,name:`${first} ${last}`,nickname,gender,phone,email,uuid,dob:dob.display,dobIso:dob.iso,age:dob.age,province:prov.name,zip:prov.zip,company,juristicId,job,salary,creditCard,creditCardType:cardType.label};
 }
 function generateAll(){
   const m=genOneMock();
   document.getElementById('out-id').textContent=m.id;
   document.getElementById('out-name').textContent=m.name;
+  document.getElementById('out-nickname').textContent=m.nickname;
   document.getElementById('out-gender').textContent=m.gender;
   document.getElementById('out-dob').textContent=`${m.dob}  (${m.age} ปี)`;
   document.getElementById('out-phone').textContent=m.phone;
@@ -238,14 +260,14 @@ function generateAll(){
   document.getElementById('bulk-output-area').style.display='none';
 }
 function clearMock(){
-  ['out-id','out-name','out-gender','out-dob','out-phone','out-email','out-uuid','out-province','out-zip','out-company','out-juristic','out-job','out-salary','out-credit'].forEach(id=>{document.getElementById(id).textContent='—';});
+  ['out-id','out-name','out-nickname','out-gender','out-dob','out-phone','out-email','out-uuid','out-province','out-zip','out-company','out-juristic','out-job','out-salary','out-credit'].forEach(id=>{document.getElementById(id).textContent='—';});
   document.getElementById('out-card-type').textContent='';
   document.getElementById('bulk-output-area').style.display='none';
   document.getElementById('bulk-json-output').value='';
 }
 function copyAllMock(){
   const g=id=>document.getElementById(id).textContent;
-  const fields={บัตรประชาชน:g('out-id'),ชื่อนามสกุล:g('out-name'),เพศ:g('out-gender'),วันเกิด:g('out-dob'),เบอร์โทร:g('out-phone'),อีเมล:g('out-email'),จังหวัด:g('out-province'),รหัสไปรษณีย์:g('out-zip'),บริษัท:g('out-company'),เลขนิติบุคคล:g('out-juristic'),ตำแหน่ง:g('out-job'),เงินเดือน:g('out-salary'),บัตรเครดิต:g('out-credit'),uuid:g('out-uuid')};
+  const fields={บัตรประชาชน:g('out-id'),ชื่อนามสกุล:g('out-name'),ฉายา:g('out-nickname'),เพศ:g('out-gender'),วันเกิด:g('out-dob'),เบอร์โทร:g('out-phone'),อีเมล:g('out-email'),จังหวัด:g('out-province'),รหัสไปรษณีย์:g('out-zip'),บริษัท:g('out-company'),เลขนิติบุคคล:g('out-juristic'),ตำแหน่ง:g('out-job'),เงินเดือน:g('out-salary'),บัตรเครดิต:g('out-credit'),uuid:g('out-uuid')};
   if(Object.values(fields).every(v=>v==='—')){showToast('กรุณาสุ่มข้อมูลก่อน');return;}
   copyText(JSON.stringify(fields,null,2));
 }
