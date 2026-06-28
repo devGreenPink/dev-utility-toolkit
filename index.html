@@ -2324,10 +2324,10 @@
                     <div class="rxjs-analogy">🚰 <strong>Array</strong> = น้ำในขวด (มีอยู่แล้ว) &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Observable</strong> = ก๊อกน้ำ (ไหลมาเรื่อยๆ)</div>
                   </div>
                   <div class="rxjs-uc-list">
-                    <div class="rxjs-uc">🔍 Search autocomplete</div>
-                    <div class="rxjs-uc">📡 Real-time / WebSocket</div>
-                    <div class="rxjs-uc">🌐 HTTP + cancel request</div>
-                    <div class="rxjs-uc">📦 State management</div>
+                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('debounce')">🔍 Search autocomplete <span class="rxjs-uc-hint">→ ดู operators</span></div>
+                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('subject')">📡 Real-time / WebSocket <span class="rxjs-uc-hint">→ ดู operators</span></div>
+                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('switchMap')">🌐 HTTP + cancel request <span class="rxjs-uc-hint">→ ดู operators</span></div>
+                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('behavior')">📦 State management <span class="rxjs-uc-hint">→ ดู operators</span></div>
                   </div>
                 </div>
                 <div class="rxjs-concepts-grid">
@@ -2358,11 +2358,52 @@
                   </div>
                 </div>
                 <div class="rxjs-flow-diag">
-                  <div class="rxjs-flow-node rxjs-fn-obs">Observable<br><span>source$</span></div>
-                  <div class="rxjs-flow-arr">→</div>
-                  <div class="rxjs-flow-node rxjs-fn-pipe">pipe(<br><span>op1, op2…</span><br>)</div>
-                  <div class="rxjs-flow-arr">→</div>
-                  <div class="rxjs-flow-node rxjs-fn-sub">subscribe(<br><span>next, error,<br>complete</span><br>)</div>
+                  <div class="rxjs-fn-node rxjs-fn-obs">
+                    <div class="rxjs-fn-icon">⚡</div>
+                    <div class="rxjs-fn-name">Observable</div>
+                    <div class="rxjs-fn-desc">แหล่งข้อมูล — emit ค่าได้เรื่อยๆ</div>
+                    <div class="rxjs-fn-codes">
+                      <code>interval(1000)</code>
+                      <code>fromEvent(btn, 'click')</code>
+                      <code>of(1, 2, 3)</code>
+                    </div>
+                  </div>
+                  <div class="rxjs-fn-conn">
+                    <div class="rxjs-fn-line">
+                      <span class="rxjs-fn-dot rxjs-fnd1"></span>
+                      <span class="rxjs-fn-dot rxjs-fnd2"></span>
+                      <span class="rxjs-fn-dot rxjs-fnd3"></span>
+                    </div>
+                    <span class="rxjs-fn-conn-lbl">ค่า →</span>
+                  </div>
+                  <div class="rxjs-fn-node rxjs-fn-pipe">
+                    <div class="rxjs-fn-icon">⚙️</div>
+                    <div class="rxjs-fn-name">pipe(operators)</div>
+                    <div class="rxjs-fn-desc">แปลง / กรอง / รวม stream</div>
+                    <div class="rxjs-fn-codes">
+                      <code>map(x =&gt; x * 2)</code>
+                      <code>filter(x =&gt; x &gt; 0)</code>
+                      <code>debounceTime(300)</code>
+                    </div>
+                  </div>
+                  <div class="rxjs-fn-conn">
+                    <div class="rxjs-fn-line">
+                      <span class="rxjs-fn-dot rxjs-fnd1"></span>
+                      <span class="rxjs-fn-dot rxjs-fnd2"></span>
+                      <span class="rxjs-fn-dot rxjs-fnd3"></span>
+                    </div>
+                    <span class="rxjs-fn-conn-lbl">ผลลัพธ์ →</span>
+                  </div>
+                  <div class="rxjs-fn-node rxjs-fn-subscribe">
+                    <div class="rxjs-fn-icon">🎯</div>
+                    <div class="rxjs-fn-name">subscribe</div>
+                    <div class="rxjs-fn-desc">รับค่า / render / handle error</div>
+                    <div class="rxjs-fn-codes">
+                      <code>next: v =&gt; render(v)</code>
+                      <code>error: e =&gt; handle(e)</code>
+                      <code>complete: () =&gt; done()</code>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

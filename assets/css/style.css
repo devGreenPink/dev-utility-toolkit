@@ -1463,14 +1463,43 @@
     .rxjs-concept-eg { font-size: 0.72rem; color: var(--text-muted); }
     .rxjs-concept code { font-family: var(--mono); font-size: 0.72rem; background: var(--surface); padding: 1px 4px; border-radius: 3px; }
 
+    /* Use case clickable */
+    .rxjs-uc-btn { cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .rxjs-uc-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+    .rxjs-uc-hint { font-size: 0.68rem; color: var(--text-muted); margin-left: 4px; opacity: 0; transition: opacity 0.15s; }
+    .rxjs-uc-btn:hover .rxjs-uc-hint { opacity: 1; color: var(--accent); }
+
     /* Flow diagram */
-    .rxjs-flow-diag { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; justify-content: center; }
-    .rxjs-flow-node { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 10px 16px; text-align: center; font-family: var(--mono); font-size: 0.78rem; color: var(--text); line-height: 1.5; }
-    .rxjs-flow-node span { font-size: 0.7rem; color: var(--text-dim); display: block; }
+    .rxjs-flow-diag { display: flex; align-items: center; gap: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 16px; justify-content: center; flex-wrap: wrap; row-gap: 12px; }
+    .rxjs-fn-node { background: var(--surface); border: 2px solid; border-radius: var(--radius); padding: 14px 16px; text-align: center; min-width: 152px; flex: 0 0 auto; }
+    .rxjs-fn-icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .rxjs-fn-name { font-family: var(--mono); font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; }
+    .rxjs-fn-desc { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 10px; line-height: 1.4; }
+    .rxjs-fn-codes { display: flex; flex-direction: column; gap: 3px; }
+    .rxjs-fn-codes code { font-family: var(--mono); font-size: 0.62rem; background: var(--surface2); padding: 2px 6px; border-radius: 3px; display: block; text-align: left; }
     .rxjs-fn-obs { border-color: #a78bfa; }
+    .rxjs-fn-obs .rxjs-fn-name { color: #a78bfa; }
+    .rxjs-fn-obs .rxjs-fn-codes code { color: #a78bfa; }
     .rxjs-fn-pipe { border-color: var(--accent); }
-    .rxjs-fn-sub { border-color: #34d399; }
-    .rxjs-flow-arr { font-size: 1.2rem; color: var(--text-dim); }
+    .rxjs-fn-pipe .rxjs-fn-name { color: var(--accent); }
+    .rxjs-fn-pipe .rxjs-fn-codes code { color: var(--accent); }
+    .rxjs-fn-subscribe { border-color: #34d399; }
+    .rxjs-fn-subscribe .rxjs-fn-name { color: #34d399; }
+    .rxjs-fn-subscribe .rxjs-fn-codes code { color: #34d399; }
+    /* Animated connector */
+    .rxjs-fn-conn { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 0 10px; }
+    .rxjs-fn-line { position: relative; width: 48px; height: 3px; background: var(--border-strong); border-radius: 2px; }
+    .rxjs-fn-dot { position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 50%; transform: translateY(-50%); animation: rxjsFlowDot 2s linear infinite; }
+    .rxjs-fnd1 { background: #a78bfa; animation-delay: 0s; }
+    .rxjs-fnd2 { background: var(--accent); animation-delay: 0.67s; }
+    .rxjs-fnd3 { background: #34d399; animation-delay: 1.33s; }
+    @keyframes rxjsFlowDot {
+      0%   { left: -8px; opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { left: calc(100% + 8px); opacity: 0; }
+    }
+    .rxjs-fn-conn-lbl { font-size: 0.6rem; color: var(--text-muted); }
 
     /* Marble diagrams */
     .rxjs-marbles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }

@@ -2474,6 +2474,13 @@ function clearRxjs(){
   renderRxjsCats();renderRxjsOps();
 }
 
+function rxjsUcClick(q){
+  const inp=document.getElementById('rxjs-search');
+  if(inp)inp.value=q;
+  rxjsSearch(q);
+  document.getElementById('rxjs-op-list').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function rxjsToggleAcc(btn){
   const body=btn.nextElementSibling;
   const open=body.style.display!=='none';
