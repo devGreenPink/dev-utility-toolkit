@@ -2562,6 +2562,9 @@ let ngTimer=null,ngQ='';
 
 function initAngular(){renderNgTimeline();renderNgHooks();renderNgDetail(null);}
 
+function ngPB(p){return 'ng-pb-'+p;}
+function ngFB(f){return 'ng-fb-'+f.replace(/-/g,'-');}
+
 function renderNgTimeline(){
   const el=document.getElementById('ng-timeline');
   if(!el)return;
@@ -2572,8 +2575,8 @@ function renderNgTimeline(){
   <div class="ng-hook-info">
     <span class="ng-hook-name">${h.name}</span>
     <div class="ng-hook-badges">
-      ${h.phase.map(p=>`<span class="ng-phase-badge" style="background:${NG_PC[p]}18;color:${NG_PC[p]};border-color:${NG_PC[p]}40">${p}</span>`).join('')}
-      <span class="ng-freq-badge" style="background:${NG_FC[h.freq]}18;color:${NG_FC[h.freq]};border-color:${NG_FC[h.freq]}40">${NG_FL[h.freq]}</span>
+      ${h.phase.map(p=>`<span class="ng-phase-badge ${ngPB(p)}">${p}</span>`).join('')}
+      <span class="ng-freq-badge ${ngFB(h.freq)}">${NG_FL[h.freq]}</span>
     </div>
   </div>
 </div>`;
@@ -2590,8 +2593,8 @@ function renderNgDetail(hook){
   el.innerHTML=`<div class="ng-detail-content">
   <div class="ng-detail-name">${hook.name}</div>
   <div class="ng-detail-badges">
-    ${hook.phase.map(p=>`<span class="ng-phase-badge" style="background:${NG_PC[p]}18;color:${NG_PC[p]};border-color:${NG_PC[p]}40">${p}</span>`).join('')}
-    <span class="ng-freq-badge" style="background:${NG_FC[hook.freq]}18;color:${NG_FC[hook.freq]};border-color:${NG_FC[hook.freq]}40">${NG_FL[hook.freq]}</span>
+    ${hook.phase.map(p=>`<span class="ng-phase-badge ${ngPB(p)}">${p}</span>`).join('')}
+    <span class="ng-freq-badge ${ngFB(hook.freq)}">${NG_FL[hook.freq]}</span>
     ${hook.iface?`<span class="ng-iface-badge">implements ${hook.iface}</span>`:''}
   </div>
   <div class="ng-detail-desc">${hook.desc}</div>
@@ -2654,8 +2657,8 @@ function renderNgHooks(){
   el.innerHTML=hooks.map(h=>`<div class="ng-hook-card" onclick="ngSelectHook('${h.id}');document.getElementById('ng-detail').scrollIntoView({behavior:'smooth',block:'nearest'})">
   <div class="rxjs-op-top">
     <span class="rxjs-op-name">${h.name}</span>
-    ${h.phase.map(p=>`<span class="ng-phase-badge" style="background:${NG_PC[p]}18;color:${NG_PC[p]};border-color:${NG_PC[p]}40">${p}</span>`).join('')}
-    <span class="ng-freq-badge" style="background:${NG_FC[h.freq]}18;color:${NG_FC[h.freq]};border-color:${NG_FC[h.freq]}40">${NG_FL[h.freq]}</span>
+    ${h.phase.map(p=>`<span class="ng-phase-badge ${ngPB(p)}">${p}</span>`).join('')}
+    <span class="ng-freq-badge ${ngFB(h.freq)}">${NG_FL[h.freq]}</span>
   </div>
   <div class="rxjs-op-summary">${escHtml(h.desc)}</div>
   <div class="rxjs-op-when">

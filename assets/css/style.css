@@ -28,8 +28,8 @@
       --border: rgba(0,0,0,0.08);
       --border-strong: rgba(0,0,0,0.15);
       --text: #1e293b;
-      --text-dim: #64748b;
-      --text-muted: #94a3b8;
+      --text-dim: #475569;
+      --text-muted: #64748b;
     }
 
     [data-theme="matrix"] {
@@ -43,7 +43,8 @@
       --accent2: #39ff14;
       --accent3: #00cc33;
       --text: #a8ffb0;
-      --text-dim: #2d7a3a;
+      --text-dim: #4ade80;
+      --text-muted: #22c55e;
       --mono: 'JetBrains Mono', monospace;
     }
 
@@ -73,7 +74,8 @@
       --accent3: #ff79c6;
       --success: #50fa7b;
       --text: #f8f8f2;
-      --text-dim: #6272a4;
+      --text-dim: #8292c4;
+      --text-muted: #6272a4;
     }
 
     [data-theme="kitty"] {
@@ -91,8 +93,8 @@
       --warning: #d97706;
       --danger: #dc2626;
       --text: #3b0f2c;
-      --text-dim: #9c4d73;
-      --text-muted: #c9a0b8;
+      --text-dim: #7c3060;
+      --text-muted: #9c4d73;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1613,6 +1615,43 @@
     .ng-mistake-wrong { font-size: 0.8rem; color: var(--danger); font-weight: 500; line-height: 1.4; }
     .ng-mistake-right { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
     .ng-mistake-right code { font-family: var(--mono); font-size: 0.7rem; background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 3px; color: var(--accent2); }
+
+    /* Angular badge color classes — theme-safe (no hardcoded inline colors) */
+    .ng-pb-create  { background: rgba(34,211,238,0.1);  color: #22d3ee; border-color: rgba(34,211,238,0.28);  }
+    .ng-pb-update  { background: rgba(251,191,36,0.1);  color: #fbbf24; border-color: rgba(251,191,36,0.28);  }
+    .ng-pb-destroy { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.28); }
+    .ng-fb-once           { background: rgba(52,211,153,0.1);  color: #34d399; border-color: rgba(52,211,153,0.28);  }
+    .ng-fb-every-cd       { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.28); }
+    .ng-fb-on-input-change { background: rgba(251,191,36,0.1); color: #fbbf24; border-color: rgba(251,191,36,0.28); }
+
+    /* Light + Kitty: use darker/more saturated colors for readable contrast */
+    [data-theme="light"] .ng-pb-create,
+    [data-theme="kitty"] .ng-pb-create  { color: #0891b2; background: rgba(8,145,178,0.08);   border-color: rgba(8,145,178,0.22);  }
+    [data-theme="light"] .ng-pb-update,
+    [data-theme="kitty"] .ng-pb-update  { color: #b45309; background: rgba(180,83,9,0.08);    border-color: rgba(180,83,9,0.22);   }
+    [data-theme="light"] .ng-pb-destroy,
+    [data-theme="kitty"] .ng-pb-destroy { color: #dc2626; background: rgba(220,38,38,0.07);   border-color: rgba(220,38,38,0.2);   }
+    [data-theme="light"] .ng-fb-once,
+    [data-theme="kitty"] .ng-fb-once    { color: #15803d; background: rgba(21,128,61,0.07);   border-color: rgba(21,128,61,0.2);   }
+    [data-theme="light"] .ng-fb-every-cd,
+    [data-theme="kitty"] .ng-fb-every-cd { color: #dc2626; background: rgba(220,38,38,0.07);  border-color: rgba(220,38,38,0.2);   }
+    [data-theme="light"] .ng-fb-on-input-change,
+    [data-theme="kitty"] .ng-fb-on-input-change { color: #b45309; background: rgba(180,83,9,0.07); border-color: rgba(180,83,9,0.2); }
+
+    /* code inline: theme-safe backgrounds */
+    .ng-concept-card code, .ng-mistake-right code {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--accent2);
+    }
+    [data-theme="light"] .ng-concept-card code,
+    [data-theme="light"] .ng-mistake-right code,
+    [data-theme="kitty"] .ng-concept-card code,
+    [data-theme="kitty"] .ng-mistake-right code { color: var(--accent); }
 
     /* Mobile responsive */
     @media (max-width: 640px) {
