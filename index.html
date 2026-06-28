@@ -210,6 +210,13 @@
         >
           <span class="nav-icon">🌐</span> HTTP Status
         </div>
+        <div
+          class="nav-item"
+          data-tab="rxjs-tab"
+          onclick="openTab(event, 'rxjs-tab')"
+        >
+          <span class="nav-icon">⚡</span> RxJS Reference
+        </div>
 
         <div class="nav-section-label">อ้างอิงคำสั่ง</div>
         <div
@@ -2271,6 +2278,350 @@
             allowfullscreen
           ></iframe>
         </div>
+
+        <!-- RXJS REFERENCE -->
+        <div id="rxjs-tab" class="tab-content">
+          <!-- Intro -->
+          <div class="rxjs-intro">
+            <div class="rxjs-intro-text">
+              <div class="rxjs-intro-title">RxJS คืออะไร?</div>
+              <div class="rxjs-intro-desc">Library สำหรับจัดการ <strong>async data</strong> ด้วยแนวคิด <strong>stream</strong> (Observable) — ข้อมูลไหลมาเรื่อยๆ แทนที่จะมีแค่ครั้งเดียว เหมาะมากสำหรับ HTTP, events, state, และ real-time data</div>
+              <div class="rxjs-intro-analogy">🚰 Array = น้ำในขวด (มีอยู่แล้ว) &nbsp;|&nbsp; Observable = ก๊อกน้ำ (ไหลมาเรื่อยๆ)</div>
+            </div>
+            <div class="rxjs-usecases">
+              <div class="rxjs-usecase"><span class="rxjs-uc-icon">🔍</span><span>Search autocomplete</span></div>
+              <div class="rxjs-usecase"><span class="rxjs-uc-icon">📡</span><span>Real-time / WebSocket</span></div>
+              <div class="rxjs-usecase"><span class="rxjs-uc-icon">🌐</span><span>HTTP + cancel request</span></div>
+              <div class="rxjs-usecase"><span class="rxjs-uc-icon">📦</span><span>State management</span></div>
+            </div>
+          </div>
+
+          <!-- Core Concepts -->
+          <div class="rxjs-section">
+            <div class="rxjs-section-title">แนวคิดหลัก (Core Concepts)</div>
+            <div class="rxjs-concepts-grid">
+              <div class="rxjs-concept-card" style="border-color:#a78bfa44">
+                <div class="rxjs-concept-name" style="color:#a78bfa">Observable</div>
+                <div class="rxjs-concept-desc">แหล่งข้อมูลที่ emit ค่าได้ — cold (ใหม่ทุก subscribe) หรือ hot (share กัน)</div>
+                <div class="rxjs-concept-eg">🚰 ก๊อกน้ำ</div>
+              </div>
+              <div class="rxjs-concept-card" style="border-color:#34d39944">
+                <div class="rxjs-concept-name" style="color:#34d399">Observer</div>
+                <div class="rxjs-concept-desc">ผู้รับค่า — มี 3 callback: <code>next</code>, <code>error</code>, <code>complete</code></div>
+                <div class="rxjs-concept-eg">🥤 แก้วน้ำ</div>
+              </div>
+              <div class="rxjs-concept-card" style="border-color:#60a5fa44">
+                <div class="rxjs-concept-name" style="color:#60a5fa">Subscription</div>
+                <div class="rxjs-concept-desc">การเชื่อมต่อ Observable กับ Observer — เก็บไว้เพื่อ unsubscribe</div>
+                <div class="rxjs-concept-eg">🔌 เปิดก๊อก</div>
+              </div>
+              <div class="rxjs-concept-card" style="border-color:#fbbf2444">
+                <div class="rxjs-concept-name" style="color:#fbbf24">Operator</div>
+                <div class="rxjs-concept-desc">ฟังก์ชันใน <code>pipe()</code> สำหรับแปลง, กรอง, รวม stream</div>
+                <div class="rxjs-concept-eg">⚙️ ตัวกรองน้ำ</div>
+              </div>
+              <div class="rxjs-concept-card" style="border-color:#f472b644">
+                <div class="rxjs-concept-name" style="color:#f472b6">Subject</div>
+                <div class="rxjs-concept-desc">Observable + Observer ในตัวเดียว — ส่งค่าเข้า stream จากภายนอกได้</div>
+                <div class="rxjs-concept-eg">🎛️ ก๊อกที่บังคับได้</div>
+              </div>
+            </div>
+            <!-- Flow diagram -->
+            <div class="rxjs-flow">
+              <div class="rxjs-flow-box rxjs-flow-src">Observable<br><span>source$</span></div>
+              <div class="rxjs-flow-arrow">→</div>
+              <div class="rxjs-flow-box rxjs-flow-pipe">pipe(<br><span>op1, op2…</span><br>)</div>
+              <div class="rxjs-flow-arrow">→</div>
+              <div class="rxjs-flow-box rxjs-flow-sub">subscribe(<br><span>next, error,<br>complete</span><br>)</div>
+            </div>
+          </div>
+
+          <!-- Marble Diagrams -->
+          <div class="rxjs-section">
+            <div class="rxjs-section-title">Marble Diagrams — มองภาพการไหล</div>
+            <div class="rxjs-marbles-grid">
+
+              <div class="rxjs-marble">
+                <div class="rxjs-marble-title">map(x =&gt; x * 2)</div>
+                <div class="rxjs-marble-label">Source</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:12%">1</div>
+                  <div class="rxjs-mdot mc2" style="left:38%">2</div>
+                  <div class="rxjs-mdot mc3" style="left:64%">3</div>
+                  <div class="rxjs-mend" style="left:88%">|</div>
+                </div>
+                <div class="rxjs-marble-op">map(x =&gt; x * 2)</div>
+                <div class="rxjs-marble-label">Output</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:12%">2</div>
+                  <div class="rxjs-mdot mc2" style="left:38%">4</div>
+                  <div class="rxjs-mdot mc3" style="left:64%">6</div>
+                  <div class="rxjs-mend" style="left:88%">|</div>
+                </div>
+              </div>
+
+              <div class="rxjs-marble">
+                <div class="rxjs-marble-title">filter(x =&gt; x &gt; 2)</div>
+                <div class="rxjs-marble-label">Source</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:10%">1</div>
+                  <div class="rxjs-mdot mc2" style="left:28%">2</div>
+                  <div class="rxjs-mdot mc3" style="left:46%">3</div>
+                  <div class="rxjs-mdot mc4" style="left:64%">4</div>
+                  <div class="rxjs-mend" style="left:84%">|</div>
+                </div>
+                <div class="rxjs-marble-op">filter(x =&gt; x &gt; 2)</div>
+                <div class="rxjs-marble-label">Output</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc3" style="left:46%">3</div>
+                  <div class="rxjs-mdot mc4" style="left:64%">4</div>
+                  <div class="rxjs-mend" style="left:84%">|</div>
+                </div>
+              </div>
+
+              <div class="rxjs-marble">
+                <div class="rxjs-marble-title">debounceTime(300ms)</div>
+                <div class="rxjs-marble-label">Source (พิมพ์เร็ว)</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:8%">a</div>
+                  <div class="rxjs-mdot mc1" style="left:18%">ab</div>
+                  <div class="rxjs-mdot mc1" style="left:28%">abc</div>
+                  <div class="rxjs-mdot mc2" style="left:55%">rx</div>
+                  <div class="rxjs-mdot mc2" style="left:65%">rxj</div>
+                  <div class="rxjs-mend" style="left:88%">|</div>
+                </div>
+                <div class="rxjs-marble-op">debounceTime(300ms)</div>
+                <div class="rxjs-marble-label">Output (หลังหยุดพิมพ์)</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:42%">abc</div>
+                  <div class="rxjs-mdot mc2" style="left:79%">rxj</div>
+                  <div class="rxjs-mend" style="left:88%">|</div>
+                </div>
+              </div>
+
+              <div class="rxjs-marble">
+                <div class="rxjs-marble-title">take(2)</div>
+                <div class="rxjs-marble-label">Source</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:15%">A</div>
+                  <div class="rxjs-mdot mc2" style="left:38%">B</div>
+                  <div class="rxjs-mdot mc3" style="left:60%">C</div>
+                  <div class="rxjs-mdot mc4" style="left:80%">D</div>
+                </div>
+                <div class="rxjs-marble-op">take(2)</div>
+                <div class="rxjs-marble-label">Output (รับแค่ 2 ตัว)</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:15%">A</div>
+                  <div class="rxjs-mdot mc2" style="left:38%">B</div>
+                  <div class="rxjs-mend" style="left:52%">|</div>
+                </div>
+              </div>
+
+              <div class="rxjs-marble">
+                <div class="rxjs-marble-title">switchMap (cancel เมื่อมีใหม่)</div>
+                <div class="rxjs-marble-label">Source (clicks)</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:10%">A</div>
+                  <div class="rxjs-mdot mc2" style="left:45%">B</div>
+                  <div class="rxjs-mend" style="left:88%">|</div>
+                </div>
+                <div class="rxjs-marble-op">switchMap(click =&gt; http$)</div>
+                <div class="rxjs-marble-label">Output (B cancel request ของ A)</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:10%" style="opacity:0.3">A</div>
+                  <div class="rxjs-mdot rxjs-mdot-x" style="left:40%">✕</div>
+                  <div class="rxjs-mdot mc2" style="left:70%">B</div>
+                  <div class="rxjs-mend" style="left:88%">|</div>
+                </div>
+              </div>
+
+              <div class="rxjs-marble">
+                <div class="rxjs-marble-title">combineLatest (รวม 2 streams)</div>
+                <div class="rxjs-marble-label">Stream A</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc1" style="left:15%">a1</div>
+                  <div class="rxjs-mdot mc1" style="left:55%">a2</div>
+                </div>
+                <div class="rxjs-marble-label">Stream B</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc3" style="left:35%">b1</div>
+                  <div class="rxjs-mdot mc3" style="left:72%">b2</div>
+                </div>
+                <div class="rxjs-marble-op">combineLatest([A, B])</div>
+                <div class="rxjs-marble-label">Output</div>
+                <div class="rxjs-marble-timeline">
+                  <div class="rxjs-marble-track"></div>
+                  <div class="rxjs-mdot mc4" style="left:35%">a1,b1</div>
+                  <div class="rxjs-mdot mc4" style="left:55%">a2,b1</div>
+                  <div class="rxjs-mdot mc4" style="left:72%">a2,b2</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Comparison Table -->
+          <div class="rxjs-section">
+            <div class="rxjs-section-title">⚡ switchMap vs mergeMap vs concatMap vs exhaustMap</div>
+            <div class="rxjs-compare-wrap">
+              <table class="rxjs-compare-table">
+                <thead>
+                  <tr>
+                    <th>Operator</th>
+                    <th>Inner concurrent</th>
+                    <th>ถ้ามีค่าใหม่ระหว่างรัน</th>
+                    <th>Order</th>
+                    <th>ใช้เมื่อ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><button class="rxjs-rel-btn" onclick="rxjsJumpTo('switchMap')">switchMap</button></td>
+                    <td><span class="rxjs-badge rxjs-badge-danger">cancel ทันที</span></td>
+                    <td>cancel inner เดิม เริ่มใหม่</td>
+                    <td>ไม่รับประกัน</td>
+                    <td>Search, route change</td>
+                  </tr>
+                  <tr>
+                    <td><button class="rxjs-rel-btn" onclick="rxjsJumpTo('mergeMap')">mergeMap</button></td>
+                    <td><span class="rxjs-badge rxjs-badge-success">รันพร้อมกันหมด</span></td>
+                    <td>รัน inner ใหม่เพิ่ม ของเก่ายังรัน</td>
+                    <td>ไม่รับประกัน</td>
+                    <td>Upload ไฟล์หลายไฟล์</td>
+                  </tr>
+                  <tr>
+                    <td><button class="rxjs-rel-btn" onclick="rxjsJumpTo('concatMap')">concatMap</button></td>
+                    <td><span class="rxjs-badge rxjs-badge-warning">ทีละ 1</span></td>
+                    <td>queue รอ inner เดิมเสร็จก่อน</td>
+                    <td>รับประกัน</td>
+                    <td>Sequential API, save ทีละรายการ</td>
+                  </tr>
+                  <tr>
+                    <td><button class="rxjs-rel-btn" onclick="rxjsJumpTo('exhaustMap')">exhaustMap</button></td>
+                    <td><span class="rxjs-badge rxjs-badge-warning">ทีละ 1</span></td>
+                    <td>ignore ค่าใหม่จน inner เสร็จ</td>
+                    <td>รับประกัน</td>
+                    <td>Submit button, login</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recipes -->
+          <div class="rxjs-section">
+            <div class="rxjs-section-title">🍳 Real-World Recipes</div>
+            <div class="rxjs-recipes-grid">
+              <div class="rxjs-recipe">
+                <div class="rxjs-recipe-title">Search Autocomplete</div>
+                <div class="rxjs-recipe-desc">รอหยุดพิมพ์ 300ms → cancel request เก่า → search ใหม่</div>
+                <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>fromEvent(searchInput, 'input').pipe(
+  map(e => e.target.value),
+  debounceTime(300),
+  distinctUntilChanged(),
+  switchMap(term =>
+    term ? http.get(`/api/search?q=${term}`) : EMPTY
+  )
+).subscribe(results => render(results));</code></pre></div>
+              </div>
+              <div class="rxjs-recipe">
+                <div class="rxjs-recipe-title">Parallel API Calls</div>
+                <div class="rxjs-recipe-desc">โหลดหลาย API พร้อมกัน รอทุกตัวเสร็จ</div>
+                <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>forkJoin({
+  user: http.get('/api/user'),
+  posts: http.get('/api/posts'),
+  settings: http.get('/api/settings')
+}).subscribe(({ user, posts, settings }) =>
+  renderPage(user, posts, settings)
+);</code></pre></div>
+              </div>
+              <div class="rxjs-recipe">
+                <div class="rxjs-recipe-title">HTTP Retry + Timeout</div>
+                <div class="rxjs-recipe-desc">retry 3 ครั้ง, หมดเวลา 5 วินาที, fallback gracefully</div>
+                <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>http.get('/api/data').pipe(
+  timeout(5000),
+  retry(3),
+  catchError(err => of({ error: err.message })),
+  finalize(() => hideSpinner())
+).subscribe(data => render(data));</code></pre></div>
+              </div>
+              <div class="rxjs-recipe">
+                <div class="rxjs-recipe-title">Angular Component Cleanup</div>
+                <div class="rxjs-recipe-desc">หยุด subscription อัตโนมัติตอน destroy</div>
+                <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>class MyComponent implements OnDestroy {
+  private destroy$ = new Subject&lt;void&gt;();
+
+  ngOnInit() {
+    interval(1000).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(tick => update(tick));
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+}</code></pre></div>
+              </div>
+              <div class="rxjs-recipe">
+                <div class="rxjs-recipe-title">Cache HTTP Response</div>
+                <div class="rxjs-recipe-desc">โหลดครั้งเดียว subscriber ใหม่ได้ cached value</div>
+                <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>const config$ = http.get('/api/config').pipe(
+  shareReplay({ bufferSize: 1, refCount: true })
+);
+
+// HTTP call เกิดครั้งเดียว
+config$.subscribe(renderHeader);
+config$.subscribe(renderSidebar);</code></pre></div>
+              </div>
+              <div class="rxjs-recipe">
+                <div class="rxjs-recipe-title">Simple State Store</div>
+                <div class="rxjs-recipe-desc">BehaviorSubject เป็น lightweight state</div>
+                <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>class Store {
+  private state$ = new BehaviorSubject({ count: 0 });
+
+  get count$() {
+    return this.state$.pipe(
+      map(s => s.count),
+      distinctUntilChanged()
+    );
+  }
+
+  increment() {
+    const s = this.state$.getValue();
+    this.state$.next({ ...s, count: s.count + 1 });
+  }
+}
+
+store.count$.subscribe(n => countEl.textContent = n);</code></pre></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Operator Explorer -->
+          <div class="rxjs-section">
+            <div class="section-header">
+              <div class="rxjs-section-title" style="margin-bottom:0">Operator Explorer</div>
+              <button class="btn btn-danger" onclick="clearRxjs()">✖ ล้างการค้นหา</button>
+            </div>
+            <input type="text" id="rxjs-search" placeholder="🔍 ค้นหา... เช่น switchMap, cancel, search, debounce" oninput="rxjsSearch(this.value)" style="margin-bottom:12px" />
+            <div id="rxjs-cat-filter" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"></div>
+            <div id="rxjs-op-list"></div>
+          </div>
+        </div>
+
       </div>
       <!-- content-area -->
     </main>
