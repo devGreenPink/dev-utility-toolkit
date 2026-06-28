@@ -92,7 +92,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.7</div>
+            <div class="app-version">v1.8</div>
           </div>
         </div>
       </div>
@@ -216,6 +216,13 @@
           onclick="openTab(event, 'rxjs-tab')"
         >
           <span class="nav-icon">⚡</span> RxJS Reference
+        </div>
+        <div
+          class="nav-item"
+          data-tab="angular-tab"
+          onclick="openTab(event, 'angular-tab')"
+        >
+          <span class="nav-icon">🔄</span> Angular Lifecycle
         </div>
 
         <div class="nav-section-label">อ้างอิงคำสั่ง</div>
@@ -2696,6 +2703,173 @@ store.count$.subscribe(n => countEl.textContent = n);</code></pre></div>
 
           </div><!-- /rxjs-acc-group -->
         </div>
+
+        <!-- ANGULAR LIFECYCLE -->
+        <div id="angular-tab" class="tab-content">
+          <div class="rxjs-topbar">
+            <div class="rxjs-topbar-left">
+              <span class="rxjs-topbar-badge">🔄</span>
+              <div>
+                <div class="rxjs-topbar-title">Angular Lifecycle Hooks</div>
+                <div class="rxjs-topbar-sub">9 Hooks · Interactive Simulator · คำอธิบายภาษาไทย</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lifecycle Simulator -->
+          <div class="ng-simulator">
+            <div class="ng-sim-buttons">
+              <span class="ng-sim-label">▶ Simulate:</span>
+              <button class="ng-sim-btn" data-scenario="create" onclick="ngSimulate('create')">🟢 สร้าง Component</button>
+              <button class="ng-sim-btn" data-scenario="update" onclick="ngSimulate('update')">🟡 เปลี่ยน @Input</button>
+              <button class="ng-sim-btn" data-scenario="cd" onclick="ngSimulate('cd')">🔵 CD Cycle</button>
+              <button class="ng-sim-btn" data-scenario="destroy" onclick="ngSimulate('destroy')">🔴 Destroy</button>
+              <button class="ng-sim-btn ng-sim-reset-btn" onclick="ngReset()">✕ Reset</button>
+            </div>
+            <div class="ng-sim-body">
+              <div class="ng-timeline-wrap">
+                <div id="ng-timeline"></div>
+              </div>
+              <div id="ng-detail" class="ng-detail-panel"></div>
+            </div>
+          </div>
+
+          <!-- Hook Reference Cards -->
+          <div class="ng-hooks-section">
+            <div class="ng-hooks-header">
+              <span class="ng-hooks-title">📋 Hook Reference</span>
+              <div class="ng-hooks-search-row">
+                <input type="text" class="ng-search-input" placeholder="🔍 ค้นหา hook..." oninput="ngSearch(this.value)" />
+                <span class="rxjs-count-badge" id="ng-count">9 hooks</span>
+              </div>
+            </div>
+            <div id="ng-hook-list" class="rxjs-op-grid"></div>
+          </div>
+
+          <!-- Accordions -->
+          <div class="rxjs-acc-group">
+
+            <!-- Key Concepts -->
+            <div class="rxjs-acc">
+              <button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
+                <span>📖 Key Concepts — Change Detection, Content vs View, @Input</span>
+                <span class="rxjs-acc-chevron">›</span>
+              </button>
+              <div class="rxjs-acc-bd" style="display:none">
+                <div class="ng-concepts-grid">
+                  <div class="ng-concept-card">
+                    <div class="ng-concept-title" style="color:#22d3ee">⚡ Change Detection (CD)</div>
+                    <div class="ng-concept-desc">Angular ตรวจ state ของ app ว่ามีอะไรเปลี่ยนไหม แล้ว update DOM ให้ตรงกัน CD run ทุกครั้งที่มี event (click, HTTP response, setTimeout, Observable emit)</div>
+                    <div class="ng-concept-tip">hooks ที่มี "ทุก CD cycle" = run บ่อยมาก — ระวัง performance</div>
+                  </div>
+                  <div class="ng-concept-card">
+                    <div class="ng-concept-title" style="color:#f472b6">📦 Content vs View</div>
+                    <div class="ng-concept-desc"><strong>Content</strong> = HTML ที่ parent ส่งมาผ่าน <code>&lt;ng-content&gt;</code>&nbsp; <strong>View</strong> = template ของ component เอง และ child components</div>
+                    <div class="ng-concept-tip">ngAfterContent* → Content พร้อม &nbsp;|&nbsp; ngAfterView* → View + children พร้อม</div>
+                  </div>
+                  <div class="ng-concept-card">
+                    <div class="ng-concept-title" style="color:#fbbf24">🔗 @Input binding</div>
+                    <div class="ng-concept-desc">ค่าที่ parent ส่งเข้า component ผ่าน <code>[prop]="value"</code> — Angular ตรวจ <em>reference change</em> เท่านั้น object/array เดิมที่ mutate ภายในจะไม่ trigger ngOnChanges</div>
+                    <div class="ng-concept-tip">ใช้ immutable update (spread) เพื่อให้ ngOnChanges fire: <code>[...arr, item]</code></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Common Patterns -->
+            <div class="rxjs-acc">
+              <button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
+                <span>🍳 Common Patterns — ngOnInit, ngOnDestroy, ViewChild, ngOnChanges</span>
+                <span class="rxjs-acc-chevron">›</span>
+              </button>
+              <div class="rxjs-acc-bd" style="display:none">
+                <div class="rxjs-recipes-grid">
+                  <div class="rxjs-recipe">
+                    <div class="rxjs-recipe-title">Fetch Data ใน ngOnInit</div>
+                    <div class="rxjs-recipe-desc">ไม่ใช่ constructor — @Input พร้อมแล้ว, testable กว่า</div>
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>ngOnInit(): void {
+  this.userId = this.route.snapshot.params['id'];
+  this.user$ = this.userService.getUser(this.userId);
+}</code></pre></div>
+                  </div>
+                  <div class="rxjs-recipe">
+                    <div class="rxjs-recipe-title">Cleanup ด้วย takeUntil (ngOnDestroy)</div>
+                    <div class="rxjs-recipe-desc">Pattern มาตรฐาน — unsubscribe ทุก Observable ใน ngOnDestroy</div>
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>private destroy$ = new Subject&lt;void&gt;();
+
+ngOnInit(): void {
+  this.data$.pipe(
+    takeUntil(this.destroy$)
+  ).subscribe(d =&gt; this.data = d);
+}
+
+ngOnDestroy(): void {
+  this.destroy$.next();
+  this.destroy$.complete();
+}</code></pre></div>
+                  </div>
+                  <div class="rxjs-recipe">
+                    <div class="rxjs-recipe-title">ViewChild ใน ngAfterViewInit</div>
+                    <div class="rxjs-recipe-desc">เข้าถึง DOM / child component ได้ที่นี่เท่านั้น — ไม่ใช่ ngOnInit</div>
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>@ViewChild('canvas') canvasRef!: ElementRef;
+
+ngAfterViewInit(): void {
+  // ✓ DOM ready
+  const ctx = this.canvasRef.nativeElement;
+  this.chart = new Chart(ctx, this.config);
+}</code></pre></div>
+                  </div>
+                  <div class="rxjs-recipe">
+                    <div class="rxjs-recipe-title">React ต่อ @Input Change</div>
+                    <div class="rxjs-recipe-desc">ใช้ ngOnChanges — แยก firstChange กับ update ออกจากกัน</div>
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>ngOnChanges(changes: SimpleChanges): void {
+  if (changes['config'] &amp;&amp; !changes['config'].firstChange) {
+    this.applyConfig(changes['config'].currentValue);
+  }
+}</code></pre></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Common Mistakes -->
+            <div class="rxjs-acc">
+              <button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
+                <span>⚠️ Common Mistakes — สิ่งที่ผิดพลาดบ่อย</span>
+                <span class="rxjs-acc-chevron">›</span>
+              </button>
+              <div class="rxjs-acc-bd" style="display:none">
+                <div class="ng-mistakes-grid">
+                  <div class="ng-mistake">
+                    <div class="ng-mistake-wrong">❌ เข้าถึง @ViewChild ใน ngOnInit</div>
+                    <div class="ng-mistake-right">✓ ย้ายไป ngAfterViewInit — DOM ยังไม่พร้อมใน ngOnInit</div>
+                  </div>
+                  <div class="ng-mistake">
+                    <div class="ng-mistake-wrong">❌ HTTP call ใน constructor</div>
+                    <div class="ng-mistake-right">✓ ย้ายไป ngOnInit — @Input พร้อม + testable กว่า</div>
+                  </div>
+                  <div class="ng-mistake">
+                    <div class="ng-mistake-wrong">❌ Heavy logic ใน ngDoCheck / ngAfterViewChecked</div>
+                    <div class="ng-mistake-right">✓ hooks เหล่านี้ run ทุก CD cycle — ใส่แค่ O(1) operation</div>
+                  </div>
+                  <div class="ng-mistake">
+                    <div class="ng-mistake-wrong">❌ ลืม unsubscribe ใน ngOnDestroy</div>
+                    <div class="ng-mistake-right">✓ ใช้ takeUntil(destroy$) หรือ AsyncPipe — ป้องกัน memory leak</div>
+                  </div>
+                  <div class="ng-mistake">
+                    <div class="ng-mistake-wrong">❌ detectChanges() ใน ngAfterViewChecked</div>
+                    <div class="ng-mistake-right">✓ Infinite loop: CD → hook → detectChanges → CD → ...</div>
+                  </div>
+                  <div class="ng-mistake">
+                    <div class="ng-mistake-wrong">❌ Mutate @Input object/array โดยตรง แล้วรอ ngOnChanges fire</div>
+                    <div class="ng-mistake-right">✓ ใช้ immutable: <code>[...arr, item]</code> หรือ <code>{...obj, key: val}</code></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /rxjs-acc-group -->
+        </div><!-- /angular-tab -->
 
       </div>
       <!-- content-area -->
