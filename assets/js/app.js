@@ -2475,6 +2475,8 @@ function clearRxjs(){
 }
 
 function rxjsUcClick(q){
+  rxjsCatActive='all';
+  renderRxjsCats();
   const inp=document.getElementById('rxjs-search');
   if(inp)inp.value=q;
   rxjsSearch(q);

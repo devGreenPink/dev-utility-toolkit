@@ -2299,6 +2299,13 @@
             <input type="text" id="rxjs-search" class="rxjs-search-input"
               placeholder="🔍 ค้นหา operator... เช่น cancel, state, debounce, async"
               oninput="rxjsSearch(this.value)" />
+            <div class="rxjs-uc-row">
+              <span class="rxjs-uc-label">ลองดู:</span>
+              <button class="rxjs-uc-tag" onclick="rxjsUcClick('debounce')">🔍 Search autocomplete</button>
+              <button class="rxjs-uc-tag" onclick="rxjsUcClick('subject')">📡 Real-time</button>
+              <button class="rxjs-uc-tag" onclick="rxjsUcClick('switchMap')">🌐 HTTP + cancel</button>
+              <button class="rxjs-uc-tag" onclick="rxjsUcClick('behavior')">📦 State</button>
+            </div>
             <div class="rxjs-filter-row">
               <div id="rxjs-cat-filter" class="rxjs-chips"></div>
               <span class="rxjs-count-badge" id="rxjs-count">57 operators</span>
@@ -2318,18 +2325,8 @@
                 <span class="rxjs-acc-chevron">›</span>
               </button>
               <div class="rxjs-acc-bd" style="display:none">
-                <div class="rxjs-intro-row">
-                  <div class="rxjs-intro-text">
-                    <p class="rxjs-intro-p">Library สำหรับจัดการ <strong>async data</strong> ด้วยแนวคิด <strong>stream</strong> (Observable) — ข้อมูลไหลมาเรื่อยๆ แทนที่จะมีแค่ครั้งเดียว เหมาะสำหรับ HTTP, DOM events, state management, และ real-time data</p>
-                    <div class="rxjs-analogy">🚰 <strong>Array</strong> = น้ำในขวด (มีอยู่แล้ว) &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Observable</strong> = ก๊อกน้ำ (ไหลมาเรื่อยๆ)</div>
-                  </div>
-                  <div class="rxjs-uc-list">
-                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('debounce')">🔍 Search autocomplete <span class="rxjs-uc-hint">→ ดู operators</span></div>
-                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('subject')">📡 Real-time / WebSocket <span class="rxjs-uc-hint">→ ดู operators</span></div>
-                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('switchMap')">🌐 HTTP + cancel request <span class="rxjs-uc-hint">→ ดู operators</span></div>
-                    <div class="rxjs-uc rxjs-uc-btn" onclick="rxjsUcClick('behavior')">📦 State management <span class="rxjs-uc-hint">→ ดู operators</span></div>
-                  </div>
-                </div>
+                <p class="rxjs-intro-p">Library สำหรับจัดการ <strong>async data</strong> ด้วยแนวคิด <strong>stream</strong> (Observable) — ข้อมูลไหลมาเรื่อยๆ แทนที่จะมีแค่ครั้งเดียว เหมาะสำหรับ HTTP, DOM events, state management, และ real-time data</p>
+                <div class="rxjs-analogy">🚰 <strong>Array</strong> = น้ำในขวด (มีอยู่แล้ว) &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Observable</strong> = ก๊อกน้ำ (ไหลมาเรื่อยๆ)</div>
                 <div class="rxjs-concepts-grid">
                   <div class="rxjs-concept" style="border-left-color:#a78bfa">
                     <div class="rxjs-concept-name" style="color:#a78bfa">Observable</div>

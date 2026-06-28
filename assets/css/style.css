@@ -1448,12 +1448,8 @@
     .rxjs-acc-bd { padding: 16px; border-top: 1px solid var(--border); }
 
     /* Intro section */
-    .rxjs-intro-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
-    .rxjs-intro-text { flex: 1; min-width: 240px; }
     .rxjs-intro-p { font-size: 0.84rem; color: var(--text-dim); line-height: 1.7; margin: 0 0 10px; }
-    .rxjs-analogy { font-size: 0.78rem; color: var(--text-muted); background: var(--surface2); border-radius: var(--radius-sm); padding: 8px 12px; font-family: var(--mono); }
-    .rxjs-uc-list { display: flex; flex-direction: column; gap: 6px; }
-    .rxjs-uc { font-size: 0.8rem; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; }
+    .rxjs-analogy { font-size: 0.78rem; color: var(--text-muted); background: var(--surface2); border-radius: var(--radius-sm); padding: 8px 12px; font-family: var(--mono); margin-bottom: 14px; }
 
     /* Core concepts */
     .rxjs-concepts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-bottom: 14px; }
@@ -1463,11 +1459,11 @@
     .rxjs-concept-eg { font-size: 0.72rem; color: var(--text-muted); }
     .rxjs-concept code { font-family: var(--mono); font-size: 0.72rem; background: var(--surface); padding: 1px 4px; border-radius: 3px; }
 
-    /* Use case clickable */
-    .rxjs-uc-btn { cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
-    .rxjs-uc-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
-    .rxjs-uc-hint { font-size: 0.68rem; color: var(--text-muted); margin-left: 4px; opacity: 0; transition: opacity 0.15s; }
-    .rxjs-uc-btn:hover .rxjs-uc-hint { opacity: 1; color: var(--accent); }
+    /* Use case quick-search row */
+    .rxjs-uc-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .rxjs-uc-label { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+    .rxjs-uc-tag { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.72rem; padding: 3px 10px; border-radius: 99px; cursor: pointer; transition: all 0.15s; font-family: var(--sans); }
+    .rxjs-uc-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
 
     /* Flow diagram */
     .rxjs-flow-diag { display: flex; align-items: center; gap: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 16px; justify-content: center; flex-wrap: wrap; row-gap: 12px; }
