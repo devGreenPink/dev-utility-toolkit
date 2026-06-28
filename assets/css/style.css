@@ -1382,241 +1382,127 @@
     }
 
     /* ── RXJS REFERENCE ── */
-    .rxjs-intro {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-    .rxjs-intro-text { flex: 1; min-width: 260px; }
-    .rxjs-intro-title { font-size: 1rem; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
-    .rxjs-intro-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 10px; }
-    .rxjs-intro-analogy {
-      font-size: 0.78rem; color: var(--text-muted); background: var(--surface2);
-      border-radius: var(--radius-sm); padding: 8px 12px;
-      font-family: var(--mono);
-    }
-    .rxjs-usecases { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
-    .rxjs-usecase {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 8px 12px;
-      font-size: 0.8rem; color: var(--text-dim);
-    }
-    .rxjs-uc-icon { font-size: 1.1rem; }
 
-    .rxjs-section { margin-bottom: 20px; }
-    .rxjs-section-title {
-      font-size: 0.88rem; font-weight: 600; color: var(--text-dim);
-      text-transform: uppercase; letter-spacing: 0.05em;
-      margin-bottom: 12px; padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-    }
+    /* Topbar */
+    .rxjs-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .rxjs-topbar-left { display: flex; align-items: center; gap: 12px; }
+    .rxjs-topbar-badge { font-size: 1.4rem; }
+    .rxjs-topbar-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .rxjs-topbar-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
 
-    .rxjs-concepts-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 10px; margin-bottom: 14px;
-    }
-    .rxjs-concept-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px; border-left-width: 3px;
-    }
-    .rxjs-concept-name { font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; font-family: var(--mono); }
-    .rxjs-concept-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 8px; }
-    .rxjs-concept-eg { font-size: 0.78rem; color: var(--text-muted); }
+    /* Search + filter */
+    .rxjs-search-area { margin-bottom: 16px; }
+    .rxjs-search-input { width: 100%; margin-bottom: 10px; }
+    .rxjs-filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .rxjs-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+    .rxjs-count-badge { font-size: 0.72rem; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; padding: 3px 10px; white-space: nowrap; }
 
-    .rxjs-flow {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px; justify-content: center;
-    }
-    .rxjs-flow-box {
-      background: var(--surface); border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm); padding: 10px 16px;
-      text-align: center; font-family: var(--mono); font-size: 0.8rem;
-      color: var(--text); line-height: 1.5;
-    }
-    .rxjs-flow-box span { font-size: 0.72rem; color: var(--text-dim); }
-    .rxjs-flow-src { border-color: #a78bfa; }
-    .rxjs-flow-pipe { border-color: var(--accent); }
-    .rxjs-flow-sub { border-color: #34d399; }
-    .rxjs-flow-arrow { font-size: 1.2rem; color: var(--text-dim); }
+    /* Operator grid */
+    .rxjs-op-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .rxjs-empty { grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: var(--text-dim); font-size: 0.9rem; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); }
 
-    /* Marble diagrams */
-    .rxjs-marbles-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 12px;
-    }
-    .rxjs-marble {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px;
-    }
-    .rxjs-marble-title {
-      font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
-      color: var(--accent); margin-bottom: 12px;
-    }
-    .rxjs-marble-label {
-      font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px;
-    }
-    .rxjs-marble-timeline {
-      position: relative; height: 34px; margin-bottom: 6px;
-    }
-    .rxjs-marble-track {
-      position: absolute; top: 50%; left: 0; right: 0;
-      height: 2px; background: var(--border-strong);
-      transform: translateY(-50%);
-    }
-    .rxjs-marble-op {
-      font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);
-      text-align: center; padding: 5px; margin: 4px 0;
-      border: 1px dashed var(--border-strong); border-radius: 4px;
-      background: var(--surface2);
-    }
-    .rxjs-mdot {
-      position: absolute; top: 50%; transform: translate(-50%, -50%);
-      width: 26px; height: 26px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.62rem; font-weight: 700; font-family: var(--mono);
-      border: 2px solid; z-index: 1; white-space: nowrap;
-    }
-    .mc1 { background: #6366f122; border-color: #6366f1; color: #6366f1; }
-    .mc2 { background: #34d39922; border-color: #34d399; color: #34d399; }
-    .mc3 { background: #fbbf2422; border-color: #fbbf24; color: #fbbf24; }
-    .mc4 { background: #f472b622; border-color: #f472b6; color: #f472b6; }
-    .rxjs-mdot-x { background: #f8717122; border-color: #f87171; color: #f87171; font-size: 0.75rem; }
-    .rxjs-mend {
-      position: absolute; top: 50%; transform: translate(-50%, -50%);
-      font-size: 1rem; color: var(--text-dim); font-weight: 700;
-    }
-
-    /* Comparison table */
-    .rxjs-compare-wrap { overflow-x: auto; }
-    .rxjs-compare-table {
-      width: 100%; border-collapse: collapse;
-      font-size: 0.82rem; background: var(--surface);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .rxjs-compare-table th {
-      background: var(--surface2); color: var(--text-dim);
-      font-weight: 600; padding: 10px 14px; text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    .rxjs-compare-table td {
-      padding: 10px 14px; border-bottom: 1px solid var(--border);
-      color: var(--text-dim); vertical-align: middle;
-    }
-    .rxjs-compare-table tr:last-child td { border-bottom: none; }
-    .rxjs-badge {
-      display: inline-block; padding: 2px 8px; border-radius: 99px;
-      font-size: 0.72rem; font-weight: 600;
-    }
-    .rxjs-badge-danger { background: #f8717122; color: #f87171; }
-    .rxjs-badge-success { background: #34d39922; color: #34d399; }
-    .rxjs-badge-warning { background: #fbbf2422; color: #fbbf24; }
-
-    /* Recipes */
-    .rxjs-recipes-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 12px;
-    }
-    .rxjs-recipe {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px;
-    }
-    .rxjs-recipe-title {
-      font-size: 0.85rem; font-weight: 600; color: var(--text);
-      margin-bottom: 4px;
-    }
-    .rxjs-recipe-desc {
-      font-size: 0.75rem; color: var(--text-dim); margin-bottom: 10px;
-    }
-
-    /* Operator cards */
-    .rxjs-op-list-grid { display: flex; flex-direction: column; gap: 12px; }
-    .rxjs-op-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px;
-      transition: border-color 0.15s;
-    }
+    /* Operator card */
+    .rxjs-op-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.15s; }
     .rxjs-op-card:hover { border-color: var(--border-strong); }
-    .rxjs-op-header {
-      display: flex; align-items: center; gap: 10px;
-      flex-wrap: wrap; margin-bottom: 8px;
-    }
-    .rxjs-op-name {
-      font-family: var(--mono); font-size: 1rem; font-weight: 700;
-      color: var(--text);
-    }
-    .rxjs-op-cat {
-      font-size: 0.68rem; font-weight: 600; padding: 2px 8px;
-      border-radius: 99px; border: 1px solid;
-    }
-    .rxjs-op-summary {
-      font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px;
-      line-height: 1.6;
-    }
-    .rxjs-op-when { margin-bottom: 10px; }
-    .rxjs-when-title {
-      font-size: 0.72rem; font-weight: 600; color: var(--success);
-      margin-bottom: 4px;
-    }
-    .rxjs-when-item {
-      font-size: 0.78rem; color: var(--text-dim); line-height: 1.6;
-    }
-    .rxjs-avoid-item { color: #f8717199 !important; }
-    .rxjs-op-sig {
-      background: var(--surface2); border-radius: var(--radius-sm);
-      padding: 8px 12px; margin-bottom: 10px;
-      display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap;
-    }
-    .rxjs-sig-lbl {
-      font-size: 0.65rem; font-weight: 700; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.06em;
-      padding-top: 2px; flex-shrink: 0;
-    }
-    .rxjs-op-sig code {
-      font-family: var(--mono); font-size: 0.75rem; color: var(--accent2);
-      white-space: pre-wrap; word-break: break-all;
-    }
-    .rxjs-op-code-wrap {
-      position: relative; background: var(--surface2);
-      border-radius: var(--radius-sm); margin-bottom: 10px; overflow: hidden;
-    }
-    .rxjs-copy-btn {
-      position: absolute; top: 8px; right: 8px;
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--text-dim); font-size: 0.72rem; padding: 3px 8px;
-      border-radius: var(--radius-sm); cursor: pointer; z-index: 1;
-      transition: all 0.15s;
-    }
+    .rxjs-op-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .rxjs-op-name { font-family: var(--mono); font-size: 0.95rem; font-weight: 700; color: var(--text); }
+    .rxjs-op-badge { font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; border: 1px solid; }
+    .rxjs-op-summary { font-size: 0.82rem; color: var(--text-dim); line-height: 1.65; }
+    .rxjs-op-when { display: flex; flex-direction: column; gap: 2px; }
+    .rxjs-when-ok { font-size: 0.7rem; font-weight: 600; color: var(--success); display: block; }
+    .rxjs-when-no { font-size: 0.7rem; font-weight: 600; color: var(--danger); display: block; margin-top: 4px; }
+    .rxjs-when-item { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; padding-left: 4px; }
+    .rxjs-avoid { color: #f8717190; }
+
+    /* Details/Summary — collapsible code */
+    .rxjs-details { border-top: 1px solid var(--border); padding-top: 8px; }
+    .rxjs-details-sum { cursor: pointer; display: flex; align-items: flex-start; gap: 6px; flex-wrap: wrap; list-style: none; }
+    .rxjs-details-sum::-webkit-details-marker { display: none; }
+    .rxjs-details-sum::before { content: '›'; color: var(--text-dim); font-size: 1rem; line-height: 1.4; transition: transform 0.2s; display: inline-block; flex-shrink: 0; }
+    details[open] .rxjs-details-sum::before { transform: rotate(90deg); }
+    .rxjs-sig-lbl { font-size: 0.62rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; }
+    .rxjs-sig-code { font-family: var(--mono); font-size: 0.72rem; color: var(--accent2); word-break: break-all; }
+    .rxjs-code-block { position: relative; background: var(--surface2); border-radius: var(--radius-sm); margin-top: 8px; overflow: hidden; }
+    .rxjs-copy-btn { position: absolute; top: 8px; right: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.7rem; padding: 2px 8px; border-radius: var(--radius-sm); cursor: pointer; z-index: 1; transition: all 0.15s; }
     .rxjs-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .rxjs-code {
-      margin: 0; padding: 14px 16px; overflow-x: auto;
-      font-family: var(--mono); font-size: 0.78rem;
-      color: var(--text); line-height: 1.7;
-    }
+    .rxjs-code { margin: 0; padding: 12px 14px; overflow-x: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--text); line-height: 1.7; }
     .rxjs-code code { font-family: inherit; }
-    .rxjs-op-rel { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-    .rxjs-rel-btn {
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--accent); font-family: var(--mono); font-size: 0.75rem;
-      padding: 3px 10px; border-radius: var(--radius-sm); cursor: pointer;
-      transition: all 0.15s;
-    }
+
+    /* Related operators */
+    .rxjs-op-rel { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; font-size: 0.72rem; color: var(--text-muted); }
+    .rxjs-rel-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--accent); font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; }
     .rxjs-rel-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
 
-    /* Category filter chips */
-    .rxjs-chip {
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--text-dim); font-size: 0.78rem; padding: 5px 12px;
-      border-radius: 99px; cursor: pointer; transition: all 0.15s;
-      font-family: var(--sans);
-    }
+    /* Category chips */
+    .rxjs-chip { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.75rem; padding: 4px 12px; border-radius: 99px; cursor: pointer; transition: all 0.15s; }
     .rxjs-chip:hover { border-color: var(--border-strong); color: var(--text); }
     .rxjs-chip-active { font-weight: 600; }
+
+    /* Accordion */
+    .rxjs-acc-group { display: flex; flex-direction: column; gap: 8px; }
+    .rxjs-acc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .rxjs-acc-hd { width: 100%; background: none; border: none; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-family: var(--sans); font-size: 0.84rem; font-weight: 600; color: var(--text); text-align: left; transition: background 0.15s; }
+    .rxjs-acc-hd:hover { background: var(--surface2); }
+    .rxjs-acc-chevron { font-size: 1.1rem; color: var(--text-dim); transition: transform 0.2s; flex-shrink: 0; }
+    .rxjs-acc-open .rxjs-acc-chevron { transform: rotate(90deg); }
+    .rxjs-acc-bd { padding: 16px; border-top: 1px solid var(--border); }
+
+    /* Intro section */
+    .rxjs-intro-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
+    .rxjs-intro-text { flex: 1; min-width: 240px; }
+    .rxjs-intro-p { font-size: 0.84rem; color: var(--text-dim); line-height: 1.7; margin: 0 0 10px; }
+    .rxjs-analogy { font-size: 0.78rem; color: var(--text-muted); background: var(--surface2); border-radius: var(--radius-sm); padding: 8px 12px; font-family: var(--mono); }
+    .rxjs-uc-list { display: flex; flex-direction: column; gap: 6px; }
+    .rxjs-uc { font-size: 0.8rem; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; }
+
+    /* Core concepts */
+    .rxjs-concepts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-bottom: 14px; }
+    .rxjs-concept { background: var(--surface2); border-left: 3px solid; border-radius: var(--radius-sm); padding: 12px; }
+    .rxjs-concept-name { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; }
+    .rxjs-concept-desc { font-size: 0.74rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 6px; }
+    .rxjs-concept-eg { font-size: 0.72rem; color: var(--text-muted); }
+    .rxjs-concept code { font-family: var(--mono); font-size: 0.72rem; background: var(--surface); padding: 1px 4px; border-radius: 3px; }
+
+    /* Flow diagram */
+    .rxjs-flow-diag { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; justify-content: center; }
+    .rxjs-flow-node { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 10px 16px; text-align: center; font-family: var(--mono); font-size: 0.78rem; color: var(--text); line-height: 1.5; }
+    .rxjs-flow-node span { font-size: 0.7rem; color: var(--text-dim); display: block; }
+    .rxjs-fn-obs { border-color: #a78bfa; }
+    .rxjs-fn-pipe { border-color: var(--accent); }
+    .rxjs-fn-sub { border-color: #34d399; }
+    .rxjs-flow-arr { font-size: 1.2rem; color: var(--text-dim); }
+
+    /* Marble diagrams */
+    .rxjs-marbles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .rxjs-marble { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+    .rxjs-marble-title { font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--accent); margin-bottom: 10px; }
+    .rxjs-marble-label { font-size: 0.68rem; color: var(--text-muted); margin: 6px 0 3px; }
+    .rxjs-marble-timeline { position: relative; height: 34px; margin-bottom: 4px; }
+    .rxjs-marble-track { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--border-strong); transform: translateY(-50%); }
+    .rxjs-marble-op { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); text-align: center; padding: 4px 8px; margin: 4px 0; border: 1px dashed var(--border-strong); border-radius: 4px; background: var(--surface); }
+    .rxjs-mdot { position: absolute; top: 50%; transform: translate(-50%, -50%); min-width: 24px; height: 24px; border-radius: 12px; padding: 0 5px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; font-family: var(--mono); border: 2px solid; z-index: 1; white-space: nowrap; box-sizing: border-box; }
+    .mc1 { background: #6366f118; border-color: #6366f1; color: #6366f1; }
+    .mc2 { background: #34d39918; border-color: #34d399; color: #34d399; }
+    .mc3 { background: #fbbf2418; border-color: #fbbf24; color: #fbbf24; }
+    .mc4 { background: #f472b618; border-color: #f472b6; color: #f472b6; }
+    .rxjs-mdot-x { background: #f8717118; border-color: #f87171; color: #f87171; }
+    .rxjs-mend { position: absolute; top: 50%; transform: translate(-50%, -50%); font-size: 1rem; color: var(--text-dim); font-weight: 700; }
+
+    /* Compare table */
+    .rxjs-compare-wrap { overflow-x: auto; }
+    .rxjs-compare-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .rxjs-compare-table th { background: var(--surface2); color: var(--text-dim); font-weight: 600; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    .rxjs-compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: middle; }
+    .rxjs-compare-table tr:last-child td { border-bottom: none; }
+    .rxjs-badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; }
+    .rxjs-badge-danger { background: #f8717120; color: #f87171; }
+    .rxjs-badge-success { background: #34d39920; color: #34d399; }
+    .rxjs-badge-warning { background: #fbbf2420; color: #fbbf24; }
+
+    /* Recipes */
+    .rxjs-recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+    .rxjs-recipe { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+    .rxjs-recipe-title { font-size: 0.84rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .rxjs-recipe-desc { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 10px; }
+    .rxjs-op-code-wrap { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+

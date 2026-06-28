@@ -2443,13 +2443,14 @@ function renderRxjsOps(){
     const matchQ=!rxjsQ||op.n.toLowerCase().includes(rxjsQ)||op.s.toLowerCase().includes(rxjsQ)||op.w.join(' ').toLowerCase().includes(rxjsQ);
     return matchCat&&matchQ;
   });
-  if(!ops.length){el.innerHTML='<div style="padding:32px;text-align:center;color:var(--text-dim)">ไม่พบ operator ที่ค้นหา</div>';return;}
+  const cnt=document.getElementById('rxjs-count');
+  if(cnt)cnt.textContent=`${ops.length} operator${ops.length!==1?'s':''}`;
+  if(!ops.length){el.innerHTML='<div class="rxjs-empty">ไม่พบ operator ที่ค้นหา — ลองเปลี่ยน keyword หรือ category</div>';return;}
   el.innerHTML=ops.map(op=>`<div class="rxjs-op-card">
-  <div class="rxjs-op-header"><span class="rxjs-op-name">${op.n}</span><span class="rxjs-op-cat" style="background:${RXJS_CC[op.c]}22;color:${RXJS_CC[op.c]};border-color:${RXJS_CC[op.c]}44">${op.c}</span></div>
+  <div class="rxjs-op-top"><span class="rxjs-op-name">${op.n}</span><span class="rxjs-op-badge" style="background:${RXJS_CC[op.c]}18;color:${RXJS_CC[op.c]};border-color:${RXJS_CC[op.c]}40">${op.c}</span></div>
   <div class="rxjs-op-summary">${escHtml(op.s)}</div>
-  <div class="rxjs-op-when"><div class="rxjs-when-title">✓ ใช้เมื่อ</div>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<div class="rxjs-when-title" style="color:var(--danger);margin-top:8px">✗ หลีกเลี่ยงเมื่อ</div>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid-item">• ${escHtml(a)}</div>`).join('')}`:''}</div>
-  <div class="rxjs-op-sig"><span class="rxjs-sig-lbl">sig</span><code>${escHtml(op.sig)}</code></div>
-  <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>${escHtml(op.code)}</code></pre></div>
+  <div class="rxjs-op-when"><span class="rxjs-when-ok">✓ ใช้เมื่อ</span>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<span class="rxjs-when-no">✗ หลีกเลี่ยง</span>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join('')}`:''}</div>
+  <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>${escHtml(op.code)}</code></pre></div></details>
   ${op.rel.length?`<div class="rxjs-op-rel">เทียบกับ: ${op.rel.map(r=>`<button class="rxjs-rel-btn" onclick="rxjsJumpTo('${r}')">${r}</button>`).join('')}</div>`:''}
 </div>`).join('');
 }
@@ -2471,6 +2472,13 @@ function clearRxjs(){
   rxjsQ='';rxjsCatActive='all';
   const inp=document.getElementById('rxjs-search');if(inp)inp.value='';
   renderRxjsCats();renderRxjsOps();
+}
+
+function rxjsToggleAcc(btn){
+  const body=btn.nextElementSibling;
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  btn.classList.toggle('rxjs-acc-open',!open);
 }
 
 // ── INIT ──
