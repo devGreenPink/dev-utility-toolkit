@@ -83,6 +83,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/properties.min.js"></script>
 
     <!-- ── App Styles ── -->
     <link rel="stylesheet" href="assets/css/style.css" />
@@ -256,6 +258,20 @@
           onclick="openTab(event, 'angular-tab')"
         >
           <span class="nav-icon">🔄</span> Angular Lifecycle
+        </div>
+        <div
+          class="nav-item"
+          data-tab="mq-tab"
+          onclick="openTab(event, 'mq-tab')"
+        >
+          <span class="nav-icon">🐇</span> RabbitMQ · Redis · Quarkus
+        </div>
+        <div
+          class="nav-item"
+          data-tab="storage-tab"
+          onclick="openTab(event, 'storage-tab')"
+        >
+          <span class="nav-icon">🗄️</span> Browser Storage APIs
         </div>
         <div class="nav-section-label">เครื่องมือเพิ่มเติม</div>
         <div
@@ -2955,6 +2971,1881 @@ ngAfterViewInit(): void {
 
           </div><!-- /rxjs-acc-group -->
         </div><!-- /angular-tab -->
+
+        <!-- ══════════════════════════════════════════════════════════
+             RabbitMQ · Redis · Quarkus Reference Tab
+        ══════════════════════════════════════════════════════════ -->
+        <div id="mq-tab" class="tab-content">
+
+          <!-- Top bar -->
+          <div class="mq-topbar">
+            <div class="mq-topbar-left">
+              <span class="mq-topbar-badge">🐇</span>
+              <div>
+                <div class="mq-topbar-title">RabbitMQ · Redis · Quarkus</div>
+                <div class="mq-topbar-sub">Concepts · Animations · Code Examples สำหรับมือใหม่</div>
+              </div>
+            </div>
+            <div class="mq-view-tabs">
+              <button class="mq-view-tab mq-view-tab-active" id="mq-vtab-rabbit" onclick="mqSwitchView('rabbit')">🐇 RabbitMQ</button>
+              <button class="mq-view-tab" id="mq-vtab-redis" onclick="mqSwitchView('redis')">⚡ Redis</button>
+              <button class="mq-view-tab" id="mq-vtab-quarkus" onclick="mqSwitchView('quarkus')">☕ Quarkus</button>
+            </div>
+          </div>
+
+          <!-- ═══ RABBITMQ VIEW ═══ -->
+          <div id="mq-rabbit-view">
+
+            <!-- Core Concepts Grid -->
+            <div class="mq-section">
+              <div class="mq-section-title">📦 Core Entities — ส่วนประกอบหลักของ RabbitMQ</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:#f472b6">
+                  <div class="mq-concept-icon">📤</div>
+                  <div class="mq-concept-name">Producer</div>
+                  <div class="mq-concept-desc">แอปที่ส่ง message เข้าระบบ — เหมือน<strong>ผู้ส่งจดหมาย</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:#60a5fa">
+                  <div class="mq-concept-icon">📥</div>
+                  <div class="mq-concept-name">Consumer</div>
+                  <div class="mq-concept-desc">แอปที่รับและประมวลผล message — เหมือน<strong>ผู้รับจดหมาย</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:#34d399">
+                  <div class="mq-concept-icon">📋</div>
+                  <div class="mq-concept-name">Queue</div>
+                  <div class="mq-concept-desc">คิวเก็บ message รอส่ง — เหมือน<strong>ตู้ไปรษณีย์</strong> message อยู่จนกว่า consumer จะดึงไป</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:#fbbf24">
+                  <div class="mq-concept-icon">🔀</div>
+                  <div class="mq-concept-name">Exchange</div>
+                  <div class="mq-concept-desc">ตัวรับ message จาก producer แล้วกระจายไปยัง queue ตาม routing rules — เหมือน<strong>ไปรษณีย์กลาง</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:#a78bfa">
+                  <div class="mq-concept-icon">🔗</div>
+                  <div class="mq-concept-name">Binding</div>
+                  <div class="mq-concept-desc">การเชื่อม Exchange กับ Queue ด้วย routing key — เหมือน<strong>ที่อยู่บนซอง</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:#fb7185">
+                  <div class="mq-concept-icon">📡</div>
+                  <div class="mq-concept-name">Channel</div>
+                  <div class="mq-concept-desc">ช่องทางสื่อสารเสมือนใน Connection หนึ่ง — ประหยัด resource กว่าการเปิด Connection ใหม่ทุกครั้ง</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:#38bdf8">
+                  <div class="mq-concept-icon">🔌</div>
+                  <div class="mq-concept-name">Connection</div>
+                  <div class="mq-concept-desc">TCP connection จริงระหว่าง app กับ RabbitMQ broker — หนึ่ง Connection มีได้หลาย Channel</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:#f97316">
+                  <div class="mq-concept-icon">🏠</div>
+                  <div class="mq-concept-name">VHost</div>
+                  <div class="mq-concept-desc">Virtual Host — แยก namespace ของ exchange/queue ออกจากกัน เหมือน<strong>ห้องแยกในอาคาร</strong> เดียวกัน</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Exchange Types -->
+            <div class="mq-section">
+              <div class="mq-section-title">🔀 Exchange Types — 4 ประเภทการกระจาย message</div>
+              <div class="mq-exchange-tabs">
+                <button class="mq-ex-tab mq-ex-active" data-type="direct"  onclick="mqExTab(this,'direct')">🔵 Direct</button>
+                <button class="mq-ex-tab" data-type="fanout"  onclick="mqExTab(this,'fanout')">🟢 Fanout</button>
+                <button class="mq-ex-tab" data-type="topic"   onclick="mqExTab(this,'topic')">🟡 Topic</button>
+                <button class="mq-ex-tab" data-type="headers" onclick="mqExTab(this,'headers')">🟣 Headers</button>
+              </div>
+              <div id="mq-ex-detail">
+
+                <!-- Direct -->
+                <div class="mq-ex-panel" id="mq-ex-direct">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:#60a5fa">Direct Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.1)">point-to-point</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:#60a5fa">📬 เหมือนส่งพัสดุ EMS — routing key ต้องตรงกัน 100% ถึงส่งถึง queue ปลายทาง</div>
+                      <div class="mq-ex-desc">Producer ระบุ <code>routingKey="order.created"</code> → Exchange ส่งเฉพาะ Queue ที่ binding key ตรงกัน queue อื่นไม่ได้รับ</div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag">✓ Task queue</span>
+                        <span class="mq-ex-tag">✓ Load balance workers</span>
+                        <span class="mq-ex-tag">✓ Microservice events</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode">📤</div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">order.created</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:#60a5fa;color:#60a5fa;background:rgba(96,165,250,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">direct</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">order.created</span>
+                              <span class="mq-exv-tick">✅</span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-skip"></div>
+                            <div class="mq-exv-qbox mq-qbox-skip">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">order.updated</span>
+                              <span class="mq-exv-tick">✗</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Fanout -->
+                <div class="mq-ex-panel mq-ex-hidden" id="mq-ex-fanout">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:#34d399">Fanout Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.1)">broadcast</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:#34d399">📢 เหมือนประกาศเสียงตามสาย — ส่งไปทุก Queue ที่ bind ไว้ ไม่สนใจ routing key เลย</div>
+                      <div class="mq-ex-desc">Producer ส่ง 1 message → Exchange กระจายไปยังทุก Queue ที่ bind ไว้พร้อมกัน ไม่มีเงื่อนไข</div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag">✓ Broadcast event</span>
+                        <span class="mq-ex-tag">✓ Multi-system notification</span>
+                        <span class="mq-ex-tag">✓ Cache invalidation</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode">📤</div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">(any key)</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:#34d399;color:#34d399;background:rgba(52,211,153,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">fanout</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">email service</span>
+                              <span class="mq-exv-tick">✅</span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">sms service</span>
+                              <span class="mq-exv-tick">✅</span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue C</span>
+                              <span class="mq-exv-binding">push service</span>
+                              <span class="mq-exv-tick">✅</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Topic -->
+                <div class="mq-ex-panel mq-ex-hidden" id="mq-ex-topic">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:#fbbf24">Topic Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.1)">pattern routing</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:#fbbf24">📰 เหมือนสมัครรับข่าวตามหัวข้อ — <code>*</code> แทน 1 word, <code>#</code> แทน 0 คำขึ้นไป</div>
+                      <div class="mq-ex-desc">Routing key รูปแบบ <code>word.word.word</code> เช่น <code>order.th.created</code><br>Queue subscribe ด้วย pattern เช่น <code>order.#</code> หรือ <code>*.th.*</code></div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag">✓ Multi-tenant routing</span>
+                        <span class="mq-ex-tag">✓ Microservice events</span>
+                        <span class="mq-ex-tag">✓ Flexible subscription</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode">📤</div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">order.th.created</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">topic</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">order.#</span>
+                              <span class="mq-exv-tick">✅</span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">*.th.*</span>
+                              <span class="mq-exv-tick">✅</span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-skip"></div>
+                            <div class="mq-exv-qbox mq-qbox-skip">
+                              <span class="mq-exv-qname">Queue C</span>
+                              <span class="mq-exv-binding">payment.#</span>
+                              <span class="mq-exv-tick">✗</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Headers -->
+                <div class="mq-ex-panel mq-ex-hidden" id="mq-ex-headers">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:#a78bfa">Headers Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)">content-based</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:#a78bfa">🏷️ เหมือนกรองอีเมลด้วย label — match ตาม message headers แทน routing key</div>
+                      <div class="mq-ex-desc">Route ตาม headers เช่น <code>{"format":"pdf"}</code> ใช้ <code>x-match: all</code> (AND) หรือ <code>x-match: any</code> (OR) เหมาะกับ routing ซับซ้อน</div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag">✓ Content-based routing</span>
+                        <span class="mq-ex-tag">✓ Complex conditions</span>
+                        <span class="mq-ex-tag">✓ Multi-attribute filter</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode">📤</div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">format: pdf</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:#a78bfa;color:#a78bfa;background:rgba(167,139,250,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">headers</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">format=pdf</span>
+                              <span class="mq-exv-tick">✅</span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-skip"></div>
+                            <div class="mq-exv-qbox mq-qbox-skip">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">format=csv</span>
+                              <span class="mq-exv-tick">✗</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Message Lifecycle Animation -->
+            <div class="mq-section">
+              <div class="mq-section-title">🎬 Message Lifecycle Animation — lifecycle ของ message</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" onclick="mqRunAnim('lifecycle')">▶ เล่น Animation</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('lifecycle')">↺ Reset</button>
+                <span class="mq-anim-step-label" id="mq-lifecycle-step">กด ▶ เพื่อเริ่ม</span>
+              </div>
+              <div class="mq-lifecycle-stage" id="mq-lifecycle-stage">
+                <div class="mq-lc-node mq-lc-producer" id="mq-lc-producer">
+                  <div class="mq-lc-icon">📤</div>
+                  <div class="mq-lc-label">Producer</div>
+                </div>
+                <div class="mq-lc-arrow" id="mq-lc-arr1">
+                  <div class="mq-lc-line"></div>
+                  <div class="mq-lc-msg" id="mq-lc-msg1">📨</div>
+                </div>
+                <div class="mq-lc-node mq-lc-exchange" id="mq-lc-exchange">
+                  <div class="mq-lc-icon">🔀</div>
+                  <div class="mq-lc-label">Exchange</div>
+                </div>
+                <div class="mq-lc-arrow" id="mq-lc-arr2">
+                  <div class="mq-lc-line"></div>
+                  <div class="mq-lc-msg mq-lc-msg-hidden" id="mq-lc-msg2">📨</div>
+                </div>
+                <div class="mq-lc-node mq-lc-queue" id="mq-lc-queue">
+                  <div class="mq-lc-icon">📋</div>
+                  <div class="mq-lc-label">Queue</div>
+                  <div class="mq-lc-queue-items" id="mq-lc-queue-items"></div>
+                </div>
+                <div class="mq-lc-arrow" id="mq-lc-arr3">
+                  <div class="mq-lc-line"></div>
+                  <div class="mq-lc-msg mq-lc-msg-hidden" id="mq-lc-msg3">📨</div>
+                </div>
+                <div class="mq-lc-node mq-lc-consumer" id="mq-lc-consumer">
+                  <div class="mq-lc-icon">📥</div>
+                  <div class="mq-lc-label">Consumer</div>
+                </div>
+                <div class="mq-lc-arrow mq-lc-ack-arr" id="mq-lc-arr4">
+                  <div class="mq-lc-line mq-lc-ack-line"></div>
+                  <div class="mq-lc-ack-label" id="mq-lc-ack">ack ✓</div>
+                </div>
+              </div>
+              <div class="mq-lc-steps">
+                <div class="mq-lc-step" id="mq-lcs-0">1. Producer สร้าง message และ publish ไปที่ Exchange</div>
+                <div class="mq-lc-step" id="mq-lcs-1">2. Exchange ตรวจ routing key และส่งไปยัง Queue ที่ match</div>
+                <div class="mq-lc-step" id="mq-lcs-2">3. Message นั่งรอใน Queue จนกว่า Consumer พร้อม</div>
+                <div class="mq-lc-step" id="mq-lcs-3">4. Consumer ดึง message ออกมาประมวลผล</div>
+                <div class="mq-lc-step" id="mq-lcs-4">5. Consumer ส่ง ack (acknowledge) กลับ → RabbitMQ ลบ message ออกจาก Queue</div>
+              </div>
+            </div>
+
+            <!-- Queue Fill/Drain Animation -->
+            <div class="mq-section">
+              <div class="mq-section-title">🎬 Queue Backpressure — เมื่อ Consumer ช้ากว่า Producer</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" id="mq-qfill-btn" onclick="mqToggleQFill()">▶ เริ่ม Producer เร็ว</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetQFill()">↺ Reset</button>
+                <span class="mq-anim-step-label" id="mq-qfill-status">Queue ว่าง · Consumer หยุดรอ</span>
+              </div>
+              <div class="mq-qfill-stage">
+                <div class="mq-qf-side">
+                  <div class="mq-qf-actor">📤 Producer</div>
+                  <div class="mq-qf-rate" id="mq-qf-prod-rate">ส่ง 1 msg/s</div>
+                </div>
+                <div class="mq-qf-queue-wrap">
+                  <div class="mq-qf-queue-label">Queue <span id="mq-qf-count">0</span>/10</div>
+                  <div class="mq-qf-queue" id="mq-qf-queue"></div>
+                  <div class="mq-qf-bar-wrap">
+                    <div class="mq-qf-bar" id="mq-qf-bar" style="width:0%"></div>
+                  </div>
+                </div>
+                <div class="mq-qf-side">
+                  <div class="mq-qf-actor">📥 Consumer</div>
+                  <div class="mq-qf-rate" id="mq-qf-cons-rate">ดึง 1 msg/3s</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DLQ, Durability, Prefetch concepts -->
+            <div class="mq-section">
+              <div class="mq-section-title">📚 Advanced Concepts</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">☠️</span>
+                    <span class="mq-adv-title">Dead Letter Queue (DLQ)</span>
+                    <span class="mq-badge mq-badge-danger">สำคัญ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>Queue พิเศษที่รับ message ที่ "ตาย" ไปแล้ว กล่าวคือ message ที่ถูก reject, หมดอายุ (TTL) หรือ queue เต็ม</p>
+                    <div class="mq-adv-when">
+                      <span class="mq-when-label">เกิดเมื่อ:</span>
+                      <div class="mq-when-item">• Consumer nack message โดยไม่ requeue</div>
+                      <div class="mq-when-item">• Message หมด TTL (message-ttl)</div>
+                      <div class="mq-when-item">• Queue เต็ม (x-max-length)</div>
+                    </div>
+                    <div class="mq-code-snippet"><pre>// ตั้ง DLQ ใน application.properties (Quarkus)
+mp.messaging.incoming.orders.x-dead-letter-exchange=dlx
+mp.messaging.incoming.orders.x-dead-letter-routing-key=dead</pre></div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">💾</span>
+                    <span class="mq-adv-title">Durability — ความทนทานของข้อมูล</span>
+                    <span class="mq-badge mq-badge-warning">ต้องรู้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header">
+                        <div>ประเภท</div><div>รอด restart?</div><div>ใช้เมื่อ</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Durable Queue</strong></div>
+                        <div class="mq-dt-yes">✓ ใช่</div>
+                        <div>งาน critical ที่ห้ามสูญ</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Transient Queue</strong></div>
+                        <div class="mq-dt-no">✗ ไม่</div>
+                        <div>cache/temp ที่ไม่สำคัญ</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Persistent Msg</strong></div>
+                        <div class="mq-dt-yes">✓ ใช่</div>
+                        <div>delivery-mode=2 ใน message</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Transient Msg</strong></div>
+                        <div class="mq-dt-no">✗ ไม่</div>
+                        <div>realtime/low-priority events</div>
+                      </div>
+                    </div>
+                    <div class="mq-adv-tip">💡 ต้องทั้ง durable queue + persistent message ถึงจะปลอดภัยจริง</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">⚡</span>
+                    <span class="mq-adv-title">Prefetch / QoS — คุม throughput</span>
+                    <span class="mq-badge mq-badge-info">Performance</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>จำกัดจำนวน message ที่ RabbitMQ ส่งให้ Consumer ก่อนจะรอ ack กลับ — ป้องกัน Consumer ถูก flood</p>
+                    <div class="mq-code-snippet"><pre>// prefetch = 10 → consumer ได้รับสูงสุด 10 msg
+// ก่อน ack ใด ก็ไม่ได้รับ msg ที่ 11
+mp.messaging.incoming.orders.prefetch=10</pre></div>
+                    <div class="mq-adv-tip">💡 prefetch=1 = round-robin ที่สมบูรณ์แบบ แต่ throughput ต่ำ | prefetch สูง = throughput สูง แต่อาจ unbalanced</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">🎯</span>
+                    <span class="mq-adv-title">Use Cases หลัก</span>
+                    <span class="mq-badge mq-badge-success">Real World</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-usecase-list">
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon">⚙️</span>
+                        <div><strong>Async Task Queue</strong> — ส่งงานหนัก (resize image, send email) ไปทำ background โดยไม่บล็อก HTTP response</div>
+                      </div>
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon">🔗</span>
+                        <div><strong>Event-driven Microservices</strong> — service A publish event, service B/C/D consume แยกกัน ไม่ต้อง couple กัน</div>
+                      </div>
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon">⚖️</span>
+                        <div><strong>Work Queue / Load Balancing</strong> — consumer หลาย instance แย่ง task จาก queue เดียว — scale out ได้ง่าย</div>
+                      </div>
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon">🛡️</span>
+                        <div><strong>Circuit Breaker Buffer</strong> — เมื่อ downstream ล่ม message ค้างใน queue รอจนกว่าระบบกลับมา</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /mq-rabbit-view -->
+
+          <!-- ═══ REDIS VIEW ═══ -->
+          <div id="mq-redis-view" class="mq-hidden">
+
+            <!-- Data Structures -->
+            <div class="mq-section">
+              <div class="mq-section-title">🗂️ Data Structures — โครงสร้างข้อมูลใน Redis</div>
+              <div class="mq-redis-ds-tabs">
+                <button class="mq-ds-tab mq-ds-active" onclick="mqDsTab(this,'string')">String</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'hash')">Hash</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'list')">List</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'set')">Set</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'zset')">Sorted Set</button>
+              </div>
+              <div id="mq-ds-detail">
+
+                <div class="mq-ds-panel" id="mq-ds-string">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon">📝</span>
+                    <span class="mq-ds-name" style="color:#60a5fa">String</span>
+                    <span class="mq-badge mq-badge-info">พื้นฐาน</span>
+                  </div>
+                  <div class="mq-ds-desc">ค่าเดียวที่เป็น text, number, หรือ binary (สูงสุด 512MB) — รองรับ INCR/DECR แบบ atomic</div>
+                  <div class="mq-ds-analogy">📦 เหมือนกล่องเก็บของชิ้นเดียว</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc">🔑 <strong>Cache ผลลัพธ์ SQL/API</strong> — SET product:123 "{json}" EX 300</div>
+                    <div class="mq-ds-uc">🔢 <strong>Counter</strong> — INCR page:views → atomic, thread-safe</div>
+                    <div class="mq-ds-uc">⏳ <strong>Rate limiting</strong> — INCR + EXPIRE ใน pipeline</div>
+                    <div class="mq-ds-uc">🔐 <strong>Distributed Lock</strong> — SET lock:resource uuid NX EX 30</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre>SET user:token:abc123 "eyJhbG..." EX 3600
+GET user:token:abc123
+INCR api:calls:2024-06-29
+SETNX lock:order:789 "worker-1"  # NX = only if Not eXists</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-hash">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon">🗃️</span>
+                    <span class="mq-ds-name" style="color:#34d399">Hash</span>
+                    <span class="mq-badge mq-badge-success">Session/Object</span>
+                  </div>
+                  <div class="mq-ds-desc">Map ของ field → value — เหมาะสำหรับเก็บ object ที่มีหลาย field โดยไม่ต้อง serialize ทั้งก้อน</div>
+                  <div class="mq-ds-analogy">📋 เหมือนแบบฟอร์มที่มีหลายช่อง — แก้ไขทีละช่องได้โดยไม่ต้องอ่านทั้งใบ</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc">👤 <strong>User Session</strong> — HSET session:abc userId "123" role "admin" exp "1234567890"</div>
+                    <div class="mq-ds-uc">🛒 <strong>Shopping Cart</strong> — HSET cart:user:1 product:456 "2" product:789 "1"</div>
+                    <div class="mq-ds-uc">⚙️ <strong>Config Cache</strong> — เก็บ config หลาย key ใน hash เดียว</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre>HSET session:abc userId "123" name "สมชาย" role "admin"
+HGET session:abc role          # "admin"
+HGETALL session:abc            # ได้ทุก field
+HINCRBY cart:user:1 product:456 1   # เพิ่ม quantity</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-list">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon">📜</span>
+                    <span class="mq-ds-name" style="color:#fbbf24">List</span>
+                    <span class="mq-badge mq-badge-warning">Queue/Stack</span>
+                  </div>
+                  <div class="mq-ds-desc">Linked list ของ string — push/pop จากหัว (L) หรือท้าย (R) ได้ O(1)</div>
+                  <div class="mq-ds-analogy">🚂 เหมือนรถไฟ — ต่อตู้หัว/ท้ายได้ตลอดเวลา</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc">📬 <strong>Simple Queue</strong> — LPUSH + RPOP (FIFO)</div>
+                    <div class="mq-ds-uc">📚 <strong>Stack</strong> — LPUSH + LPOP (LIFO)</div>
+                    <div class="mq-ds-uc">📰 <strong>Activity Feed</strong> — LPUSH + LTRIM เก็บแค่ 100 รายการล่าสุด</div>
+                    <div class="mq-ds-uc">⏳ <strong>Blocking Queue</strong> — BLPOP รอ message โดยไม่ poll</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre>LPUSH jobs "email-123"        # push หัว
+RPOP jobs                     # pop ท้าย = FIFO queue
+BLPOP jobs 30                 # block รอสูงสุด 30s
+LRANGE feed:user:1 0 99       # ดู 100 รายการแรก</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-set">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon">🎯</span>
+                    <span class="mq-ds-name" style="color:#a78bfa">Set</span>
+                    <span class="mq-badge mq-badge-purple">Unique Members</span>
+                  </div>
+                  <div class="mq-ds-desc">Collection ของ string ที่ไม่ซ้ำกัน (unordered) — รองรับ union/intersection/difference</div>
+                  <div class="mq-ds-analogy">🏷️ เหมือนกล่อง tag — ใส่ซ้ำไม่ได้ สลับที่ได้</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc">👥 <strong>Online Users</strong> — SADD online:users "user:123" → รู้ว่าใคร online</div>
+                    <div class="mq-ds-uc">🏷️ <strong>Tags</strong> — SADD article:1:tags "java" "quarkus" "backend"</div>
+                    <div class="mq-ds-uc">🔍 <strong>Unique Visitors</strong> — SADD visitors:2024-06-29 "ip:1.2.3.4"</div>
+                    <div class="mq-ds-uc">🤝 <strong>Common Friends</strong> — SINTER friends:user1 friends:user2</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre>SADD online:users "user:123" "user:456"
+SISMEMBER online:users "user:123"   # 1 (ใช่)
+SMEMBERS online:users               # ดูทุกคน
+SINTER tags:java tags:backend       # intersection</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-zset">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon">🏆</span>
+                    <span class="mq-ds-name" style="color:#fb7185">Sorted Set</span>
+                    <span class="mq-badge mq-badge-danger">Leaderboard</span>
+                  </div>
+                  <div class="mq-ds-desc">Set ที่แต่ละ member มี score (float) — เรียงลำดับตาม score อัตโนมัติ O(log N)</div>
+                  <div class="mq-ds-analogy">🏅 เหมือนตารางคะแนน — ใส่คะแนนแล้วได้ rank ทันที</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc">🏆 <strong>Leaderboard</strong> — ZADD scores 9500 "player:1" → ได้ rank ทันที</div>
+                    <div class="mq-ds-uc">⏰ <strong>Delayed Queue</strong> — score = timestamp → ดึง job ที่ถึงเวลา</div>
+                    <div class="mq-ds-uc">📊 <strong>Rate Window</strong> — score = timestamp ของ request → นับ requests ใน window</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre>ZADD leaderboard 9500 "player:1" 8200 "player:2"
+ZREVRANK leaderboard "player:1"    # rank (0-based)
+ZREVRANGE leaderboard 0 9 WITHSCORES  # top 10
+ZINCRBY leaderboard 100 "player:2"    # เพิ่ม score</pre></div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- TTL, Persistence, Pub/Sub, Cache Patterns -->
+            <div class="mq-section">
+              <div class="mq-section-title">📚 Redis Concepts เพิ่มเติม</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">⏳</span>
+                    <span class="mq-adv-title">TTL / Expiration</span>
+                    <span class="mq-badge mq-badge-info">สำคัญ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>ตั้งเวลาหมดอายุของ key — Redis ลบ key อัตโนมัติหลังหมดเวลา ไม่ต้องเขียน cleanup code</p>
+                    <div class="mq-code-snippet"><pre>SET session:abc "data" EX 3600      # หมดใน 1 ชั่วโมง
+EXPIRE key 300                       # ตั้ง TTL ทีหลัง
+TTL key                              # เหลืออีกกี่วินาที
+PERSIST key                          # ยกเลิก TTL</pre></div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">💾</span>
+                    <span class="mq-adv-title">Persistence: RDB vs AOF</span>
+                    <span class="mq-badge mq-badge-warning">ต้องรู้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>Mode</div><div>วิธีทำงาน</div><div>Trade-off</div></div>
+                      <div class="mq-dt-row">
+                        <div><strong>RDB</strong></div>
+                        <div>Snapshot ตาม schedule (BGSAVE)</div>
+                        <div>เร็ว / อาจสูญข้อมูลช่วงสุดท้าย</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>AOF</strong></div>
+                        <div>Log ทุก write command</div>
+                        <div>ปลอดภัย / file ใหญ่กว่า</div>
+                      </div>
+                    </div>
+                    <div class="mq-adv-tip">💡 Production แนะนำ AOF + RDB ร่วมกัน (hybrid)</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">📡</span>
+                    <span class="mq-adv-title">Pub/Sub — vs RabbitMQ</span>
+                    <span class="mq-badge mq-badge-purple">Realtime</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>Publisher ส่ง message ไปยัง channel → Subscriber ทุกตัวที่ subscribe channel นั้นได้รับพร้อมกัน</p>
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div></div><div>Redis Pub/Sub</div><div>RabbitMQ</div></div>
+                      <div class="mq-dt-row">
+                        <div>Persistence</div>
+                        <div class="mq-dt-no">✗ ไม่มี</div>
+                        <div class="mq-dt-yes">✓ มี</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div>Ack / Retry</div>
+                        <div class="mq-dt-no">✗ ไม่มี</div>
+                        <div class="mq-dt-yes">✓ มี</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div>Miss if offline</div>
+                        <div class="mq-dt-no">✗ สูญ</div>
+                        <div class="mq-dt-yes">✓ ค้างใน queue</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div>Latency</div>
+                        <div class="mq-dt-yes">~1ms</div>
+                        <div>~5-10ms</div>
+                      </div>
+                    </div>
+                    <div class="mq-adv-tip">💡 Redis Pub/Sub = fire-and-forget realtime. RabbitMQ = reliable delivery</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon">🗄️</span>
+                    <span class="mq-adv-title">Cache Patterns</span>
+                    <span class="mq-badge mq-badge-success">Design</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">Cache-Aside (Lazy)</div>
+                      <div class="mq-cp-flow">App → Redis (miss?) → DB → store in Redis → return</div>
+                      <div class="mq-cp-when">ใช้บ่อยที่สุด — App control cache เอง</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">Write-Through</div>
+                      <div class="mq-cp-flow">App → เขียน DB + Redis พร้อมกัน</div>
+                      <div class="mq-cp-when">Cache ตรงกับ DB เสมอ — write ช้ากว่า</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">Write-Behind (Write-Back)</div>
+                      <div class="mq-cp-flow">App → เขียน Redis → async flush → DB</div>
+                      <div class="mq-cp-when">Write เร็วมาก — risk data loss หาก crash</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Cache hit/miss animation -->
+            <div class="mq-section">
+              <div class="mq-section-title">🎬 Cache Hit vs Miss Animation</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" onclick="mqCacheAnim('hit')">✅ Cache Hit</button>
+                <button class="mq-anim-btn" onclick="mqCacheAnim('miss')">❌ Cache Miss</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('cache')">↺ Reset</button>
+                <span class="mq-anim-step-label" id="mq-cache-step">เลือก Hit หรือ Miss เพื่อดู animation</span>
+              </div>
+              <div class="mq-cache-stage">
+                <div class="mq-cache-node mq-cache-app" id="mq-cache-app">
+                  <div class="mq-lc-icon">🖥️</div>
+                  <div class="mq-lc-label">Application</div>
+                </div>
+                <div class="mq-cache-conn" id="mq-cache-conn1">
+                  <div class="mq-cc-msg" id="mq-cache-msg1"></div>
+                  <div class="mq-cc-time" id="mq-cache-time1"></div>
+                </div>
+                <div class="mq-cache-node mq-cache-redis" id="mq-cache-redis-node">
+                  <div class="mq-lc-icon">⚡</div>
+                  <div class="mq-lc-label">Redis Cache</div>
+                  <div class="mq-cache-status" id="mq-cache-redis-status"></div>
+                </div>
+                <div class="mq-cache-conn mq-cache-conn-db" id="mq-cache-conn2">
+                  <div class="mq-cc-msg" id="mq-cache-msg2"></div>
+                  <div class="mq-cc-time" id="mq-cache-time2"></div>
+                </div>
+                <div class="mq-cache-node mq-cache-db" id="mq-cache-db-node">
+                  <div class="mq-lc-icon">🗄️</div>
+                  <div class="mq-lc-label">Database</div>
+                </div>
+              </div>
+              <div class="mq-lc-steps" id="mq-cache-steps">
+                <div class="mq-lc-step" id="mq-cache-s0">กด ✅ Cache Hit หรือ ❌ Cache Miss เพื่อดู flow</div>
+              </div>
+            </div>
+
+            <!-- Redis Pub/Sub animation -->
+            <div class="mq-section">
+              <div class="mq-section-title">🎬 Redis Pub/Sub Animation</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" onclick="mqRunAnim('pubsub')">▶ Publish Message</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('pubsub')">↺ Reset</button>
+                <span class="mq-anim-step-label" id="mq-pubsub-step">กด ▶ เพื่อเริ่ม</span>
+              </div>
+              <div class="mq-pubsub-stage">
+                <div class="mq-ps-publisher" id="mq-ps-pub">
+                  <div class="mq-lc-icon">📢</div>
+                  <div class="mq-lc-label">Publisher</div>
+                  <div style="font-size:0.7rem;color:var(--text-dim)">PUBLISH news "ข่าวด่วน"</div>
+                </div>
+                <div class="mq-ps-channel-wrap">
+                  <div class="mq-ps-channel" id="mq-ps-channel">
+                    <div class="mq-ps-ch-label">Channel: news</div>
+                    <div class="mq-ps-msg" id="mq-ps-msg"></div>
+                  </div>
+                </div>
+                <div class="mq-ps-subscribers">
+                  <div class="mq-ps-sub" id="mq-ps-sub1">
+                    <div class="mq-lc-icon">📱</div>
+                    <div class="mq-lc-label">Sub A</div>
+                    <div class="mq-ps-received" id="mq-ps-recv1"></div>
+                  </div>
+                  <div class="mq-ps-sub" id="mq-ps-sub2">
+                    <div class="mq-lc-icon">💻</div>
+                    <div class="mq-lc-label">Sub B</div>
+                    <div class="mq-ps-received" id="mq-ps-recv2"></div>
+                  </div>
+                  <div class="mq-ps-sub" id="mq-ps-sub3">
+                    <div class="mq-lc-icon">🖥️</div>
+                    <div class="mq-lc-label">Sub C</div>
+                    <div class="mq-ps-received" id="mq-ps-recv3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /mq-redis-view -->
+
+          <!-- ═══ QUARKUS VIEW ═══ -->
+          <div id="mq-quarkus-view" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title">☕ Quarkus Integration Overview</div>
+              <div class="mq-q-overview">
+
+                <!-- RabbitMQ card -->
+                <div class="mq-q-ext-card" style="border-top-color:#f472b6">
+                  <div class="mq-q-ext-head">
+                    <span class="mq-q-ext-icon">🐇</span>
+                    <span class="mq-q-ext-badge" style="background:#f472b6">RabbitMQ</span>
+                  </div>
+                  <div class="mq-q-ext-name">quarkus-smallrye-reactive-messaging-rabbitmq</div>
+                  <div class="mq-q-ext-cmd-wrap">
+                    <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                    <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="smallrye-reactive-messaging-rabbitmq"</code></div>
+                  </div>
+                  <div class="mq-q-ext-desc">SmallRye Reactive Messaging — annotation-driven, non-blocking, reactive โดย default</div>
+                  <div class="mq-q-ext-features">
+                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">@Incoming / @Outgoing</span>
+                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">Emitter&lt;T&gt;</span>
+                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">ack / nack</span>
+                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">DLQ support</span>
+                  </div>
+                </div>
+
+                <!-- Redis card -->
+                <div class="mq-q-ext-card" style="border-top-color:#34d399">
+                  <div class="mq-q-ext-head">
+                    <span class="mq-q-ext-icon">⚡</span>
+                    <span class="mq-q-ext-badge" style="background:#34d399">Redis</span>
+                  </div>
+                  <div class="mq-q-ext-name">quarkus-redis-client</div>
+                  <div class="mq-q-ext-cmd-wrap">
+                    <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                    <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="redis-client"</code></div>
+                  </div>
+                  <div class="mq-q-ext-desc">Vert.x Redis client — รองรับทั้ง reactive และ blocking API พร้อม type-safe commands</div>
+                  <div class="mq-q-ext-features">
+                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">StringCommands</span>
+                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">HashCommands</span>
+                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">KeyCommands</span>
+                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">TTL / Pub-Sub</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- application.properties -->
+            <div class="mq-section">
+              <div class="mq-section-title">⚙️ application.properties — Config Keys ที่ต้องรู้</div>
+              <div class="mq-props-tabs">
+                <button class="mq-props-tab mq-props-active" onclick="mqPropsTab(this,'rabbit-props')">RabbitMQ</button>
+                <button class="mq-props-tab" onclick="mqPropsTab(this,'redis-props')">Redis</button>
+              </div>
+              <div id="mq-rabbit-props" class="mq-props-panel">
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                  <pre class="mq-code"><code class="language-properties"># ── RabbitMQ Connection ──────────────────────────────────────
+rabbitmq-host=localhost
+rabbitmq-port=5672
+rabbitmq-username=guest
+rabbitmq-password=guest
+rabbitmq-virtual-host=/
+
+# ── Incoming channel (Consumer) ───────────────────────────────
+mp.messaging.incoming.orders-in.connector=smallrye-rabbitmq
+mp.messaging.incoming.orders-in.queue.name=orders
+mp.messaging.incoming.orders-in.queue.durable=true
+mp.messaging.incoming.orders-in.prefetch=10
+# Dead Letter Queue
+mp.messaging.incoming.orders-in.x-dead-letter-exchange=dlx
+mp.messaging.incoming.orders-in.x-dead-letter-routing-key=dead.orders
+
+# ── Outgoing channel (Producer) ───────────────────────────────
+mp.messaging.outgoing.orders-out.connector=smallrye-rabbitmq
+mp.messaging.outgoing.orders-out.exchange.name=orders-exchange
+mp.messaging.outgoing.orders-out.exchange.type=direct
+mp.messaging.outgoing.orders-out.exchange.durable=true
+mp.messaging.outgoing.orders-out.routing-key=order.created
+
+# ── Exchange routing (topic example) ─────────────────────────
+mp.messaging.outgoing.events-out.connector=smallrye-rabbitmq
+mp.messaging.outgoing.events-out.exchange.name=events-exchange
+mp.messaging.outgoing.events-out.exchange.type=topic
+mp.messaging.outgoing.events-out.routing-key=order.th.created</code></pre>
+                </div>
+              </div>
+              <div id="mq-redis-props" class="mq-props-panel mq-hidden">
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                  <pre class="mq-code"><code class="language-properties"># ── Redis Connection ─────────────────────────────────────────
+quarkus.redis.hosts=redis://localhost:6379
+
+# ── Redis with password ───────────────────────────────────────
+quarkus.redis.hosts=redis://:mypassword@localhost:6379
+
+# ── Redis Cluster ─────────────────────────────────────────────
+quarkus.redis.hosts=redis://node1:6379,redis://node2:6379
+
+# ── Connection pool ───────────────────────────────────────────
+quarkus.redis.max-pool-size=10
+quarkus.redis.max-pool-waiting=50
+quarkus.redis.connect-timeout=5S
+
+# ── Named client (multiple Redis instances) ───────────────────
+quarkus.redis.cache.hosts=redis://cache-server:6379
+quarkus.redis.session.hosts=redis://session-server:6379
+
+# ── TLS (production) ─────────────────────────────────────────
+quarkus.redis.tls.enabled=true</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Code Examples -->
+            <div class="mq-section">
+              <div class="mq-section-title">💻 Code Examples — ตัวอย่างโค้ด Java / Quarkus</div>
+
+              <!-- Example 1: Producer -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">1</span>
+                  <span class="mq-ce-title">RabbitMQ Producer — REST Endpoint → Publish to Queue</span>
+                  <span class="mq-badge mq-badge-info">Emitter&lt;T&gt;</span>
+                </div>
+                <div class="mq-ce-desc">ใช้ <code>@Channel</code> + <code>Emitter&lt;String&gt;</code> ใน REST endpoint เพื่อส่ง message เข้า RabbitMQ แบบ non-blocking</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                  <pre class="mq-code"><code class="language-java">import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+
+@Path("/orders")
+@ApplicationScoped
+public class OrderResource {
+
+    // Channel name ต้องตรงกับ mp.messaging.outgoing.orders-out ใน application.properties
+    @Inject
+    @Channel("orders-out")
+    Emitter&lt;String&gt; orderEmitter;
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createOrder(OrderRequest req) {
+        // สร้าง JSON payload (หรือ serialize ด้วย Jackson)
+        String payload = "{\"orderId\":\"" + req.id + "\",\"amount\":" + req.amount + "}";
+
+        // ส่ง message — non-blocking, fire-and-forget
+        orderEmitter.send(payload);
+
+        return Response.accepted()
+            .entity("{\"status\":\"queued\",\"orderId\":\"" + req.id + "\"}")
+            .build();
+    }
+}
+
+// application.properties
+// mp.messaging.outgoing.orders-out.connector=smallrye-rabbitmq
+// mp.messaging.outgoing.orders-out.exchange.name=orders-exchange
+// mp.messaging.outgoing.orders-out.routing-key=order.created</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 2: Consumer -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">2</span>
+                  <span class="mq-ce-title">RabbitMQ Consumer — @Incoming + Message&lt;T&gt; wrapper</span>
+                  <span class="mq-badge mq-badge-success">@Incoming</span>
+                </div>
+                <div class="mq-ce-desc">ใช้ <code>@Incoming</code> เพื่อรับ message — ใช้ <code>Message&lt;T&gt;</code> wrapper เพื่อควบคุม ack/nack เองได้</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                  <pre class="mq-code"><code class="language-java">import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
+import jakarta.enterprise.context.ApplicationScoped;
+import java.util.concurrent.CompletionStage;
+
+@ApplicationScoped
+public class OrderConsumer {
+
+    // ─── Pattern 1: plain payload (auto-ack on success, auto-nack on exception) ───
+    @Incoming("orders-in")
+    public void processOrder(String payload) {
+        System.out.println("Got order: " + payload);
+        // ถ้า throw exception → message จะถูก nack
+        // ถ้าสำเร็จ → auto ack
+    }
+
+    // ─── Pattern 2: Message&lt;T&gt; wrapper (manual ack/nack) ───────────────────────
+    @Incoming("orders-in-manual")
+    public CompletionStage&lt;Void&gt; processOrderManual(Message&lt;String&gt; message) {
+        String payload = message.getPayload();
+        try {
+            processBusinessLogic(payload);
+            return message.ack();   // บอก RabbitMQ ว่าสำเร็จ → ลบออกจาก queue
+        } catch (Exception e) {
+            // nack(true) = requeue | nack(false) = drop / ส่งไป DLQ
+            return message.nack(e);
+        }
+    }
+
+    private void processBusinessLogic(String payload) {
+        // parse JSON, save to DB, call API, etc.
+    }
+}
+
+// application.properties
+// mp.messaging.incoming.orders-in.connector=smallrye-rabbitmq
+// mp.messaging.incoming.orders-in.queue.name=orders
+// mp.messaging.incoming.orders-in.queue.durable=true
+// mp.messaging.incoming.orders-in.prefetch=10</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 3: Redis Cache-Aside -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">3</span>
+                  <span class="mq-ce-title">Redis Cache-Aside Pattern — ตรวจ Cache ก่อน ถ้า Miss ดึงจาก DB</span>
+                  <span class="mq-badge mq-badge-warning">StringCommands</span>
+                </div>
+                <div class="mq-ce-desc">Pattern ที่ใช้บ่อยที่สุด — ลด load จาก DB สูงสุด 90% สำหรับข้อมูลที่อ่านบ่อย</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                  <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
+import io.quarkus.redis.datasource.string.SetArgs;
+import io.quarkus.redis.datasource.string.StringCommands;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
+public class ProductService {
+
+    private final StringCommands&lt;String, String&gt; stringCmds;
+
+    @Inject
+    ProductRepository productRepo; // ตัวอย่าง JPA repository
+
+    public ProductService(RedisDataSource ds) {
+        // inject RedisDataSource แล้ว get type-safe commands
+        this.stringCmds = ds.string(String.class, String.class);
+    }
+
+    public String getProduct(String productId) {
+        String cacheKey = "product:" + productId;
+
+        // Step 1: ตรวจ Redis cache ก่อน
+        String cached = stringCmds.get(cacheKey);
+        if (cached != null) {
+            System.out.println("Cache HIT for " + cacheKey);
+            return cached; // คืนจาก cache ทันที ~1ms
+        }
+
+        // Step 2: Cache MISS → ดึงจาก DB
+        System.out.println("Cache MISS — querying DB for " + cacheKey);
+        Product product = productRepo.findById(productId);
+        if (product == null) return null;
+
+        // Step 3: แปลงเป็น JSON string และ store ใน Redis พร้อม TTL 5 นาที
+        String json = toJson(product); // Jackson ObjectMapper.writeValueAsString
+        SetArgs args = new SetArgs().ex(300); // EX 300 seconds
+        stringCmds.set(cacheKey, json, args);
+
+        return json;
+    }
+
+    public void invalidateProduct(String productId) {
+        // เมื่อ update ข้อมูล → ลบ cache (cache invalidation)
+        stringCmds.del("product:" + productId);
+    }
+
+    private String toJson(Product p) {
+        // Jackson serialize
+        return "{\"id\":\"" + p.id + "\",\"name\":\"" + p.name + "\"}";
+    }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 4: Redis Session Storage -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">4</span>
+                  <span class="mq-ce-title">Redis Session Storage — Hash HSET/HGET</span>
+                  <span class="mq-badge mq-badge-purple">HashCommands</span>
+                </div>
+                <div class="mq-ce-desc">เก็บ user session ใน Redis Hash — แก้ไขแต่ละ field ได้โดยไม่ต้อง serialize ทั้งก้อน</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                  <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
+import io.quarkus.redis.datasource.hash.HashCommands;
+import io.quarkus.redis.datasource.keys.KeyCommands;
+import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Map;
+import java.util.UUID;
+
+@ApplicationScoped
+public class SessionService {
+
+    private final HashCommands&lt;String, String, String&gt; hashCmds;
+    private final KeyCommands&lt;String&gt; keyCmds;
+
+    public SessionService(RedisDataSource ds) {
+        this.hashCmds = ds.hash(String.class, String.class, String.class);
+        this.keyCmds  = ds.key(String.class);
+    }
+
+    /** สร้าง session ใหม่หลัง login สำเร็จ */
+    public String createSession(String userId, String role) {
+        String sessionId = UUID.randomUUID().toString();
+        String key = "session:" + sessionId;
+
+        // HSET session:&lt;id&gt; userId "123" role "admin" createdAt "..."
+        // hset รับ Map — ไม่มี varargs version ใน Quarkus Redis API
+        hashCmds.hset(key, Map.of(
+            "userId",    userId,
+            "role",      role,
+            "createdAt", String.valueOf(System.currentTimeMillis())
+        ));
+
+        // ตั้ง TTL 30 นาที ด้วย KeyCommands.expire()
+        keyCmds.expire(key, 1800);
+
+        return sessionId;
+    }
+
+    /** ดึงข้อมูล session ทั้งหมด */
+    public Map&lt;String, String&gt; getSession(String sessionId) {
+        return hashCmds.hgetall("session:" + sessionId);
+    }
+
+    /** ดึง field เดียว (เร็วกว่า HGETALL) */
+    public String getSessionField(String sessionId, String field) {
+        return hashCmds.hget("session:" + sessionId, field);
+    }
+
+    /** ลบ session เมื่อ logout */
+    public void deleteSession(String sessionId) {
+        keyCmds.del("session:" + sessionId);
+    }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 5: Rate Limiting -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">5</span>
+                  <span class="mq-ce-title">Rate Limiting ด้วย Redis INCR + EXPIRE</span>
+                  <span class="mq-badge mq-badge-danger">INCR + TTL</span>
+                </div>
+                <div class="mq-ce-desc">จำกัด API calls ต่อ IP หรือ user — ใช้ INCR + EXPIRE แบบ atomic — ตัวอย่าง: 100 requests/minute</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)">⎘ copy</button>
+                  <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
+import io.quarkus.redis.datasource.keys.KeyCommands;
+import io.quarkus.redis.datasource.string.StringCommands;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+
+@ApplicationScoped
+public class RateLimiter {
+
+    private static final int MAX_REQUESTS   = 100; // สูงสุด 100 requests
+    private static final int WINDOW_SECONDS = 60;  // ต่อ 1 นาที
+
+    private final StringCommands&lt;String, String&gt; stringCmds;
+    private final KeyCommands&lt;String&gt; keyCmds;
+
+    public RateLimiter(RedisDataSource ds) {
+        this.stringCmds = ds.string(String.class, String.class);
+        this.keyCmds    = ds.key(String.class);
+    }
+
+    /**
+     * ตรวจสอบ rate limit
+     * @param identifier เช่น IP address หรือ userId
+     * @throws WebApplicationException 429 Too Many Requests ถ้าเกินลิมิต
+     */
+    public void checkRateLimit(String identifier) {
+        String key = "rate:" + identifier + ":" + getCurrentMinuteBucket();
+
+        // INCR เป็น atomic — ได้ค่า count ใหม่ทันที ไม่มี race condition
+        long count = stringCmds.incr(key);
+
+        if (count == 1) {
+            // request แรกใน window นี้ → ตั้ง TTL ด้วย KeyCommands
+            keyCmds.expire(key, WINDOW_SECONDS);
+        }
+
+        if (count &gt; MAX_REQUESTS) {
+            throw new WebApplicationException(
+                Response.status(429)
+                    .header("X-RateLimit-Limit",     MAX_REQUESTS)
+                    .header("X-RateLimit-Remaining", 0)
+                    .header("Retry-After",           WINDOW_SECONDS)
+                    .entity("{\"error\":\"Rate limit exceeded. Try again in " + WINDOW_SECONDS + "s\"}")
+                    .build()
+            );
+        }
+    }
+
+    /** Bucket ต่อนาที — key เปลี่ยนทุก 60 วินาทีอัตโนมัติ */
+    private String getCurrentMinuteBucket() {
+        return String.valueOf(System.currentTimeMillis() / (WINDOW_SECONDS * 1000L));
+    }
+}
+
+// การใช้งานใน JAX-RS resource:
+// @Inject RateLimiter rateLimiter;
+//
+// @GET @Path("/api/data")
+// public Response getData(@Context HttpHeaders headers) {
+//     String ip = headers.getRequestHeader("X-Forwarded-For").get(0);
+//     rateLimiter.checkRateLimit(ip);
+//     // ... proceed
+// }</code></pre>
+                </div>
+              </div>
+
+            </div><!-- /code examples section -->
+
+            <!-- Annotations quick reference -->
+            <div class="mq-section">
+              <div class="mq-section-title">📋 Annotation Quick Reference</div>
+              <div class="mq-ann-grid">
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@Incoming("channel")</div>
+                  <div class="mq-ann-desc">รับ message จาก channel ที่กำหนด — ใส่บน method ใน @ApplicationScoped bean</div>
+                  <div class="mq-ann-note">method parameter = payload type หรือ Message&lt;T&gt;</div>
+                </div>
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@Outgoing("channel")</div>
+                  <div class="mq-ann-desc">ส่ง message ออกไปยัง channel — ใส่บน method ที่ return ค่า</div>
+                  <div class="mq-ann-note">return type = T, Message&lt;T&gt;, Publisher&lt;T&gt;</div>
+                </div>
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@Channel("channel")</div>
+                  <div class="mq-ann-desc">Inject Emitter หรือ Multi สำหรับส่ง/รับ message จาก code โดยตรง</div>
+                  <div class="mq-ann-note">ใช้คู่กับ Emitter&lt;T&gt; หรือ Multi&lt;T&gt;</div>
+                </div>
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@RedisDataSource</div>
+                  <div class="mq-ann-desc">Inject RedisDataSource สำหรับ named Redis client (ถ้ามีหลาย instance)</div>
+                  <div class="mq-ann-note">@RedisDataSource("cache") สำหรับ quarkus.redis.cache.*</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /mq-quarkus-view -->
+
+        </div><!-- /mq-tab -->
+
+        <!-- ══════════════════════════════════════════
+             BROWSER STORAGE APIS TAB
+        ══════════════════════════════════════════ -->
+        <div id="storage-tab" class="tab-content">
+
+          <!-- Sub-nav -->
+          <div class="stor-subnav">
+            <button class="stor-nav-btn stor-nav-active" onclick="storSwitchView(this,'stor-overview')">🏠 Overview</button>
+            <button class="stor-nav-btn" onclick="storSwitchView(this,'stor-local')">localStorage</button>
+            <button class="stor-nav-btn" onclick="storSwitchView(this,'stor-session')">sessionStorage</button>
+            <button class="stor-nav-btn" onclick="storSwitchView(this,'stor-idb')">IndexedDB</button>
+            <button class="stor-nav-btn" onclick="storSwitchView(this,'stor-cookie')">Cookies</button>
+            <button class="stor-nav-btn" onclick="storSwitchView(this,'stor-cache')">Cache API</button>
+            <button class="stor-nav-btn" onclick="storSwitchView(this,'stor-security')">🔒 Security</button>
+          </div>
+
+          <!-- ─── OVERVIEW ─── -->
+          <div id="stor-overview" class="stor-view">
+
+            <div class="stor-section">
+              <div class="stor-section-title">⏳ Storage Lifetime — ข้อมูลอยู่ได้นานแค่ไหน?</div>
+              <div class="stor-section-sub">กด "ปิด Tab" หรือ "ล้างข้อมูล" ดูว่า storage แต่ละชนิดตอบสนองอย่างไร</div>
+              <div class="stor-lifetime">
+                <div class="stor-lifetime-title">🟢 สถานะข้อมูล</div>
+
+                <div class="stor-bar-row" id="stor-bar-local">
+                  <div class="stor-bar-name">localStorage</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#60a5fa"></div></div>
+                  <div class="stor-bar-label">ถาวร ✓</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-session">
+                  <div class="stor-bar-name">sessionStorage</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#fb923c"></div></div>
+                  <div class="stor-bar-label">อยู่ใน tab นี้ ✓</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-idb">
+                  <div class="stor-bar-name">IndexedDB</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#a78bfa"></div></div>
+                  <div class="stor-bar-label">ถาวร ✓</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-cookie">
+                  <div class="stor-bar-name">Cookie (TTL)</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#34d399"></div></div>
+                  <div class="stor-bar-label">จนหมด TTL ✓</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-cache">
+                  <div class="stor-bar-name">Cache API</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#f472b6"></div></div>
+                  <div class="stor-bar-label">ถาวร ✓</div>
+                </div>
+
+                <div class="stor-lifetime-btns">
+                  <button class="stor-lt-btn" onclick="storLifetimeAnim('close-tab')">🔒 ปิด Tab</button>
+                  <button class="stor-lt-btn" onclick="storLifetimeAnim('clear')">🗑️ ล้างข้อมูล Browser</button>
+                  <button class="stor-lt-btn" onclick="storLifetimeAnim('reset')">🔄 Reset</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">📊 เปรียบเทียบทุกชนิด</div>
+              <div class="stor-section-sub">คลิกแถวเพื่อไปดูรายละเอียด</div>
+              <div style="overflow-x:auto">
+                <table class="stor-cmp-table">
+                  <thead><tr>
+                    <th>Storage</th><th>ขนาด</th><th>ประเภทข้อมูล</th><th>Lifetime</th><th>Async</th><th>ค้นหาได้</th><th>เหมาะกับ</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr onclick="document.querySelector('[onclick*=stor-local]').click()">
+                      <td><span class="stor-cmp-name" style="color:#60a5fa">localStorage</span></td>
+                      <td>5–10 MB</td><td>string</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-no">❌</span></td><td><span class="stor-cmp-no">❌</span></td>
+                      <td>settings, theme, preferences</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-session]').click()">
+                      <td><span class="stor-cmp-name" style="color:#fb923c">sessionStorage</span></td>
+                      <td>5 MB</td><td>string</td><td>ปิด tab = หาย</td>
+                      <td><span class="stor-cmp-no">❌</span></td><td><span class="stor-cmp-no">❌</span></td>
+                      <td>wizard, multi-step form</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-idb]').click()">
+                      <td><span class="stor-cmp-name" style="color:#a78bfa">IndexedDB</span></td>
+                      <td>GB+</td><td>Object, Blob, File…</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-ok">✅</span></td><td><span class="stor-cmp-ok">✅</span></td>
+                      <td>offline data, draft, profile cache</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-cookie]').click()">
+                      <td><span class="stor-cmp-name" style="color:#34d399">Cookie</span></td>
+                      <td>4 KB</td><td>string</td><td>มี expires</td>
+                      <td><span class="stor-cmp-ok">✅</span></td><td><span class="stor-cmp-no">❌</span></td>
+                      <td>auth token (httpOnly)</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-cache]').click()">
+                      <td><span class="stor-cmp-name" style="color:#f472b6">Cache API</span></td>
+                      <td>GB+</td><td>HTTP Request/Response</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-ok">✅</span></td><td><span class="stor-cmp-no">❌</span></td>
+                      <td>PWA offline, static assets</td>
+                    </tr>
+                    <tr>
+                      <td><span class="stor-cmp-name" style="color:#fbbf24">OPFS</span></td>
+                      <td>GB+</td><td>File (binary)</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-ok">✅</span></td><td><span class="stor-cmp-no">❌</span></td>
+                      <td>ไฟล์ใหญ่, SQLite-in-browser</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div><!-- /stor-overview -->
+
+          <!-- ─── localStorage ─── -->
+          <div id="stor-local" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title">📦 localStorage คืออะไร?</div>
+              <div class="stor-section-sub">เก็บ key-value แบบ string — ง่าย synchronous ไม่หายแม้ปิด browser</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">5–10 MB</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string เท่านั้น</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ถาวร</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Blocking</div><div class="stor-info-val">ใช่ (sync)</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🧪 ลองใช้จริงได้เลย</div>
+              <div class="stor-section-sub">ข้อมูลที่บันทึกจะอยู่ใน localStorage จริงๆ (ใช้ prefix <code>_sp_</code>)</div>
+              <div class="stor-playground">
+                <div class="stor-play-inputs">
+                  <input id="stor-play-key" placeholder="key เช่น username" />
+                  <input id="stor-play-val" placeholder="value เช่น สมชาย" />
+                </div>
+                <div class="stor-play-btns">
+                  <button class="stor-play-btn stor-play-primary" onclick="storLocalStore()">💾 setItem</button>
+                  <button class="stor-play-btn" onclick="storLocalGet()">🔍 getItem</button>
+                  <button class="stor-play-btn" onclick="storLocalDelete()">🗑️ removeItem</button>
+                  <button class="stor-play-btn stor-play-danger" onclick="storLocalClearAll()">✕ Clear All</button>
+                </div>
+                <div id="stor-play-out" class="stor-play-out">กด getItem เพื่อดูค่า…</div>
+                <div id="stor-play-list" class="stor-play-list"></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">💻 Code Example</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)">⎘ copy</button>
+                <pre class="stor-code">// ── เก็บข้อมูล ──
+localStorage.setItem('theme', 'dark');
+localStorage.setItem('lang', 'th');
+
+// ── อ่านข้อมูล ──
+const theme = localStorage.getItem('theme'); // "dark"
+const missing = localStorage.getItem('xxx'); // null
+
+// ── เก็บ Object (ต้อง JSON.stringify) ──
+const user = { id: 1, name: 'สมชาย' };
+localStorage.setItem('user', JSON.stringify(user));
+const loaded = JSON.parse(localStorage.getItem('user'));
+
+// ── ลบ ──
+localStorage.removeItem('theme');
+localStorage.clear(); // ล้างทั้งหมด
+
+// ── วนดูทุก key ──
+for (let i = 0; i &lt; localStorage.length; i++) {
+  const key = localStorage.key(i);
+  console.log(key, localStorage.getItem(key));
+}</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">✅ ใช้เมื่อ / ⚠️ อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">เก็บ theme, language, UI preferences — ข้อมูลเล็กที่ user ตั้งค่าไว้</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">Last active tab, sidebar state, form draft เล็กๆ</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">เก็บ auth token หรือ JWT — XSS ขโมยได้ทันที ใช้ httpOnly cookie แทน</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">ข้อมูลใหญ่กว่า 5 MB — จะ throw QuotaExceededError</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon">⚠️</span><span class="stor-rule-text">ข้อมูลที่ต้องการค้นหา/filter — ใช้ IndexedDB แทน</span></div>
+              </div>
+              <div class="stor-use-list">
+                <span class="stor-use-pill">Theme switcher</span>
+                <span class="stor-use-pill">Language preference</span>
+                <span class="stor-use-pill">Last active tab</span>
+                <span class="stor-use-pill">Sidebar collapse state</span>
+                <span class="stor-use-pill">Dev-tools นี้ใช้อยู่! 🎉</span>
+              </div>
+            </div>
+
+          </div><!-- /stor-local -->
+
+          <!-- ─── sessionStorage ─── -->
+          <div id="stor-session" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title">🪟 sessionStorage คืออะไร?</div>
+              <div class="stor-section-sub">เหมือน localStorage แต่ข้อมูลหายเมื่อปิด tab — แต่ละ tab มี storage แยกกัน</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">5 MB</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string เท่านั้น</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ปิด tab = หาย</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Tab isolation</div><div class="stor-info-val">ใช่ — แยกต่อ tab</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🪟 Tab Isolation — แต่ละ tab มีข้อมูลต่างกัน</div>
+              <div class="stor-section-sub">เปิด tab ใหม่ → sessionStorage ใหม่ (ว่างเปล่า) แม้เปิด URL เดียวกัน</div>
+              <div class="stor-tabs-vis">
+                <div class="stor-tab-box">
+                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab A — Checkout Step 2</div>
+                  <div class="stor-tab-body">
+                    <div class="stor-tab-kv"><span class="stor-tab-k">checkoutStep</span><span>:</span><span class="stor-tab-v">"2"</span></div>
+                    <div class="stor-tab-kv"><span class="stor-tab-k">cartItems</span><span>:</span><span class="stor-tab-v">"[{...}]"</span></div>
+                    <div class="stor-tab-kv"><span class="stor-tab-k">shippingAddr</span><span>:</span><span class="stor-tab-v">"{...}"</span></div>
+                  </div>
+                </div>
+                <div class="stor-tab-box">
+                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab B — เพิ่งเปิดใหม่</div>
+                  <div class="stor-tab-body">
+                    <div class="stor-tab-empty">sessionStorage ว่างเปล่า</div>
+                    <div class="stor-tab-empty">(ไม่เห็นข้อมูลของ Tab A)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">💻 Code Example</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)">⎘ copy</button>
+                <pre class="stor-code">// ── Multi-step checkout wizard ──
+
+// Step 1: บันทึก cart
+sessionStorage.setItem('checkoutStep', '1');
+sessionStorage.setItem('cartItems', JSON.stringify(items));
+
+// Step 2: บันทึก shipping address
+sessionStorage.setItem('checkoutStep', '2');
+sessionStorage.setItem('shippingAddr', JSON.stringify(addr));
+
+// Step 3: อ่านข้อมูลรวมเพื่อ submit
+const step  = sessionStorage.getItem('checkoutStep');
+const cart  = JSON.parse(sessionStorage.getItem('cartItems'));
+const addr  = JSON.parse(sessionStorage.getItem('shippingAddr'));
+
+// หลัง submit สำเร็จ ล้างข้อมูล
+sessionStorage.clear();
+
+// ── API เหมือน localStorage ทุกอย่าง ──
+sessionStorage.setItem(key, value);
+sessionStorage.getItem(key);
+sessionStorage.removeItem(key);
+sessionStorage.length;</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">✅ ใช้เมื่อ / ⚠️ อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">Multi-step form / wizard — เก็บ state ระหว่างขั้นตอน ล้างหลัง submit</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">OTP flow, checkout — ข้อมูลชั่วคราวที่ควรหายเมื่อปิด tab</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">ข้อมูลที่ต้องอยู่ข้าม tab หรือหลังปิด browser — ใช้ localStorage แทน</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon">⚠️</span><span class="stor-rule-text">Ctrl+D duplicate tab → sessionStorage ถูก clone ไปด้วย (ระวัง duplicate state)</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-session -->
+
+          <!-- ─── IndexedDB ─── -->
+          <div id="stor-idb" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title">🗃️ IndexedDB คืออะไร?</div>
+              <div class="stor-section-sub">Database จริงๆ ใน browser — เก็บ Object ได้โดยตรง, มี index ค้นหาได้, async ทั้งหมด</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">GB+</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">ทุกอย่าง (Object, Blob, File)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ถาวร</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Async</div><div class="stor-info-val">✅ ไม่ block UI</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🎮 Object Store — ลอง CRUD ได้เลย</div>
+              <div class="stor-section-sub">นี่คือ visual demo — เหมือนกับ IndexedDB Object Store ใน browser จริง</div>
+              <div class="stor-idb-controls">
+                <input class="stor-idb-search" placeholder="🔍 ค้นหา name หรือ role…" oninput="storIdbSearch(this.value)" />
+                <button class="stor-play-btn stor-play-primary" onclick="storIdbAdd()">+ Add Record</button>
+              </div>
+              <div class="stor-idb-wrap">
+                <table class="stor-idb-tbl">
+                  <thead><tr><th>id</th><th>name</th><th>role</th><th>cachedAt</th><th></th></tr></thead>
+                  <tbody id="stor-idb-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">💻 Code — Dexie.js (แนะนำ)</div>
+              <div class="stor-section-sub">Dexie.js คือ wrapper บาง Promise-based ที่ทำให้ IndexedDB ง่ายมาก</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)">⎘ copy</button>
+                <pre class="stor-code">import Dexie from 'dexie'; // npm install dexie
+
+// ── 1. สร้าง database + schema ──
+const db = new Dexie('myApp');
+db.version(1).stores({
+  users:    '++id, name, role, email',  // ++ = auto-increment PK
+  products: '++id, name, price, *tags', // * = multi-value index
+});
+
+// ── 2. Add ──
+await db.users.add({ name: 'สมชาย', role: 'admin', email: 'a@b.com' });
+await db.users.bulkAdd([
+  { name: 'มาลี', role: 'user', email: 'c@d.com' },
+  { name: 'วิชัย', role: 'user', email: 'e@f.com' },
+]);
+
+// ── 3. Query ──
+const all   = await db.users.toArray();
+const admins= await db.users.where('role').equals('admin').toArray();
+const found = await db.users.where('name').startsWith('ส').toArray();
+const one   = await db.users.get(1); // by primary key
+
+// ── 4. Update ──
+await db.users.update(1, { role: 'superadmin' });
+await db.users.where('role').equals('user').modify({ active: true });
+
+// ── 5. Delete ──
+await db.users.delete(1);
+await db.users.where('role').equals('guest').delete();</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">💻 Code — Raw IndexedDB API (ไม่แนะนำ แต่รู้ไว้)</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)">⎘ copy</button>
+                <pre class="stor-code">// Raw API verbose มาก — ใช้ Dexie แทนดีกว่า
+const request = indexedDB.open('myApp', 1);
+
+request.onupgradeneeded = (e) => {
+  const db = e.target.result;
+  const store = db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+  store.createIndex('role', 'role', { unique: false });
+};
+
+request.onsuccess = (e) => {
+  const db = e.target.result;
+  const tx = db.transaction('users', 'readwrite');
+  const store = tx.objectStore('users');
+  store.add({ name: 'สมชาย', role: 'admin' });
+  tx.oncomplete = () => console.log('done');
+};</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">✅ ใช้เมื่อ / ⚠️ อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">Cache API response — เก็บ product list, article, user profile ไว้ใช้ offline</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">Draft / unsent form — เก็บข้อมูลที่ยังไม่ submit ค้างไว้ระหว่าง session</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">รูปภาพ / ไฟล์ — เก็บ Blob ได้โดยตรง ไม่ต้อง base64 encode</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">Auth token — XSS อ่านได้ ใช้ httpOnly cookie เสมอ</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon">⚠️</span><span class="stor-rule-text">ข้อมูลเล็กๆ เช่น theme, setting — localStorage ง่ายกว่า เหมาะกว่า</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-idb -->
+
+          <!-- ─── Cookies ─── -->
+          <div id="stor-cookie" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title">🍪 Cookies คืออะไร?</div>
+              <div class="stor-section-sub">ส่งไปกับทุก HTTP request อัตโนมัติ — เหมาะกับ auth token ที่ server ต้องอ่าน</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">4 KB ต่อ cookie</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string (key=value)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">กำหนดได้ (expires)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ส่งไป server</div><div class="stor-info-val">✅ อัตโนมัติ</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🔄 Cookie ส่งไปกับ Request อัตโนมัติ</div>
+              <div class="stor-ck-vis">
+                <!-- Node diagram -->
+                <div class="stor-ck-diagram">
+                  <div class="stor-ck-endpoint">
+                    <div class="stor-ck-ep-icon">🌐</div>
+                    <div class="stor-ck-ep-label">Browser</div>
+                  </div>
+                  <div class="stor-ck-mid">
+                    <div class="stor-ck-pkt" id="stor-ck-pkt-req">🍪 Cookie: session=abc123</div>
+                    <div class="stor-ck-lane stor-ck-lane-req">
+                      <div class="stor-ck-progress" id="stor-ck-prog-req"></div>
+                    </div>
+                    <div class="stor-ck-lane-label" id="stor-ck-lbl-req">GET /api/profile</div>
+                    <div class="stor-ck-lane stor-ck-lane-res">
+                      <div class="stor-ck-progress stor-ck-progress-rev" id="stor-ck-prog-res"></div>
+                    </div>
+                    <div class="stor-ck-pkt stor-ck-pkt-res" id="stor-ck-pkt-res">Set-Cookie: session=xyz; HttpOnly; Secure</div>
+                    <div class="stor-ck-lane-label stor-ck-lane-label-res" id="stor-ck-lbl-res">200 OK</div>
+                  </div>
+                  <div class="stor-ck-endpoint">
+                    <div class="stor-ck-ep-icon">⚙️</div>
+                    <div class="stor-ck-ep-label">Server</div>
+                  </div>
+                </div>
+                <div class="stor-ck-status" id="stor-ck-status">กด Animate เพื่อดู cookie flow</div>
+                <button class="stor-lt-btn" id="stor-ck-btn" onclick="storCookieAnimate()">▶ Animate</button>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🔐 Cookie Attributes ที่สำคัญ</div>
+              <div style="overflow-x:auto">
+                <table class="stor-cmp-table">
+                  <thead><tr><th>Attribute</th><th>ความหมาย</th><th>แนะนำ</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>HttpOnly</code></td><td>JS อ่านไม่ได้ ป้องกัน XSS</td><td><span class="stor-cmp-ok">ใช้เสมอสำหรับ auth</span></td></tr>
+                    <tr><td><code>Secure</code></td><td>ส่งผ่าน HTTPS เท่านั้น</td><td><span class="stor-cmp-ok">ใช้เสมอใน production</span></td></tr>
+                    <tr><td><code>SameSite=Strict</code></td><td>ป้องกัน CSRF attack</td><td><span class="stor-cmp-ok">แนะนำ Strict หรือ Lax</span></td></tr>
+                    <tr><td><code>expires / Max-Age</code></td><td>กำหนดอายุ cookie</td><td>ตามความต้องการ</td></tr>
+                    <tr><td><code>Path</code></td><td>จำกัด path ที่ส่ง cookie</td><td>ระบุให้ specific</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">💻 Code Example</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)">⎘ copy</button>
+                <pre class="stor-code">// ── Server-side (Node.js / Express) — แนะนำ ──
+res.cookie('session', token, {
+  httpOnly: true,   // ← JS อ่านไม่ได้ (สำคัญมาก!)
+  secure:   true,   // ← HTTPS เท่านั้น
+  sameSite: 'Strict', // ← ป้องกัน CSRF
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 วัน
+});
+
+// ── Client-side JS (regular cookie เท่านั้น) ──
+// อ่าน
+document.cookie; // "name=Alice; lang=th"
+
+// เขียน
+document.cookie = "lang=th; max-age=86400; path=/";
+
+// ลบ (ตั้ง expire เป็นอดีต)
+document.cookie = "lang=; max-age=0; path=/";
+
+// ⚠️ httpOnly cookie จาก server → JS อ่านไม่เห็นเลย (ถูกต้อง!)</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">✅ ใช้เมื่อ / ⚠️ อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">Auth token / session ID — httpOnly + Secure + SameSite=Strict เท่านั้น</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">ข้อมูลใหญ่ — 4 KB limit และส่งไปกับทุก request (ทำให้ request ใหญ่ขึ้น)</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">Sensitive data ใน non-httpOnly cookie — JS อ่านได้ = XSS อ่านได้</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-cookie -->
+
+          <!-- ─── Cache API ─── -->
+          <div id="stor-cache" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title">⚡ Cache API คืออะไร?</div>
+              <div class="stor-section-sub">เก็บ HTTP Request/Response — ใช้กับ Service Worker เพื่อทำ PWA offline</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">GB+</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">HTTP Request/Response</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ถาวร (จนกว่าล้าง)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">dev-tools นี้</div><div class="stor-info-val">✅ ใช้อยู่ใน sw.js</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🎬 Service Worker Intercept — Cache Hit vs Miss</div>
+              <div class="stor-cache-vis">
+                <div class="stor-cache-btns">
+                  <button class="stor-lt-btn" onclick="storCacheAnim('first')">📡 Request ครั้งแรก (Cache Miss)</button>
+                  <button class="stor-lt-btn" onclick="storCacheAnim('hit')">⚡ Request ครั้งที่ 2 (Cache Hit)</button>
+                  <button class="stor-lt-btn" onclick="storCacheAnim('offline')">📴 Offline Mode</button>
+                </div>
+                <div id="stor-cache-log" class="stor-cache-log">
+                  <div class="stor-cl-line" style="opacity:1;color:var(--text-muted)">กดปุ่มด้านบนเพื่อ simulate request…</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">💻 Code — Service Worker (sw.js ของ dev-tools นี้)</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)">⎘ copy</button>
+                <pre class="stor-code">const CACHE = 'myapp-v1';
+const ASSETS = ['/', '/index.html', '/app.css', '/app.js'];
+
+// ── Install: pre-cache static assets ──
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(ASSETS))
+  );
+  self.skipWaiting();
+});
+
+// ── Activate: ลบ cache เก่า ──
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+// ── Fetch: Cache-first strategy ──
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if (cached) return cached; // ← Cache HIT ⚡
+      return fetch(e.request).then(res => {
+        // Cache ก่อนส่งกลับ
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      });
+    })
+  );
+});</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">✅ ใช้เมื่อ / ⚠️ อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">PWA offline support — HTML, CSS, JS, รูปภาพ, fonts</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">Performance — ลด network round-trip สำหรับ static assets</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">เก็บ JSON data ทั่วไป — ใช้ IndexedDB แทน Cache API เก็บได้แค่ HTTP Response</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon">⚠️</span><span class="stor-rule-text">Cache invalidation — ต้อง bump cache version เมื่อ deploy ใหม่ ไม่งั้น user ได้ของเก่า</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-cache -->
+
+          <!-- ─── SECURITY ─── -->
+          <div id="stor-security" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title">😈 XSS Attack — ขโมยข้อมูลจาก Storage ได้ไหม?</div>
+              <div class="stor-section-sub">เลือก storage type ดูว่า attacker อ่านได้ไหม</div>
+              <div class="stor-xss-tabs">
+                <button class="stor-xss-tab stor-xss-tab-active" data-id="ls"  onclick="storXssSelect('ls')">localStorage</button>
+                <button class="stor-xss-tab" data-id="ss"  onclick="storXssSelect('ss')">sessionStorage</button>
+                <button class="stor-xss-tab" data-id="hc"  onclick="storXssSelect('hc')">httpOnly Cookie</button>
+                <button class="stor-xss-tab" data-id="idb" onclick="storXssSelect('idb')">IndexedDB</button>
+              </div>
+              <div id="stor-xss-box" class="stor-xss-box"></div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🔒 Best Practices — กฎที่ต้องจำ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text"><strong>Auth token → httpOnly Cookie เท่านั้น</strong> ไม่ใช่ localStorage, sessionStorage, หรือ IndexedDB</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">ใช้ <code>Secure</code> + <code>SameSite=Strict</code> กับทุก auth cookie</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">Sanitize ทุก user input ก่อนแสดงผล — ป้องกัน XSS ตั้งแต่ต้นทาง</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">✅</span><span class="stor-rule-text">ใช้ Content Security Policy (CSP) header — จำกัด script ที่รันได้</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon">❌</span><span class="stor-rule-text">อย่าเก็บ password, เลขบัตรเครดิต, เลขบัตรประชาชน ใน storage ใดๆ ทั้งสิ้น</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon">⚠️</span><span class="stor-rule-text">IndexedDB ไม่ encrypt — ใครเข้าถึงเครื่องได้อ่านข้อมูลได้ อย่าเก็บ sensitive data</span></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">🌳 Decision Tree — ใช้ storage ไหนดี?</div>
+              <div class="stor-section-sub">ตอบคำถามเพื่อรับคำแนะนำ</div>
+              <div id="stor-dt-box" class="stor-dt-box"></div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title">📖 ดูใน Chrome DevTools</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">F12</span><span class="stor-rule-text">เปิด DevTools → แท็บ <strong>Application</strong> (หรือ Storage)</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">📦</span><span class="stor-rule-text">ซ้ายมือ: Local Storage, Session Storage, IndexedDB, Cookies, Cache Storage</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">🔍</span><span class="stor-rule-text">คลิกที่แต่ละ origin เพื่อดู/แก้ไข/ลบข้อมูลได้ทันที</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon">⚠️</span><span class="stor-rule-text">httpOnly cookie จะแสดงใน DevTools แต่ JS อ่านไม่ได้ — นี่คือพฤติกรรมที่ถูกต้อง</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-security -->
+
+        </div><!-- /storage-tab -->
 
       </div>
       <!-- content-area -->

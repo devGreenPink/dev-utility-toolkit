@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.10-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.12-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -12,7 +12,7 @@
 
 ## ✨ Features
 
-เครื่องมือ 18 อย่าง ทำงานได้ทั้งหมดบน client-side ไม่มี server ไม่มี API ไม่มี tracking
+เครื่องมือ 20 อย่าง ทำงานได้ทั้งหมดบน client-side ไม่มี server ไม่มี API ไม่มี tracking
 
 ### 🎲 Mock Data Generator
 สร้างข้อมูลจำลองสำหรับทดสอบระบบ รองรับข้อมูลไทย:
@@ -116,6 +116,24 @@
 - Hook Reference cards 9 hooks — ค้นหาได้, phase badge, คำอธิบาย + ✓ ใช้เมื่อ + ✗ หลีกเลี่ยง + code
 - Key Concepts (Change Detection, Content vs View, @Input), Common Patterns, Common Mistakes
 
+### 🐇 RabbitMQ · Redis · Quarkus
+แนะนำ concept + code สำหรับมือใหม่ที่ต้องการใช้งานใน Quarkus service บน Kubernetes:
+- **RabbitMQ** — Exchange types (Direct / Fanout / Topic / Headers) พร้อม visual flow diagram, Queue animation
+- **Redis** — Pub/Sub, Cache-aside pattern, Session storage, Rate limiting animation
+- **Quarkus Integration** — SmallRye Reactive Messaging (`@Incoming` / `@Outgoing` / `Emitter<T>`), Redis DataSource API (StringCommands, HashCommands, KeyCommands)
+- Code examples ที่ถูกต้องและ compile ได้จริง — ครอบคลุม atomic INCR, TTL ด้วย KeyCommands, hset ด้วย Map.of()
+- Syntax highlighting ด้วย highlight.js (Java + Properties)
+
+### 🗄️ Browser Storage APIs
+เข้าใจ storage ทุกชนิดใน browser พร้อม animation และ live demo:
+- **Overview** — Lifetime animation เปรียบเทียบ 5 storage types, comparison table แบบ interactive
+- **localStorage** — Live Playground ลอง set/get/delete ได้จริง + code examples
+- **sessionStorage** — Tab isolation visual diagram
+- **IndexedDB** — Animated CRUD table, Dexie.js + raw API code examples
+- **Cookies** — Request flow animation (cookie ส่งอัตโนมัติ), Cookie attributes (HttpOnly/Secure/SameSite)
+- **Cache API** — Service Worker intercept log animation (Cache Miss / Cache Hit / Offline)
+- **Security** — XSS attack visualization เลือกดูแต่ละ storage ว่าโดน/ปลอดภัย + Decision Tree แนะนำ storage ที่เหมาะสม
+
 ---
 
 ## 🚀 วิธีใช้งาน
@@ -181,7 +199,7 @@ HTML + CSS + Vanilla JavaScript (no build step, no npm, no framework)
 ├── jsdiff 5.1.0          — Text/JSON diff (CDN)
 ├── RxJS 7.8.1            — RxJS Playground runtime (CDN)
 ├── CodeMirror 5.65.16    — RxJS Playground editor + syntax highlighting (CDN)
-├── highlight.js 11.9.0   — TypeScript syntax highlighting for code blocks (CDN)
+├── highlight.js 11.9.0   — TypeScript / Java / JavaScript syntax highlighting for code blocks (CDN)
 └── Google Fonts          — IBM Plex Sans Thai, JetBrains Mono
 ```
 
