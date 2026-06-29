@@ -2420,8 +2420,9 @@ const RXJS_OPS=[
 ];
 
 let rxjsCatActive='all',rxjsQ='';
+let rxjsCurrentView='ref';
 
-function initRxjs(){renderRxjsCats();renderRxjsOps();}
+function initRxjs(){renderRxjsCats();renderRxjsOps();rxjsInitPlayground();}
 
 function renderRxjsCats(){
   const el=document.getElementById('rxjs-cat-filter');
@@ -2448,12 +2449,562 @@ function renderRxjsOps(){
   if(cnt)cnt.textContent=`${ops.length} operator${ops.length!==1?'s':''}`;
   if(!ops.length){el.innerHTML='<div class="rxjs-empty">ไม่พบ operator ที่ค้นหา — ลองเปลี่ยน keyword หรือ category</div>';return;}
   el.innerHTML=ops.map(op=>`<div class="rxjs-op-card">
-  <div class="rxjs-op-top"><span class="rxjs-op-name">${op.n}</span><span class="rxjs-op-badge" style="background:${RXJS_CC[op.c]}18;color:${RXJS_CC[op.c]};border-color:${RXJS_CC[op.c]}40">${op.c}</span></div>
+  <div class="rxjs-op-top">
+    <span class="rxjs-op-name">${op.n}</span>
+    <span class="rxjs-op-badge" style="background:${RXJS_CC[op.c]}18;color:${RXJS_CC[op.c]};border-color:${RXJS_CC[op.c]}40">${op.c}</span>
+    <button class="rxjs-try-btn" onclick="rxjsTryOp('${op.n}')">▶ Try</button>
+  </div>
   <div class="rxjs-op-summary">${escHtml(op.s)}</div>
   <div class="rxjs-op-when"><span class="rxjs-when-ok">✓ ใช้เมื่อ</span>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<span class="rxjs-when-no">✗ หลีกเลี่ยง</span>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join('')}`:''}</div>
   <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>${escHtml(op.code)}</code></pre></div></details>
   ${op.rel.length?`<div class="rxjs-op-rel">เทียบกับ: ${op.rel.map(r=>`<button class="rxjs-rel-btn" onclick="rxjsJumpTo('${r}')">${r}</button>`).join('')}</div>`:''}
 </div>`).join('');
+}
+
+// Runnable versions of operator examples (override op.code for playground)
+const RXJS_RUN_CODE={
+'from':
+`// from — แปลง array / Promise เป็น Observable
+from([1, 2, 3]).subscribe(console.log);
+
+// จาก Promise
+from(Promise.resolve({ name: 'RxJS', version: 7 }))
+  .subscribe(data => console.log('resolved:', JSON.stringify(data)));`,
+
+'fromEvent':
+`// จำลอง DOM events ด้วย Subject (ไม่ต้องการ element จริง)
+const clicks$ = new Subject();
+
+clicks$.pipe(
+  map(pos => \`clicked at x:\${pos.x} y:\${pos.y}\`)
+).subscribe(console.log);
+
+clicks$.next({ x: 120, y: 45 });
+clicks$.next({ x: 88,  y: 200 });
+clicks$.next({ x: 300, y: 150 });
+clicks$.complete();`,
+
+'interval':
+`// poll ทุก 300ms รับแค่ 5 ครั้ง
+interval(300).pipe(
+  take(5),
+  switchMap(i => of({ tick: i, ok: i < 4 ? 'loading' : 'done' }))
+).subscribe({
+  next: s => console.log(\`poll #\${s.tick}:\`, s.ok),
+  complete: () => console.log('หยุด poll')
+});`,
+
+'timer':
+`// emit ครั้งเดียวหลัง 500ms
+timer(500).subscribe(() => console.log('⏰ timer fired!'));
+
+// emit ทุก 300ms หลังรอ 600ms
+timer(600, 300).pipe(
+  take(4),
+  map(n => \`tick \${n}\`)
+).subscribe(console.log);`,
+
+'EMPTY':
+`const search$ = new Subject();
+
+search$.pipe(
+  switchMap(term =>
+    term.length < 2 ? EMPTY : of(\`results: "\${term}"\`).pipe(delay(100))
+  )
+).subscribe(r => console.log(r));
+
+search$.next('a');   // ไม่ emit (EMPTY)
+search$.next('rx');  // emit
+search$.next('rxj'); // emit`,
+
+'throwError':
+`throwError(() => new Error('API failed')).pipe(
+  catchError(err => {
+    console.error('caught:', err.message);
+    return EMPTY;
+  })
+).subscribe({
+  next: v => console.log('next:', v),
+  complete: () => console.log('complete')
+});`,
+
+'iif':
+`const isLoggedIn = () => true;
+
+iif(
+  isLoggedIn,
+  of({ user: 'สมชาย', role: 'admin' }),
+  of({ guest: true })
+).subscribe(u => console.log(JSON.stringify(u)));`,
+
+'map':
+`from([1, 2, 3]).pipe(
+  map(x => x * 2)
+).subscribe(console.log); // 2, 4, 6
+
+// transform HTTP response shape
+of({ data: [{ name: 'ก้อง', active: true }, { name: 'บิ๊ก', active: false }] }).pipe(
+  map(res => res.data),
+  map(users => users.filter(u => u.active))
+).subscribe(u => console.log('active:', JSON.stringify(u)));`,
+
+'switchMap':
+`// search autocomplete: cancel request เก่าทันทีเมื่อมีคำใหม่
+const search$ = new Subject();
+
+search$.pipe(
+  debounceTime(100),
+  distinctUntilChanged(),
+  switchMap(term =>
+    term ? of(\`results for "\${term}"\`).pipe(delay(150)) : EMPTY
+  )
+).subscribe(r => console.log(r));
+
+search$.next('a');
+search$.next('an');
+search$.next('ang');
+setTimeout(() => search$.next('angular'), 200);`,
+
+'mergeMap':
+`// upload หลายไฟล์พร้อมกัน (parallel)
+const files = ['photo.jpg', 'doc.pdf', 'data.csv'];
+
+from(files).pipe(
+  mergeMap(file => {
+    const ms = Math.round(Math.random() * 150 + 100);
+    return of(\`✅ uploaded: \${file}\`).pipe(delay(ms));
+  })
+).subscribe({
+  next: r => console.log(r),
+  complete: () => console.log('🎉 ทุกไฟล์ upload สำเร็จ')
+});`,
+
+'concatMap':
+`// sequential steps — รอทีละขั้น
+const steps = ['validate', 'save to DB', 'send email'];
+
+from(steps).pipe(
+  concatMap((step, i) =>
+    of(\`✅ step \${i+1}: \${step}\`).pipe(delay(200))
+  )
+).subscribe({
+  next: s => console.log(s),
+  complete: () => console.log('🏁 ทุก step เสร็จ')
+});`,
+
+'exhaustMap':
+`// ป้องกัน double submit
+const loginClick$ = new Subject();
+
+loginClick$.pipe(
+  exhaustMap(() => {
+    console.log('🔐 login started...');
+    return of({ user: 'สมชาย', token: 'abc123' }).pipe(delay(300));
+  })
+).subscribe(u => console.log('✅ logged in:', u.user));
+
+loginClick$.next(); // fires
+loginClick$.next(); // ignored (login ยังรันอยู่)
+loginClick$.next(); // ignored
+console.log('3 clicks sent → only 1 login fires');`,
+
+'scan':
+`// running counter
+from(['click','click','click','click']).pipe(
+  scan(count => count + 1, 0),
+  map(n => \`count: \${n}\`)
+).subscribe(console.log);
+
+// build array progressively
+of(1, 2, 3).pipe(
+  scan((acc, v) => [...acc, v], [])
+).subscribe(arr => console.log(JSON.stringify(arr)));`,
+
+'bufferTime':
+`// จำลอง buffered events
+interval(100).pipe(
+  take(15),
+  bufferTime(500)
+).subscribe(batch => console.log('batch:', JSON.stringify(batch)));`,
+
+'filter':
+`from([1,2,3,4,5,6]).pipe(
+  filter(n => n % 2 === 0)
+).subscribe(console.log); // 2, 4, 6
+
+// กรอง events ตาม type
+from([
+  { type: 'click', target: '.btn-primary' },
+  { type: 'click', target: '.btn-secondary' },
+  { type: 'click', target: '.btn-primary' }
+]).pipe(
+  filter(e => e.target === '.btn-primary')
+).subscribe(e => console.log('handled:', e.target));`,
+
+'take':
+`interval(200).pipe(
+  take(3)
+).subscribe({
+  next: n => console.log(n),
+  complete: () => console.log('complete after 3')
+});
+
+// take(1) = first-only
+const btn$ = new Subject();
+btn$.pipe(take(1)).subscribe(() => console.log('first click only!'));
+btn$.next(); // fires
+btn$.next(); // ignored`,
+
+'takeUntil':
+`const destroy$ = new Subject();
+
+interval(200).pipe(
+  takeUntil(destroy$)
+).subscribe({
+  next: tick => console.log('tick:', tick)
+});
+
+// destroy หลัง 700ms
+setTimeout(() => {
+  destroy$.next();
+  destroy$.complete();
+  console.log('✅ unsubscribed!');
+}, 700);`,
+
+'takeWhile':
+`const statuses = ['queued', 'processing', 'processing', 'done'];
+
+from(statuses).pipe(
+  concatMap((s, i) => of(s).pipe(delay(i * 150))),
+  takeWhile(s => s !== 'done', true)
+).subscribe({
+  next: s => console.log('status:', s),
+  complete: () => console.log('🏁 job complete!')
+});`,
+
+'skip':
+`const state$ = new BehaviorSubject(null);
+
+state$.pipe(
+  skip(1) // ข้าม null initial value
+).subscribe(data => console.log('got data:', JSON.stringify(data)));
+
+state$.next({ users: ['ก้อง'] });
+state$.next({ users: ['ก้อง', 'บิ๊ก'] });`,
+
+'skipUntil':
+`const ready$ = new Subject();
+
+interval(100).pipe(
+  take(10),
+  skipUntil(ready$)
+).subscribe(n => console.log('after ready:', n));
+
+setTimeout(() => {
+  console.log('🟢 ready!');
+  ready$.next();
+}, 350);`,
+
+'debounceTime':
+`const input$ = new Subject();
+
+input$.pipe(
+  tap(v => console.log('⌨️', v)),
+  debounceTime(200),
+  distinctUntilChanged()
+).subscribe(v => console.log('🔍 search API:', v));
+
+['a','an','ang','angu','angul','angular'].forEach((v, i) =>
+  setTimeout(() => input$.next(v), i * 80)
+);`,
+
+'throttleTime':
+`// scroll/event throttling
+interval(50).pipe(
+  take(20),
+  throttleTime(200),
+  map(n => \`event #\${n}\`)
+).subscribe(console.log);`,
+
+'distinctUntilChanged':
+`from([1,1,2,2,3,1]).pipe(
+  distinctUntilChanged()
+).subscribe(console.log); // 1 2 3 1
+
+// custom comparator
+from([
+  { userId: 1, name: 'ก้อง' },
+  { userId: 1, name: 'ก้อง v2' }, // same id → skip
+  { userId: 2, name: 'บิ๊ก' }
+]).pipe(
+  distinctUntilChanged((a, b) => a.userId === b.userId)
+).subscribe(s => console.log(JSON.stringify(s)));`,
+
+'distinct':
+`from([1,2,1,3,2,4]).pipe(
+  distinct()
+).subscribe(console.log); // 1 2 3 4
+
+from([{id:1,name:'ก้อง'},{id:2,name:'บิ๊ก'},{id:1,name:'ก้อง v2'}]).pipe(
+  distinct(u => u.id)
+).subscribe(u => console.log(JSON.stringify(u)));`,
+
+'sampleTime':
+`// snapshot ทุก 300ms จาก stream ที่ถี่
+interval(60).pipe(
+  take(20),
+  map(n => ({ x: n * 5, y: Math.round(Math.random() * 100) })),
+  sampleTime(300)
+).subscribe(pos => console.log('sampled:', JSON.stringify(pos)));`,
+
+'combineLatest':
+`const filter$ = new BehaviorSubject('all');
+const sort$   = new BehaviorSubject('name');
+const page$   = new BehaviorSubject(1);
+
+combineLatest([filter$, sort$, page$]).pipe(
+  debounceTime(50),
+  map(([f, s, p]) => \`filter=\${f} sort=\${s} page=\${p}\`)
+).subscribe(q => console.log('query:', q));
+
+filter$.next('active');
+sort$.next('date');
+page$.next(2);`,
+
+'merge':
+`const a$ = interval(200).pipe(take(3), map(i => \`A\${i}\`));
+const b$ = interval(300).pipe(take(2), map(i => \`B\${i}\`));
+const c$ = timer(500).pipe(map(() => 'C0'));
+
+merge(a$, b$, c$).subscribe(e => console.log('event:', e));`,
+
+'concat':
+`concat(
+  of('⏳ loading...'),
+  of({ data: 'init', version: 2 }).pipe(
+    delay(200),
+    map(d => JSON.stringify(d))
+  ),
+  of('✅ ready!')
+).subscribe(state => console.log(state));`,
+
+'forkJoin':
+`forkJoin({
+  user:  of({ id: 1, name: 'สมชาย' }).pipe(delay(100)),
+  posts: of([{ title: 'RxJS 101' }, { title: 'Angular Tips' }]).pipe(delay(150)),
+  tags:  of(['rxjs', 'angular']).pipe(delay(80))
+}).subscribe(({ user, posts, tags }) => {
+  console.log('👤', user.name);
+  console.log('📝', posts.length, 'posts');
+  console.log('🏷️', tags.join(', '));
+  console.log('✅ โหลดพร้อมกันทั้ง 3 APIs!');
+});`,
+
+'withLatestFrom':
+`const user$ = new BehaviorSubject({ name: 'สมชาย', role: 'admin' });
+const actions$ = new Subject();
+
+actions$.pipe(
+  withLatestFrom(user$),
+  map(([action, user]) => ({
+    action,
+    user: user.name,
+    allowed: user.role === 'admin' || action === 'view'
+  }))
+).subscribe(r => console.log(JSON.stringify(r)));
+
+actions$.next('view');
+actions$.next('delete');
+user$.next({ name: 'บิ๊ก', role: 'viewer' });
+actions$.next('delete'); // allowed: false`,
+
+'race':
+`const api1$ = of('api1 response').pipe(delay(300));
+const api2$ = of('api2 response').pipe(delay(200)); // เร็วกว่า
+const api3$ = of('api3 response').pipe(delay(400));
+
+race(api1$, api2$, api3$).subscribe(
+  winner => console.log('🏆 winner:', winner)
+);`,
+
+'startWith':
+`of({ users: ['ก้อง', 'บิ๊ก', 'มิ้น'] }).pipe(
+  delay(300),
+  map(data => ({ loading: false, data })),
+  startWith({ loading: true, data: null })
+).subscribe(state => console.log(JSON.stringify(state)));`,
+
+'catchError':
+`throwError(() => new Error('500 Internal Server Error')).pipe(
+  catchError(err => {
+    console.log('❌ Error:', err.message);
+    return of({ data: [], fromCache: true }); // fallback
+  })
+).subscribe(r => console.log('✅', JSON.stringify(r)));`,
+
+'retry':
+`let attempt = 0;
+
+defer(() => {
+  attempt++;
+  console.log(\`attempt \${attempt}...\`);
+  return attempt < 3
+    ? throwError(() => new Error('fail'))
+    : of('✅ success!');
+}).pipe(
+  retry(3)
+).subscribe({
+  next: v => console.log(v),
+  error: e => console.log('❌', e.message)
+});`,
+
+'retryWhen':
+`let tries = 0;
+
+defer(() => {
+  tries++;
+  return tries < 3
+    ? throwError(() => new Error(\`fail #\${tries}\`))
+    : of('success');
+}).pipe(
+  retry({ count: 3, delay: 200 })
+).subscribe({
+  next: v => console.log('✅', v),
+  error: e => console.log('❌', e.message)
+});`,
+
+'finalize':
+`of('data').pipe(
+  delay(200),
+  finalize(() => console.log('🏁 finalize — always runs'))
+).subscribe({
+  next: v => console.log('next:', v),
+  complete: () => console.log('complete')
+});
+
+throwError(() => new Error('oops')).pipe(
+  catchError(e => { console.log('caught:', e.message); return EMPTY; }),
+  finalize(() => console.log('🏁 finalize on error too'))
+).subscribe();`,
+
+'tap':
+`from([1, 2, 3, 4, 5]).pipe(
+  tap(v => console.log('📥 before filter:', v)),
+  filter(v => v % 2 === 0),
+  tap(v => console.log('✅ passed filter:', v)),
+  map(v => v * 10)
+).subscribe(v => console.log('📤 result:', v));`,
+
+'timeout':
+`// เร็วพอ
+of('fast response').pipe(
+  delay(100),
+  timeout(500)
+).subscribe({
+  next: v => console.log('✅', v),
+  error: e => console.log('❌', e.message)
+});
+
+// timeout
+of('slow response').pipe(
+  delay(600),
+  timeout(300),
+  catchError(err =>
+    err.name === 'TimeoutError'
+      ? of('⏱️ fallback data')
+      : throwError(() => err)
+  )
+).subscribe(v => console.log(v));`,
+
+'share':
+`let callCount = 0;
+const data$ = defer(() => {
+  callCount++;
+  console.log(\`HTTP call #\${callCount}\`);
+  return of({ result: 'shared' }).pipe(delay(100));
+}).pipe(share());
+
+// 2 subscribers แต่ HTTP call แค่ครั้งเดียว
+data$.subscribe(d => console.log('A:', JSON.stringify(d)));
+data$.subscribe(d => console.log('B:', JSON.stringify(d)));`,
+
+'shareReplay':
+`let callCount = 0;
+const config$ = defer(() => {
+  callCount++;
+  console.log(\`HTTP call #\${callCount}\`);
+  return of({ theme: 'dark', lang: 'th' }).pipe(delay(100));
+}).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+
+config$.subscribe(c => console.log('header:', JSON.stringify(c)));
+config$.subscribe(c => console.log('sidebar:', JSON.stringify(c)));
+
+setTimeout(() =>
+  config$.subscribe(c => console.log('late (cached):', JSON.stringify(c))),
+300);`,
+
+'Subject':
+`const action$ = new Subject();
+
+action$.pipe(
+  filter(a => a.type === 'click'),
+  throttleTime(200)
+).subscribe(a => console.log('handled:', a.type, '#' + a.id));
+
+action$.next({ type: 'click', id: 1 });
+action$.next({ type: 'hover', id: 2 }); // filtered out
+action$.next({ type: 'click', id: 3 });
+action$.complete();`,
+
+'BehaviorSubject':
+`const cart$ = new BehaviorSubject([]);
+
+// subscriber A
+cart$.subscribe(items => console.log('A cart:', items.length, 'items'));
+
+cart$.next([{ name: 'MacBook', price: 50000 }]);
+cart$.next([{ name: 'MacBook', price: 50000 }, { name: 'AirPods', price: 8000 }]);
+
+// subscriber B มาทีหลัง — ได้ค่าล่าสุดทันที
+cart$.subscribe(items => console.log('B (late):', items.length, 'items'));
+
+const total = cart$.getValue().reduce((s, i) => s + i.price, 0);
+console.log('total:', total.toLocaleString(), 'บาท');`,
+
+'ReplaySubject':
+`const history$ = new ReplaySubject(3); // buffer 3 ค่าล่าสุด
+
+history$.next({ action: 'login' });
+history$.next({ action: 'view', page: '/home' });
+history$.next({ action: 'click', btn: 'buy' });
+history$.next({ action: 'checkout' });
+
+// subscriber ใหม่ได้ 3 ล่าสุดทันที
+history$.subscribe(a => console.log(JSON.stringify(a)));`,
+
+'AsyncSubject':
+`const result$ = new AsyncSubject();
+
+result$.subscribe(v => console.log('A:', v));
+
+result$.next(1); // ยังไม่ emit
+result$.next(2); // ยังไม่ emit
+result$.next(3); // ยังไม่ emit
+
+result$.complete(); // emit เฉพาะค่าสุดท้าย (3)
+console.log('complete called');
+
+// late subscriber ก็ได้ค่า 3
+result$.subscribe(v => console.log('B (late):', v));`,
+};
+
+function rxjsTryOp(name){
+  const op=RXJS_OPS.find(o=>o.n===name);
+  if(!op)return;
+  rxjsSwitchView('pg');
+  rxjsPgSetCode(RXJS_RUN_CODE[name]||op.code);
+  rxjsRunCode();
+  document.getElementById('rxjs-pg-view').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function rxjsCopyCode(btn){
@@ -2463,6 +3014,7 @@ function rxjsCopyCode(btn){
 }
 
 function rxjsJumpTo(name){
+  rxjsSwitchView('ref');
   rxjsQ=name.toLowerCase();rxjsCatActive='all';
   const inp=document.getElementById('rxjs-search');if(inp)inp.value=name;
   renderRxjsCats();renderRxjsOps();
@@ -2470,12 +3022,14 @@ function rxjsJumpTo(name){
 }
 
 function clearRxjs(){
+  if(rxjsCurrentView==='pg'){rxjsClearOutput();return;}
   rxjsQ='';rxjsCatActive='all';
   const inp=document.getElementById('rxjs-search');if(inp)inp.value='';
   renderRxjsCats();renderRxjsOps();
 }
 
 function rxjsUcClick(q){
+  rxjsSwitchView('ref');
   rxjsCatActive='all';
   renderRxjsCats();
   const inp=document.getElementById('rxjs-search');
@@ -2484,11 +3038,375 @@ function rxjsUcClick(q){
   document.getElementById('rxjs-op-list').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
+function rxjsSwitchView(v){
+  rxjsCurrentView=v;
+  const ref=document.getElementById('rxjs-ref-view');
+  const pg=document.getElementById('rxjs-pg-view');
+  const tabRef=document.getElementById('rxjs-vtab-ref');
+  const tabPg=document.getElementById('rxjs-vtab-pg');
+  const clearBtn=document.getElementById('rxjs-clear-btn');
+  if(!ref||!pg)return;
+  ref.style.display=v==='ref'?'block':'none';
+  pg.style.display=v==='pg'?'block':'none';
+  tabRef.classList.toggle('rxjs-view-tab-active',v==='ref');
+  tabPg.classList.toggle('rxjs-view-tab-active',v==='pg');
+  if(clearBtn)clearBtn.textContent=v==='pg'?'✖ ล้าง output':'✖ ล้าง';
+}
+
 function rxjsToggleAcc(btn){
   const body=btn.nextElementSibling;
   const open=body.style.display!=='none';
   body.style.display=open?'none':'block';
   btn.classList.toggle('rxjs-acc-open',!open);
+  if(!open){
+    // animate marble dots on open
+    body.querySelectorAll('.rxjs-marble').forEach((m,mi)=>{
+      m.classList.remove('rxjs-marble-animated');
+      void m.offsetWidth; // force reflow to restart animation
+      m.classList.add('rxjs-marble-animated');
+      // stagger dots by position within each marble
+      m.querySelectorAll('.rxjs-mdot,.rxjs-mend').forEach((dot,di)=>{
+        dot.style.animationDelay=(mi*0.05+di*0.08)+'s';
+      });
+    });
+  }
+}
+
+// ── RxJS PLAYGROUND ──
+
+const RXJS_PG_PRESETS={
+'of':`// of — emit ค่าหลายตัวทีเดียว แล้วแปลงด้วย map
+of(1, 2, 3, 4, 5).pipe(
+  filter(x => x % 2 !== 0),
+  map(x => 'เลขคี่ x²: ' + (x * x))
+).subscribe(v => console.log(v));`,
+
+'from':`// from — แปลง array เป็น stream
+from(['Angular', 'React', 'Vue']).pipe(
+  map((name, i) => \`\${i + 1}. \${name}\`),
+  filter(s => !s.includes('Vue'))
+).subscribe(v => console.log(v));`,
+
+'interval':`// interval — emit ทุก 300ms รับแค่ 6 ค่า
+interval(300).pipe(
+  take(6),
+  map(i => {
+    const bars = '█'.repeat(i + 1);
+    return \`[\${i}] \${bars}\`;
+  })
+).subscribe({
+  next: v => console.log(v),
+  complete: () => console.log('✅ complete!')
+});`,
+
+'scan':`// scan — running total (เหมือน reduce แต่ emit ทุกรอบ)
+of(10, 5, 20, 3, 15).pipe(
+  scan((acc, v) => ({ sum: acc.sum + v, last: v }), { sum: 0, last: 0 }),
+  map(s => \`+\${s.last} → รวม: \${s.sum}\`)
+).subscribe(v => console.log(v));`,
+
+'switchMap':`// switchMap — cancel inner เดิม เมื่อมี source ใหม่
+// จำลอง: พิมพ์ search term → cancel เก่า → fetch ใหม่
+of('a', 'an', 'ang', 'angu', 'angul').pipe(
+  concatMap((term, i) =>
+    // เพิ่ม delay เพื่อให้เห็นว่า switchMap จะ cancel ของเก่า
+    timer(i * 80).pipe(
+      switchMap(() => {
+        console.log('🔍 search:', term);
+        return of(\`results for "\${term}": [\${term}1, \${term}2]\`);
+      })
+    )
+  ),
+  take(3) // รับแค่ 3 ตัวแรกที่ผ่าน
+).subscribe(r => console.log('📦', r));`,
+
+'combineLatest':`// combineLatest — emit ทุกครั้งที่ stream ใดเปลี่ยน
+const price$ = of(100, 200, 350);
+const discount$ = of(0, 10, 20);
+
+combineLatest([price$, discount$]).pipe(
+  map(([price, disc]) => ({
+    price,
+    discount: disc + '%',
+    total: price * (1 - disc / 100)
+  }))
+).subscribe(order => console.log(JSON.stringify(order)));`,
+
+'forkJoin':`// forkJoin — parallel requests (รอทุกตัว complete)
+forkJoin({
+  user: of({ id: 1, name: 'สมชาย' }).pipe(delay(100)),
+  posts: of([{ title: 'RxJS เบื้องต้น' }, { title: 'Angular Tips' }]).pipe(delay(150)),
+  tags: of(['rxjs', 'angular', 'typescript']).pipe(delay(80))
+}).subscribe(({ user, posts, tags }) => {
+  console.log('👤 user:', user.name);
+  console.log('📝 posts:', posts.length + ' รายการ');
+  console.log('🏷️ tags:', tags.join(', '));
+  console.log('✅ โหลดพร้อมกันทั้ง 3 APIs!');
+});`,
+
+'BehaviorSubject':`// BehaviorSubject — state management
+const count$ = new BehaviorSubject(0);
+
+// subscriber A (มาตั้งแต่แรก)
+count$.subscribe(v => console.log('A:', v));
+
+count$.next(1);
+count$.next(2);
+count$.next(3);
+
+// subscriber B (มาทีหลัง) → ได้ค่าล่าสุด (3) ทันที
+count$.pipe(
+  map(v => 'B (late): ' + v)
+).subscribe(v => console.log(v));
+
+count$.next(4);
+console.log('ค่าปัจจุบัน:', count$.getValue());`,
+
+'catchError':`// catchError — error handling + fallback
+throwError(() => new Error('Network timeout')).pipe(
+  tap(() => console.log('ถ้าสำเร็จจะเข้าบรรทัดนี้')),
+  catchError(err => {
+    console.log('❌ Error:', err.message);
+    return of({ data: 'cached fallback', fromCache: true });
+  }),
+  finalize(() => console.log('🏁 finalize — ทำงานเสมอ ทั้ง success และ error'))
+).subscribe(v => console.log('✅ result:', JSON.stringify(v)));`,
+
+'tap':`// tap — side effects โดยไม่เปลี่ยนค่าใน stream (debug-friendly)
+from([1, 2, 3, 4, 5]).pipe(
+  tap(v => console.log('📥 before filter:', v)),
+  filter(v => v % 2 === 0),
+  tap(v => console.log('✅ passed filter:', v)),
+  map(v => v * 10),
+  tap(v => console.log('🔄 after map:', v))
+).subscribe(v => console.log('📤 subscribe got:', v));`,
+
+'debounceTime':`// debounceTime — จำลอง search input (รอหยุด emit 200ms ก่อน)
+// emit ถี่ๆ แต่ debounce จะปล่อยแค่ค่าสุดท้ายหลังหยุด
+const keystrokes$ = from(['a','ab','abc','abcd','abcde']).pipe(
+  concatMap((v,i) => timer(i * 60).pipe(map(() => v)))
+);
+
+keystrokes$.pipe(
+  tap(v => console.log('⌨️ keystroke:', v)),
+  debounceTime(150),
+).subscribe(v => console.log('🔍 search API called with:', v));`,
+
+'withLatestFrom':`// withLatestFrom — ดึงค่าล่าสุดจาก stream อื่นตอน source emit
+const user$ = new BehaviorSubject({ name: 'สมชาย', role: 'admin' });
+const actions$ = of('view', 'edit', 'delete');
+
+actions$.pipe(
+  withLatestFrom(user$),
+  map(([action, user]) => ({
+    action,
+    user: user.name,
+    allowed: user.role === 'admin' || action === 'view'
+  }))
+).subscribe(r => console.log(JSON.stringify(r)));`
+};
+
+let rxjsPgActive=false,rxjsPgLogCount=0,rxjsPgStopHandle=null,rxjsPgInited=false,rxjsPgEditor=null;
+const _origConsoleLog=console.log,_origConsoleWarn=console.warn,_origConsoleError=console.error;
+
+const RXJS_PG_DEFAULT=`// โหลดตัวอย่างจาก "ตัวอย่าง" ด้านบน หรือกด ▶ Try ที่ operator card
+// Ctrl+Enter = Run
+
+of(1, 2, 3, 4, 5).pipe(
+  filter(x => x % 2 !== 0),
+  map(x => x * x)
+).subscribe(v => console.log('value:', v));`;
+
+function rxjsInitPlayground(){
+  if(rxjsPgInited)return;
+  rxjsPgInited=true;
+
+  // init CodeMirror
+  const wrap=document.getElementById('rxjs-pg-cm-wrap');
+  if(wrap&&window.CodeMirror){
+    rxjsPgEditor=CodeMirror(wrap,{
+      value:RXJS_PG_DEFAULT,
+      mode:'javascript',
+      theme:'dracula',
+      lineNumbers:true,
+      lineWrapping:false,
+      tabSize:2,
+      indentWithTabs:false,
+      autoCloseBrackets:true,
+      matchBrackets:true,
+      extraKeys:{
+        'Ctrl-Enter':()=>rxjsRunCode(),
+        'Cmd-Enter':()=>rxjsRunCode(),
+        'Ctrl-/':cm=>cm.toggleComment(),
+        'Tab':cm=>cm.replaceSelection('  ','end')
+      }
+    });
+    rxjsPgEditor.setSize('100%','100%');
+  }
+
+  // patch console once — route to output panel when playground is active
+  console.log=(...args)=>{
+    if(rxjsPgActive)rxjsPgAppendLog(args,'log');
+    _origConsoleLog(...args);
+  };
+  console.warn=(...args)=>{
+    if(rxjsPgActive)rxjsPgAppendLog(args,'warn');
+    _origConsoleWarn(...args);
+  };
+  console.error=(...args)=>{
+    if(rxjsPgActive)rxjsPgAppendLog(args,'error');
+    _origConsoleError(...args);
+  };
+}
+
+function rxjsPgGetCode(){
+  return rxjsPgEditor?rxjsPgEditor.getValue():
+    (document.getElementById('rxjs-pg-code')||{value:''}).value;
+}
+function rxjsPgSetCode(code){
+  if(rxjsPgEditor){rxjsPgEditor.setValue(code);rxjsPgEditor.focus();}
+  else{const ta=document.getElementById('rxjs-pg-code');if(ta)ta.value=code;}
+}
+
+function rxjsPgAppendLog(args,type){
+  if(rxjsPgLogCount>=200)return;
+  const out=document.getElementById('rxjs-pg-output');
+  if(!out)return;
+  const empty=out.querySelector('.rxjs-pg-empty');
+  if(empty)empty.remove();
+  rxjsPgLogCount++;
+
+  if(type==='log'){
+    const div=document.createElement('div');
+    div.className='rxjs-pg-log rxjs-pg-log-entry';
+    const idx=document.createElement('span');
+    idx.className='rxjs-pg-log-idx';
+    idx.textContent=rxjsPgLogCount;
+    const val=document.createElement('span');
+    const raw=args.map(a=>{
+      if(typeof a==='object'&&a!==null){try{return JSON.stringify(a,null,2);}catch{return String(a);}}
+      return String(a);
+    }).join(' ');
+    val.className='rxjs-pg-log-val'+(typeof args[0]==='number'&&args.length===1?' type-number':typeof args[0]==='string'&&args.length===1?' type-string':typeof args[0]==='boolean'&&args.length===1?' type-bool':'');
+    val.textContent=raw;
+    div.appendChild(idx);div.appendChild(val);
+    out.appendChild(div);
+    if(rxjsPgLogCount>=200){
+      const lim=document.createElement('div');
+      lim.className='rxjs-pg-log-complete';
+      lim.textContent='… (ถึงขีดจำกัด 200 บรรทัด)';
+      out.appendChild(lim);
+      rxjsStopCode();
+    }
+  }else{
+    const div=document.createElement('div');
+    div.className=`rxjs-pg-log-${type} rxjs-pg-log-entry`;
+    div.textContent=args.join(' ');
+    out.appendChild(div);
+  }
+  out.scrollTop=out.scrollHeight;
+}
+
+function rxjsPgSetStatus(txt,running){
+  const el=document.getElementById('rxjs-pg-status');
+  if(!el)return;
+  el.textContent=txt;
+  el.className='rxjs-pg-status'+(running?' rxjs-pg-status-running':'');
+  const stopBtn=document.getElementById('rxjs-pg-stop-btn');
+  if(stopBtn)stopBtn.disabled=!running;
+}
+
+function rxjsRunCode(){
+  if(!window.rxjs){showToast('กำลังโหลด RxJS...');return;}
+  rxjsStopCode();
+
+  const code=rxjsPgGetCode().trim();
+  if(!code)return;
+
+  const out=document.getElementById('rxjs-pg-output');
+  if(out){out.innerHTML='';const div=document.createElement('div');div.className='rxjs-pg-log-divider';out.appendChild(div);}
+  rxjsPgLogCount=0;
+  rxjsPgActive=true;
+  rxjsPgSetStatus('▶ Running…',true);
+
+  // auto-stop safety after 15 seconds
+  rxjsPgStopHandle=setTimeout(()=>{
+    rxjsPgAppendLog(['⏱️ หยุดอัตโนมัติหลัง 15 วินาที'],'warn');
+    rxjsStopCode();
+  },15000);
+
+  const {of,from,fromEvent,interval,timer,range,EMPTY,throwError,defer,iif,
+    combineLatest,merge,concat,zip,forkJoin,race,Subject,BehaviorSubject,
+    ReplaySubject,AsyncSubject,Observable,
+    map,filter,take,takeUntil,takeWhile,skip,skipUntil,
+    first,last,debounceTime,throttleTime,distinctUntilChanged,
+    distinct,sampleTime,switchMap,mergeMap,concatMap,exhaustMap,
+    scan,reduce,buffer,bufferTime,groupBy,toArray,pairwise,
+    catchError,retry,retryWhen,finalize,tap,delay,timeout,
+    share,shareReplay,startWith,withLatestFrom,pipe}=window.rxjs;
+
+  try{
+    new Function('of','from','fromEvent','interval','timer','range','EMPTY','throwError',
+      'defer','iif','combineLatest','merge','concat','zip','forkJoin','race',
+      'Subject','BehaviorSubject','ReplaySubject','AsyncSubject','Observable',
+      'map','filter','take','takeUntil','takeWhile','skip','skipUntil',
+      'first','last','debounceTime','throttleTime','distinctUntilChanged',
+      'distinct','sampleTime','switchMap','mergeMap','concatMap','exhaustMap',
+      'scan','reduce','buffer','bufferTime','groupBy','toArray','pairwise',
+      'catchError','retry','retryWhen','finalize','tap','delay','timeout',
+      'share','shareReplay','startWith','withLatestFrom','pipe',
+      code
+    )(of,from,fromEvent,interval,timer,range,EMPTY,throwError,
+      defer,iif,combineLatest,merge,concat,zip,forkJoin,race,
+      Subject,BehaviorSubject,ReplaySubject,AsyncSubject,Observable,
+      map,filter,take,takeUntil,takeWhile,skip,skipUntil,
+      first,last,debounceTime,throttleTime,distinctUntilChanged,
+      distinct,sampleTime,switchMap,mergeMap,concatMap,exhaustMap,
+      scan,reduce,buffer,bufferTime,groupBy,toArray,pairwise,
+      catchError,retry,retryWhen,finalize,tap,delay,timeout,
+      share,shareReplay,startWith,withLatestFrom,pipe);
+
+    // if synchronous ops, mark done after a tick
+    setTimeout(()=>{
+      if(rxjsPgActive&&rxjsPgLogCount>0){
+        rxjsPgSetStatus('✅ สำเร็จ ('+rxjsPgLogCount+' logs)',false);
+        rxjsPgActive=false;
+        clearTimeout(rxjsPgStopHandle);
+      }else if(rxjsPgActive){
+        rxjsPgSetStatus('▶ Running…',true);
+      }
+    },100);
+
+  }catch(e){
+    rxjsPgActive=false;
+    clearTimeout(rxjsPgStopHandle);
+    rxjsPgAppendLog(['❌ '+e.message],'error');
+    rxjsPgSetStatus('❌ Error',false);
+  }
+}
+
+function rxjsStopCode(){
+  rxjsPgActive=false;
+  clearTimeout(rxjsPgStopHandle);
+  rxjsPgSetStatus('⏹ หยุดแล้ว',false);
+}
+
+function rxjsClearOutput(){
+  rxjsStopCode();
+  const out=document.getElementById('rxjs-pg-output');
+  if(out){out.innerHTML='<div class="rxjs-pg-empty">กด ▶ Run เพื่อรันโค้ด</div>';}
+  rxjsPgLogCount=0;
+  rxjsPgSetStatus('⏸ พร้อม',false);
+  document.querySelectorAll('.rxjs-pg-preset-btn').forEach(b=>b.classList.remove('rxjs-pg-preset-active'));
+}
+
+function rxjsPgPreset(name){
+  const code=RXJS_PG_PRESETS[name];
+  if(!code)return;
+  rxjsPgSetCode(code);
+  document.querySelectorAll('.rxjs-pg-preset-btn').forEach(b=>{
+    b.classList.toggle('rxjs-pg-preset-active',b.getAttribute('onclick').includes("'"+name+"'"));
+  });
 }
 
 // ── ANGULAR LIFECYCLE ──

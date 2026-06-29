@@ -1533,6 +1533,82 @@
     .rxjs-recipe-desc { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 10px; }
     .rxjs-op-code-wrap { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 
+    /* ── RxJS View Switcher ── */
+    .rxjs-view-tabs { display: flex; gap: 2px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 3px; }
+    .rxjs-view-tab { background: none; border: none; color: var(--text-dim); font-family: var(--sans); font-size: 0.78rem; font-weight: 600; padding: 5px 14px; border-radius: calc(var(--radius-sm) - 2px); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .rxjs-view-tab:hover { color: var(--text); background: var(--surface); }
+    .rxjs-view-tab-active { background: var(--accent) !important; color: #fff !important; }
+
+    /* ── Try button on operator cards ── */
+    .rxjs-try-btn { margin-left: auto; background: var(--accent-glow); border: 1px solid var(--accent); color: var(--accent); font-family: var(--sans); font-size: 0.68rem; font-weight: 600; padding: 2px 9px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .rxjs-try-btn:hover { background: var(--accent); color: #fff; }
+
+    /* ── Marble animations ── */
+    @keyframes rxjsMarblePop {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+      60%  { transform: translate(-50%, -50%) scale(1.15); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    .rxjs-marble-animated .rxjs-mdot { animation: rxjsMarblePop 0.38s ease both; }
+    .rxjs-marble-animated .rxjs-mend { animation: rxjsMarblePop 0.38s ease both; }
+
+    /* ── RxJS Playground ── */
+    .rxjs-pg-presets-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+    .rxjs-pg-presets-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+    .rxjs-pg-presets-scroll { display: flex; gap: 6px; overflow-x: auto; flex: 1; padding-bottom: 2px; scrollbar-width: thin; }
+    .rxjs-pg-presets-scroll::-webkit-scrollbar { height: 3px; }
+    .rxjs-pg-presets-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+    .rxjs-pg-preset-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-family: var(--mono); font-size: 0.72rem; padding: 4px 11px; border-radius: 99px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .rxjs-pg-preset-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+    .rxjs-pg-preset-btn.rxjs-pg-preset-active { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); font-weight: 600; }
+
+    .rxjs-pg-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    @media (max-width: 800px) { .rxjs-pg-split { grid-template-columns: 1fr; } }
+
+    .rxjs-pg-editor-pane, .rxjs-pg-output-pane { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; min-height: 360px; height: 420px; }
+    .rxjs-pg-split { align-items: stretch; }
+    .rxjs-pg-pane-hd { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--surface2); flex-shrink: 0; }
+    .rxjs-pg-pane-title { font-size: 0.78rem; font-weight: 600; color: var(--text-dim); }
+    .rxjs-pg-run-btns { display: flex; gap: 5px; }
+    .rxjs-pg-run-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-family: var(--sans); font-size: 0.72rem; font-weight: 600; padding: 4px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; }
+    .rxjs-pg-run-btn:hover:not(:disabled) { border-color: var(--border-strong); color: var(--text); }
+    .rxjs-pg-run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .rxjs-pg-run-primary { background: var(--accent); border-color: var(--accent); color: #fff !important; }
+    .rxjs-pg-run-primary:hover:not(:disabled) { filter: brightness(1.1); border-color: var(--accent) !important; }
+
+    /* CodeMirror overrides */
+    .rxjs-pg-cm-wrap { flex: 1; display: flex; flex-direction: column; min-height: 300px; }
+    .rxjs-pg-cm-wrap .CodeMirror { flex: 1; font-family: var(--mono); font-size: 0.78rem; line-height: 1.75; height: 100%; min-height: 300px; border: none; border-radius: 0; background: #282a36; }
+    .rxjs-pg-cm-wrap .CodeMirror-scroll { min-height: 300px; }
+    .rxjs-pg-cm-wrap .CodeMirror-gutters { background: #21222c; border-right: 1px solid #44475a; }
+    .rxjs-pg-cm-wrap .CodeMirror-linenumber { color: #6272a4; font-size: 0.7rem; }
+    .rxjs-pg-cm-wrap .CodeMirror-cursor { border-left-color: #f8f8f2; }
+    .rxjs-pg-cm-wrap .CodeMirror-selected { background: #44475a80; }
+    .rxjs-pg-cm-wrap .CodeMirror-matchingbracket { color: #50fa7b !important; background: #50fa7b18; outline: 1px solid #50fa7b; }
+
+    .rxjs-pg-status { font-size: 0.7rem; color: var(--text-muted); font-family: var(--mono); }
+    .rxjs-pg-status-running { color: #34d399; animation: rxjsPulse 1s ease infinite; }
+    @keyframes rxjsPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .rxjs-pg-output { flex: 1; overflow-y: auto; padding: 10px 12px; font-family: var(--mono); font-size: 0.76rem; line-height: 1.75; display: flex; flex-direction: column; gap: 1px; max-height: 480px; }
+    .rxjs-pg-empty { color: var(--text-muted); text-align: center; padding: 40px 20px; font-size: 0.78rem; }
+    .rxjs-pg-log { display: flex; gap: 8px; align-items: flex-start; padding: 2px 0; }
+    .rxjs-pg-log-idx { color: var(--text-muted); font-size: 0.65rem; min-width: 20px; text-align: right; padding-top: 1px; user-select: none; flex-shrink: 0; }
+    .rxjs-pg-log-val { color: var(--text); word-break: break-all; white-space: pre-wrap; }
+    .rxjs-pg-log-val.type-string { color: #34d399; }
+    .rxjs-pg-log-val.type-number { color: #60a5fa; }
+    .rxjs-pg-log-val.type-bool { color: #f472b6; }
+    .rxjs-pg-log-error { color: #f87171; padding: 3px 8px; background: #f8717110; border-radius: 4px; border-left: 2px solid #f87171; }
+    .rxjs-pg-log-warn { color: #fbbf24; padding: 3px 8px; background: #fbbf2410; border-radius: 4px; border-left: 2px solid #fbbf24; }
+    .rxjs-pg-log-complete { color: #34d399; font-size: 0.7rem; font-style: italic; opacity: 0.8; }
+    .rxjs-pg-log-divider { border-top: 1px dashed var(--border); margin: 4px 0; }
+    .rxjs-pg-log-entry { animation: rxjsLogFadeIn 0.18s ease; }
+    @keyframes rxjsLogFadeIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
+
+    .rxjs-pg-hint { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.7; }
+    .rxjs-pg-hint code { font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim); }
+    .rxjs-pg-hint strong { color: var(--text-dim); }
+
     /* ── ANGULAR LIFECYCLE ── */
 
     /* Simulator */

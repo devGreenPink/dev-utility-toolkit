@@ -73,6 +73,14 @@
 
     <!-- ── External Libraries ── -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.8.1/rxjs.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
 
     <!-- ── App Styles ── -->
     <link rel="stylesheet" href="assets/css/style.css" />
@@ -2298,8 +2306,17 @@
                 <div class="rxjs-topbar-sub">คำอธิบายภาษาไทย · 57 operators · พร้อมตัวอย่างโค้ด</div>
               </div>
             </div>
-            <button class="btn btn-danger" onclick="clearRxjs()">✖ ล้าง</button>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="rxjs-view-tabs">
+                <button class="rxjs-view-tab rxjs-view-tab-active" id="rxjs-vtab-ref" onclick="rxjsSwitchView('ref')">📚 Reference</button>
+                <button class="rxjs-view-tab" id="rxjs-vtab-pg" onclick="rxjsSwitchView('pg')">⚡ Playground</button>
+              </div>
+              <button class="btn btn-danger" id="rxjs-clear-btn" onclick="clearRxjs()">✖ ล้าง</button>
+            </div>
           </div>
+
+          <!-- ═══ REFERENCE VIEW ═══ -->
+          <div id="rxjs-ref-view">
 
           <!-- Search + Filter -->
           <div class="rxjs-search-area">
@@ -2702,6 +2719,72 @@ store.count$.subscribe(n => countEl.textContent = n);</code></pre></div>
             </div>
 
           </div><!-- /rxjs-acc-group -->
+          </div><!-- /rxjs-ref-view -->
+
+          <!-- ═══ PLAYGROUND VIEW ═══ -->
+          <div id="rxjs-pg-view" style="display:none">
+
+            <!-- Preset bar -->
+            <div class="rxjs-pg-presets-bar">
+              <span class="rxjs-pg-presets-label">📚 ตัวอย่าง</span>
+              <div class="rxjs-pg-presets-scroll">
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('of')">of + map</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('from')">from + filter</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('interval')">interval + take</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('scan')">scan (counter)</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('switchMap')">switchMap</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('combineLatest')">combineLatest</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('forkJoin')">forkJoin</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('BehaviorSubject')">BehaviorSubject</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('catchError')">catchError</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('tap')">tap (debug)</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('debounceTime')">debounceTime</button>
+                <button class="rxjs-pg-preset-btn" onclick="rxjsPgPreset('withLatestFrom')">withLatestFrom</button>
+              </div>
+            </div>
+
+            <!-- Split: Editor | Output -->
+            <div class="rxjs-pg-split">
+
+              <!-- Code editor -->
+              <div class="rxjs-pg-editor-pane">
+                <div class="rxjs-pg-pane-hd">
+                  <span class="rxjs-pg-pane-title">✏️ Code</span>
+                  <div class="rxjs-pg-run-btns">
+                    <button class="rxjs-pg-run-btn rxjs-pg-run-primary" onclick="rxjsRunCode()">▶ Run</button>
+                    <button class="rxjs-pg-run-btn" id="rxjs-pg-stop-btn" onclick="rxjsStopCode()" disabled>⬛ Stop</button>
+                    <button class="rxjs-pg-run-btn" onclick="rxjsClearOutput()">✕ Clear</button>
+                  </div>
+                </div>
+                <div id="rxjs-pg-cm-wrap" class="rxjs-pg-cm-wrap"></div>
+              </div>
+
+              <!-- Output panel -->
+              <div class="rxjs-pg-output-pane">
+                <div class="rxjs-pg-pane-hd">
+                  <span class="rxjs-pg-pane-title">📤 Output</span>
+                  <span class="rxjs-pg-status" id="rxjs-pg-status">⏸ พร้อม</span>
+                </div>
+                <div id="rxjs-pg-output" class="rxjs-pg-output">
+                  <div class="rxjs-pg-empty">กด ▶ Run เพื่อรันโค้ด</div>
+                </div>
+              </div>
+
+            </div><!-- /split -->
+
+            <!-- Hint -->
+            <div class="rxjs-pg-hint">
+              💡 <strong>Operators ที่ใช้ได้:</strong>
+              <code>of, from, fromEvent, interval, timer, range, EMPTY, throwError, defer, iif,
+combineLatest, merge, concat, zip, forkJoin, race, Subject, BehaviorSubject, ReplaySubject, AsyncSubject,
+map, filter, take, takeUntil, takeWhile, skip, skipUntil, first, last, distinct, distinctUntilChanged,
+debounceTime, throttleTime, sampleTime, switchMap, mergeMap, concatMap, exhaustMap,
+scan, reduce, buffer, bufferTime, toArray, pairwise, groupBy, startWith, withLatestFrom,
+catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
+            </div>
+
+          </div><!-- /rxjs-pg-view -->
+
         </div>
 
         <!-- ANGULAR LIFECYCLE -->
