@@ -1441,12 +1441,12 @@
 
     /* Details/Summary — collapsible code */
     .rxjs-details { border-top: 1px solid var(--border); padding-top: 8px; }
-    .rxjs-details-sum { cursor: pointer; display: flex; align-items: flex-start; gap: 6px; flex-wrap: wrap; list-style: none; }
+    .rxjs-details-sum { cursor: pointer; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; list-style: none; }
     .rxjs-details-sum::-webkit-details-marker { display: none; }
-    .rxjs-details-sum::before { content: '›'; color: var(--text-dim); font-size: 1rem; line-height: 1.4; transition: transform 0.2s; display: inline-block; flex-shrink: 0; }
+    .rxjs-details-sum::before { content: '›'; color: var(--text-dim); font-size: 1rem; line-height: 1; transition: transform 0.2s; display: inline-block; flex-shrink: 0; }
     details[open] .rxjs-details-sum::before { transform: rotate(90deg); }
-    .rxjs-sig-lbl { font-size: 0.62rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; }
-    .rxjs-sig-code { font-family: var(--mono); font-size: 0.72rem; color: var(--accent2); word-break: break-all; }
+    .rxjs-sig-lbl { font-size: 0.62rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
+    .rxjs-sig-code { font-family: var(--mono); font-size: 0.78rem; color: var(--accent2); word-break: break-all; }
     .rxjs-code-block { position: relative; background: var(--surface2); border-radius: var(--radius-sm); margin-top: 8px; overflow: hidden; }
     .rxjs-copy-btn { position: absolute; top: 8px; right: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); font-size: 0.7rem; padding: 2px 8px; border-radius: var(--radius-sm); cursor: pointer; z-index: 1; transition: all 0.15s; }
     .rxjs-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -1576,12 +1576,10 @@
     .rxjs-marble-animated .rxjs-mend { animation: rxjsMarblePop 0.38s ease both; }
 
     /* ── RxJS Playground ── */
-    .rxjs-pg-presets-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
-    .rxjs-pg-presets-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
-    .rxjs-pg-presets-scroll { display: flex; gap: 6px; overflow-x: auto; flex: 1; padding-bottom: 2px; scrollbar-width: thin; }
-    .rxjs-pg-presets-scroll::-webkit-scrollbar { height: 3px; }
-    .rxjs-pg-presets-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
-    .rxjs-pg-preset-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-family: var(--mono); font-size: 0.72rem; padding: 4px 11px; border-radius: 99px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .rxjs-pg-presets-bar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+    .rxjs-pg-presets-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+    .rxjs-pg-presets-scroll { display: flex; gap: 6px; flex-wrap: wrap; }
+    .rxjs-pg-preset-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); font-family: var(--mono); font-size: 0.71rem; padding: 3px 10px; border-radius: 99px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .rxjs-pg-preset-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
     .rxjs-pg-preset-btn.rxjs-pg-preset-active { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); font-weight: 600; }
 
@@ -1761,4 +1759,66 @@
       .ng-hooks-header { flex-direction: column; align-items: flex-start; }
       .ng-hooks-search-row { width: 100%; }
     }
+
+    /* ── HIGHLIGHT.JS — Angular TypeScript code blocks ── */
+    /* Strip hljs default background so our --surface2 shows through */
+    .rxjs-code .hljs,
+    .ng-detail-code-wrap .hljs { background: transparent; }
+
+    /* Dark theme token colors (atom-one-dark palette) */
+    .rxjs-code .hljs-keyword                        { color: #c678dd; }
+    .rxjs-code .hljs-title,
+    .rxjs-code .hljs-title.class_,
+    .rxjs-code .hljs-title.function_                { color: #61afef; }
+    .rxjs-code .hljs-string                         { color: #98c379; }
+    .rxjs-code .hljs-comment                        { color: #7c848e; font-style: italic; }
+    .rxjs-code .hljs-number                         { color: #d19a66; }
+    .rxjs-code .hljs-literal                        { color: #56b6c2; }
+    .rxjs-code .hljs-attr,
+    .rxjs-code .hljs-property                       { color: #e06c75; }
+    .rxjs-code .hljs-built_in                       { color: #e5c07b; }
+    .rxjs-code .hljs-params                         { color: #abb2bf; }
+    .rxjs-code .hljs-meta                           { color: #e06c75; }
+    .rxjs-code .hljs-punctuation,
+    .rxjs-code .hljs-operator                       { color: #abb2bf; }
+    .rxjs-code .hljs-variable,
+    .rxjs-code .hljs-subst                          { color: #e06c75; }
+    .rxjs-code .hljs-type                           { color: #e5c07b; }
+
+    /* Light + Kitty: darker saturated tones for WCAG-passing contrast */
+    [data-theme="light"] .rxjs-code .hljs,
+    [data-theme="kitty"] .rxjs-code .hljs           { color: #1e293b; }
+    [data-theme="light"] .rxjs-code .hljs-keyword,
+    [data-theme="kitty"] .rxjs-code .hljs-keyword   { color: #7c3aed; }
+    [data-theme="light"] .rxjs-code .hljs-title,
+    [data-theme="light"] .rxjs-code .hljs-title.class_,
+    [data-theme="light"] .rxjs-code .hljs-title.function_,
+    [data-theme="kitty"] .rxjs-code .hljs-title,
+    [data-theme="kitty"] .rxjs-code .hljs-title.class_,
+    [data-theme="kitty"] .rxjs-code .hljs-title.function_ { color: #1d4ed8; }
+    [data-theme="light"] .rxjs-code .hljs-string,
+    [data-theme="kitty"] .rxjs-code .hljs-string    { color: #15803d; }
+    [data-theme="light"] .rxjs-code .hljs-comment,
+    [data-theme="kitty"] .rxjs-code .hljs-comment   { color: #475569; font-style: italic; }
+    [data-theme="light"] .rxjs-code .hljs-number,
+    [data-theme="kitty"] .rxjs-code .hljs-number    { color: #c2410c; }
+    [data-theme="light"] .rxjs-code .hljs-literal,
+    [data-theme="kitty"] .rxjs-code .hljs-literal   { color: #0891b2; }
+    [data-theme="light"] .rxjs-code .hljs-attr,
+    [data-theme="light"] .rxjs-code .hljs-property,
+    [data-theme="kitty"] .rxjs-code .hljs-attr,
+    [data-theme="kitty"] .rxjs-code .hljs-property  { color: #dc2626; }
+    [data-theme="light"] .rxjs-code .hljs-built_in,
+    [data-theme="kitty"] .rxjs-code .hljs-built_in  { color: #b45309; }
+    [data-theme="light"] .rxjs-code .hljs-params,
+    [data-theme="kitty"] .rxjs-code .hljs-params    { color: #334155; }
+    [data-theme="light"] .rxjs-code .hljs-meta,
+    [data-theme="kitty"] .rxjs-code .hljs-meta      { color: #dc2626; }
+    [data-theme="light"] .rxjs-code .hljs-punctuation,
+    [data-theme="light"] .rxjs-code .hljs-operator,
+    [data-theme="kitty"] .rxjs-code .hljs-punctuation,
+    [data-theme="kitty"] .rxjs-code .hljs-operator  { color: #475569; }
+    [data-theme="light"] .rxjs-code .hljs-type,
+    [data-theme="kitty"] .rxjs-code .hljs-type      { color: #b45309; }
+
 

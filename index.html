@@ -81,6 +81,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
 
     <!-- ── App Styles ── -->
     <link rel="stylesheet" href="assets/css/style.css" />
@@ -145,7 +147,7 @@
           <span class="nav-icon">📦</span> JSON Tools
         </div>
 
-        <div class="nav-section-label">Encode / Decode</div>
+        <div class="nav-section-label">แปลง &amp; Encode</div>
         <div
           class="nav-item"
           data-tab="unix-tab"
@@ -218,22 +220,8 @@
         >
           <span class="nav-icon">🌐</span> HTTP Status
         </div>
-        <div
-          class="nav-item"
-          data-tab="rxjs-tab"
-          onclick="openTab(event, 'rxjs-tab')"
-        >
-          <span class="nav-icon">⚡</span> RxJS Reference
-        </div>
-        <div
-          class="nav-item"
-          data-tab="angular-tab"
-          onclick="openTab(event, 'angular-tab')"
-        >
-          <span class="nav-icon">🔄</span> Angular Lifecycle
-        </div>
 
-        <div class="nav-section-label">อ้างอิงคำสั่ง</div>
+        <div class="nav-section-label">อ้างอิง</div>
         <div
           class="nav-item"
           data-tab="kubectl-tab"
@@ -254,6 +242,20 @@
           onclick="openTab(event, 'git-tab')"
         >
           <span class="nav-icon">🌿</span> Git CLI
+        </div>
+        <div
+          class="nav-item"
+          data-tab="rxjs-tab"
+          onclick="openTab(event, 'rxjs-tab')"
+        >
+          <span class="nav-icon">⚡</span> RxJS Reference
+        </div>
+        <div
+          class="nav-item"
+          data-tab="angular-tab"
+          onclick="openTab(event, 'angular-tab')"
+        >
+          <span class="nav-icon">🔄</span> Angular Lifecycle
         </div>
         <div class="nav-section-label">เครื่องมือเพิ่มเติม</div>
         <div

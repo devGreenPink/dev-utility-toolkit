@@ -181,6 +181,7 @@ HTML + CSS + Vanilla JavaScript (no build step, no npm, no framework)
 ├── jsdiff 5.1.0          — Text/JSON diff (CDN)
 ├── RxJS 7.8.1            — RxJS Playground runtime (CDN)
 ├── CodeMirror 5.65.16    — RxJS Playground editor + syntax highlighting (CDN)
+├── highlight.js 11.9.0   — TypeScript syntax highlighting for code blocks (CDN)
 └── Google Fonts          — IBM Plex Sans Thai, JetBrains Mono
 ```
 
