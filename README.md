@@ -3,9 +3,10 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
+[![Version](https://img.shields.io/badge/version-1.10-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
-[![No Dependencies](https://img.shields.io/badge/No-Backend%20Required-34d399?style=flat-square)]()
-[![Offline Ready](https://img.shields.io/badge/Offline-Ready-22d3ee?style=flat-square)]()
+[![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
+[![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
 
 ---
 
@@ -96,15 +97,23 @@
 ### 🐧 Linux Command Cheatsheet
 คำสั่ง Linux 100+ คำสั่ง พร้อมคำอธิบายภาษาไทย
 
-### ⚡ RxJS Reference
-- **Operator Explorer** — 57 operators ใน 7 หมวด, search + กรองตาม category
-- คำอธิบายภาษาไทย, ตัวอย่าง code, quick-search use case tags
-- Marble diagram แบบ visual, เปรียบเทียบ Subject types, Recipes
+### ⚡ RxJS Reference + Playground
+**Reference** — Operator Explorer พร้อม Playground สลับ view ในแท็บเดียวกัน:
+- 57 operators ใน 7 หมวด (creation, transformation, filtering, combination, error, utility, multicasting)
+- คำอธิบายภาษาไทย, ✓ ใช้เมื่อ, ✗ หลีกเลี่ยง, ตัวอย่าง code
+- Quick-search use case tags, Marble diagram แบบ visual, Subject types comparison, Recipes
+
+**Playground** — รัน RxJS จริงๆ ในเบราว์เซอร์:
+- **CodeMirror editor** พร้อม Dracula theme + JS syntax highlighting
+- **▶ Try** บนทุก operator card — โหลด runnable example เข้า editor แล้วรันทันที
+- **12 presets** — `of`, `from`, `interval`, `scan`, `switchMap`, `combineLatest`, `forkJoin`, `BehaviorSubject`, `catchError`, `tap`, `debounceTime`, `withLatestFrom`
+- Output panel พร้อม type-colored logs (number / string / boolean / error)
+- Auto-stop หลัง 15s + cap 200 บรรทัด ป้องกัน infinite stream
 
 ### 🔄 Angular Lifecycle Hooks
 - **Interactive Simulator** — animate hooks ที่ fire ตามลำดับจริงสำหรับ 4 scenarios (สร้าง / เปลี่ยน @Input / CD Cycle / Destroy)
 - Timeline แบบ vertical คลิกแต่ละ hook เพื่อดูรายละเอียดทันที
-- Hook Reference cards 9 hooks — ค้นหาได้, phase badge, คำอธิบาย + ✓ใช้เมื่อ + ✗หลีกเลี่ยง + code
+- Hook Reference cards 9 hooks — ค้นหาได้, phase badge, คำอธิบาย + ✓ ใช้เมื่อ + ✗ หลีกเลี่ยง + code
 - Key Concepts (Change Detection, Content vs View, @Input), Common Patterns, Common Mistakes
 
 ---
@@ -132,10 +141,9 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 
 | Shortcut | Action |
 |---|---|
-| `Ctrl + Enter` | Run tool ปัจจุบัน (รองรับทุก tab ที่มี action) |
-| `Ctrl + K` | Focus search (kubectl / Linux / Git tab) |
-
-กด **⌨** (ปุ่มขวาบน) เพื่อดู shortcut ทั้งหมดได้ตลอดเวลา
+| `Ctrl + Enter` | Run tool ปัจจุบัน / Run RxJS Playground |
+| `Ctrl + K` | Focus search (kubectl / Linux tab) |
+| `Ctrl + /` | Toggle comment (RxJS Playground) |
 
 ---
 
@@ -157,7 +165,7 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 ## 🔒 Privacy
 
 ข้อมูลทุกอย่างประมวลผลในเบราว์เซอร์ล้วน:
-- ไม่มี server, ไม่มี API calls (ยกเว้น Google Fonts)
+- ไม่มี server, ไม่มี API calls (ยกเว้น Google Fonts + CDN libraries)
 - ไม่มี analytics / tracking / cookies
 - ใช้งาน offline ได้หลังติดตั้งเป็น PWA
 
@@ -167,11 +175,13 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 
 ```
 HTML + CSS + Vanilla JavaScript (no build step, no npm, no framework)
-├── Web Crypto API   — Hash (SHA-1/256/512), UUID v4, JWT HS256
-├── Canvas API       — Color Picker SV square, hue/alpha sliders
-├── Service Worker   — PWA offline (cache-first)
-├── jsdiff 5.1.0     — Text/JSON diff (CDN)
-└── Google Fonts     — IBM Plex Sans Thai, JetBrains Mono
+├── Web Crypto API        — Hash (SHA-1/256/512), UUID v4, JWT HS256
+├── Canvas API            — Color Picker SV square, hue/alpha sliders
+├── Service Worker        — PWA offline (cache-first)
+├── jsdiff 5.1.0          — Text/JSON diff (CDN)
+├── RxJS 7.8.1            — RxJS Playground runtime (CDN)
+├── CodeMirror 5.65.16    — RxJS Playground editor + syntax highlighting (CDN)
+└── Google Fonts          — IBM Plex Sans Thai, JetBrains Mono
 ```
 
 ---
