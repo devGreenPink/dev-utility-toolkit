@@ -2451,7 +2451,7 @@ function renderRxjsOps(){
   el.innerHTML=ops.map(op=>`<div class="rxjs-op-card">
   <div class="rxjs-op-top">
     <span class="rxjs-op-name">${op.n}</span>
-    <span class="rxjs-op-badge" style="background:${RXJS_CC[op.c]}18;color:${RXJS_CC[op.c]};border-color:${RXJS_CC[op.c]}40">${op.c}</span>
+    <span class="rxjs-op-badge rxjs-badge-${op.c}">${op.c}</span>
     <button class="rxjs-try-btn" onclick="rxjsTryOp('${op.n}')">▶ Try</button>
   </div>
   <div class="rxjs-op-summary">${escHtml(op.s)}</div>
