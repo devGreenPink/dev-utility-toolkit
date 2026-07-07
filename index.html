@@ -85,6 +85,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/properties.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
 
     <!-- ── App Styles ── -->
     <link rel="stylesheet" href="assets/css/style.css" />
@@ -272,6 +273,14 @@
           onclick="openTab(event, 'storage-tab')"
         >
           <span class="nav-icon">🗄️</span> Browser Storage APIs
+        </div>
+        <div class="nav-section-label">ฐานข้อมูล</div>
+        <div
+          class="nav-item"
+          data-tab="lov-tab"
+          onclick="openTab(event, 'lov-tab')"
+        >
+          <span class="nav-icon">🗂️</span> LOV Query Browser
         </div>
         <div class="nav-section-label">เครื่องมือเพิ่มเติม</div>
         <div
@@ -4846,6 +4855,32 @@ self.addEventListener('fetch', e => {
           </div><!-- /stor-security -->
 
         </div><!-- /storage-tab -->
+
+        <div id="lov-tab" class="tab-content">
+          <div id="lov-unsupported" class="card" style="display:none;">
+            <div class="card-title">⚠️ ฟีเจอร์นี้รองรับเฉพาะ Chrome / Edge</div>
+            <div style="color:var(--text-dim);font-size:0.85rem;line-height:1.6;">
+              เบราว์เซอร์นี้ไม่รองรับ File System Access API (<code>showDirectoryPicker</code>)
+              กรุณาเปิดด้วย Chrome หรือ Edge เวอร์ชันล่าสุด
+            </div>
+          </div>
+
+          <div id="lov-main">
+            <div class="section-header">
+              <div class="toolbar">
+                <button class="btn btn-primary" id="lov-pick-btn" onclick="lovPickFolder()">📂 เลือกโฟลเดอร์</button>
+                <button class="btn btn-ghost" id="lov-refresh-btn" onclick="lovRefresh()" style="display:none;">🔄 โหลดใหม่</button>
+                <button class="btn btn-danger" id="lov-forget-btn" onclick="lovForgetFolder()" style="display:none;">✖ ลืมโฟลเดอร์</button>
+              </div>
+            </div>
+            <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px;">ยังไม่ได้เลือกโฟลเดอร์</div>
+            <div style="margin-bottom:16px;">
+              <input type="text" id="lov-search" placeholder="🔍 ค้นหาด้วย id หรือชื่อไฟล์... เช่น lovCpsComp" oninput="lovFilter(this.value)" disabled />
+            </div>
+            <div id="lov-list" class="rxjs-acc-group"></div>
+            <div id="lov-empty" style="display:none;color:var(--text-dim);text-align:center;padding:40px;">ไม่พบไฟล์ JSON ในโฟลเดอร์นี้</div>
+          </div>
+        </div><!-- /lov-tab -->
 
       </div>
       <!-- content-area -->

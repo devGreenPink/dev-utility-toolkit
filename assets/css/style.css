@@ -1453,6 +1453,16 @@
     .rxjs-code { margin: 0; padding: 12px 14px; overflow-x: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--text); line-height: 1.7; }
     .rxjs-code code { font-family: inherit; }
 
+    /* LOV Query Browser */
+    .lov-sql-label-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; margin-bottom: 2px; }
+    .lov-sql-label-row:first-child { margin-top: 0; }
+    .lov-sql-label { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+    .lov-params-note { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+    #lov-tab .rxjs-acc { border-color: var(--border); transition: border-color 0.15s; }
+    #lov-tab .rxjs-acc:has(.rxjs-acc-open) { border-color: var(--accent); }
+    #lov-tab .rxjs-acc-hd.rxjs-acc-open { color: var(--accent); }
+    #lov-tab .rxjs-acc-hd.rxjs-acc-open .rxjs-acc-chevron { color: var(--accent); }
+
     /* Related operators */
     .rxjs-op-rel { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; font-size: 0.72rem; color: var(--text-muted); }
     .rxjs-rel-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--accent); font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; }

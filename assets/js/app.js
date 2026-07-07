@@ -22,6 +22,7 @@ const TAB_META = {
   'angular-tab': { title: 'Angular Lifecycle', sub: '9 Lifecycle Hooks · Interactive Simulator · คำอธิบายภาษาไทย' },
   'mq-tab': { title: 'RabbitMQ · Redis · Quarkus', sub: 'Concepts · Animations · Code Examples สำหรับมือใหม่' },
   'storage-tab': { title: 'Browser Storage APIs', sub: 'localStorage · sessionStorage · IndexedDB · Cookies · Cache API · OPFS' },
+  'lov-tab': { title: 'LOV Query Template Browser', sub: 'เรียกดู JSON query builder config จากโฟลเดอร์ในเครื่อง · ประกอบ SQL พร้อม copy' },
 };
 
 // ── THEME ──
@@ -4248,6 +4249,235 @@ function storInitHljs() {
   });
 }
 
+// ── LOV QUERY BROWSER ──
+let _lovDirHandle = null;
+let _lovFiles = [];
+
+function lovIdbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('isaan-devtools-fsah', 1);
+    req.onupgradeneeded = () => { req.result.createObjectStore('handles'); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function lovIdbGetHandle() {
+  try {
+    const db = await lovIdbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction('handles', 'readonly');
+      const req = tx.objectStore('handles').get('lastDir');
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) { return null; }
+}
+async function lovIdbSetHandle(handle) {
+  try {
+    const db = await lovIdbOpen();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').put(handle, 'lastDir');
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch (e) {}
+}
+async function lovIdbClearHandle() {
+  try {
+    const db = await lovIdbOpen();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').delete('lastDir');
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch (e) {}
+}
+
+async function lovVerifyPermission(handle, requestIfNeeded) {
+  try {
+    const opts = { mode: 'read' };
+    if (await handle.queryPermission(opts) === 'granted') return true;
+    if (requestIfNeeded && await handle.requestPermission(opts) === 'granted') return true;
+    return false;
+  } catch (e) { return false; }
+}
+
+function lovSetStatus(msg) {
+  const el = document.getElementById('lov-status');
+  if (el) el.textContent = msg;
+}
+
+async function lovPickFolder() {
+  try {
+    const handle = await window.showDirectoryPicker();
+    _lovDirHandle = handle;
+    await lovIdbSetHandle(handle);
+    await lovLoadFiles();
+  } catch (err) {
+    if (err && err.name === 'AbortError') return;
+    showToast('✗ ไม่สามารถเปิดโฟลเดอร์ได้');
+    console.error(err);
+  }
+}
+
+async function lovRefresh() {
+  if (!_lovDirHandle) return;
+  await lovLoadFiles();
+}
+
+async function lovForgetFolder() {
+  _lovDirHandle = null;
+  _lovFiles = [];
+  await lovIdbClearHandle();
+  lovSetStatus('ยังไม่ได้เลือกโฟลเดอร์');
+  const search = document.getElementById('lov-search');
+  if (search) { search.value = ''; search.disabled = true; }
+  document.getElementById('lov-refresh-btn').style.display = 'none';
+  document.getElementById('lov-forget-btn').style.display = 'none';
+  lovRenderList([]);
+}
+
+async function lovRestoreFolder() {
+  const handle = await lovIdbGetHandle();
+  if (!handle) return;
+  const granted = await lovVerifyPermission(handle, false);
+  if (granted) {
+    _lovDirHandle = handle;
+    await lovLoadFiles();
+  } else {
+    lovSetStatus(`โฟลเดอร์ที่บันทึกไว้: ${handle.name} — `);
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-ghost';
+    btn.textContent = '🔓 ขอสิทธิ์เข้าถึงโฟลเดอร์อีกครั้ง';
+    btn.onclick = async () => {
+      const ok = await lovVerifyPermission(handle, true);
+      if (ok) { _lovDirHandle = handle; await lovLoadFiles(); }
+      else showToast('✗ ไม่ได้รับสิทธิ์เข้าถึงโฟลเดอร์');
+    };
+    document.getElementById('lov-status').appendChild(btn);
+  }
+}
+
+async function lovLoadFiles() {
+  if (!_lovDirHandle) return;
+  lovSetStatus('กำลังโหลดไฟล์...');
+  _lovFiles = [];
+  let skipped = 0;
+  for await (const [name, handle] of _lovDirHandle.entries()) {
+    if (handle.kind !== 'file') continue; // flat-only: subfolders intentionally not recursed
+    if (!name.toLowerCase().endsWith('.json')) continue;
+    try {
+      const file = await handle.getFile();
+      const text = await file.text();
+      const json = JSON.parse(text);
+      const built = lovBuildSql(json);
+      _lovFiles.push({ fileName: name, id: json.id || '(no id)', description: json.description, built });
+    } catch (e) {
+      console.warn('LOV: skip malformed file', name, e);
+      skipped++;
+    }
+  }
+  _lovFiles.sort((a, b) => a.id.localeCompare(b.id));
+  const skipNote = skipped ? ` (ข้าม ${skipped} ไฟล์ที่อ่านไม่ได้)` : '';
+  lovSetStatus(`โฟลเดอร์: ${_lovDirHandle.name} · พบ ${_lovFiles.length} query${skipNote}`);
+  const search = document.getElementById('lov-search');
+  if (search) search.disabled = false;
+  document.getElementById('lov-refresh-btn').style.display = '';
+  document.getElementById('lov-forget-btn').style.display = '';
+  lovRenderList(_lovFiles);
+}
+
+function lovBuildOrderBy(order) {
+  if (!order || typeof order !== 'object' || !Object.keys(order).length) return '';
+  const parts = Object.entries(order).map(([key, val]) =>
+    (val && typeof val === 'object' && val.sql) ? val.sql : `${key} ${val || ''}`.trim());
+  return parts.length ? 'ORDER BY ' + parts.join(', ') : '';
+}
+
+function lovBuildSql(json) {
+  const selectClause = Object.entries(json.select || {})
+    .map(([alias, def]) => `${(def && typeof def === 'object' && def.sql) || def} AS ${alias}`)
+    .join(',\n  ') || '*';
+  const fromClause = json.from || '';
+  const where = json.where || {};
+  const main = (typeof where.main === 'string' && where.main.trim()) ? where.main.trim() : null;
+  const orderClause = lovBuildOrderBy(json.order);
+  const baseSql = [`SELECT ${selectClause}`, `FROM ${fromClause}`, main ? `WHERE ${main}` : '', orderClause].filter(Boolean).join('\n');
+
+  const alt = (where.alternate && typeof where.alternate === 'object') ? where.alternate : {};
+  const cases = Object.keys(alt).map((key, idx) => {
+    const c = alt[key] || {};
+    const caseSql = (typeof c.sql === 'string' && c.sql.trim()) ? c.sql.trim() : '';
+    const params = (c.parameter && typeof c.parameter === 'object') ? Object.keys(c.parameter) : [];
+    return { label: `Case ${idx + 1}`, key, sql: `AND ${caseSql}`, params };
+  });
+  return { baseSql, cases };
+}
+
+function lovCopyBlock(btn) {
+  const code = btn.closest('.rxjs-code-block').querySelector('code');
+  copyText(code.textContent);
+}
+
+function lovInitHljs() {
+  if (!window.hljs) return;
+  document.querySelectorAll('#lov-tab pre.rxjs-code code').forEach(code => {
+    if (code.dataset.hlInit) return;
+    code.dataset.hlInit = '1';
+    window.hljs.highlightElement(code);
+  });
+}
+
+function lovSqlBlockHtml(label, sql, params) {
+  const paramsNote = (params && params.length) ? `<span class="lov-params-note">Params: ${escHtml(params.join(', '))}</span>` : '';
+  return `<div class="lov-sql-label-row">
+      <span class="lov-sql-label">${escHtml(label)}</span>
+      ${paramsNote}
+    </div>
+    <div class="rxjs-code-block">
+      <button class="rxjs-copy-btn" onclick="lovCopyBlock(this)">⎘ copy</button>
+      <pre class="rxjs-code"><code class="language-sql">${escHtml(sql)}</code></pre>
+    </div>`;
+}
+
+function lovRenderList(files) {
+  const container = document.getElementById('lov-list');
+  const empty = document.getElementById('lov-empty');
+  container.innerHTML = '';
+  if (!files.length) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  for (const entry of files) {
+    const acc = document.createElement('div');
+    acc.className = 'rxjs-acc';
+    acc.innerHTML = `<button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
+      <span>${escHtml(entry.id)} <span style="color:var(--text-dim);font-weight:400;font-size:0.78rem;">(${escHtml(entry.fileName)})</span></span>
+      <span class="rxjs-acc-chevron">›</span>
+    </button>
+    <div class="rxjs-acc-bd" style="display:none;">
+      ${lovSqlBlockHtml('SQL Query', entry.built.baseSql, [])}
+      ${entry.built.cases.map(c => lovSqlBlockHtml(c.label, c.sql, c.params)).join('\n')}
+    </div>`;
+    container.appendChild(acc);
+  }
+  lovInitHljs();
+}
+
+function lovFilter(q) {
+  const query = (q || '').trim().toLowerCase();
+  const filtered = !query ? _lovFiles : _lovFiles.filter(f =>
+    (f.id || '').toLowerCase().includes(query) || f.fileName.toLowerCase().includes(query));
+  lovRenderList(filtered);
+}
+
+function lovInit() {
+  const supported = 'showDirectoryPicker' in window;
+  document.getElementById('lov-unsupported').style.display = supported ? 'none' : '';
+  document.getElementById('lov-main').style.display = supported ? '' : 'none';
+  if (supported) lovRestoreFolder();
+}
+
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   restoreTheme();
@@ -4292,6 +4522,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   storLocalRefresh();
   storInitHljs();
   initJsonLineNumbers();
+  lovInit();
 
   // Sync JSON Live checkbox state
   try {
