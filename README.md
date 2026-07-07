@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.12-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.13-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -12,7 +12,7 @@
 
 ## ✨ Features
 
-เครื่องมือ 20 อย่าง ทำงานได้ทั้งหมดบน client-side ไม่มี server ไม่มี API ไม่มี tracking
+เครื่องมือ 21 อย่าง ทำงานได้ทั้งหมดบน client-side ไม่มี server ไม่มี API ไม่มี tracking
 
 ### 🎲 Mock Data Generator
 สร้างข้อมูลจำลองสำหรับทดสอบระบบ รองรับข้อมูลไทย:
@@ -134,6 +134,15 @@
 - **Cache API** — Service Worker intercept log animation (Cache Miss / Cache Hit / Offline)
 - **Security** — XSS attack visualization เลือกดูแต่ละ storage ว่าโดน/ปลอดภัย + Decision Tree แนะนำ storage ที่เหมาะสม
 
+### 🗂️ LOV Query Browser
+เปิดดู query-template JSON (LOV/SimpleLovContainer) จากโฟลเดอร์ในเครื่องโดยตรง — ไม่ต้อง upload:
+- เลือกโฟลเดอร์ผ่าน **File System Access API** (`showDirectoryPicker`) — จำโฟลเดอร์ไว้ข้าม session ด้วย IndexedDB
+- แสดงเป็น **Accordion** ต่อไฟล์ — ค้นหาได้ด้วย `id` หรือชื่อไฟล์
+- ประกอบ **SQL Query** จาก `select` / `from` / `where.main` อัตโนมัติ
+- ถ้ามี `where.alternate` แสดงแต่ละ case เป็น fragment `AND <condition>` พร้อม required-parameter note (เช่น `Params: zoneId`) — copy ไปต่อท้าย WHERE ได้ทันที
+- Syntax highlighting ด้วย highlight.js (SQL)
+- รองรับเฉพาะ Chrome / Edge (Chromium) — เบราว์เซอร์อื่นแสดงข้อความแจ้งเตือน
+
 ---
 
 ## 🚀 วิธีใช้งาน
@@ -199,7 +208,9 @@ HTML + CSS + Vanilla JavaScript (no build step, no npm, no framework)
 ├── jsdiff 5.1.0          — Text/JSON diff (CDN)
 ├── RxJS 7.8.1            — RxJS Playground runtime (CDN)
 ├── CodeMirror 5.65.16    — RxJS Playground editor + syntax highlighting (CDN)
-├── highlight.js 11.9.0   — TypeScript / Java / JavaScript syntax highlighting for code blocks (CDN)
+├── highlight.js 11.9.0   — TypeScript / Java / SQL / JavaScript syntax highlighting for code blocks (CDN)
+├── File System Access API — LOV Query Browser: local folder read (Chromium only)
+├── IndexedDB             — LOV Query Browser: persist directory handle across sessions
 └── Google Fonts          — IBM Plex Sans Thai, JetBrains Mono
 ```
 

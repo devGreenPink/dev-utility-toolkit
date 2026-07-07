@@ -1,7 +1,7 @@
 {
   "name": "อีสาน DevTools",
   "short_name": "DevTools",
-  "description": "Developer toolkit สำหรับนักพัฒนาไทย — 15 เครื่องมือในหน้าเดียว ทำงานใน browser ล้วน ไม่มี backend",
+  "description": "Developer toolkit สำหรับนักพัฒนาไทย — 21 เครื่องมือในหน้าเดียว ทำงานใน browser ล้วน ไม่มี backend",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0f1117",
