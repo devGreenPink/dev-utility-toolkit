@@ -105,7 +105,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.10</div>
+            <div class="app-version">v1.14</div>
           </div>
         </div>
       </div>
@@ -120,6 +120,19 @@
       </div>
 
       <nav class="sidebar-nav" id="sidebar-nav">
+        <div class="nav-fav-section" id="nav-fav-section" style="display: none">
+          <div class="nav-section-label nav-fav-label">
+            <span>⭐ รายการโปรด</span>
+            <span
+              class="nav-fav-clear"
+              onclick="clearFavorites()"
+              title="ล้างรายการโปรดทั้งหมด"
+              >ล้าง</span
+            >
+          </div>
+          <div id="nav-fav-list"></div>
+        </div>
+
         <div class="nav-section-label">เครื่องมือหลัก</div>
         <div
           class="nav-item active"
