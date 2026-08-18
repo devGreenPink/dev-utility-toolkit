@@ -53,16 +53,157 @@ function closeSidebar(){
   document.getElementById('sidebar-overlay').classList.remove('show');
 }
 
+// ── FAVORITES STORE (persistence impl — swappable) ──
+// Interface: load() -> Promise<string[]>, save(ids: string[]) -> Promise<void>
+// วันหลังถ้าจะเก็บบน backend ก็เขียน impl ใหม่ที่มี 2 เมธอดนี้ แล้วเรียก
+// setFavoritesStore(ApiFavoritesStore) ก่อน initFavorites() — ตัว feature ไม่ต้องแก้
+const STORAGE_FAV='isaan-devtools-favorites';
+
+const LocalStorageFavoritesStore={
+  name:'localStorage',
+  load(){
+    try{
+      const raw=localStorage.getItem(STORAGE_FAV);
+      const ids=raw?JSON.parse(raw):[];
+      return Promise.resolve(Array.isArray(ids)?ids:[]);
+    }catch(e){return Promise.resolve([]);}
+  },
+  save(ids){
+    try{localStorage.setItem(STORAGE_FAV,JSON.stringify(ids));}catch(e){}
+    return Promise.resolve();
+  },
+};
+
+// ตัวอย่าง impl สำหรับ REST API (ยังไม่ได้ใช้ — เก็บไว้เป็นแบบ)
+// const ApiFavoritesStore={
+//   name:'api',
+//   base:'/api/favorites',
+//   load(){return fetch(this.base).then(r=>r.ok?r.json():[]).catch(()=>[]);},
+//   save(ids){return fetch(this.base,{method:'PUT',headers:{'Content-Type':'application/json'},
+//     body:JSON.stringify(ids)}).then(()=>{}).catch(()=>{});},
+// };
+
+let favoritesStore=LocalStorageFavoritesStore;
+function setFavoritesStore(store){favoritesStore=store;}
+
+// ── FAVORITES ──
+let favorites=[];
+function saveFavorites(){favoritesStore.save(favorites.slice()).catch(()=>{});}
+function isFavorite(id){return favorites.includes(id);}
+function navLabelOf(el){
+  const lbl=el.querySelector('.nav-label');
+  return (lbl?lbl.textContent:el.textContent).trim();
+}
+function srcNavItem(id){return document.querySelector(`#sidebar-nav .nav-item[data-tab="${id}"]:not(.nav-fav-item)`);}
+function makeFavStar(id){
+  const star=document.createElement('span');
+  star.className='nav-fav-star'+(isFavorite(id)?' on':'');
+  star.dataset.favFor=id;
+  star.textContent=isFavorite(id)?'★':'☆';
+  star.title=isFavorite(id)?'เอาออกจากรายการโปรด':'เพิ่มเข้ารายการโปรด';
+  star.onclick=e=>toggleFavorite(e,id);
+  return star;
+}
+function toggleFavorite(evt,id){
+  if(evt){evt.stopPropagation();evt.preventDefault();}
+  const i=favorites.indexOf(id);
+  if(i>=0)favorites.splice(i,1);else favorites.push(id);
+  saveFavorites();
+  renderFavorites();
+  syncFavStars();
+  const q=document.getElementById('nav-search');
+  if(q&&q.value.trim())filterNav(q.value);
+  showToast(i>=0?'เอาออกจากรายการโปรดแล้ว':'⭐ เพิ่มเข้ารายการโปรดแล้ว');
+}
+function clearFavorites(){
+  if(!favorites.length)return;
+  favorites=[];
+  saveFavorites();
+  renderFavorites();
+  syncFavStars();
+  showToast('ล้างรายการโปรดแล้ว');
+}
+function syncFavStars(){
+  document.querySelectorAll('.nav-fav-star').forEach(s=>{
+    const fav=isFavorite(s.dataset.favFor);
+    s.textContent=fav?'★':'☆';
+    s.classList.toggle('on',fav);
+    s.title=fav?'เอาออกจากรายการโปรด':'เพิ่มเข้ารายการโปรด';
+  });
+}
+function renderFavorites(){
+  const section=document.getElementById('nav-fav-section');
+  const list=document.getElementById('nav-fav-list');
+  if(!section||!list)return;
+  // drop ids whose tool no longer exists (renamed/removed tabs)
+  const valid=favorites.filter(id=>srcNavItem(id));
+  if(valid.length!==favorites.length){favorites=valid;saveFavorites();}
+  list.innerHTML='';
+  section.style.display=favorites.length?'':'none';
+  favorites.forEach(id=>{
+    const src=srcNavItem(id);
+    const icon=src.querySelector('.nav-icon');
+    const item=document.createElement('div');
+    item.className='nav-item nav-fav-item'+(id===activeTabId?' active':'');
+    item.dataset.tab=id;
+    item.onclick=e=>openTab(e,id);
+    item.innerHTML=`<span class="nav-icon">${escHtml(icon?icon.textContent:'🔧')}</span>`+
+                   `<span class="nav-label">${escHtml(navLabelOf(src))}</span>`;
+    item.appendChild(makeFavStar(id));
+    list.appendChild(item);
+  });
+}
+function injectFavStars(){
+  document.querySelectorAll('#sidebar-nav .nav-item').forEach(item=>{
+    const id=item.dataset.tab;
+    if(!id||item.classList.contains('nav-fav-item'))return;
+    // wrap the label text so the star can sit flush right
+    if(!item.querySelector('.nav-label')){
+      const icon=item.querySelector('.nav-icon');
+      // เอาเฉพาะ text ที่ไม่ใช่ตัว icon ไม่งั้น label จะติด emoji มาด้วย → icon ซ้ำ 2 อัน
+      const text=Array.from(item.childNodes).filter(n=>n!==icon).map(n=>n.textContent).join('').trim();
+      item.innerHTML='';
+      if(icon)item.appendChild(icon);
+      const span=document.createElement('span');
+      span.className='nav-label';
+      span.textContent=text;
+      item.appendChild(span);
+    }
+    item.appendChild(makeFavStar(id));
+  });
+}
+function initFavorites(){
+  injectFavStars();
+  return favoritesStore.load().then(ids=>{
+    favorites=Array.isArray(ids)?ids:[];
+    renderFavorites();
+    syncFavStars();
+    const q=document.getElementById('nav-search');
+    if(q&&q.value.trim())filterNav(q.value); // ให้รายการโปรดโดน filter ด้วยถ้ามีคำค้นค้างอยู่
+  }).catch(()=>{});
+}
+
 // ── NAV FILTER ──
 const STORAGE_NAVSEARCH='isaan-devtools-navsearch';
 function filterNav(q){
   const query=q.toLowerCase().trim();
-  document.querySelectorAll('.nav-item').forEach(item=>{
-    item.style.display=!query||item.textContent.toLowerCase().includes(query)?'':'none';
+  document.querySelectorAll('#sidebar-nav .nav-item').forEach(item=>{
+    item.style.display=!query||navLabelOf(item).toLowerCase().includes(query)?'':'none';
   });
-  document.querySelectorAll('.nav-section-label').forEach(label=>{
-    label.style.display='';
+  // hide section headings whose items are all filtered out
+  document.querySelectorAll('#sidebar-nav .nav-section-label').forEach(label=>{
+    if(label.classList.contains('nav-fav-label'))return;
+    let visible=false;
+    for(let el=label.nextElementSibling;el&&!el.classList.contains('nav-section-label');el=el.nextElementSibling){
+      if(el.classList.contains('nav-item')&&el.style.display!=='none'){visible=true;break;}
+    }
+    label.style.display=visible?'':'none';
   });
+  const favSec=document.getElementById('nav-fav-section');
+  if(favSec){
+    const anyFav=Array.from(document.querySelectorAll('#nav-fav-list .nav-item')).some(i=>i.style.display!=='none');
+    favSec.style.display=favorites.length&&anyFav?'':'none';
+  }
   try{localStorage.setItem(STORAGE_NAVSEARCH,q);}catch(e){}
 }
 function restoreNavSearch(){
@@ -81,8 +222,8 @@ function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if(evt&&evt.currentTarget)evt.currentTarget.classList.add('active');
-  else document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>b.classList.add('active'));
+  // mark ทุก nav item ที่ชี้ tab นี้ (ตัวใน section ปกติ + ตัวใน รายการโปรด)
+  document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>b.classList.add('active'));
   activeTabId=id;
   const meta=TAB_META[id]||{title:'',sub:''};
   document.getElementById('topbar-title').textContent=meta.title;
@@ -4481,6 +4622,7 @@ function lovInit() {
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   restoreTheme();
+  initFavorites();
   restoreTab();
   restoreNavSearch();
 
