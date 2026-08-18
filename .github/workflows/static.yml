@@ -41,3 +41,57 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  # ติด tag + สร้าง release ตามเวอร์ชันใน index.html หลัง deploy สำเร็จ
+  # (push เข้า main = PR ถูก merge) — ถ้า tag นั้นมีอยู่แล้วจะข้ามไป
+  # ไม่ fail ดังนั้น merge ที่ไม่ได้ bump version ก็ผ่านปกติ
+  tag:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        id: ver
+        run: |
+          set -euo pipefail
+          version=$(sed -n 's/.*class="app-version">v\([0-9][0-9.]*\)<.*/\1/p' index.html | head -1)
+          if [ -z "$version" ]; then
+            echo "::error file=index.html::อ่าน version จาก .app-version ไม่ได้"
+            exit 1
+          fi
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "เวอร์ชันที่อ่านได้: v$version"
+
+          # เตือนเฉยๆ ถ้า badge ใน README ไม่ตรงกับ index.html (ไม่ fail)
+          badge=$(sed -n 's/.*badge\/version-\([0-9][0-9.]*\)-.*/\1/p' README.md | head -1)
+          if [ -n "$badge" ] && [ "$badge" != "$version" ]; then
+            echo "::warning file=README.md::badge ใน README เป็น v$badge แต่ index.html เป็น v$version"
+          fi
+
+      - name: Check existing tag
+        id: check
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ steps.ver.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "มี tag ${{ steps.ver.outputs.tag }} อยู่แล้ว — ข้าม"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create tag and release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "${{ steps.ver.outputs.tag }}" \
+            --target "${{ github.sha }}" \
+            --title "${{ steps.ver.outputs.tag }}" \
+            --generate-notes
