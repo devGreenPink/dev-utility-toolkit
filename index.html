@@ -105,7 +105,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.14</div>
+            <div class="app-version">v1.15</div>
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@
         />
       </div>
 
-      <nav class="sidebar-nav" id="sidebar-nav">
+      <nav class="sidebar-nav" id="sidebar-nav" role="tablist" aria-label="เครื่องมือ">
         <div class="nav-fav-section" id="nav-fav-section" style="display: none">
           <div class="nav-section-label nav-fav-label">
             <span>⭐ รายการโปรด</span>
@@ -294,14 +294,6 @@
           onclick="openTab(event, 'lov-tab')"
         >
           <span class="nav-icon">🗂️</span> LOV Query Browser
-        </div>
-        <div class="nav-section-label">เครื่องมือเพิ่มเติม</div>
-        <div
-          class="nav-item"
-          data-tab="kopwang-tab"
-          onclick="openTab(event, 'kopwang-tab')"
-        >
-          <span class="nav-icon">🫨</span> ก๊อปวาง เอนจิ้น
         </div>
       </nav>
 
@@ -753,7 +745,7 @@
             oninput="detectSqlMode(this.value)"
           ></textarea>
           <div style="margin-top: 10px">
-            <button class="btn btn-green btn-full" onclick="convertSQL()">
+            <button class="btn btn-primary btn-full" onclick="convertSQL()">
               ▶ แยก SQL
             </button>
           </div>
@@ -2316,22 +2308,6 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <div id="kopwang-tab" class="tab-content" >
-          <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
-            <a href="https://devgreenpink.github.io/kop-wang-engine/" target="_blank"
-               class="btn btn-ghost" style="font-size:0.78rem; text-decoration:none;">
-              เปิดในแท็บใหม่ ↗
-            </a>
-          </div>
-          <iframe
-            src="https://devgreenpink.github.io/kop-wang-engine/"
-            class="kopwang-frame"
-            title="ก๊อปวาง เอนจิ้น"
-            loading="lazy"
-            allowfullscreen
-          ></iframe>
         </div>
 
         <!-- RXJS REFERENCE -->
@@ -4297,27 +4273,27 @@ public class RateLimiter {
                 <div class="stor-bar-row" id="stor-bar-local">
                   <div class="stor-bar-name">localStorage</div>
                   <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#60a5fa"></div></div>
-                  <div class="stor-bar-label">ถาวร ✓</div>
+                  <div class="stor-bar-label">ถาวร</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-session">
                   <div class="stor-bar-name">sessionStorage</div>
                   <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#fb923c"></div></div>
-                  <div class="stor-bar-label">อยู่ใน tab นี้ ✓</div>
+                  <div class="stor-bar-label">อยู่ใน tab นี้</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-idb">
                   <div class="stor-bar-name">IndexedDB</div>
                   <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#a78bfa"></div></div>
-                  <div class="stor-bar-label">ถาวร ✓</div>
+                  <div class="stor-bar-label">ถาวร</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-cookie">
                   <div class="stor-bar-name">Cookie (TTL)</div>
                   <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#34d399"></div></div>
-                  <div class="stor-bar-label">จนหมด TTL ✓</div>
+                  <div class="stor-bar-label">จนหมด TTL</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-cache">
                   <div class="stor-bar-name">Cache API</div>
                   <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#f472b6"></div></div>
-                  <div class="stor-bar-label">ถาวร ✓</div>
+                  <div class="stor-bar-label">ถาวร</div>
                 </div>
 
                 <div class="stor-lifetime-btns">

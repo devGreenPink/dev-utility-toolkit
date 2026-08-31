@@ -17,7 +17,6 @@ const TAB_META = {
   'linux-tab': { title: 'Linux Command Cheatsheet', sub: 'คำสั่ง Linux ที่ใช้บ่อย — Ubuntu / Debian / RHEL' },
   'git-tab': { title: 'Git CLI Cheatsheet', sub: 'คำสั่ง Git ที่ใช้บ่อย — commit · branch · rebase · stash · undo' },
   'numbase-tab': { title: 'Number Base Converter', sub: 'แปลงเลขฐาน 10 ↔ 16 ↔ 2 ↔ 8' },
-  'kopwang-tab': { title: 'ก๊อปวาง เอนจิ้น', sub: 'SQL → TypeScript / Java Entity Generator' },
   'rxjs-tab': { title: 'RxJS Reference', sub: 'Operator Explorer · Marble Diagrams · คำอธิบายภาษาไทย' },
   'angular-tab': { title: 'Angular Lifecycle', sub: '9 Lifecycle Hooks · Interactive Simulator · คำอธิบายภาษาไทย' },
   'mq-tab': { title: 'RabbitMQ · Redis · Quarkus', sub: 'Concepts · Animations · Code Examples สำหรับมือใหม่' },
@@ -150,8 +149,14 @@ function renderFavorites(){
     item.innerHTML=`<span class="nav-icon">${escHtml(icon?icon.textContent:'🔧')}</span>`+
                    `<span class="nav-label">${escHtml(navLabelOf(src))}</span>`;
     item.appendChild(makeFavStar(id));
+    makeNavItemFocusable(item);
     list.appendChild(item);
   });
+}
+function makeNavItemFocusable(item){
+  item.setAttribute('role','tab');
+  item.setAttribute('tabindex','0');
+  item.setAttribute('aria-selected',item.classList.contains('active')?'true':'false');
 }
 function injectFavStars(){
   document.querySelectorAll('#sidebar-nav .nav-item').forEach(item=>{
@@ -170,8 +175,19 @@ function injectFavStars(){
       item.appendChild(span);
     }
     item.appendChild(makeFavStar(id));
+    makeNavItemFocusable(item);
   });
 }
+// Enter/Space activates any focused .nav-item (static + dynamically-rendered favorites)
+document.addEventListener('keydown',e=>{
+  const isEnter=e.key==='Enter'||e.keyCode===13||e.which===13;
+  const isSpace=e.key===' '||e.key==='Spacebar'||e.keyCode===32||e.which===32;
+  if(!isEnter&&!isSpace)return;
+  const item=e.target.closest && e.target.closest('.nav-item');
+  if(!item||!item.classList.contains('nav-item'))return;
+  e.preventDefault();
+  item.click();
+});
 function initFavorites(){
   injectFavStars();
   return favoritesStore.load().then(ids=>{
@@ -220,10 +236,10 @@ function restoreNavSearch(){
 let activeTabId='random-tab';
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});
   document.getElementById(id).classList.add('active');
   // mark ทุก nav item ที่ชี้ tab นี้ (ตัวใน section ปกติ + ตัวใน รายการโปรด)
-  document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>b.classList.add('active'));
+  document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>{b.classList.add('active');b.setAttribute('aria-selected','true');});
   activeTabId=id;
   const meta=TAB_META[id]||{title:'',sub:''};
   document.getElementById('topbar-title').textContent=meta.title;
@@ -274,6 +290,25 @@ document.addEventListener('click',e=>{const wrap=document.querySelector('.kb-pop
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg||'✓ Copied';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function copyText(txt){navigator.clipboard.writeText(txt).then(()=>showToast('✓ Copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('✓ Copied');});}
 function copyVal(id){const el=document.getElementById(id);if(el&&el.textContent&&el.textContent!=='—')copyText(el.textContent);}
+// คลิก/Enter/Space บนตัวค่าเอง (ไม่ใช่แค่ปุ่ม Copy) ก็ copy ได้
+document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
+  el.setAttribute('tabindex','0');
+  el.setAttribute('role','button');
+  el.setAttribute('title','คลิกเพื่อ copy');
+});
+document.addEventListener('click',e=>{
+  const val=e.target.closest && e.target.closest('.mock-field-value[id]');
+  if(val)copyVal(val.id);
+});
+document.addEventListener('keydown',e=>{
+  const isEnter=e.key==='Enter'||e.keyCode===13||e.which===13;
+  const isSpace=e.key===' '||e.key==='Spacebar'||e.keyCode===32||e.which===32;
+  if(!isEnter&&!isSpace)return;
+  const val=e.target.closest && e.target.closest('.mock-field-value[id]');
+  if(!val)return;
+  e.preventDefault();
+  copyVal(val.id);
+});
 function copyElText(id){const el=document.getElementById(id);if(el)copyText(el.value!==undefined?el.value:el.textContent);}
 function copyArea(id){const el=document.getElementById(id);if(el)copyText(el.value||el.textContent);}
 function highlightText(text,query){if(!query)return escHtml(text);const re=new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return escHtml(text).replace(re,'<span class="cmd-highlight">$1</span>');}
@@ -1690,6 +1725,7 @@ function renderCmdList(cmds,containerId,searchQuery){
     const gt=document.createElement('div');gt.className='kubectl-group-title';gt.textContent=grp;gDiv.appendChild(gt);
     for(const item of items){
       const card=document.createElement('div');card.className='cmd-card';
+      card.tabIndex=0;card.setAttribute('role','button');card.title='คลิกเพื่อ copy';
       const txt=document.createElement('div');txt.style.flex='1';
       const codeEl=document.createElement('div');codeEl.className='cmd-code';
       const descEl=document.createElement('div');descEl.className='cmd-desc';
@@ -1701,7 +1737,15 @@ function renderCmdList(cmds,containerId,searchQuery){
       }
       txt.appendChild(codeEl);txt.appendChild(descEl);
       const copyBtn=document.createElement('button');copyBtn.className='btn btn-ghost';copyBtn.textContent='Copy';
-      copyBtn.onclick=()=>copyText(item.cmd);
+      copyBtn.onclick=e=>{e.stopPropagation();copyText(item.cmd);};
+      card.onclick=()=>copyText(item.cmd);
+      card.onkeydown=e=>{
+        const isEnter=e.key==='Enter'||e.keyCode===13||e.which===13;
+        const isSpace=e.key===' '||e.key==='Spacebar'||e.keyCode===32||e.which===32;
+        if(!isEnter&&!isSpace)return;
+        e.preventDefault();
+        copyText(item.cmd);
+      };
       card.appendChild(txt);card.appendChild(copyBtn);
       gDiv.appendChild(card);
     }
@@ -4098,13 +4142,13 @@ function storLifetimeAnim(action) {
   const ids = ['local','session','idb','cookie','cache'];
   if (action === 'close-tab') {
     const s = document.getElementById('stor-bar-session');
-    if (s) { s.classList.add('stor-bar-dead'); s.querySelector('.stor-bar-label').textContent = 'หาย ❌'; }
+    if (s) { s.classList.add('stor-bar-dead'); s.querySelector('.stor-bar-label').textContent = 'หาย'; }
     const c = document.getElementById('stor-bar-cookie');
-    if (c) { c.querySelector('.stor-bar-fill').style.width = '55%'; c.querySelector('.stor-bar-label').textContent = 'ลดลงตาม TTL ⏱️'; }
+    if (c) { c.querySelector('.stor-bar-fill').style.width = '55%'; c.querySelector('.stor-bar-label').textContent = 'ลดลงตาม TTL'; }
   } else if (action === 'clear') {
     ids.forEach(id => {
       const el = document.getElementById('stor-bar-' + id);
-      if (el) { el.classList.add('stor-bar-dead'); el.querySelector('.stor-bar-label').textContent = 'หาย ❌'; }
+      if (el) { el.classList.add('stor-bar-dead'); el.querySelector('.stor-bar-label').textContent = 'หาย'; }
     });
   } else {
     ids.forEach(id => {
@@ -4114,7 +4158,7 @@ function storLifetimeAnim(action) {
       const fill = el.querySelector('.stor-bar-fill');
       if (fill) fill.style.width = '100%';
     });
-    const labels = { local:'ถาวร ✓', session:'อยู่ใน tab นี้ ✓', idb:'ถาวร ✓', cookie:'จนหมด TTL ✓', cache:'ถาวร ✓' };
+    const labels = { local:'ถาวร', session:'อยู่ใน tab นี้', idb:'ถาวร', cookie:'จนหมด TTL', cache:'ถาวร' };
     Object.entries(labels).forEach(([id, txt]) => {
       const el = document.getElementById('stor-bar-' + id);
       if (el) el.querySelector('.stor-bar-label').textContent = txt;

@@ -18,12 +18,13 @@ Push to `main` → GitHub Actions (`.github/workflows/static.yml`) deploys the w
 
 ## Architecture
 
-The app is a single HTML page with two companion files:
+The app is a single HTML page with a few companion files:
 
 - `index.html` — all tool UI markup. Each tool lives in a `<div id="<name>-tab" class="tab-content">` block.
-- `assets/js/app.js` — all JavaScript in one file. No modules, no imports.
+- `assets/js/app.js` — all JavaScript in one file, organized into `// ── SECTION ──`-delimited blocks (one per tool/feature — grep for `// ── ` to get the full tool list).
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
 - `manifest.json` — PWA metadata.
+- `sw.js` — service worker: cache-first for same-origin assets, network-first (with cache fallback) for cross-origin (CDN/fonts). See Versioning below for why its `CACHE` constant must stay in sync with the app version.
 
 ### Tab/navigation system
 
@@ -40,6 +41,26 @@ Adding a new tool requires three things:
 - `isaan-devtools-theme` — active theme name
 - `isaan-devtools-tab` — last active tab id
 - `isaan-devtools-navsearch` — last sidebar search query
+- `isaan-devtools-favorites` — favorited tool ids (see Favorites below)
+
+### Favorites store
+
+Favorites persistence is behind a swappable interface (`assets/js/app.js:56`): any store object
+implementing `load() -> Promise<string[]>` and `save(ids) -> Promise<void>` can replace
+`LocalStorageFavoritesStore` via `setFavoritesStore(store)` before `initFavorites()` runs — e.g.
+to move favorites to a backend later without touching the feature code itself.
+
+### Versioning / release
+
+The version badge at `index.html` (`.app-version`, e.g. `v1.14`) is the single source of truth
+for the app version. After every push to `main`, `.github/workflows/static.yml`'s `tag` job reads
+that badge and auto-creates a matching git tag + GitHub release (skips silently if the tag already
+exists — merges that don't bump the version don't fail the build). When bumping the version, keep
+these in sync manually:
+- `.app-version` in `index.html`
+- `CACHE` constant in `sw.js` (e.g. `isaan-devtools-v14`) — must be bumped on any deploy that
+  changes cached assets, or returning users keep getting stale files from the service worker
+- the version badge in `README.md` (CI only warns on mismatch here, doesn't fail)
 
 ### External dependencies (CDN, no local copy)
 
@@ -67,3 +88,28 @@ Adding a new tool requires three things:
 - `escHtml(s)` — escapes HTML for safe insertion into `innerHTML`.
 - Mock data generator uses `crypto.getRandomValues` for UUID and standard `Math.random` for other fields.
 - Thai ID checksum: sum of `digit[i] * (13 - i)` for i 0–11, check digit = `(11 - sum % 11) % 10`.
+
+## Design-system toolkit (`.claude/`)
+
+Separate from the app itself: this repo also carries a generic, framework-agnostic
+design-system authoring kit for Claude Code — DTCG design tokens, taste/accessibility
+doctrine, component specs, and verification scripts. It doesn't run as part of
+อีสาน DevTools and has no build wiring (no `package.json`/CI yet); it exists so Claude
+can design/review/generate UI code to a consistent bar, including for this app's own
+future UI work.
+
+- `.claude/rules/*.md` — topic-scoped instruction files (accessibility, tokens/color,
+  typography/spacing, components, frameworks, brand/operations, review/research),
+  split out of a global CLAUDE.md so each loads only when relevant. Don't duplicate
+  their content here — see them directly when working on design/UI tasks.
+- `.claude/skills/*` — invocable skills for token generation, component design,
+  accessibility audits, design review, framework code generation, etc.
+- `tokens/*.json` — DTCG-format design tokens (color, type, spacing, motion, ...).
+- `accessibility/`, `components/`, `content/`, `design-systems/`, `frameworks/`,
+  `taste/`, `workflows/` — reference docs backing the rules/skills above.
+- `scripts/` — Python/Node validators and auditors (contrast, token lint, a11y/axe,
+  responsive overflow, taste audit, etc.) invoked by the skills, not by any app build
+  step.
+
+This toolkit is unrelated to the Thai ID/mock-data/SQL-parser logic above — don't
+conflate the two when navigating the repo.
