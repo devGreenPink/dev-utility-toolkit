@@ -1,0 +1,10 @@
+{
+  "name": "esan-office",
+  "version": "0.3.0",
+  "description": "ESAN AI AGENT: ออฟฟิศ 8 บิตที่แสดงสถานะ Claude Code แต่ละ session บนเครื่องคุณแบบสด เปิดดูที่ http://localhost:4567",
+  "author": {
+    "name": "devgreenpink"
+  },
+  "homepage": "https://devgreenpink.github.io/dev-utility-toolkit/",
+  "keywords": ["office", "dashboard", "hooks", "pixel-art"]
+}

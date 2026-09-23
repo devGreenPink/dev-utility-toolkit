@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="th" data-theme="isan">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ESAN AI AGENT</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#1C1F3A">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Chakra+Petch:wght@400;500;600&display=swap">
+<script>try{var q=new URLSearchParams(location.search).get('theme'),t=q||localStorage.getItem('esan-office-theme');if(t==='isan'||t==='green')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>
+:root{
+  --bg:#1C1F3A;--bg-deep:#141730;--panel:#232850;--line:#3B447A;
+  --ink:#F3E6C8;--ink-2:#D9C9A3;--ink-3:#A89A7C;--shade:#0E1024;
+  --accent:#E9B949;--accent-deep:#B8862A;--on-accent:#1C1F3A;
+  --good:#8FD18B;--warn:#E9B949;--bad:#E0604E;
+  --px:"Pixelify Sans","Chakra Petch",ui-monospace,Consolas,monospace;
+  --th:"Chakra Petch","Pixelify Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --b:3px;
+  color-scheme:dark;
+}
+:root[data-theme="green"]{
+  --bg:#1B3620;--bg-deep:#12261A;--panel:#16301D;--line:#2F5C39;
+  --ink:#BDEBFB;--ink-2:#8FC3D3;--ink-3:#6C9AA6;--shade:#0B1A10;
+  --accent:#BDEBFB;--accent-deep:#6FB2C8;--on-accent:#12261A;
+  --good:#BDEBFB;--warn:#F4C35A;--bad:#FF7A66;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.6;padding-inline:16px;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+.wrap{max-width:800px;margin:0 auto;padding-block:24px 44px;display:flex;flex-direction:column;gap:18px}
+.notch{clip-path:polygon(0 var(--b),var(--b) var(--b),var(--b) 0,calc(100% - var(--b)) 0,calc(100% - var(--b)) var(--b),100% var(--b),100% calc(100% - var(--b)),calc(100% - var(--b)) calc(100% - var(--b)),calc(100% - var(--b)) 100%,var(--b) 100%,var(--b) calc(100% - var(--b)),0 calc(100% - var(--b)))}
+.pkm{height:10px;background-color:#B8392F;background-image:linear-gradient(90deg,rgba(232,220,192,.55) 1px,transparent 1px),linear-gradient(0deg,rgba(232,220,192,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(46,63,143,.9) 4px,transparent 4px),linear-gradient(0deg,rgba(46,63,143,.9) 4px,transparent 4px);background-size:12px 12px,12px 12px,12px 12px,12px 12px;background-position:9px 0,0 9px,0 0,0 0}
+:root[data-theme="green"] .pkm{display:none}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.eyebrow{display:inline-block;font-family:var(--px);font-size:12px;letter-spacing:.06em;color:var(--on-accent);background:var(--warn);padding:2px 8px}
+h1{font-family:var(--px);font-size:clamp(28px,7vw,40px);font-weight:600;line-height:1.15;margin:10px 0 8px;text-wrap:balance;letter-spacing:.04em}
+h1 .blink{color:var(--warn)}
+.lede{margin:0;color:var(--ink-2);max-width:62ch}
+.themes{display:flex;gap:6px;align-items:center;font-family:var(--px);font-size:12px;color:var(--ink-3)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--panel);border:var(--b) solid var(--line);padding:8px 12px;min-width:0}
+.stat .k{font-size:12px;color:var(--ink-3);line-height:1.4}
+.stat .v{font-family:var(--px);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.3}
+.stat .h{font-size:11px;color:var(--ink-3);line-height:1.3}
+button{font-family:var(--px);font-size:15px;line-height:1.2;padding:9px 14px 11px;border:var(--b) solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;box-shadow:inset 0 -4px 0 var(--line)}
+button:hover{background:var(--panel)}
+button:active{transform:translateY(2px);box-shadow:inset 0 -2px 0 var(--line)}
+button:focus-visible{outline:none;box-shadow:inset 0 0 0 3px var(--warn)}
+.chip{font-size:12px;padding:3px 9px 4px;border:2px solid var(--line);color:var(--ink-3);box-shadow:none}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--on-accent);border-color:var(--ink)}
+.status{display:flex;align-items:center;gap:8px;font-family:var(--px);font-size:13px;color:var(--ink-3)}
+.status i{width:10px;height:10px;background:var(--bad);display:inline-block}
+.status.on i{background:var(--good)}
+.stage{position:relative;display:flex;justify-content:center;background:var(--bg-deep);border:var(--b) solid var(--line);line-height:0}
+.stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.10) 0 1px,transparent 1px 3px)}
+canvas{display:block;max-width:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer}
+.sec{font-family:var(--px);font-size:22px;font-weight:600;letter-spacing:.03em;margin:0}
+.sec-sub{margin:0;font-size:14px;color:var(--ink-2);max-width:62ch}
+.team,.guide{display:flex;flex-direction:column;gap:10px}
+.roster{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:10px}
+.roster li{background:var(--panel);border:var(--b) solid var(--line);padding:10px 12px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.roster li.empty{color:var(--ink-2);font-size:14px}
+.rh{display:flex;align-items:center;gap:8px;min-width:0}
+.dot{width:12px;height:12px;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.nm{font-family:var(--px);font-size:16px;line-height:1.3;white-space:nowrap}
+.role{font-family:var(--px);font-size:12px;line-height:1.5;padding:0 6px;color:var(--shade);white-space:nowrap;max-width:14ch;overflow:hidden;text-overflow:ellipsis}
+.rh .pill{margin-left:auto}
+.pill{font-family:var(--px);font-size:12px;padding:1px 8px;background:var(--bg-deep);color:var(--ink-2);border:2px solid var(--line);white-space:nowrap}
+.pill.on{background:var(--ink);color:var(--on-accent);border-color:var(--ink)}
+.pill.wait{background:var(--warn);color:var(--shade);border-color:var(--warn)}
+.where{margin:0;font-size:12px;color:var(--ink-3);font-family:var(--px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rf{display:grid;grid-template-columns:minmax(0,1fr) 64px 44px;gap:10px;align-items:center}
+.now{font-size:13px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.now.wait{color:var(--warn)}
+.seg{display:grid;grid-template-columns:repeat(10,1fr);gap:2px}
+.seg i{display:block;height:8px;background:var(--bg-deep)}
+.pct{font-family:var(--px);font-size:13px;text-align:right;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ra{display:flex;justify-content:flex-end}
+.ra button{font-size:13px;padding:5px 10px 7px}
+.gl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px}
+.gl li{background:var(--panel);border:var(--b) solid var(--line);padding:10px 12px;display:grid;grid-template-columns:14px minmax(0,1fr);gap:2px 10px;align-content:start}
+.gl .ic{width:14px;height:14px;margin-top:4px}
+.gl b{font-family:var(--px);font-weight:500;font-size:16px;line-height:1.4}
+.gl p{grid-column:2;margin:0;font-size:13px;color:var(--ink-2);line-height:1.55}
+.gl code{grid-column:2;font-family:var(--px);font-size:12px;color:var(--warn);margin-top:2px}
+.foot{font-size:13px;color:var(--ink-3);margin:0;max-width:62ch}
+.foot code{font-family:var(--px);color:var(--ink-2)}
+.install{display:flex;flex-direction:column;gap:10px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:st}
+.steps>li{background:var(--panel);border:var(--b) solid var(--line);padding:10px 12px 12px 48px;position:relative;counter-increment:st}
+.steps>li::before{content:counter(st);position:absolute;left:12px;top:10px;width:24px;height:24px;display:grid;place-items:center;font-family:var(--px);font-size:14px;background:var(--warn);color:var(--shade)}
+.steps b{font-family:var(--px);font-weight:500;font-size:16px;display:block;line-height:1.5}
+.steps p{margin:4px 0 0;font-size:13px;color:var(--ink-2);line-height:1.55;max-width:62ch}
+.steps p b,.gl p b{display:inline;font-size:inherit;line-height:inherit;color:var(--ink)}
+.install .gl{margin-top:4px}
+.cmd{display:flex;gap:8px;align-items:stretch;margin-top:6px}
+.cmd code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-size:13px;background:var(--bg-deep);border:2px solid var(--line);padding:6px 10px;color:var(--ink)}
+.cmd button{font-size:12px;padding:4px 10px 6px;flex:none}
+.appnote{font-family:var(--px);font-size:13px;color:var(--good)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;padding:0 12px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none}
+.sheet-in{pointer-events:auto;width:100%;max-width:800px;max-height:min(74vh,660px);overflow:auto;background:var(--panel);border:var(--b) solid var(--ink);padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.sh-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sh-head b{font-family:var(--px);font-size:20px;font-weight:600}
+.sh-head .x{margin-left:auto;font-size:13px;padding:5px 10px 7px}
+.sh-meta{font-family:var(--px);font-size:12px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:4px 14px}
+.sh-h{font-family:var(--px);font-size:15px;font-weight:500;margin:0;color:var(--ink-2)}
+.sh-box{margin:0;font-size:14px;background:var(--bg-deep);border:2px solid var(--line);padding:8px 10px;white-space:pre-wrap;word-break:break-word}
+.log{list-style:none;margin:0;padding:8px 10px;display:flex;flex-direction:column;gap:5px;max-height:220px;overflow:auto;background:var(--bg-deep);border:2px solid var(--line);font-size:13px;line-height:1.5}
+.log b{font-family:var(--px);font-weight:500;margin-right:6px}
+.l-you b{color:var(--warn)}
+.l-tool{font-family:var(--px);color:var(--ink-3);font-size:12px}
+.l-agent{color:var(--good)}
+.l-sys,.l-perm{color:var(--warn);font-size:12px}
+.demo{margin:0;font-size:12px;color:var(--ink-3)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.controls .status{margin-left:auto}
+button.primary{background:var(--ink);color:var(--on-accent);box-shadow:inset 0 -4px 0 var(--accent-deep)}
+button.primary:active{box-shadow:inset 0 -2px 0 var(--accent-deep)}
+button.danger{border-color:var(--bad);color:var(--bad);box-shadow:inset 0 -4px 0 #5A2420}
+.permbtn{border-color:var(--warn);color:var(--warn);box-shadow:inset 0 -4px 0 #5A4A1A}
+.perm{border:var(--b) solid var(--warn);background:#2B2A14;padding:8px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.perm p{margin:0;flex:1 1 220px;color:var(--warn);font-size:14px;word-break:break-word}
+.perm code{font-family:var(--px)}
+.perm .ok{background:var(--warn);color:var(--shade);border-color:var(--warn);box-shadow:inset 0 -4px 0 #B08A2A}
+.sh-form{display:flex;gap:8px;align-items:flex-end}
+.sh-form textarea{flex:1;min-width:0}
+.sh-btns{display:flex;flex-direction:column;gap:6px}
+textarea,.sh-set input,.sh-set select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg-deep);border:2px solid var(--line);padding:8px 10px;width:100%;resize:vertical}
+textarea:focus,.sh-set input:focus,.sh-set select:focus{outline:2px solid var(--warn);outline-offset:0}
+.err{margin:0;font-size:13px;color:var(--bad)}
+.watch{margin:0;font-size:13px;color:var(--ink-2);background:var(--bg-deep);border:2px dashed var(--line);padding:8px 10px}
+details.sh-set{border-top:2px dashed var(--line);padding-top:8px}
+details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color:var(--ink-2)}
+.sh-set label{display:block;font-size:12px;color:var(--ink-3);margin:10px 0 4px;font-family:var(--px)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.warnnote{margin:10px 0 0;font-size:12px;color:var(--warn)}
+.sh-save{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px}
+.sh-save button{font-size:13px;padding:6px 12px 8px}
+.saved{font-family:var(--px);font-size:12px;color:var(--good)}
+.saved.bad{color:var(--bad)}
+@media (max-width:440px){
+  .stat{padding:6px 10px}
+  .stat .v{font-size:19px}
+}
+@media (prefers-reduced-motion:reduce){button:active{transform:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div class="top">
+      <span class="eyebrow notch" id="eyebrow" data-i18n="eyebrow">สบายดีบ่ · ต่อกับ Claude Code บนเครื่องนี้</span>
+      <div class="themes" role="group" aria-label="ธีม">ธีม
+        <button type="button" class="chip" data-set-theme="isan">อีสาน</button>
+        <button type="button" class="chip" data-set-theme="green">CDG</button>
+      </div>
+    </div>
+    <h1><span data-i18n="title">ESAN AI AGENT</span><span class="blink">_</span></h1>
+    <p class="lede" data-i18n="lede">agent แต่ละตัวคือ session ของ Claude Code ที่เปิดอยู่บนเครื่องนี้ <span style="white-space:nowrap">มีเวียกกะย่างไปนั่งโต๊ะ</span> <span style="white-space:nowrap">บ่มีเวียกกะไปพัก</span> ตำส้มตำ เล่นตู้อาเขต หรือขึ้นเวทีมวย แถบบนหัวคือ context ที่เหลืออยู่</p>
+  </header>
+  <div class="pkm" aria-hidden="true"></div>
+
+  <section class="stats" aria-label="สรุปสถานะ">
+    <div class="stat notch"><div class="k" data-i18n="statWork">กำลังเฮ็ดเวียก</div><div class="v" id="s-work">0/0</div></div>
+    <div class="stat notch"><div class="k">Context เฉลี่ยคงเหลือ</div><div class="v" id="s-ctx">-</div></div>
+    <div class="stat notch"><div class="k">โควตา 5 ชม. ใช้ไป</div><div class="v" id="s-quota">-</div><div class="h" id="s-quota-h">ต้องตั้ง statusline ก่อน</div></div>
+  </section>
+
+  <div class="controls">
+    <button type="button" class="primary notch" id="b-add" hidden>เพิ่ม agent</button>
+    <button type="button" class="notch permbtn" id="b-perm" hidden>มีคำขออนุญาต <span id="perm-n">1</span> รายการ</button>
+    <div class="status" id="status" role="status"><i aria-hidden="true"></i><span id="status-t">กำลังต่อ bridge…</span></div>
+  </div>
+
+  <div class="stage notch" id="stage"><canvas id="office" aria-label="ผังออฟฟิศแบบ 8 บิต โต๊ะคอมอยู่กลางห้อง มุมพัก โต๊ะโป๊กเกอร์ และสนามมวย"></canvas></div>
+
+  <section class="team" aria-labelledby="team-h">
+    <h2 class="sec" id="team-h">ทีม agent</h2>
+    <p class="sec-sub">มี 2 แบบ: agent ประจำออฟฟิศที่กดเพิ่มเอง สั่งงาน ตั้งคำสั่งประจำตัว และกดอนุญาตได้จากหน้านี้ กับ session ที่คุณเปิดเองใน terminal หรือแอป ซึ่งดูได้อย่างเดียว แตะที่ตัว agent หรือกดปุ่มที่การ์ดเพื่อเปิดแผงของตัวนั้น</p>
+    <ul class="roster" id="roster"></ul>
+  </section>
+
+  <section class="install" aria-labelledby="install-h" id="install">
+    <h2 class="sec" id="install-h">วิธีติดตั้ง</h2>
+    <p class="sec-sub">ติดตั้งครั้งเดียว หลังจากนั้นเปิด Claude Code ตามปกติ ออฟฟิศจะทำงานเอง ข้อมูลทั้งหมดอยู่ในเครื่องคุณ</p>
+    <ol class="steps">
+      <li><b>ลง Node.js 18 ขึ้นไป</b><p>plugin ใช้ Node รัน bridge ตัวเล็ก ๆ ในเครื่อง ถ้ามีอยู่แล้วข้ามไปได้เลย</p>
+        <div class="cmd"><code>node --version</code><button type="button" class="notch" data-copy="node --version">คัดลอก</button></div></li>
+      <li><b>ติดตั้ง plugin ใน Claude Code</b><p>พิมพ์ 2 คำสั่งนี้ใน terminal (หรือพิมพ์ <code>/plugin</code> แบบเดียวกันในหน้าจอ Claude Code)</p>
+        <div class="cmd"><code>claude plugin marketplace add devgreenpink/dev-utility-toolkit</code><button type="button" class="notch" data-copy="claude plugin marketplace add devgreenpink/dev-utility-toolkit">คัดลอก</button></div>
+        <div class="cmd"><code>claude plugin install esan-office@esan-devtools</code><button type="button" class="notch" data-copy="claude plugin install esan-office@esan-devtools">คัดลอก</button></div></li>
+      <li><b>เปิด Claude Code แล้วเข้าออฟฟิศ</b><p>พอเริ่ม session ใหม่ bridge จะเปิดเองเบื้องหลัง แล้วเข้าหน้านี้ที่ <code>http://localhost:4567</code></p></li>
+      <li><b>ติดตั้งเป็นแอปบนเครื่อง</b><p id="app-hint">ใช้ Chrome หรือ Edge กดปุ่มด้านล่าง หรือไอคอนติดตั้งท้ายแถบที่อยู่ จะได้ไอคอน ESAN AI AGENT บนเดสก์ท็อปและเปิดเป็นหน้าต่างของตัวเอง เหมือนแอปทั่วไป</p>
+        <div class="cmd"><button type="button" class="primary notch" id="b-install" hidden>ติดตั้งเป็นแอป</button><span class="appnote" id="app-on" hidden>เปิดเป็นแอปอยู่แล้ว</span></div></li>
+      <li><b>ได้ตัวเลข context กับโควตาจริง (ไม่บังคับ)</b><p>เพิ่มบรรทัดนี้ใน <code>~/.claude/settings.json</code> ให้ชี้ไปที่ <code>scripts/statusline.js</code> ของ plugin โควตา 5 ชั่วโมงมีเฉพาะแพ็กเกจ Pro/Max</p>
+        <div class="cmd"><code>"statusLine": { "type": "command", "command": "node &lt;โฟลเดอร์ plugin&gt;/scripts/statusline.js" }</code></div></li>
+      <li><b>ดูจากมือถือ (ไม่บังคับ)</b><p>รัน bridge ด้วย <code>ESAN_OFFICE_LAN=1</code> แล้วเปิด <code>http://&lt;IP ของคอม&gt;:4567</code> บนมือถือที่อยู่ Wi-Fi เดียวกัน มือถือดูได้อย่างเดียว และติดตั้งเป็นแอปไม่ได้เพราะไม่ใช่ https</p></li>
+    </ol>
+  </section>
+
+  <section class="install" aria-labelledby="usage-h" id="usage">
+    <h2 class="sec" id="usage-h">วิธีใช้งาน</h2>
+    <p class="sec-sub">สั่งงาน agent ประจำออฟฟิศครั้งแรก ทำตามนี้ทีละขั้น</p>
+    <ol class="steps">
+      <li><b>สร้าง agent</b><p data-i18n="use1">กดปุ่ม <b style="display:inline">เพิ่ม agent</b> ด้านบน เลือกหน้าที่สำเร็จรูป เช่น Frontend หรือ QA ตั้งชื่อ แล้วใส่โฟลเดอร์ทำงานเป็น path เต็ม เช่น <code>D:/work/shop-ui</code> เลือกเครื่องมือที่ให้ใช้ได้เลยโดยไม่ต้องถาม กับโมเดล (Haiku ประหยัดที่สุด) แล้วกด <b style="display:inline">สร้าง agent</b> ตัวใหม่จะย่างเข้าประตูมา</p></li>
+      <li><b>ส่งงาน</b><p data-i18n="use2">แตะตัว agent ในห้อง หรือกดปุ่ม <b style="display:inline">สั่งงาน</b> ที่การ์ด พิมพ์งานที่ต้องการ แล้วกด <b style="display:inline">ส่งงาน</b> (หรือ Ctrl+Enter) agent จะย่างไปนั่งโต๊ะ กล่องเหนือหัวบอกว่ากำลังใช้เครื่องมืออะไร ถ้ากำลังทำงานอื่นอยู่ งานใหม่จะต่อคิวไว้</p></li>
+      <li><b>กดอนุญาตเมื่อถูกถาม</b><p>ถ้า agent จะใช้เครื่องมือนอกรายการ เช่น เขียนไฟล์หรือรันคำสั่ง จะมีปุ่มสีเหลือง <b style="display:inline">มีคำขออนุญาต</b> ขึ้นด้านบน กดเปิดแล้วดู path หรือคำสั่งเต็มก่อน แล้วค่อยกดอนุญาตหรือไม่อนุญาต ถ้าไม่มีใครกดภายใน 4 นาทีจะปฏิเสธเอง</p></li>
+      <li><b>ดูผลงาน</b><p>ทำเสร็จแล้ว agent จะลุกไปพักที่มุมพัก เปิดแผงของตัวนั้นเพื่อดูคำตอบล่าสุด ลำดับเหตุการณ์ ค่าใช้จ่ายโดยประมาณ และ context ที่เหลือ สั่งงานต่อได้เลย agent จำบทสนทนาเดิม</p></li>
+    </ol>
+    <ul class="gl">
+      <li class="notch"><span class="ic" style="background:#9FB8AE"></span><b>session ที่เปิดเอง</b><p data-i18n="useOwn">เปิด Claude Code ใน terminal หรือแอปตามปกติ agent จะย่างเข้ามาเอง พิมพ์งานในหน้าต่าง Claude Code แล้วดูความคืบหน้าในออฟฟิศได้ ถ้าขึ้นสีเหลืองให้กดอนุญาตในหน้าต่าง Claude Code</p><code>ดูได้อย่างเดียว</code></li>
+      <li class="notch"><span class="ic" style="background:var(--bad)"></span><b>หยุด เริ่มใหม่ ลบ</b><p>ปุ่ม <b style="display:inline">หยุด</b> ตัดงานที่ทำอยู่และล้างคิว <b style="display:inline">เริ่มบทสนทนาใหม่</b> ให้ agent ลืมเรื่องเก่า <b style="display:inline">ลบ agent</b> ต้องกด 2 ครั้ง</p><code>อยู่ใน "ตั้งค่า agent ตัวนี้"</code></li>
+      <li class="notch"><span class="ic" style="background:var(--warn)"></span><b>แก้คำสั่งประจำตัว</b><p>เปิด "ตั้งค่า agent ตัวนี้" แก้หน้าที่ โฟลเดอร์ คำสั่งประจำตัว เครื่องมือ หรือโมเดล แล้วกดบันทึก มีผลกับงานถัดไป</p><code>ไม่ต้องสร้างใหม่</code></li>
+      <li class="notch"><span class="ic" style="background:var(--good)"></span><b>ประหยัด token</b><p>งานง่ายใช้ Haiku ให้เครื่องมือเท่าที่จำเป็น และกดเริ่มบทสนทนาใหม่เมื่อแถบ context ใกล้หมด ทำพร้อมกันได้ครั้งละ 3 ตัว ที่เหลือจะรอคิว</p><code>ทุกงานที่สั่งกิน token จริง</code></li>
+    </ul>
+  </section>
+
+  <section class="guide" aria-labelledby="guide-h">
+    <h2 class="sec" id="guide-h">สัญลักษณ์ในออฟฟิศ</h2>
+    <ul class="gl">
+      <li class="notch"><span class="ic" style="background:var(--warn)"></span><b>agent ประจำออฟฟิศ</b><p>กดเพิ่ม agent แล้วเลือกโฟลเดอร์กับหน้าที่ พิมพ์งานส่งได้เลย ทำงานพร้อมกันได้ครั้งละ 3 ตัว ที่เหลือต่อคิว ถ้าต้องใช้เครื่องมือนอกรายการจะขึ้นปุ่มอนุญาตให้กด ทุกงานที่สั่งกิน token จริง</p><code>claude -p ในโฟลเดอร์ของ agent</code></li>
+      <li class="notch"><span class="ic" style="background:#7FC6E3"></span><b>โต๊ะคอม 12 ตัว</b><p data-i18n="gDesk">พอคุณพิมพ์ prompt agent จะย่างมานั่งพิมพ์ จอสว่างและมีโค้ดวิ่ง ตอบเสร็จก็ลุกไปพัก ถ้าโต๊ะเต็มจะยืนทำงานในมุมพักแทน</p><code>UserPromptSubmit → Stop</code></li>
+      <li class="notch"><span class="ic" style="background:var(--shade);box-shadow:inset 0 0 0 3px var(--ink)"></span><b>กล่องข้อความเหนือหัว</b><p>ชื่อเครื่องมือที่ agent กำลังใช้ ถ้าขอบเป็นสีเหลือง แปลว่ารอให้คุณกดอนุญาต (agent ประจำออฟฟิศกดในหน้านี้ได้ session ที่เปิดเองกดใน Claude Code)</p><code>PreToolUse, PermissionRequest</code></li>
+      <li class="notch"><span class="ic" style="background:var(--good)"></span><b>แถบบนหัว</b><p>context ที่เหลือ ถ้ายังไม่ได้ตั้ง statusline จะเป็นค่าประมาณจากไฟล์ transcript (มีเครื่องหมาย ≈ ข้างหน้า)</p><code>transcript หรือ statusline</code></li>
+      <li class="notch"><span class="ic" style="background:#9FB8AE"></span><b>ประตู</b><p data-i18n="gDoor">เปิด session ใหม่ agent จะย่างเข้าประตูมา ปิด session ก็ย่างกลับบ้าน subagent ใส่หมวกฟ้าเข้ามาช่วยงานแล้วออกไป</p><code>SessionStart, SubagentStart/Stop, SessionEnd</code></li>
+      <li class="notch"><span class="ic" style="background:#B8392F;box-shadow:inset -7px 0 0 #2E3F8F"></span><b data-i18n="gLoungeB">มุมพักแบบอีสาน</b><p data-i18n="gLounge">ร้านส้มตำกับกระติบข้าวเหนียว โอ่งน้ำ เสื่อกับหมอนขวาน ตู้อาเขต ลู่วิ่ง เครื่องยกน้ำหนัก โต๊ะโป๊กเกอร์ และสนามมวย agent ที่ว่างจะเลือกไปเอง</p><code>สถานะ: ว่าง</code></li>
+    </ul>
+    <p class="foot">ข้อมูลทั้งหมดอยู่ในเครื่องนี้เท่านั้น ถ้าอยากได้ context กับโควตาแบบตัวเลขจริง ให้ตั้ง statusline ตาม README ของ plugin (<code>scripts/statusline.js</code>)</p>
+  </section>
+</main>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-in notch" role="dialog" aria-labelledby="sh-name">
+    <div class="sh-head"><span class="dot" id="sh-dot"></span><b id="sh-name">Claude A</b><span class="role" id="sh-role"></span><span class="pill" id="sh-state"></span><button type="button" class="x notch" id="sh-close">ปิด</button></div>
+    <div class="sh-meta" id="sh-meta"></div>
+    <div class="perm notch" id="sh-perm" hidden><p>ขอใช้ <code id="sh-perm-cmd"></code></p><button type="button" class="ok notch" id="sh-allow">อนุญาต</button><button type="button" class="notch" id="sh-deny">ไม่อนุญาต</button></div>
+    <div id="sh-view">
+      <h3 class="sh-h">งานล่าสุด</h3>
+      <p class="sh-box" id="sh-prompt"></p>
+      <h3 class="sh-h">คำตอบล่าสุด</h3>
+      <p class="sh-box" id="sh-reply"></p>
+      <h3 class="sh-h">เหตุการณ์ล่าสุด</h3>
+      <ul class="log" id="sh-log" aria-live="polite"></ul>
+    </div>
+    <form class="sh-form" id="sh-form" novalidate hidden>
+      <textarea id="sh-input" rows="2" placeholder="ปรับหน้า login ให้รองรับมือถือ"></textarea>
+      <div class="sh-btns"><button type="submit" class="primary notch">ส่งงาน</button><button type="button" class="notch" id="sh-stop">หยุด</button></div>
+    </form>
+    <p class="err" id="sh-err" hidden></p>
+    <p class="watch" id="sh-watch" hidden></p>
+    <details class="sh-set" id="sh-set" hidden>
+      <summary id="sh-set-sum">ตั้งค่า agent ตัวนี้</summary>
+      <div id="f-preset-w"><label for="f-preset">เริ่มจากหน้าที่สำเร็จรูป</label><select id="f-preset"></select></div>
+      <label for="f-name">ชื่อ</label><input id="f-name" type="text" maxlength="30" placeholder="หมอลำ Frontend">
+      <label for="f-role">หน้าที่ (ป้ายที่แสดงในห้อง)</label><input id="f-role" type="text" maxlength="20" placeholder="Frontend">
+      <label for="f-cwd">โฟลเดอร์ทำงาน (path เต็ม)</label><input id="f-cwd" type="text" placeholder="D:/work/shop-ui">
+      <label for="f-prompt">คำสั่งประจำตัว (ต่อท้าย system prompt)</label><textarea id="f-prompt" rows="3"></textarea>
+      <label id="f-tools-l">เครื่องมือที่ใช้ได้โดยไม่ต้องขออนุญาต</label><div class="chips" id="f-tools" role="group" aria-labelledby="f-tools-l"></div>
+      <label for="f-mode">ถ้าต้องใช้เครื่องมือนอกรายการ</label>
+      <select id="f-mode"><option value="default">ถามผมก่อนทุกครั้ง</option><option value="acceptEdits">แก้ไฟล์ได้เลย เรื่องอื่นถามก่อน</option><option value="plan">วางแผนอย่างเดียว ห้ามแก้ไฟล์</option><option value="dontAsk">ไม่ต้องถาม ปฏิเสธไปเลย</option></select>
+      <label for="f-model">โมเดล</label>
+      <select id="f-model"><option value="">ตามค่าเริ่มต้นของเครื่อง</option><option value="haiku">Haiku (ประหยัดสุด)</option><option value="sonnet">Sonnet</option><option value="opus">Opus</option></select>
+      <p class="warnnote">agent จะรัน hooks และ .mcp.json ของโฟลเดอร์นั้นโดยไม่ถามก่อน ใช้เฉพาะโฟลเดอร์ที่คุณเชื่อถือ</p>
+      <div class="sh-save"><button type="button" class="primary notch" id="f-save">บันทึก</button><button type="button" class="notch" id="f-new">เริ่มบทสนทนาใหม่</button><button type="button" class="notch danger" id="f-del">ลบ agent</button><span class="saved" id="f-msg" role="status" hidden></span></div>
+    </details>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const root=document.documentElement;
+const cv=$('office'),c=cv.getContext('2d'),stage=$('stage');
+const off=document.createElement('canvas'),g=off.getContext('2d');
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const R=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];
+const POKER=['Call','Raise','Fold','Check','All in'];
+const MUAY=['POW!','ฮึบ!','ตุ้บ!','KO?'];
+const SHIRTS=['#F4C35A','#FF7A66','#B69CF0','#7FD1AE','#F29BC4','#8DB8FF','#FFB26B','#C9E27A','#E8E3D3','#6FD3E0','#E9A04E','#A0D8EF'];
+const HAIRS=['#3A2A1E','#1C1C1C','#5A3A22','#2B2B3A','#7A4A2A'];
+const FRONT=["..HHHH..",".HHHHHH.",".HSSSSH.",".SESSES.",".SSSSSS.","..SSSS..",".CCCCCC.","CCCCCCCC","SCCCCCCS",".PPPPPP.",".PP..PP.",".KK..KK."];
+const BACK =["..HHHH..",".HHHHHH.",".HHHHHH.",".HHHHHH.",".SHHHHS.","..SSSS..",".CCCCCC.","CCCCCCCC","SCCCCCCS",".PPPPPP.",".PP..PP.",".KK..KK."];
+const PLANT=["..LL.L..",".LLlLL..","LLlLLlL.",".LLLLLL.","..LlLL..","...LL...",".OOOOOO.",".OOOOOO.","..OOOO.."];
+
+// ── COMMANDS ── the bridge fills in the token only for viewers on this computer
+const TOKEN='__ESAN_TOKEN__',CAN_CMD=TOKEN.length>0&&TOKEN.indexOf('__ESAN')!==0;
+const TOOLSET=['Read','Grep','Glob','Edit','Write','Bash','WebFetch','WebSearch','Task'];
+const PRESETS=[
+  {role:'Frontend',prompt:'คุณคือ Frontend dev ดูแลหน้าจอเว็บ ใช้ component กลางของทีม และห้ามแก้ไฟล์ฝั่ง backend',tools:['Read','Grep','Glob','Edit','Write']},
+  {role:'Backend',prompt:'คุณคือ Backend dev ดูแล API ทุก endpoint ต้องมี validation และมีเทสต์คู่กันเสมอ',tools:['Read','Grep','Glob','Edit','Write']},
+  {role:'QA',prompt:'คุณคือ QA เขียนและรันเทสต์ ถ้าเจอบั๊กให้สรุปขั้นตอนทำซ้ำ ห้ามแก้โค้ดจริงเอง',tools:['Read','Grep','Glob','Write']},
+  {role:'Reviewer',prompt:'คุณคือ Reviewer อ่านโค้ดอย่างเดียว ห้ามแก้ไฟล์ สรุปจุดเสี่ยงเรียงจากร้ายแรงที่สุด',tools:['Read','Grep','Glob']},
+  {role:'DevOps',prompt:'คุณคือ DevOps ดูแล CI/CD และ Docker ก่อนแก้ pipeline ต้องอธิบายผลกระทบก่อนเสมอ',tools:['Read','Grep','Glob','Edit']},
+  {role:'Database',prompt:'คุณคือ DBA ทุก migration ต้องย้อนกลับได้ และห้ามรันคำสั่งลบข้อมูลจริง',tools:['Read','Grep','Glob','Edit','Write']},
+  {role:'Security',prompt:'คุณคือ Security reviewer หาช่องโหว่และความลับที่หลุด รายงานอย่างเดียว ห้ามแก้ไฟล์',tools:['Read','Grep','Glob']},
+  {role:'Docs',prompt:'คุณคือคนเขียนเอกสาร เขียนภาษาไทยอ่านง่าย และมีตัวอย่างคำสั่งประกอบทุกหัวข้อ',tools:['Read','Grep','Glob','Edit','Write']},
+  {role:'Research',prompt:'คุณคือนักค้นคว้า อ้างอิงแหล่งที่มาทุกครั้ง และสรุปเป็นตารางเปรียบเทียบ',tools:['Read','Grep','Glob','WebFetch','WebSearch']},
+  {role:'Planner',prompt:'คุณคือหัวหน้าทีม แตกงานใหญ่เป็นงานย่อย แล้วส่งต่อให้ subagent ที่เหมาะกับงาน',tools:['Read','Grep','Glob','Task']}
+];
+async function api(p,body){
+  const r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/json','X-Esan-Token':TOKEN},body:JSON.stringify(body||{})});
+  let j={};try{j=await r.json();}catch(e){}
+  if(!r.ok)throw new Error(j.error||('ทำไม่สำเร็จ (HTTP '+r.status+')'));
+  return j;
+}
+
+// ── THEMES ──
+const BASE={skin:'#F1C9A5',eye:'#0B1A10',pants:'#2A3A4A',shoe:'#0B1A10',scrOn:'#7FC6E3',scrLine:'#DDF6FF',mug:'#F4E9D8',
+  cab:'#4A3585',cabHi:'#6B4FB8',cabDk:'#2E2160',belt:'#16221C',beltLine:'#2E3F36',felt:'#2E7D46',feltHi:'#3E9A58',
+  leafA:'#3F8A4A',leafB:'#6BBF5A',sofa:'#C8563E',sofaDk:'#8F3526'};
+const THEMES={
+  isan:{floor:'plank',rug:'plaid',lounge:'isan',decor:true,
+    pal:Object.assign({},BASE,{k0:'#120E0A',wall:'#4A2F1F',trim:'#7A5234',floorA:'#6E4A2E',floorB:'#664429',seam:'#4E331F',
+      rug:'#B8392F',rugEdge:'#2E3F8F',pk2:'#2E3F8F',pk3:'#1F2B66',pkW:'#E8DCC0',
+      desk:'#C49A62',deskHi:'#D8B27A',deskEdge:'#8A6238',deskFront:'#6E4C2A',chair:'#2E3F8F',chairDk:'#1F2B66',
+      scrOff:'#1B2233',board:'#E9B949',cyan:'#F3E6C8',kb:'#D9C9A3',table:'#7A5234',machine:'#5A4A3A',pot:'#8A4F2A',
+      carpet:'#6E2A26',carpetEdge:'#4A1C1A',matA:'#C9A45A',matB:'#A98840',
+      good:'#8FD18B',warn:'#E9B949',bad:'#E0604E',ink2:'#D9C9A3',ink3:'#E8DCC0'}),
+    labels:{bar:'ส้มตำ',arcade:'อาเขต',gym:'ฟิตเนส',poker:'โป๊กเกอร์',ring:'สนามมวย',door:'ประตู'},
+    act:{coffee:'ตักน้ำจากโอ่ง',bar:'ตำส้มตำกินกับข้าวเหนียว',arcade:'เล่นตู้อาเขต',sofa:'นอนเล่นบนเสื่อ',treadmill:'วิ่งบนลู่วิ่ง',weights:'ยกน้ำหนัก',poker:'เล่นโป๊กเกอร์',ring:'ชกมวยบนเวที'},
+    txt:{title:'ESAN AI AGENT',color:'#1C1F3A',board:'เวียก',busy:'เฮ็ดเวียก',toDesk:'ย่างไปโต๊ะ',walkRest:'กำลังย่างไปพัก',noSess:'ยังบ่มี session เปิดอยู่',noBridge:'ยังต่อ bridge บ่ได้',
+      hintCmd:'กด "เพิ่ม agent" หรือเปิด Claude Code',hintView:'เปิด Claude Code ที่โหลด plugin นี้',down:'ต่อ bridge บ่ได้ กำลังลองใหม่…',created:'สร้างแล้ว กำลังย่างเข้าประตูมา',
+      emptyCmd:'ยังบ่มี agent กดปุ่ม "เพิ่ม agent" เพื่อสร้างตัวประจำออฟฟิศ หรือเปิด Claude Code ที่โหลด plugin esan-office แล้ว session นั้นจะย่างเข้าประตูมาเอง',
+      emptyView:'ยังบ่มี session เปิด Claude Code ที่โหลด plugin esan-office แล้ว agent จะย่างเข้าประตูมาเอง'}},
+  green:{floor:'tile',rug:'plain',lounge:'office',decor:false,
+    pal:Object.assign({},BASE,{k0:'#0B1A10',wall:'#12261A',trim:'#2F5C39',floorA:'#1E3C25',floorB:'#21422A',seam:'#1A3421',
+      rug:'#2A5232',rugEdge:'#3A6B43',pk2:'#2A5232',pk3:'#2A5232',pkW:'#2A5232',
+      desk:'#8A6B4A',deskHi:'#9C7C58',deskEdge:'#5E4631',deskFront:'#4A3726',chair:'#3D7F99',chairDk:'#2B5E72',
+      scrOff:'#1B3A40',board:'#BDEBFB',cyan:'#BDEBFB',kb:'#9FB8AE',table:'#6E5438',machine:'#3A4A44',pot:'#9A5B2E',
+      carpet:'#5E2B2E',carpetEdge:'#4A2226',matA:'#C8563E',matB:'#8F3526',
+      good:'#BDEBFB',warn:'#F4C35A',bad:'#FF7A66',ink2:'#8FC3D3',ink3:'#6C9AA6'}),
+    labels:{bar:'บาร์น้ำ',arcade:'อาเขต',gym:'ฟิตเนส',poker:'โป๊กเกอร์',ring:'สนามมวย',door:'ประตู'},
+    act:{coffee:'ชงกาแฟ',bar:'ดื่มน้ำที่บาร์',arcade:'เล่นตู้อาเขต',sofa:'นั่งพักที่โซฟา',treadmill:'วิ่งบนลู่วิ่ง',weights:'ยกน้ำหนัก',poker:'เล่นโป๊กเกอร์',ring:'ชกมวยบนเวที'},
+    txt:{title:'CDG AI AGENT',color:'#1B3620',board:'ทำงาน',busy:'ทำงาน',toDesk:'เดินไปโต๊ะ',walkRest:'กำลังเดินไปพัก',noSess:'ยังไม่มี session เปิดอยู่',noBridge:'ยังต่อ bridge ไม่ได้',
+      hintCmd:'กด "เพิ่ม agent" หรือเปิด Claude Code',hintView:'เปิด Claude Code ที่โหลด plugin นี้',down:'ต่อ bridge ไม่ได้ กำลังลองใหม่…',created:'สร้างแล้ว กำลังเดินเข้าประตูมา',
+      emptyCmd:'ยังไม่มี agent กดปุ่ม "เพิ่ม agent" เพื่อสร้างตัวประจำออฟฟิศ หรือเปิด Claude Code ที่โหลด plugin esan-office แล้ว session นั้นจะเดินเข้าประตูมาเอง',
+      emptyView:'ยังไม่มี session เปิด Claude Code ที่โหลด plugin esan-office แล้ว agent จะเดินเข้าประตูมาเอง'}}
+};
+// Page copy in central Thai for the CDG theme; the Isan version is whatever the HTML already says
+const GREEN_HTML={
+  eyebrow:'ต่อกับ Claude Code บนเครื่องนี้',
+  title:'CDG AI AGENT',
+  lede:'agent แต่ละตัวคือ session ของ Claude Code ที่เปิดอยู่บนเครื่องนี้ มีงานก็เดินไปนั่งโต๊ะ ว่างก็ไปพักที่มุมพัก ดื่มน้ำ เล่นตู้อาเขต หรือขึ้นเวทีมวย แถบบนหัวคือ context ที่เหลืออยู่',
+  statWork:'กำลังทำงาน',
+  use1:'กดปุ่ม <b>เพิ่ม agent</b> ด้านบน เลือกหน้าที่สำเร็จรูป เช่น Frontend หรือ QA ตั้งชื่อ แล้วใส่โฟลเดอร์ทำงานเป็น path เต็ม เช่น <code>D:/work/shop-ui</code> เลือกเครื่องมือที่ให้ใช้ได้เลยโดยไม่ต้องถาม กับโมเดล (Haiku ประหยัดที่สุด) แล้วกด <b>สร้าง agent</b> ตัวใหม่จะเดินเข้าประตูมา',
+  use2:'แตะตัว agent ในห้อง หรือกดปุ่ม <b>สั่งงาน</b> ที่การ์ด พิมพ์งานที่ต้องการ แล้วกด <b>ส่งงาน</b> (หรือ Ctrl+Enter) agent จะเดินไปนั่งโต๊ะ กล่องเหนือหัวบอกว่ากำลังใช้เครื่องมืออะไร ถ้ากำลังทำงานอื่นอยู่ งานใหม่จะต่อคิวไว้',
+  useOwn:'เปิด Claude Code ใน terminal หรือแอปตามปกติ agent จะเดินเข้ามาเอง พิมพ์งานในหน้าต่าง Claude Code แล้วดูความคืบหน้าในออฟฟิศได้ ถ้าขึ้นสีเหลืองให้กดอนุญาตในหน้าต่าง Claude Code',
+  gDesk:'พอคุณพิมพ์ prompt agent จะเดินมานั่งพิมพ์ จอสว่างและมีโค้ดวิ่ง ตอบเสร็จก็ลุกไปพัก ถ้าโต๊ะเต็มจะยืนทำงานในมุมพักแทน',
+  gDoor:'เปิด session ใหม่ agent จะเดินเข้าประตูมา ปิด session ก็เดินกลับบ้าน subagent ใส่หมวกฟ้าเข้ามาช่วยงานแล้วออกไป',
+  gLoungeB:'มุมพัก',
+  gLounge:'บาร์น้ำ ตู้อาเขต ลู่วิ่ง เครื่องยกน้ำหนัก โซฟา เครื่องชงกาแฟ โต๊ะโป๊กเกอร์ และสนามมวย agent ที่ว่างจะเลือกไปเอง'
+};
+document.querySelectorAll('[data-i18n]').forEach(el=>{el.dataset.orig=el.innerHTML;});
+function applyText(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;el.innerHTML=themeKey==='green'&&GREEN_HTML[k]!=null?GREEN_HTML[k]:el.dataset.orig;});
+  document.title=T.txt.title;
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=T.txt.color;
+  const e=document.querySelector('#roster .empty');if(e)e.remove();
+}
+let themeKey=THEMES[root.dataset.theme]?root.dataset.theme:'isan',T=THEMES[themeKey],P=T.pal;
+function setTheme(k){
+  if(!THEMES[k])return;themeKey=k;T=THEMES[k];P=T.pal;root.dataset.theme=k;
+  try{localStorage.setItem('esan-office-theme',k);}catch(e){}
+  document.querySelectorAll('[data-set-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.setTheme===k)));
+  rosterEls.forEach(li=>{li.dataset.v='';});
+  applyText();
+  if(typeof ui==='function'&&L)ui();
+}
+document.querySelectorAll('[data-set-theme]').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.setTheme)));
+
+// ── LAYOUT ──
+function makeSpots(L){
+  const F=L.F,V=L.via||{},list=[{id:'coffee',x:F.machine[0]+8,y:F.machine[1]+29,face:'up'}];
+  F.stools.forEach(([sx])=>list.push({id:'bar',x:sx,y:F.bar[1]+26,face:'up'}));
+  list.push({id:'arcade',x:F.arcade[0]+7,y:F.arcade[1]+35,face:'up'});
+  [24,46].forEach(dy=>list.push({id:'sofa',x:F.sofa[0]+7,y:F.sofa[1]+dy,face:'down'}));
+  list.push({id:'treadmill',x:F.tread[0]+7,y:F.tread[1]+30,face:'up'},{id:'weights',x:F.weights[0]+15,y:F.weights[1]+36,face:'down'});
+  list.forEach(s=>{s.zone='lounge';s.via=V[s.id]||[];});
+  const pk=L.poker,[tx,ty,tw,th]=pk.table,hy=pk.hub.y,by=ty+th+12;
+  list.push({id:'poker',zone:'poker',top:true,x:tx+12,y:ty-6,face:'down',via:[]},
+            {id:'poker',zone:'poker',top:true,x:tx+36,y:ty-6,face:'down',via:[]},
+            {id:'poker',zone:'poker',top:false,x:tx+12,y:by,face:'up',via:[{x:tx-10,y:hy},{x:tx-10,y:by}]},
+            {id:'poker',zone:'poker',top:false,x:tx+36,y:by,face:'up',via:[{x:tx+tw+10,y:hy},{x:tx+tw+10,y:by}]});
+  const[gx,gy]=L.ring;
+  list.push({id:'ring',zone:'ring',x:gx+14,y:gy+30,face:'down',dir:1,via:[]},{id:'ring',zone:'ring',x:gx+34,y:gy+30,face:'down',dir:-1,via:[]});
+  return list.map(s=>Object.assign(s,{who:null}));
+}
+function build(portrait){
+  let L;
+  if(!portrait){L={portrait,PW:380,PH:210,cols:[151,185,219,253,287,321],deskW:34,DH:18,
+    islands:[{D0:72,rug:[126,50,220,78]}],H:[44,136],V:[122,350],
+    door:{x:362,y:203,g0:352,g1:372},board:[184,2,104,14],
+    zones:{lounge:{gate:{x:122,y:110},hub:{x:70,y:110}},poker:{gate:{x:220,y:136},hub:{x:220,y:146}},ring:{gate:{x:294,y:136},hub:{x:294,y:142}}},
+    wander:[56,106,66,140],
+    F:{machine:[8,19,16,20],bar:[30,22,42,12],stools:[[40,36],[60,36]],arcade:[84,19],sofa:[6,80,14,56],table:[23,124,12,10],tread:[40,160],weights:[70,164]},
+    poker:{table:[196,160,48,22],rug:[180,147,80,56],hub:{x:220,y:146}},ring:[270,148,48,44],
+    shelf:[362,56,12,76],plants:[[18,202],[366,34],[110,34],[336,202]],
+    decor:{khaen:[128,1],phin:[144,2],window:[300,2,40,13],mask:[348,1]},
+    labels:[['bar',51,12],['arcade',91,12],['gym',70,156],['poker',158,176],['ring',294,146],['door',362,190]]};}
+  else{L={portrait,PW:180,PH:548,cols:[52,90,128],deskW:38,DH:17,
+    islands:[{D0:84,rug:[24,62,132,74]},{D0:178,rug:[24,158,132,74]}],H:[56,150,244],V:[14,166],
+    door:{x:157,y:541,g0:146,g1:169},board:[18,2,104,14],
+    zones:{lounge:{gate:{x:136,y:244},hub:{x:136,y:456}},poker:{gate:{x:90,y:244},hub:{x:90,y:250}},ring:{gate:{x:136,y:244},hub:{x:136,y:336}}},
+    wander:[70,128,444,484],
+    F:{machine:[6,388,16,20],bar:[26,392,40,10],stools:[[36,404],[56,404]],arcade:[104,384],sofa:[6,428,14,56],table:[23,431,12,10],tread:[40,496],weights:[72,500]},
+    via:{treadmill:[{x:60,y:489}],weights:[{x:87,y:489}]},
+    poker:{table:[66,262,48,22],rug:[48,247,84,56],hub:{x:90,y:250}},ring:[44,310,48,44],
+    shelf:null,plants:[[14,34],[166,34],[128,540]],
+    decor:{window:[128,2,36,13]},
+    labels:[['bar',46,385],['arcade',111,381],['gym',72,493],['poker',25,278],['ring',114,322],['door',157,528]]};}
+  L.spots=makeSpots(L);return L;
+}
+
+// ── SPRITES ──
+let L=null,seats=[],time=0,kc=2,dpr=1,sel=null,snap={sessions:[],rate:null},connected=false,firstSnap=true;
+const S=new Map(),rosterEls=new Map();
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
+function wanderPt(){const[w0,w1,h0,h1]=L.wander;return{kind:'zone',zone:'lounge',x:Math.round(R(w0,w1)),y:Math.round(R(h0,h1)),via:[]};}
+function mkSprite(key,info,sub){
+  const h=hash(key);
+  return{key,sub,name:sub?info.type:info.name,label:sub?info.type:(info.role||info.project||info.name),
+    shirt:sub?'#9FB8AE':SHIRTS[h%SHIRTS.length],hair:sub?'#3D7F99':HAIRS[(h>>5)%HAIRS.length],
+    x:L.door.x,y:L.door.y,at:'door',zone:'lounge',via:[],path:[],state:'idle',seat:null,lastSeat:null,spot:null,dest:null,
+    standing:false,want:false,leave:false,wait:R(0,1),walk:0,up:false,pkMsg:null,pkT:R(0,3),bb:null,data:info,gone:false};
+}
+function placeInstant(sp,working){
+  if(working){const free=seats.filter(s=>!s.who);if(free.length){const s=pick(free);s.who=sp;sp.seat=s;sp.lastSeat=s;sp.x=s.x;sp.y=s.y;sp.at='seat';sp.state='working';return;}}
+  const fs=L.spots.filter(s=>!s.who);
+  if(fs.length){const s=pick(fs);sp.x=s.x;sp.y=s.y;sp.spot=s;s.who=sp;sp.at='zone';sp.zone=s.zone;sp.via=s.via;sp.wait=R(3,8);}
+  else{const p=wanderPt();sp.x=p.x;sp.y=p.y;sp.at='zone';sp.zone='lounge';}
+  if(working){sp.state='working';sp.standing=true;}
+}
+function sync(instant){
+  const seen=new Set();
+  (snap.sessions||[]).forEach(s=>{
+    let sp=S.get(s.id);
+    if(s.state==='ended'){if(sp){sp.data=s;sp.want=false;sp.leave=true;seen.add(s.id);}return;}
+    if(!sp){sp=mkSprite(s.id,s,false);S.set(s.id,sp);if(instant)placeInstant(sp,s.state==='working');}
+    sp.data=s;sp.want=s.state==='working';sp.label=s.role||s.project||s.name;seen.add(s.id);
+    (s.subs||[]).forEach(u=>{const k=s.id+':'+u.id;let q=S.get(k);
+      if(!q){q=mkSprite(k,{type:u.type},true);S.set(k,q);if(instant)placeInstant(q,true);}
+      q.data=Object.assign({},u,{parent:s});q.want=true;seen.add(k);});
+  });
+  S.forEach((sp,k)=>{if(!seen.has(k)){sp.want=false;sp.leave=true;}});
+}
+function resetLayout(){
+  seats=[];L.islands.forEach((isl,ii)=>[0,1].forEach(row=>L.cols.forEach(x=>seats.push({x,y:row?isl.D0+2*L.DH+10:isl.D0-6,row,D0:isl.D0,hy:L.H[ii+row],who:null}))));
+  S.clear();rosterEls.forEach(li=>li.remove());rosterEls.clear();closeSheet();sync(true);
+}
+
+// ── ROUTING ──
+function sameLine(A,B){return (A.y===B.y&&L.H.includes(A.y))||(A.x===B.x&&L.V.includes(A.x));}
+function gridPath(A,B){
+  if(A.x===B.x&&A.y===B.y)return[];
+  const nodes=[A,B];L.V.forEach(x=>L.H.forEach(y=>nodes.push({x,y})));
+  const n=nodes.length,dist=Array(n).fill(Infinity),prev=Array(n).fill(-1),done=Array(n).fill(false);dist[0]=0;
+  for(let it=0;it<n;it++){let u=-1;for(let i=0;i<n;i++)if(!done[i]&&(u<0||dist[i]<dist[u]))u=i;
+    if(u<0||dist[u]===Infinity)break;done[u]=true;if(u===1)break;
+    for(let v=0;v<n;v++)if(!done[v]&&sameLine(nodes[u],nodes[v])){const d=dist[u]+Math.hypot(nodes[u].x-nodes[v].x,nodes[u].y-nodes[v].y);if(d<dist[v]){dist[v]=d;prev[v]=u;}}}
+  const out=[];let u=1;while(u>0){out.unshift(nodes[u]);u=prev[u];}
+  return out.length?out:[B];
+}
+function route(a,d){
+  const lastH=L.H[L.H.length-1],p=[];let g1;a.dest=d;
+  if(a.at==='zone'){
+    const z=L.zones[a.zone];
+    p.push(...a.via.slice().reverse(),{x:z.hub.x,y:z.hub.y});a.via=[];
+    if(d.kind==='zone'&&d.zone===a.zone){p.push(...d.via,{x:d.x,y:d.y});a.path=p;return;}
+    if(d.kind==='zone'){const z2=L.zones[d.zone];
+      if(z2.gate.x===z.gate.x&&z2.gate.y===z.gate.y){p.push({x:z2.hub.x,y:z2.hub.y},...d.via,{x:d.x,y:d.y});a.path=p;a.at='moving';return;}}
+    g1=z.gate;
+  }else if(a.at==='seat')g1={x:a.x,y:a.seat.hy};
+  else g1={x:L.door.x,y:lastH};
+  p.push(g1);
+  if(d.kind==='zone'){const z=L.zones[d.zone];p.push(...gridPath(g1,z.gate),{x:z.hub.x,y:z.hub.y},...d.via,{x:d.x,y:d.y});}
+  else if(d.kind==='seat')p.push(...gridPath(g1,{x:d.x,y:d.hy}),{x:d.x,y:d.y});
+  else p.push(...gridPath(g1,{x:L.door.x,y:lastH}),{x:L.door.x,y:L.door.y});
+  a.path=p;a.at='moving';
+}
+function releaseSpot(a){if(a.spot){a.spot.who=null;a.spot=null;}}
+function arrive(a){
+  const d=a.dest;
+  if(a.at==='moving'){a.at=d.kind;if(d.kind==='zone')a.zone=d.zone;}
+  if(d&&d.kind==='zone')a.via=d.via||[];
+  if(a.state==='toDesk')a.state='working';
+  else if(a.state==='leaving')a.gone=true;
+  else a.wait=a.spot?(a.spot.id==='poker'?R(8,16):R(4,9)):R(2,4);
+}
+function goRelax(a,chance){
+  releaseSpot(a);
+  const free=L.spots.filter(s=>!s.who);
+  if(free.length&&Math.random()<chance){const s=pick(free);s.who=a;a.spot=s;route(a,{kind:'zone',zone:s.zone,x:s.x,y:s.y,via:s.via});}
+  else route(a,wanderPt());
+}
+function startWork(a){
+  const free=seats.filter(s=>!s.who);if(!free.length)return false;
+  const s=(a.lastSeat&&!a.lastSeat.who)?a.lastSeat:pick(free);
+  releaseSpot(a);s.who=a;a.seat=s;a.lastSeat=s;a.state='toDesk';route(a,{kind:'seat',x:s.x,y:s.y,hy:s.hy});return true;
+}
+function stopWork(a){const s=a.seat;a.state='idle';goRelax(a,0.8);if(s)s.who=null;a.seat=null;}
+function seatedWorking(a){return a.state==='working'&&!a.path.length&&!!a.seat&&!a.standing&&a.at==='seat';}
+function atSpot(a,id){return a.state==='idle'&&!a.path.length&&!!a.spot&&a.spot.id===id;}
+function atPoker(a){return atSpot(a,'poker');}
+function atRing(a){return atSpot(a,'ring');}
+
+function step(a,dt){
+  if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy),s=44*dt;
+    if(Math.abs(dy)>Math.abs(dx))a.up=dy<0;else if(Math.abs(dx)>0.01)a.up=false;
+    if(d<=s){a.x=p.x;a.y=p.y;a.path.shift();if(!a.path.length){a.up=false;arrive(a);}}else{a.x+=dx/d*s;a.y+=dy/d*s;a.walk+=dt*7;}
+    return;}
+  if(a.leave){
+    if(a.state!=='leaving'){releaseSpot(a);a.state='leaving';a.standing=false;
+      if(a.at==='door'){a.gone=true;return;}
+      route(a,{kind:'door'});if(a.seat){a.seat.who=null;a.seat=null;}}
+    return;}
+  if(a.want){
+    if(a.state==='idle'&&(a.at==='zone'||a.at==='door')){if(!startWork(a)){a.state='working';a.standing=true;if(a.at==='door')route(a,wanderPt());}}
+    else if(a.standing&&a.at==='zone'&&seats.some(s=>!s.who)){a.standing=false;a.state='idle';startWork(a);}
+  }else if(a.state==='working'){
+    if(a.standing){a.standing=false;a.state='idle';a.wait=0;}else stopWork(a);
+  }
+  if(a.state==='idle'){
+    if(a.at==='door')goRelax(a,0.8);
+    else if(a.at==='zone'){a.wait-=dt;if(a.wait<=0)goRelax(a,0.75);}
+  }
+  const chat=atPoker(a)?POKER:atRing(a)?MUAY:null;
+  if(chat){a.pkT-=dt;if(a.pkT<=0){if(a.pkMsg){a.pkMsg=null;a.pkT=R(2,6);}else{a.pkMsg=pick(chat);a.pkT=1.4;}}}else a.pkMsg=null;
+}
+
+// ── DRAWING ──
+function px(x,y,w,h,col){g.fillStyle=col;g.fillRect(x,y,w,h);}
+function box(x,y,w,h,col){px(x+1,y,w-2,h,col);px(x,y+1,w,h-2,col);}
+function sprite(rows,x0,y0,map,r0,r1){for(let r=r0;r<r1;r++){const row=rows[r];for(let i=0;i<8;i++){const ch=row[i];if(ch==='.')continue;g.fillStyle=map[ch];g.fillRect(x0+i,y0+r,1,1);}}}
+function bar(x,y,v){if(v==null)return;px(x-1,y-1,12,4,P.k0);const w=Math.max(0,Math.round(10*v/100));px(x,y,w,2,v>50?P.good:v>25?P.warn:P.bad);}
+function ctxOf(a){return a.sub||!a.data||!a.data.ctx?null:a.data.ctx.pct;}
+function inUse(id){return L.spots.filter(s=>s.id===id&&s.who&&!s.who.path.length&&s.who.state==='idle');}
+function mapOf(a){return{H:a.hair,S:P.skin,E:P.eye,C:a.shirt,P:P.pants,K:P.shoe,R:'#C8413B',B:'#2E3F8F',W:P.mug};}
+
+function drawFloor(){
+  const{PW,PH}=L;
+  if(T.floor==='plank'){
+    for(let y=18,r=0;y<PH-4;y+=6,r++){px(4,y,PW-8,6,r%2?P.floorA:P.floorB);px(4,y+5,PW-8,1,P.seam);
+      for(let x=4+(r%3)*16;x<PW-4;x+=48)px(x,y,1,5,P.seam);}
+  }else{for(let y=18;y<PH-4;y+=8)for(let x=4;x<PW-4;x+=8)px(x,y,8,8,((x/8+y/8)|0)%2?P.floorA:P.floorB);}
+}
+function drawRug(x,y,w,h){
+  box(x,y,w,h,P.rugEdge);
+  const ix=x+2,iy=y+2,iw=w-4,ih=h-4;px(ix,iy,iw,ih,P.rug);
+  if(T.rug==='plaid'){
+    for(let k=ix+4;k<ix+iw;k+=12)px(k,iy,Math.min(3,ix+iw-k),ih,P.pk2);
+    for(let k=iy+4;k<iy+ih;k+=12)px(ix,k,iw,Math.min(3,iy+ih-k),P.pk2);
+    for(let a=ix+4;a<ix+iw;a+=12)for(let b=iy+4;b<iy+ih;b+=12)px(a,b,Math.min(3,ix+iw-a),Math.min(3,iy+ih-b),P.pk3);
+    for(let k=ix+10;k<ix+iw;k+=12)px(k,iy,1,ih,P.pkW);
+    for(let k=iy+10;k<iy+ih;k+=12)px(ix,k,iw,1,P.pkW);
+    for(let k=x+3;k<x+w-3;k+=3){px(k,y-1,1,1,P.pkW);px(k,y+h,1,1,P.pkW);}
+  }else for(let k=x+4;k<x+w-4;k+=4){px(k,y+1,2,1,P.rug);px(k,y+h-2,2,1,P.rug);}
+}
+// pixel "CDG" sign for the CDG theme, drawn where the Isan window hangs
+const GLYPH={C:[".XXXX","X....","X....","X....","X....","X....",".XXXX"],D:["XXXX.","X...X","X...X","X...X","X...X","X...X","XXXX."],G:[".XXXX","X....","X....","X..XX","X...X","X...X",".XXX."]};
+function drawSign(x,y){box(x,y,23,11,P.k0);px(x+1,y+1,21,9,'#1B3620');['C','D','G'].forEach((ch,k)=>GLYPH[ch].forEach((row,r)=>{for(let i=0;i<5;i++)if(row[i]==='X')px(x+3+k*6+i,y+2+r,1,1,P.cyan);}));}
+function drawDecor(){
+  if(themeKey==='green'&&L.decor&&L.decor.window){const[x,,w]=L.decor.window;drawSign(x+Math.round((w-23)/2),3);return;}
+  if(!T.decor||!L.decor)return;const D=L.decor;
+  if(D.khaen){const[x,y]=D.khaen;[10,13,13,10].forEach((h,i)=>{px(x+i*2,y+14-h,1,h,'#D8B27A');px(x+i*2,y+14-h+3,1,1,'#8A6238');});box(x-1,y+8,9,4,'#6E4C2A');px(x+3,y+12,1,2,'#6E4C2A');}
+  if(D.phin){const[x,y]=D.phin;box(x,y+4,10,8,'#A0522D');px(x+4,y+7,2,2,'#2A1A10');px(x+10,y+7,14,2,'#8A6238');box(x+24,y+5,4,5,'#6E4C2A');px(x+2,y+8,22,1,'#EDE6D6');px(x+1,y+5,1,1,'#E9B949');px(x+8,y+10,1,1,'#E9B949');}
+  if(D.window){const[x,y,w,h]=D.window;box(x,y,w,h,'#2A1A10');px(x+1,y+1,w-2,4,'#8EC9F0');px(x+w-7,y+2,2,2,'#FFD76A');
+    px(x+1,y+5,w-2,h-6,'#6DBE45');for(let k=0;k*2+6<h-1;k++)px(x+1,y+6+k*2,w-2,1,'#4E9A30');
+    px(x+6,y+7,5,2,'#3A3A3A');px(x+5,y+7,1,1,'#3A3A3A');px(x+5,y+6,1,1,'#E8DCC0');px(x+7,y+9,1,1,'#3A3A3A');px(x+10,y+9,1,1,'#3A3A3A');
+    const hx=x+w-14;px(hx+1,y+4,7,1,'#A0522D');px(hx,y+5,9,1,'#8A4F2A');px(hx+2,y+6,1,3,'#6E4C2A');px(hx+6,y+6,1,3,'#6E4C2A');
+    px(x+w/2|0,y,1,h,'#2A1A10');}
+  if(D.mask){const[x,y]=D.mask;px(x+1,y,10,2,'#2E3F8F');px(x,y+2,12,11,'#E0604E');px(x+1,y+3,1,9,'#E9B949');px(x+10,y+3,1,9,'#E9B949');
+    px(x+2,y+5,3,2,'#FFFFFF');px(x+7,y+5,3,2,'#FFFFFF');px(x+3,y+5,1,1,'#120E0A');px(x+8,y+5,1,1,'#120E0A');px(x+5,y+7,2,5,'#E9B949');px(x+3,y+12,6,1,'#FFFFFF');}
+}
+function drawLounge(){
+  const F=L.F,isan=T.lounge==='isan';
+  const[mx,my,mw,mh]=F.machine;
+  if(isan){box(mx+2,my+3,mw-4,mh-4,'#8A4F2A');px(mx+4,my+2,mw-8,2,'#6E3A1E');px(mx+4,my+6,1,6,'#B06A3A');px(mx+6,my+10,4,1,'#E9B949');px(mx+7,my+12,2,1,'#E9B949');px(mx+mw-5,my,3,2,'#E9B949');}
+  else{box(mx,my,mw,mh,P.machine);px(mx+3,my+3,mw-6,4,P.k0);px(mx+mw-5,my+4,2,2,P.bad);px(mx+5,my+mh-7,6,5,P.mug);
+    if(inUse('coffee').length&&!RM&&Math.floor(time*3)%2)px(mx+7,my+mh-10,1,2,P.mug);}
+  const[bx,by,bw,bh]=F.bar;box(bx,by,bw,bh,P.deskFront);px(bx+1,by,bw-2,3,P.deskHi);px(bx,by+bh-3,bw,3,P.deskEdge);
+  if(isan){px(bx+6,by-3,7,4,'#8A5A3A');px(bx+5,by-4,9,1,'#6E4C2A');px(bx+12,by-7,1,5,'#C49A62');
+    px(bx+19,by-5,6,6,'#D8B27A');px(bx+19,by-3,6,1,'#A98840');px(bx+19,by-1,6,1,'#A98840');px(bx+18,by-6,8,1,'#A98840');
+    px(bx+29,by-3,5,3,'#6BBF5A');px(bx+30,by-4,2,1,'#3F8A4A');px(bx+36,by-2,2,1,'#E0604E');
+    inUse('bar').forEach(s=>{px(s.x-2,by+4,5,2,P.mug);px(s.x-1,by+4,3,1,'#E9A04E');});}
+  else{const bot=[P.scrOn,P.warn,P.bad,P.leafB,P.cyan],gap=Math.floor((bw-8)/5);
+    bot.forEach((col,i)=>{const x=bx+4+i*gap;px(x,by-3,2,4,col);px(x,by-4,2,1,P.k0);});
+    inUse('bar').forEach(s=>px(s.x-1,by+4,3,3,P.scrOn));}
+  F.stools.forEach(([sx,sy])=>{box(sx-2,sy,5,4,P.chair);px(sx-1,sy+3,3,1,P.chairDk);});
+  const[ax,ay]=F.arcade,play=inUse('arcade').length>0;
+  box(ax,ay,14,23,P.cab);px(ax+1,ay+1,12,4,P.warn);px(ax+2,ay+2,10,2,'#FFE08A');
+  px(ax+2,ay+6,10,8,P.k0);
+  if(play){const cols=[P.cyan,P.bad,P.warn,P.leafB];for(let k=0;k<6;k++){const q=RM?k:k*5+Math.floor(time*8);px(ax+3+(q%8),ay+7+(k%3)*2,2,2,cols[k%4]);}}
+  else px(ax+3,ay+7,8,6,'#1B2A4A');
+  px(ax+1,ay+15,12,4,P.cabHi);px(ax+3,ay+16,2,2,P.bad);px(ax+8,ay+16,2,2,P.cyan);px(ax+11,ay+16,1,2,P.warn);px(ax+1,ay+20,12,2,P.cabDk);
+  const[sx,sy,sw,sh]=F.sofa;
+  if(isan){box(sx,sy,sw+2,sh,'#B8392F');for(let yy=sy+1;yy<sy+sh-1;yy+=2)for(let xx=sx+1;xx<sx+sw+1;xx+=2)px(xx,yy,2,2,((xx+yy)/2|0)%2?P.matA:P.matB);
+    [sy+4,sy+sh-12].forEach(cy=>{px(sx+1,cy,3,8,'#C8413B');px(sx+4,cy+1,2,6,'#C8413B');px(sx+6,cy+2,2,4,'#C8413B');px(sx+1,cy+3,6,1,'#E9B949');});}
+  else{box(sx,sy,sw,sh,P.sofaDk);box(sx+4,sy+2,sw-4,sh-4,P.sofa);px(sx+4,sy+sh/2,sw-4,1,P.sofaDk);}
+  const[tx,ty,tw,th]=F.table;box(tx,ty,tw,th,P.table);
+  if(isan){px(tx+2,ty+2,4,4,'#D8B27A');px(tx+2,ty+3,4,1,'#A98840');px(tx+7,ty+3,3,2,'#E9A04E');}
+  else{px(tx+3,ty+2,3,3,P.mug);px(tx+2,ty+2,1,2,P.mug);}
+  const[qx,qy]=F.tread,run=inUse('treadmill').length>0;
+  box(qx,qy,14,36,P.machine);px(qx+2,qy+1,10,4,P.k0);px(qx+4,qy+2,6,2,run?P.scrOn:P.scrOff);
+  px(qx,qy+5,1,11,P.kb);px(qx+13,qy+5,1,11,P.kb);px(qx+2,qy+7,10,27,P.belt);
+  const sh2=run&&!RM?Math.floor(time*16)%4:0;for(let y=qy+7+sh2;y<qy+34;y+=4)px(qx+2,y,10,1,P.beltLine);
+  const[wx,wy]=F.weights;
+  px(wx,wy,2,38,P.kb);px(wx+28,wy,2,38,P.kb);px(wx,wy,30,2,P.kb);
+  for(let k=0;k<6;k++)px(wx+3,wy+4+k*3,5,2,k%2?P.machine:P.k0);
+  px(wx+22,wy+6,5,1,P.k0);px(wx+21,wy+5,2,3,P.machine);px(wx+26,wy+5,2,3,P.machine);
+  px(wx+22,wy+11,5,1,P.k0);px(wx+21,wy+10,2,3,P.machine);px(wx+26,wy+10,2,3,P.machine);
+  box(wx+10,wy+20,10,5,P.chair);px(wx+11,wy+24,8,1,P.chairDk);
+}
+function pokerSit(a,s){
+  const[tx,ty,tw,th]=L.poker.table,rows=(s.top?FRONT:BACK).slice(),y0=s.top?ty-9:ty+th-2;
+  if(!RM&&Math.floor(time*1.5+s.x)%4===0)rows[8]=".SCCCCS.";
+  sprite(rows,s.x-4,y0,mapOf(a),0,9);a.bb=[s.x-4,y0,8,9];
+  if(s.top)bar(s.x-5,y0-4,ctxOf(a));
+}
+function drawPoker(){
+  const pk=L.poker,[tx,ty,tw,th]=pk.table,sp=L.spots.filter(s=>s.id==='poker'),on=s=>s.who&&atPoker(s.who);
+  const players=sp.filter(on),top=sp.filter(s=>s.top),bot=sp.filter(s=>!s.top);
+  const[rx,ry,rw,rh]=pk.rug;box(rx,ry,rw,rh,P.carpetEdge);box(rx+2,ry+2,rw-4,rh-4,P.carpet);
+  for(let x=rx+4;x<rx+rw-4;x+=6){px(x,ry+3,2,1,P.warn);px(x,ry+rh-4,2,1,P.warn);}
+  top.forEach(s=>{box(s.x-5,ty-13,10,6,P.chair);px(s.x-4,ty-13,8,1,P.chairDk);});
+  top.filter(on).forEach(s=>pokerSit(s.who,s));
+  box(tx,ty,tw,th,P.deskEdge);box(tx+2,ty+2,tw-4,th-4,P.felt);px(tx+4,ty+4,tw-8,1,P.feltHi);px(tx+4,ty+th-5,tw-8,1,P.feltHi);
+  if(players.length>=2){
+    const shown=RM?5:3+Math.floor(time/3)%3;
+    for(let k=0;k<5;k++){const cx=tx+9+k*6;if(k<shown){px(cx,ty+8,4,6,P.mug);px(cx+1,ty+10,2,2,k%2?P.bad:P.k0);}else{px(cx,ty+8,4,6,'#8F3526');px(cx+1,ty+9,2,4,'#C8563E');}}
+    players.forEach(s=>{const cy=s.top?ty+4:ty+th-6;px(s.x-3,cy,2,2,P.warn);px(s.x,cy,2,2,P.bad);px(s.x+3,cy,2,2,P.cyan);});
+  }else{px(tx+tw/2-3,ty+8,6,6,'#8F3526');px(tx+tw/2-2,ty+9,4,4,'#C8563E');}
+  px(tx+tw-7,ty+th/2-1,3,3,P.mug);
+  bot.filter(on).forEach(s=>pokerSit(s.who,s));
+  bot.forEach(s=>{const y=ty+th+5;box(s.x-5,y,10,7,P.chair);px(s.x-4,y+6,8,1,P.chairDk);});
+  bot.filter(on).forEach(s=>bar(s.x-5,ty+th+14,ctxOf(s.who)));
+}
+function drawRing(){
+  const[x,y,w,h]=L.ring;
+  box(x,y,w,h,P.deskFront);px(x+2,y+2,w-4,h-4,'#C9D6D0');px(x+7,y+7,w-14,h-14,'#B8C8C1');
+  [[3,P.bad],[5,P.mug]].forEach(([i,col])=>{px(x+i,y+i,w-2*i,1,col);px(x+i,y+h-i-1,w-2*i,1,col);px(x+i,y+i,1,h-2*i,col);px(x+w-i-1,y+i,1,h-2*i,col);});
+  px(x+1,y+1,4,4,'#E24B4A');px(x+w-5,y+h-5,4,4,'#378ADD');px(x+w-5,y+1,4,4,P.mug);px(x+1,y+h-5,4,4,P.mug);
+}
+function drawIsland(isl){
+  const DH=L.DH,D0=isl.D0,D1=D0+DH,mine=seats.filter(s=>s.D0===D0),top=mine.filter(s=>s.row===0),bot=mine.filter(s=>s.row===1);
+  const on=s=>s.who&&seatedWorking(s.who);
+  top.forEach(s=>{box(s.x-5,D0-13,10,6,P.chair);px(s.x-4,D0-13,8,1,P.chairDk);});
+  top.filter(on).forEach(s=>seated(s.who,s));
+  const x0=L.cols[0]-L.deskW/2,dw=L.deskW*L.cols.length;
+  px(x0,D0,dw,DH*2,P.desk);px(x0,D0,dw,1,P.deskHi);px(x0,D1-1,dw,1,P.deskEdge);px(x0,D1+DH-3,dw,3,P.deskFront);
+  for(let i=1;i<L.cols.length;i++)px(x0+L.deskW*i,D0+1,1,DH*2-4,P.deskEdge);
+  mine.forEach(s=>{const lit=on(s),i=seats.indexOf(s);
+    if(s.row===0){px(s.x-5,D0+2,10,2,P.kb);box(s.x-6,D1-7,12,5,P.k0);px(s.x-1,D1-6,2,1,lit?P.scrOn:P.trim);if(lit)px(s.x-6,D1-8,12,1,P.scrOn);}
+    else{box(s.x-7,D1+1,14,10,P.k0);px(s.x-6,D1+2,12,7,lit?P.scrOn:P.scrOff);
+      if(lit){for(let k=0;k<3;k++){const w=RM?7:2+Math.floor((time*6+k*3+i*2)%9);px(s.x-5,D1+3+k*2,Math.min(10,w),1,P.scrLine);}}
+      px(s.x-1,D1+11,2,1,P.k0);px(s.x-5,D1+12,10,2,P.kb);}});
+  bot.filter(on).forEach(s=>seated(s.who,s));
+  bot.forEach(s=>{const y=D1+DH+5;box(s.x-5,y,10,7,P.chair);px(s.x-4,y+6,8,1,P.chairDk);});
+  bot.filter(on).forEach(s=>bar(s.x-5,D1+DH+14,ctxOf(s.who)));
+}
+function seated(a,s){
+  const top=s.row===0,rows=(top?FRONT:BACK).slice(),typing=!RM&&Math.floor(time*5+s.x)%2===0;
+  if(typing)rows[8]=".SCCCCS.";
+  const y0=top?s.D0-9:s.D0+2*L.DH-2;
+  sprite(rows,s.x-4,y0,mapOf(a),0,9);a.bb=[s.x-4,y0,8,9];
+  if(top)bar(s.x-5,y0-4,ctxOf(a));
+}
+function walker(a){
+  const moving=a.path.length>0,act=!moving&&a.state==='idle'&&a.spot?a.spot.id:null;
+  const rows=((act?a.spot.face==='up':a.up)?BACK:FRONT).slice();
+  let f=Math.floor(a.walk)%2,bob=0,last=12;
+  if(act==='treadmill')f=Math.floor(time*9)%2;
+  if(T.lounge==='isan'&&!a.sub)rows[9]='.RBRBRB.';
+  if(moving||act==='treadmill'){if(f){rows[10]=".PP...P.";rows[11]=".KK...KK";}else{rows[10]=".P...PP.";rows[11]="KK...KK.";}if(!RM&&f)bob=1;}
+  if(act==='arcade'&&!RM&&Math.floor(time*7)%2)rows[8]=".SCCCCS.";
+  if(act==='weights'||act==='ring')rows[8]=".CCCCCC.";
+  const map=mapOf(a);
+  if(act==='ring'){rows[1]=".WWWWWW.";map.P=a.spot.dir>0?'#E24B4A':'#378ADD';if(!RM&&Math.floor(time*4+a.spot.dir)%2)bob=1;}
+  const x0=Math.round(a.x)-4;let y0=Math.round(a.y)-12-bob;
+  if(act==='sofa'){last=10;y0+=1;}
+  px(x0+1,Math.round(a.y),6,1,'rgba(0,0,0,0.25)');
+  sprite(rows,x0,y0,map,0,last);a.bb=[x0,y0,8,last];
+  if(act==='ring'){const gl=a.spot.dir>0?'#E24B4A':'#378ADD',dir=a.spot.dir,jab=!RM&&Math.floor(time*3+(dir>0?0:1.5))%3===0?3:0;
+    const fx=dir>0?x0+7+jab:x0-1-jab,bx2=dir>0?x0-1:x0+7;px(bx2,y0+6,2,2,gl);px(fx,y0+6,2,2,gl);}
+  let barY=y0-4;
+  if(act==='weights'){const lift=RM?0:(Math.sin(time*3)>0?3:0),yb=y0-2-lift;
+    px(x0,yb+1,1,y0+7-(yb+1),P.skin);px(x0+7,yb+1,1,y0+7-(yb+1),P.skin);
+    px(x0-3,yb,14,1,P.kb);px(x0-5,yb-1,2,3,P.k0);px(x0+11,yb-1,2,3,P.k0);barY=y0-10;}
+  bar(x0-1,barY,ctxOf(a));
+}
+function drawWorld(){
+  const{PW,PH}=L,d=L.door;
+  px(0,0,PW,PH,P.wall);drawFloor();
+  px(0,16,PW,2,P.trim);px(0,17,PW,1,P.k0);
+  px(0,PH-4,PW,4,P.wall);px(d.g0,PH-4,d.g1-d.g0,4,P.rugEdge);px(d.g0,PH-4,d.g1-d.g0,1,P.cyan);
+  const[bx,by,bw,bh]=L.board;box(bx,by,bw,bh,P.board);box(bx+1,by+1,bw-2,bh-2,P.k0);
+  const q=quotaPct();px(bx+4,by+9,bw-8,3,P.trim);if(q!=null)px(bx+4,by+9,Math.round((bw-8)*q/100),3,q<60?P.good:q<85?P.warn:P.bad);
+  drawDecor();
+  L.islands.forEach(isl=>drawRug(...isl.rug));
+  drawLounge();drawPoker();drawRing();
+  if(L.shelf){const[hx,hy,hw,hh]=L.shelf;box(hx,hy,hw,hh,P.deskEdge);const bk=[P.warn,P.bad,P.cyan,'#B69CF0',P.scrOn,P.sofa,P.leafB];
+    for(let k=0;k*10+4<hh;k++){px(hx+2,hy+2+k*10,hw-4,8,P.deskFront);for(let j=0;j<4;j++)px(hx+2+j*2,hy+3+k*10,2,7,bk[(k*3+j)%bk.length]);}}
+  L.plants.forEach(([x,y])=>sprite(PLANT,x-4,y-9,{L:P.leafA,l:P.leafB,O:P.pot},0,9));
+  L.islands.forEach(drawIsland);
+  [...S.values()].filter(a=>!seatedWorking(a)&&!atPoker(a)).sort((p,q)=>p.y-q.y).forEach(walker);
+  if(sel&&sel.bb&&!sel.gone&&(RM||Math.floor(time*3)%2)){const[x,y]=sel.bb,cx=x+4,ty=y-11;px(cx-3,ty,7,1,P.warn);px(cx-2,ty+1,5,1,P.warn);px(cx-1,ty+2,3,1,P.warn);px(cx,ty+3,1,1,P.warn);}
+}
+function label(t,wx,wy,col){c.fillStyle=col;c.fillText(t,wx*kc,wy*kc);}
+function bubble(t,X,Y,col,fs,tailBelow){
+  const tw=c.measureText(t).width+12,h=fs+8,x=Math.round(X-tw/2),y=Math.round(Y),b=Math.max(2,Math.round(kc));
+  c.fillStyle=col;c.fillRect(x+b,y,tw-2*b,h);c.fillRect(x,y+b,tw,h-2*b);
+  c.fillStyle=P.k0;c.fillRect(x+b,y+b,tw-2*b,h-2*b);
+  c.fillStyle=col;if(tailBelow)c.fillRect(Math.round(X)-b,y+h,2*b,b);else c.fillRect(Math.round(X)-b,y-b,2*b,b);
+  c.textAlign='center';c.fillText(t,X,y+h/2+fs*0.36);
+}
+function workText(a){const d=a.data||{};if(!a.sub&&d.perm)return{t:'รออนุญาต',warn:true};return{t:d.tool?d.tool.name:'คิดอยู่',warn:false};}
+function drawOverlay(){
+  c.setTransform(dpr,0,0,dpr,0,0);c.textBaseline='alphabetic';
+  const fs=Math.max(11,Math.round(kc*5.2)),h=fs+8;
+  c.font=`500 ${fs}px "Pixelify Sans","Chakra Petch",monospace`;
+  const[bx,by,bw]=L.board,q=quotaPct(),live=[...S.values()].filter(a=>!a.sub&&!a.leave),work=live.filter(a=>a.want).length;
+  c.textAlign='left';label('โควตา 5 ชม.',bx+4,by+7.6,P.ink2);
+  c.textAlign='right';label((q==null?'-':q.toFixed(0)+'%')+'  '+T.txt.board+' '+work+'/'+live.length,bx+bw-4,by+7.6,P.cyan);
+  c.textAlign='center';L.labels.forEach(([k,x,y])=>label(T.labels[k],x,y,P.ink3));
+  const[tx,ty,tw,th]=L.poker.table;
+  S.forEach(a=>{
+    if(atPoker(a)){if(a.pkMsg){const y0=a.spot.top?ty-9:ty+th-2;bubble(a.pkMsg,a.x*kc,(y0-6)*kc-h-2,P.warn,fs,true);}return;}
+    if(seatedWorking(a)){const w=workText(a),s=a.seat,col=w.warn?P.warn:P.cyan;
+      if(s.row===0)bubble(w.t,a.x*kc,(s.D0-15)*kc-h-2,col,fs,true);else bubble(w.t,a.x*kc,(s.D0+2*L.DH+18)*kc,col,fs,false);return;}
+    c.textAlign='center';label(String(a.label||'').slice(0,12),a.x,a.y+1+fs/kc,P.ink2);
+    if(a.state==='working'&&a.standing&&!a.path.length){const w=workText(a);bubble(w.t,a.x*kc,(a.y-18)*kc-h-2,w.warn?P.warn:P.cyan,fs,true);}
+    else if(atRing(a)&&a.pkMsg)bubble(a.pkMsg,a.x*kc,(a.y-18)*kc-h-2,P.bad,fs,true);
+  });
+  if(!S.size){c.textAlign='center';const cx=L.PW*kc/2,cy=(L.portrait?118:112)*kc;
+    c.fillStyle=P.k0;c.fillRect(cx-150,cy-30,300,48);c.fillStyle=P.warn;c.fillText(connected?T.txt.noSess:T.txt.noBridge,cx,cy-8);
+    c.fillStyle=P.ink3;c.fillText(connected?(CAN_CMD?T.txt.hintCmd:T.txt.hintView):'รัน node scripts/bridge.js ก่อน',cx,cy+10);}
+}
+
+// ── UI ──
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
+function fmtK(n){return n>=1000?(n/1000).toFixed(1)+'k':String(n);}
+function quotaPct(){const f=snap.rate&&snap.rate.five_hour;return f&&typeof f.used_percentage==='number'?f.used_percentage:null;}
+function nowText(a){
+  const d=a.data||{};
+  if(a.leave)return 'ปิด session แล้ว';
+  if(a.sub)return d.tool?d.tool.name+(d.tool.detail?' '+d.tool.detail:''):'ช่วยงาน '+(d.parent?d.parent.name:'');
+  if(d.perm)return 'รออนุญาต: '+d.perm.name+(d.perm.detail?' '+d.perm.detail:'');
+  if(d.state==='working')return (d.tool?d.tool.name+(d.tool.detail?' '+d.tool.detail:''):'กำลังคิด: '+(d.prompt||''))+(d.queue?` · คิว ${d.queue}`:'');
+  if(d.owned&&d.queue)return `รอคิว ${d.queue} งาน (ทำพร้อมกันได้ ${snap.office?snap.office.max:3} ตัว)`;
+  if(a.path.length)return T.txt.walkRest;
+  const rest=a.spot?T.act[a.spot.id]:'เดินเล่นในมุมพัก';
+  return d.owned&&!d.prompt?'รอรับงาน · '+rest:rest;
+}
+function stateOf(a){const d=a.data||{};if(a.leave)return{t:'กลับบ้าน',c:''};if(!a.sub&&d.perm)return{t:'รออนุญาต',c:' wait'};if(a.want)return{t:T.txt.busy,c:' on'};if(d.owned&&d.queue)return{t:'รอคิว',c:''};return d.asleep?{t:'หลับอยู่',c:''}:{t:'ว่าง',c:''};}
+function cmdable(a){return CAN_CMD&&!a.sub&&a.data&&a.data.owned;}
+function ctxText(d){if(!d||!d.ctx)return '-';return (d.ctx.exact?'':'≈')+d.ctx.pct+'%';}
+function ui(){
+  const live=[...S.values()].filter(a=>!a.sub&&!a.leave),ctxs=live.map(a=>a.data&&a.data.ctx&&a.data.ctx.pct).filter(v=>typeof v==='number');
+  $('s-work').textContent=live.filter(a=>a.want).length+'/'+live.length;
+  $('s-ctx').textContent=ctxs.length?Math.round(ctxs.reduce((s,v)=>s+v,0)/ctxs.length)+'%':'-';
+  const q=quotaPct();$('s-quota').textContent=q==null?'-':q.toFixed(1)+'%';$('s-quota-h').hidden=q!=null;
+  const stt=$('status');stt.classList.toggle('on',connected);
+  $('status-t').textContent=connected?`เชื่อมต่อแล้ว · ${live.length} session`:T.txt.down;
+  const ul=$('roster');
+  const list=[...S.values()].sort((p,q)=>(p.sub?(p.data.parent?p.data.parent.name:''):p.name).localeCompare(q.sub?(q.data.parent?q.data.parent.name:''):q.name)||(p.sub-q.sub));
+  const emptyEl=ul.querySelector('.empty');
+  if(!list.length){if(!emptyEl){const li=document.createElement('li');li.className='empty notch';li.textContent=CAN_CMD?T.txt.emptyCmd:T.txt.emptyView;ul.appendChild(li);}}
+  else if(emptyEl)emptyEl.remove();
+  list.forEach((a,idx)=>{
+    let li=rosterEls.get(a.key);
+    if(!li){li=document.createElement('li');li.className='notch';
+      li.innerHTML='<div class="rh"><span class="dot"></span><span class="nm"></span><span class="role"></span><span class="pill"></span></div><p class="where"></p><div class="rf"><span class="now"></span><span class="seg"></span><span class="pct"></span></div><div class="ra"><button type="button" class="notch">ดูรายละเอียด</button></div>';
+      li.querySelector('button').addEventListener('click',()=>openSheet(a,true));
+      li.querySelector('.dot').style.background=a.shirt;
+      if(cmdable(a))li.querySelector('button').textContent='สั่งงาน';
+      rosterEls.set(a.key,li);}
+    if(ul.children[idx]!==li)ul.insertBefore(li,ul.children[idx]||null);
+    const d=a.data||{},st=stateOf(a);
+    li.querySelector('.nm').textContent=a.name;
+    const rl=li.querySelector('.role');rl.textContent=a.sub?'subagent':(d.role||d.project||'Claude');rl.style.background=a.shirt;
+    const pl=li.querySelector('.pill');pl.textContent=st.t;pl.className='pill'+st.c;
+    li.querySelector('.where').textContent=a.sub?'ช่วย '+(d.parent?d.parent.name:''):[d.owned?'ประจำออฟฟิศ':'เปิดจาก terminal/แอป',d.project,d.model].filter(Boolean).join(' · ');
+    const nw=li.querySelector('.now');nw.textContent=nowText(a);nw.className='now'+(st.c===' wait'?' wait':'');
+    const p=a.sub||!d.ctx?null:d.ctx.pct,n=p==null?0:Math.round(p/10),col=p==null?'':p>50?'var(--good)':p>25?'var(--warn)':'var(--bad)';
+    let seg='';for(let k=0;k<10;k++)seg+=`<i${k<n?` style="background:${col}"`:''}></i>`;
+    li.querySelector('.seg').innerHTML=seg;li.querySelector('.pct').textContent=a.sub?'':ctxText(d);
+  });
+  rosterEls.forEach((li,k)=>{if(!S.has(k)){li.remove();rosterEls.delete(k);}});
+  const waiting=[...S.values()].filter(x=>cmdable(x)&&x.data.perm);
+  $('b-perm').hidden=!waiting.length;$('perm-n').textContent=waiting.length;
+  $('b-add').hidden=!CAN_CMD||!connected;
+  renderSheet(false);
+}
+
+// ── SHEET ── view any agent; command and configure the office's own agents
+let sheetMode='view',pendingOpen=null,delArm=0;
+function fillForm(cfg){
+  $('f-name').value=cfg.name||'';$('f-role').value=cfg.role||'';$('f-cwd').value=cfg.cwd||'';$('f-prompt').value=cfg.prompt||'';
+  $('f-mode').value=cfg.permMode||'default';$('f-model').value=cfg.model||'';
+  const allow=cfg.allowedTools||[];
+  $('f-tools').innerHTML=TOOLSET.map(t=>`<button type="button" class="chip" aria-pressed="${allow.includes(t)}" data-t="${t}">${t}</button>`).join('');
+}
+function readForm(){return{name:$('f-name').value.trim(),role:$('f-role').value.trim(),cwd:$('f-cwd').value.trim(),prompt:$('f-prompt').value,
+  permMode:$('f-mode').value,model:$('f-model').value,allowedTools:[...$('f-tools').querySelectorAll('.chip[aria-pressed="true"]')].map(b=>b.dataset.t)};}
+function formMsg(t,bad){const m=$('f-msg');m.textContent=t;m.className='saved'+(bad?' bad':'');m.hidden=!t;}
+function showErr(t){const e=$('sh-err');e.textContent=t||'';e.hidden=!t;}
+function openSheet(a,focus){
+  sheetMode='view';sel=a;delArm=0;$('sheet').hidden=false;showErr('');formMsg('');
+  const d=a.data||{};
+  if(cmdable(a)){fillForm(Object.assign({name:d.name,role:d.role,cwd:d.cwd},d.cfg||{}));$('sh-input').value='';}
+  $('f-preset-w').hidden=true;$('f-save').textContent='บันทึก';$('f-new').hidden=false;$('f-del').hidden=false;$('f-del').textContent='ลบ agent';
+  $('sh-set').open=false;$('sh-set-sum').textContent='ตั้งค่า agent ตัวนี้';
+  renderSheet(true);
+  if(focus&&cmdable(a))setTimeout(()=>$('sh-input').focus(),30);
+}
+function openCreate(){
+  sheetMode='create';sel=null;$('sheet').hidden=false;showErr('');formMsg('');
+  $('sh-dot').style.background=P.warn;$('sh-name').textContent='agent ใหม่';$('sh-role').textContent='';$('sh-state').textContent='';$('sh-state').className='';
+  $('sh-meta').innerHTML='<span>ตั้งชื่อ เลือกโฟลเดอร์ แล้วใส่คำสั่งประจำตัว agent จะเข้ามาอยู่ในออฟฟิศถาวร</span>';
+  ['sh-perm','sh-view','sh-form','sh-watch'].forEach(id=>$(id).hidden=true);
+  $('sh-set').hidden=false;$('sh-set').open=true;$('sh-set-sum').textContent='ข้อมูล agent';
+  $('f-preset-w').hidden=false;$('f-save').textContent='สร้าง agent';$('f-new').hidden=true;$('f-del').hidden=true;
+  const p=PRESETS[0];$('f-preset').value='0';fillForm({name:'',role:p.role,cwd:'',prompt:p.prompt,allowedTools:p.tools,permMode:'default',model:''});
+  setTimeout(()=>$('f-name').focus(),30);
+}
+function closeSheet(){sel=null;sheetMode='view';const s=$('sheet');if(s)s.hidden=true;}
+function renderSheet(full){
+  if(sheetMode!=='view'||!sel)return;const a=sel,d=a.data||{},st=stateOf(a),cmd=cmdable(a);
+  $('sh-view').hidden=false;
+  const pm=$('sh-perm');
+  if(cmd&&d.perm&&!a.gone){pm.hidden=false;
+    $('sh-perm-cmd').textContent=(d.perm.sub?'['+d.perm.sub+'] ':'')+d.perm.name+' '+(d.perm.full||d.perm.detail||'')+(d.perm.count>1?`  (รออีก ${d.perm.count-1} รายการ)`:'');}
+  else pm.hidden=true;
+  $('sh-form').hidden=!cmd||a.gone;$('sh-set').hidden=!cmd||a.gone;
+  $('sh-stop').hidden=!(d.state==='working'||d.queue);
+  const w=$('sh-watch');
+  if(!cmd){w.hidden=false;w.textContent=a.sub?'subagent ถูกเรียกโดย '+(d.parent?d.parent.name:'agent หลัก')+' ทำเสร็จแล้วจะส่งผลกลับไปเอง สั่งตรงไม่ได้'
+    :d.owned?'ดูจากเครื่องอื่นอยู่ สั่งงานได้เฉพาะบนคอมที่รัน bridge':'session นี้เปิดจาก terminal หรือแอป ออฟฟิศเลยดูได้อย่างเดียว ถ้าจะสั่งงานให้พิมพ์ในหน้าต่างนั้น';}
+  else w.hidden=true;
+  $('sh-dot').style.background=a.shirt;$('sh-name').textContent=a.name;
+  const rl=$('sh-role');rl.textContent=a.sub?'subagent':(d.role||d.project||'Claude');rl.style.background=a.shirt;
+  const pl=$('sh-state');pl.textContent=a.gone?'ออกไปแล้ว':st.t;pl.className='pill'+st.c;
+  const pd=a.sub?(d.parent||{}):d;
+  const meta=[a.sub?'subagent ของ '+(pd.name||''):'',pd.cwd?'โฟลเดอร์ '+pd.cwd:'',pd.model?'โมเดล '+pd.model:'',
+    !a.sub&&typeof d.cost==='number'?'ค่าใช้จ่ายโดยประมาณ $'+d.cost.toFixed(3):'',!a.sub&&d.queue?'คิวรอ '+d.queue+' งาน':'',
+    !a.sub&&d.ctx?(d.ctx.exact?'context เหลือ '+d.ctx.pct+'%':'context ใช้ไป ≈'+fmtK(d.ctx.used)+' จาก '+fmtK(d.ctx.window)):'',
+    pd.startedAt?'เริ่ม '+new Date(pd.startedAt).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):''].filter(Boolean);
+  $('sh-meta').innerHTML=meta.map(t=>`<span>${esc(t)}</span>`).join('');
+  $('sh-prompt').textContent=pd.prompt||'ยังไม่มี';$('sh-reply').textContent=pd.reply||'ยังไม่มี';
+  const log=pd.log||[],v=log.length?log[log.length-1].t+':'+log.length:'0';
+  if(full||$('sh-log').dataset.v!==v){$('sh-log').dataset.v=v;
+    $('sh-log').innerHTML=log.map(l=>l.kind==='tool'?`<li class="l-tool">› ${esc(l.text)}</li>`:l.kind==='agent'?`<li class="l-agent"><b>${esc(pd.name||'')}</b>${esc(l.text)}</li>`:l.kind==='you'?`<li class="l-you"><b>คุณ</b>${esc(l.text)}</li>`:`<li class="l-${l.kind==='perm'?'perm':'sys'}">${esc(l.text)}</li>`).join('')||'<li class="l-sys">ยังไม่มีเหตุการณ์</li>';
+    const ul=$('sh-log');ul.scrollTop=ul.scrollHeight;}
+}
+$('sh-close').addEventListener('click',closeSheet);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sheet').hidden)closeSheet();});
+$('f-preset').innerHTML=PRESETS.map((p,i)=>`<option value="${i}">${esc(p.role)}</option>`).join('');
+$('f-preset').addEventListener('change',()=>{const p=PRESETS[+$('f-preset').value];const f=readForm();fillForm(Object.assign(f,{role:p.role,prompt:p.prompt,allowedTools:p.tools}));});
+$('f-tools').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true');});
+$('b-add').addEventListener('click',openCreate);
+$('b-perm').addEventListener('click',()=>{const a=[...S.values()].find(x=>cmdable(x)&&x.data.perm);if(a)openSheet(a,false);});
+async function act(fn){try{showErr('');await fn();}catch(e){showErr(e.message);}}
+$('sh-allow').addEventListener('click',()=>act(()=>api(`/api/agents/${sel.data.agentId}/permission`,{allow:true,id:sel.data.perm&&sel.data.perm.key})));
+$('sh-deny').addEventListener('click',()=>act(()=>api(`/api/agents/${sel.data.agentId}/permission`,{allow:false,id:sel.data.perm&&sel.data.perm.key})));
+$('sh-stop').addEventListener('click',()=>act(()=>api(`/api/agents/${sel.data.agentId}/stop`)));
+$('sh-input').addEventListener('input',()=>showErr(''));
+$('sh-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();$('sh-form').requestSubmit();}});
+$('sh-form').addEventListener('submit',e=>{
+  e.preventDefault();const text=$('sh-input').value.trim();
+  if(!text){showErr('พิมพ์งานที่ต้องการก่อน แล้วค่อยกดส่งงาน');$('sh-input').focus();return;}
+  act(async()=>{await api(`/api/agents/${sel.data.agentId}/prompt`,{text});$('sh-input').value='';});
+});
+$('f-save').addEventListener('click',()=>{
+  const f=readForm();
+  if(!f.name){formMsg('ใส่ชื่อ agent ก่อน',true);$('f-name').focus();return;}
+  if(!f.cwd){formMsg('ใส่โฟลเดอร์ทำงานก่อน',true);$('f-cwd').focus();return;}
+  (async()=>{try{
+    if(sheetMode==='create'){const r=await api('/api/agents',f);pendingOpen='office:'+r.id;formMsg(T.txt.created);}
+    else{await api(`/api/agents/${sel.data.agentId}/config`,f);formMsg('บันทึกแล้ว มีผลกับงานถัดไป');}
+  }catch(err){formMsg(err.message,true);}})();
+});
+$('f-new').addEventListener('click',()=>{(async()=>{try{await api(`/api/agents/${sel.data.agentId}/reset`);formMsg('เริ่มบทสนทนาใหม่แล้ว');}catch(err){formMsg(err.message,true);}})();});
+$('f-del').addEventListener('click',()=>{
+  if(Date.now()-delArm>4000){delArm=Date.now();$('f-del').textContent='กดอีกครั้งเพื่อลบ';formMsg('ลบแล้วกู้คืนไม่ได้ (บทสนทนาเดิมยังอยู่ใน Claude Code)',true);return;}
+  (async()=>{try{await api(`/api/agents/${sel.data.agentId}/delete`);closeSheet();}catch(err){formMsg(err.message,true);}})();
+});
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect(),wx=(e.clientX-r.left)/r.width*L.PW,wy=(e.clientY-r.top)/r.height*L.PH;
+  let best=null,bd=Infinity;
+  S.forEach(a=>{if(!a.bb)return;const[x,y,w,h]=a.bb;if(wx>=x-4&&wx<=x+w+4&&wy>=y-6&&wy<=y+h+4){const dd=Math.hypot(wx-(x+w/2),wy-(y+h/2));if(dd<bd){bd=dd;best=a;}}});
+  if(best)openSheet(best);
+});
+
+// ── LIVE DATA ──
+function connect(){
+  // ?once loads a single snapshot without a live stream (used for headless screenshots)
+  if(/[?&]once\b/.test(location.search)){fetch('/api/state').then(r=>r.json()).then(j=>{snap=j;connected=true;sync(true);firstSnap=false;ui();}).catch(()=>{});return;}
+  let es;
+  try{es=new EventSource('/api/events');}catch(e){connected=false;return;}
+  // update the cards on every snapshot too, since requestAnimationFrame pauses in background tabs
+  es.onopen=()=>{connected=true;ui();};
+  es.onmessage=e=>{try{snap=JSON.parse(e.data);connected=true;sync(firstSnap);firstSnap=false;
+    if(pendingOpen&&S.has(pendingOpen)){const a=S.get(pendingOpen);pendingOpen=null;openSheet(a,true);}
+    ui();}catch(err){}};
+  es.onerror=()=>{connected=false;ui();};
+}
+
+let lastCw=0;
+function fit(){
+  const cw=stage.clientWidth||340,portrait=cw<560;
+  if(cw===lastCw&&L)return;lastCw=cw;
+  if(!L||L.portrait!==portrait){L=build(portrait);off.width=L.PW;off.height=L.PH;resetLayout();}
+  dpr=window.devicePixelRatio||1;
+  let s=cw*dpr/L.PW;const si=Math.floor(s);if(s<4&&si>=1&&si/s>=0.85)s=si;
+  cv.width=Math.round(s*L.PW);cv.height=Math.round(s*L.PH);
+  cv.style.width=(cv.width/dpr)+'px';cv.style.height=(cv.height/dpr)+'px';kc=s/dpr;
+}
+// ── APP ── installable like อีสาน DevTools: service worker + install button
+let installEvt=null;
+const standalone=window.matchMedia&&matchMedia('(display-mode: standalone)').matches;
+if(standalone){$('app-on').hidden=false;$('app-hint').textContent='ตอนนี้เปิดเป็นแอปอยู่แล้ว ปักหมุดไว้ที่ taskbar ได้เลย';}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('b-install').hidden=false;});
+window.addEventListener('appinstalled',()=>{installEvt=null;$('b-install').hidden=true;$('app-on').hidden=false;});
+$('b-install').addEventListener('click',async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice;}catch(e){}installEvt=null;$('b-install').hidden=true;});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('/sw.js').catch(()=>{});
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{
+  const t=b.dataset.copy;let ok=false;
+  try{await navigator.clipboard.writeText(t);ok=true;}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{ok=document.execCommand('copy');}catch(err){}ta.remove();}
+  const old=b.textContent;b.textContent=ok?'คัดลอกแล้ว':'คัดลอกไม่ได้';setTimeout(()=>{b.textContent=old;},1500);
+}));
+
+setTheme(themeKey);
+fit();
+if(window.ResizeObserver)new ResizeObserver(fit).observe(stage);else window.addEventListener('resize',fit);
+connect();
+
+let last=performance.now(),rt=0;
+function loop(now){
+  const dt=Math.min(0.05,(now-last)/1000);last=now;time+=dt;
+  S.forEach(a=>step(a,dt));
+  S.forEach((a,k)=>{if(a.gone){if(a.seat)a.seat.who=null;releaseSpot(a);S.delete(k);if(sel===a)renderSheet(false);}});
+  drawWorld();
+  c.setTransform(1,0,0,1,0,0);c.imageSmoothingEnabled=false;c.clearRect(0,0,cv.width,cv.height);c.drawImage(off,0,0,cv.width,cv.height);
+  drawOverlay();
+  rt-=dt;if(rt<=0){ui();rt=0.3;}
+  requestAnimationFrame(loop);
+}
+ui();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
