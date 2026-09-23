@@ -1,0 +1,14 @@
+{
+  "name": "esan-devtools",
+  "description": "Claude Code plugins จาก อีสาน DevTools",
+  "owner": {
+    "name": "devgreenpink"
+  },
+  "plugins": [
+    {
+      "name": "esan-office",
+      "source": "./plugins/esan-office",
+      "description": "ESAN AI AGENT: ออฟฟิศ 8 บิตที่แสดงสถานะ Claude Code แต่ละ session บนเครื่องคุณแบบสด"
+    }
+  ]
+}

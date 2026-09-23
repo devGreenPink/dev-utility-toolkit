@@ -1,0 +1,44 @@
+{
+  "description": "ESAN AI AGENT: ส่งสถานะของ session ไปที่ออฟฟิศ 8 บิตบนเครื่องนี้ (http://127.0.0.1:4567) ไม่ส่งข้อมูลออกนอกเครื่อง",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/start.js\"", "timeout": 5 }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "*", "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "PostToolUse": [
+      { "matcher": "*", "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "PostToolUseFailure": [
+      { "matcher": "*", "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "PermissionRequest": [
+      { "matcher": "*", "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "Notification": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "StopFailure": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "SubagentStart": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "SubagentStop": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "PostCompact": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ],
+    "SessionEnd": [
+      { "hooks": [{ "type": "http", "url": "http://127.0.0.1:4567/hook", "timeout": 2, "headers": { "X-Esan-Hook": "1" } }] }
+    ]
+  }
+}

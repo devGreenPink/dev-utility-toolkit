@@ -113,3 +113,25 @@ future UI work.
 
 This toolkit is unrelated to the Thai ID/mock-data/SQL-parser logic above — don't
 conflate the two when navigating the repo.
+
+## Claude Code plugin: ESAN AI AGENT (`plugins/esan-office/`)
+
+Also separate from the static site: a Claude Code plugin that shows every Claude Code
+session on the user's machine as an agent in an 8-bit office, and runs "office agents"
+the user commands from the page. Full docs (Thai) in `plugins/esan-office/README.md` —
+don't duplicate them here.
+
+- `.claude-plugin/marketplace.json` (repo root) declares marketplace `esan-devtools`;
+  the plugin is `esan-office`. Install: `claude plugin marketplace add devgreenpink/dev-utility-toolkit`
+  then `claude plugin install esan-office@esan-devtools`.
+- Zero-dependency Node: `scripts/bridge.js` (server on `127.0.0.1:4567`), `scripts/start.js`
+  (SessionStart hook), `office/index.html` (single-file page, two themes: `isan` and `green`/CDG).
+- GitHub Pages deploys these files too (whole repo is the artifact); runtime data
+  (agents, token, log) lives in `~/.esan-office/`, never in the repo.
+- Gotchas: `start.js` must never write to stdout (SessionStart stdout enters Claude's
+  context); `claude -p` doesn't fire `PermissionRequest`, so office-agent approvals go
+  through a per-run `PreToolUse` hook; watched sessions' hooks always get `{}` back.
+- Keep `plugin.json` `version` and `VERSION` in `bridge.js` in sync; bump `CACHE` in
+  `office/sw.js` when the manifest or icons change.
+- Verify with `claude plugin validate plugins/esan-office` and `claude plugin validate .`;
+  end-to-end tests: `plugins/esan-office/tests/office-tests.mjs` (`ONLY_FREE=1` spends no tokens).
