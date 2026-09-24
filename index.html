@@ -446,11 +446,11 @@
             </div>
           </div>
 
-          <div class="grid-2" style="align-items: start; gap: 14px">
-            <!-- Left: Data fields -->
-            <div>
+          <div class="mock-layout">
+            <!-- Data fields: grid-template-areas in style.css -->
+            <div class="mock-cards">
               <!-- Identity card -->
-              <div class="mock-section-card">
+              <div class="mock-section-card mock-card-personal">
                 <div class="mock-section-header">
                   <span class="mock-section-icon">🪪</span>
                   <span class="mock-section-title">ข้อมูลส่วนตัว</span>
@@ -502,9 +502,8 @@
                   <button class="mock-copy-btn" onclick="copyVal('out-dob')" title="Copy">⎘</button>
                 </div>
               </div>
-
               <!-- Contact card -->
-              <div class="mock-section-card">
+              <div class="mock-section-card mock-card-contact">
                 <div class="mock-section-header">
                   <span class="mock-section-icon">📱</span>
                   <span class="mock-section-title">ติดต่อ</span>
@@ -545,7 +544,7 @@
               </div>
 
               <!-- Address card -->
-              <div class="mock-section-card">
+              <div class="mock-section-card mock-card-address">
                 <div class="mock-section-header">
                   <span class="mock-section-icon">📍</span>
                   <span class="mock-section-title">ที่อยู่</span>
@@ -569,7 +568,7 @@
               </div>
 
               <!-- Work card -->
-              <div class="mock-section-card">
+              <div class="mock-section-card mock-card-work">
                 <div class="mock-section-header">
                   <span class="mock-section-icon">💼</span>
                   <span class="mock-section-title">ข้อมูลงาน</span>
@@ -609,7 +608,7 @@
               </div>
 
               <!-- Finance card -->
-              <div class="mock-section-card">
+              <div class="mock-section-card mock-card-finance">
                 <div class="mock-section-header">
                   <span class="mock-section-icon">💳</span>
                   <span class="mock-section-title">การเงิน</span>
@@ -624,9 +623,8 @@
                   <button class="mock-copy-btn" onclick="copyVal('out-credit')" title="Copy">⎘</button>
                 </div>
               </div>
-
               <!-- System card -->
-              <div class="mock-section-card">
+              <div class="mock-section-card mock-card-system">
                 <div class="mock-section-header">
                   <span class="mock-section-icon">⚙️</span>
                   <span class="mock-section-title">ระบบ</span>
@@ -651,18 +649,17 @@
                   </button>
                 </div>
               </div>
-
-              <!-- Copy all -->
-              <button
-                class="btn btn-ghost btn-full"
-                onclick="copyAllMock()"
-                style="margin-top: 4px"
-              >
-                📋 Copy ทั้งหมดเป็น JSON
-              </button>
             </div>
 
-            <!-- Right: Bulk output -->
+            <!-- Copy all -->
+            <button
+              class="btn btn-ghost btn-full"
+              onclick="copyAllMock()"
+            >
+              📋 Copy ทั้งหมดเป็น JSON
+            </button>
+
+            <!-- Bulk output -->
             <div id="bulk-output-area" style="display: none">
               <div
                 style="
