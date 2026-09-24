@@ -125,7 +125,7 @@ don't duplicate them here.
   the plugin is `esan-office`. Install: `claude plugin marketplace add devgreenpink/dev-utility-toolkit`
   then `claude plugin install esan-office@esan-devtools`.
 - Zero-dependency Node: `scripts/bridge.js` (server on `127.0.0.1:4567`), `scripts/start.js`
-  (SessionStart hook), `office/index.html` (single-file page, two themes: `isan` and `green`/CDG).
+  (SessionStart hook), `office/index.html` (single-file page, three themes: `isan`, `green`/CDG, and `south`).
 - GitHub Pages deploys these files too (whole repo is the artifact); runtime data
   (agents, token, log) lives in `~/.esan-office/`, never in the repo.
 - Gotchas: `start.js` must never write to stdout (SessionStart stdout enters Claude's

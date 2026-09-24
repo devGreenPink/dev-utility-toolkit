@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Chakra+Petch:wght@400;500;600&display=swap">
-<script>try{var q=new URLSearchParams(location.search).get('theme'),t=q||localStorage.getItem('esan-office-theme');if(t==='isan'||t==='green')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{var q=new URLSearchParams(location.search).get('theme'),t=q||localStorage.getItem('esan-office-theme');if(/^(isan|green|south)$/.test(t))document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 :root{
   --bg:#1C1F3A;--bg-deep:#141730;--panel:#232850;--line:#3B447A;
@@ -29,6 +29,12 @@
   --accent:#BDEBFB;--accent-deep:#6FB2C8;--on-accent:#12261A;
   --good:#BDEBFB;--warn:#F4C35A;--bad:#FF7A66;
 }
+:root[data-theme="south"]{
+  --bg:#0F2A3A;--bg-deep:#0A1F2C;--panel:#133548;--line:#2A5A70;
+  --ink:#F5EBD7;--ink-2:#D8CCB0;--ink-3:#A9BFC2;--shade:#08161F;
+  --accent:#3FC1C9;--accent-deep:#23858C;--on-accent:#0A1F2C;
+  --good:#7FD8B0;--warn:#F2B84B;--bad:#F58A70;
+}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-size:15px;line-height:1.6;padding-inline:16px;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
@@ -37,13 +43,14 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--th);font-s
 .notch{clip-path:polygon(0 var(--b),var(--b) var(--b),var(--b) 0,calc(100% - var(--b)) 0,calc(100% - var(--b)) var(--b),100% var(--b),100% calc(100% - var(--b)),calc(100% - var(--b)) calc(100% - var(--b)),calc(100% - var(--b)) 100%,var(--b) 100%,var(--b) calc(100% - var(--b)),0 calc(100% - var(--b)))}
 .pkm{height:10px;background-color:#B8392F;background-image:linear-gradient(90deg,rgba(232,220,192,.55) 1px,transparent 1px),linear-gradient(0deg,rgba(232,220,192,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(46,63,143,.9) 4px,transparent 4px),linear-gradient(0deg,rgba(46,63,143,.9) 4px,transparent 4px);background-size:12px 12px,12px 12px,12px 12px,12px 12px;background-position:9px 0,0 9px,0 0,0 0}
 :root[data-theme="green"] .pkm{display:none}
+:root[data-theme="south"] .pkm{background-color:#1F6A73;background-image:radial-gradient(circle at 6px 10px,transparent 4px,#F5EBD7 4px 5px,transparent 5px),radial-gradient(circle at 6px 5px,#F2B84B 1px,transparent 1.5px);background-size:12px 10px,12px 10px;background-position:0 0,6px 0}
 .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .eyebrow{display:inline-block;font-family:var(--px);font-size:12px;letter-spacing:.06em;color:var(--on-accent);background:var(--warn);padding:2px 8px}
 h1{font-family:var(--px);font-size:clamp(28px,7vw,40px);font-weight:600;line-height:1.15;margin:10px 0 8px;text-wrap:balance;letter-spacing:.04em}
 h1 .blink{color:var(--warn)}
 .lede{margin:0;color:var(--ink-2);max-width:62ch}
-.themes{display:flex;gap:6px;align-items:center;font-family:var(--px);font-size:12px;color:var(--ink-3)}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.themes{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-family:var(--px);font-size:12px;color:var(--ink-3)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .stat{background:var(--panel);border:var(--b) solid var(--line);padding:8px 12px;min-width:0}
 .stat .k{font-size:12px;color:var(--ink-3);line-height:1.4}
 .stat .v{font-family:var(--px);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.3}
@@ -81,7 +88,7 @@ canvas{display:block;max-width:100%;image-rendering:pixelated;image-rendering:cr
 .seg{display:grid;grid-template-columns:repeat(10,1fr);gap:2px}
 .seg i{display:block;height:8px;background:var(--bg-deep)}
 .pct{font-family:var(--px);font-size:13px;text-align:right;color:var(--ink-2);font-variant-numeric:tabular-nums}
-.ra{display:flex;justify-content:flex-end}
+.ra{display:flex;justify-content:flex-end;gap:8px}
 .ra button{font-size:13px;padding:5px 10px 7px}
 .gl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px}
 .gl li{background:var(--panel);border:var(--b) solid var(--line);padding:10px 12px;display:grid;grid-template-columns:14px minmax(0,1fr);gap:2px 10px;align-content:start}
@@ -99,10 +106,7 @@ canvas{display:block;max-width:100%;image-rendering:pixelated;image-rendering:cr
 .steps p{margin:4px 0 0;font-size:13px;color:var(--ink-2);line-height:1.55;max-width:62ch}
 .steps p b,.gl p b{display:inline;font-size:inherit;line-height:inherit;color:var(--ink)}
 .install .gl{margin-top:4px}
-.cmd{display:flex;gap:8px;align-items:stretch;margin-top:6px}
-.cmd code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-size:13px;background:var(--bg-deep);border:2px solid var(--line);padding:6px 10px;color:var(--ink)}
-.cmd button{font-size:12px;padding:4px 10px 6px;flex:none}
-.appnote{font-family:var(--px);font-size:13px;color:var(--good)}
+.foot a{color:var(--ink-2)}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;padding:0 12px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none}
 .sheet-in{pointer-events:auto;width:100%;max-width:800px;max-height:min(74vh,660px);overflow:auto;background:var(--panel);border:var(--b) solid var(--ink);padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
 .sh-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -144,6 +148,28 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
 .sh-save button{font-size:13px;padding:6px 12px 8px}
 .saved{font-family:var(--px);font-size:12px;color:var(--good)}
 .saved.bad{color:var(--bad)}
+.fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:"▸";font-family:var(--px);font-size:18px;line-height:1;color:var(--warn)}
+.fold[open]>summary::before{content:"▾"}
+.fold>summary:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.fold-hint{font-family:var(--px);font-size:12px;color:var(--ink-3)}
+.fold[open] .fold-hint{display:none}
+.fold-body{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.quick{background:var(--panel);border:var(--b) solid var(--line);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.quick label{font-family:var(--px);font-size:14px;color:var(--ink-2)}
+.quick .row{display:flex;gap:8px}
+.quick input{flex:1;min-width:0;inline-size:100%;font:inherit;font-size:14px;color:var(--ink);background:var(--bg-deep);border:2px solid var(--line);padding:8px 10px}
+.quick input:focus{outline:2px solid var(--warn);outline-offset:0}
+.quick .row button{flex:none}
+.q-msg{margin:0;font-size:13px;color:var(--ink-3)}
+.q-msg.bad{color:var(--bad)}
+.prank{position:absolute;z-index:5;line-height:1.4;background:var(--panel);border:var(--b) solid var(--ink);padding:6px;display:flex;flex-direction:column;gap:4px;inline-size:190px;max-inline-size:calc(100% - 8px)}
+.prank .pt{font-family:var(--px);font-size:12px;color:var(--ink-3);padding:0 2px;overflow-wrap:anywhere}
+#pk-list{display:flex;flex-direction:column;gap:4px}
+.prank button{font-size:13px;padding:4px 8px 6px;text-align:left;border-width:2px;box-shadow:none}
+.prank button small{display:block;font-family:var(--th);font-size:11px;color:var(--ink-3);line-height:1.35}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:440px){
   .stat{padding:6px 10px}
   .stat .v{font-size:19px}
@@ -156,10 +182,11 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
   <header>
     <div class="top">
       <span class="eyebrow notch" id="eyebrow" data-i18n="eyebrow">สบายดีบ่ · ต่อกับ Claude Code บนเครื่องนี้</span>
-      <div class="themes" role="group" aria-label="ธีม">ธีม
+      <div class="themes"><div class="themes" role="group" aria-label="ธีม">ธีม
         <button type="button" class="chip" data-set-theme="isan">อีสาน</button>
         <button type="button" class="chip" data-set-theme="green">CDG</button>
-      </div>
+        <button type="button" class="chip" data-set-theme="south">ใต้</button>
+      </div><button type="button" class="chip" id="b-install" hidden>ติดตั้งเป็นแอป</button></div>
     </div>
     <h1><span data-i18n="title">ESAN AI AGENT</span><span class="blink">_</span></h1>
     <p class="lede" data-i18n="lede">agent แต่ละตัวคือ session ของ Claude Code ที่เปิดอยู่บนเครื่องนี้ <span style="white-space:nowrap">มีเวียกกะย่างไปนั่งโต๊ะ</span> <span style="white-space:nowrap">บ่มีเวียกกะไปพัก</span> ตำส้มตำ เล่นตู้อาเขต หรือขึ้นเวทีมวย แถบบนหัวคือ context ที่เหลืออยู่</p>
@@ -169,7 +196,8 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
   <section class="stats" aria-label="สรุปสถานะ">
     <div class="stat notch"><div class="k" data-i18n="statWork">กำลังเฮ็ดเวียก</div><div class="v" id="s-work">0/0</div></div>
     <div class="stat notch"><div class="k">Context เฉลี่ยคงเหลือ</div><div class="v" id="s-ctx">-</div></div>
-    <div class="stat notch"><div class="k">โควตา 5 ชม. ใช้ไป</div><div class="v" id="s-quota">-</div><div class="h" id="s-quota-h">ต้องตั้ง statusline ก่อน</div></div>
+    <div class="stat notch"><div class="k">โควตา 5 ชม. ใช้ไป</div><div class="v" id="s-quota">-</div><div class="h" id="s-quota-h">ยังไม่มีข้อมูล ตั้ง statusline ตาม README</div></div>
+    <div class="stat notch"><div class="k">โควตาสัปดาห์ ใช้ไป</div><div class="v" id="s-week">-</div><div class="h" id="s-week-h">ยังไม่มีข้อมูล ตั้ง statusline ตาม README</div></div>
   </section>
 
   <div class="controls">
@@ -178,7 +206,14 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
     <div class="status" id="status" role="status"><i aria-hidden="true"></i><span id="status-t">กำลังต่อ bridge…</span></div>
   </div>
 
-  <div class="stage notch" id="stage"><canvas id="office" aria-label="ผังออฟฟิศแบบ 8 บิต โต๊ะคอมอยู่กลางห้อง มุมพัก โต๊ะโป๊กเกอร์ และสนามมวย"></canvas></div>
+  <form class="quick notch" id="quick" novalidate hidden>
+    <label for="q-in">ถามด่วน · Easy Research (Haiku ค้นเว็บได้ ไม่แก้ไฟล์)</label>
+    <div class="row"><input id="q-in" type="text" maxlength="2000" placeholder="React 19 มีอะไรใหม่บ้าง" autocomplete="off"><button type="submit" class="primary notch">ถาม</button></div>
+    <p class="q-msg" id="q-msg" role="status">ทุกคำถามเริ่มบทสนทนาใหม่ คำตอบขึ้นในแผงของ Easy Research</p>
+  </form>
+
+  <div class="stage notch" id="stage"><canvas id="office" aria-label="ผังออฟฟิศแบบ 8 บิต โต๊ะคอมอยู่กลางห้อง มุมพัก โต๊ะโป๊กเกอร์ และสนามมวย"></canvas>
+    <div class="prank notch" id="prank" role="group" aria-labelledby="pk-t" hidden><span class="pt" id="pk-t">แกล้ง Claude A</span><div id="pk-list"></div></div></div>
 
   <section class="team" aria-labelledby="team-h">
     <h2 class="sec" id="team-h">ทีม agent</h2>
@@ -186,26 +221,8 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
     <ul class="roster" id="roster"></ul>
   </section>
 
-  <section class="install" aria-labelledby="install-h" id="install">
-    <h2 class="sec" id="install-h">วิธีติดตั้ง</h2>
-    <p class="sec-sub">ติดตั้งครั้งเดียว หลังจากนั้นเปิด Claude Code ตามปกติ ออฟฟิศจะทำงานเอง ข้อมูลทั้งหมดอยู่ในเครื่องคุณ</p>
-    <ol class="steps">
-      <li><b>ลง Node.js 18 ขึ้นไป</b><p>plugin ใช้ Node รัน bridge ตัวเล็ก ๆ ในเครื่อง ถ้ามีอยู่แล้วข้ามไปได้เลย</p>
-        <div class="cmd"><code>node --version</code><button type="button" class="notch" data-copy="node --version">คัดลอก</button></div></li>
-      <li><b>ติดตั้ง plugin ใน Claude Code</b><p>พิมพ์ 2 คำสั่งนี้ใน terminal (หรือพิมพ์ <code>/plugin</code> แบบเดียวกันในหน้าจอ Claude Code)</p>
-        <div class="cmd"><code>claude plugin marketplace add devgreenpink/dev-utility-toolkit</code><button type="button" class="notch" data-copy="claude plugin marketplace add devgreenpink/dev-utility-toolkit">คัดลอก</button></div>
-        <div class="cmd"><code>claude plugin install esan-office@esan-devtools</code><button type="button" class="notch" data-copy="claude plugin install esan-office@esan-devtools">คัดลอก</button></div></li>
-      <li><b>เปิด Claude Code แล้วเข้าออฟฟิศ</b><p>พอเริ่ม session ใหม่ bridge จะเปิดเองเบื้องหลัง แล้วเข้าหน้านี้ที่ <code>http://localhost:4567</code></p></li>
-      <li><b>ติดตั้งเป็นแอปบนเครื่อง</b><p id="app-hint">ใช้ Chrome หรือ Edge กดปุ่มด้านล่าง หรือไอคอนติดตั้งท้ายแถบที่อยู่ จะได้ไอคอน ESAN AI AGENT บนเดสก์ท็อปและเปิดเป็นหน้าต่างของตัวเอง เหมือนแอปทั่วไป</p>
-        <div class="cmd"><button type="button" class="primary notch" id="b-install" hidden>ติดตั้งเป็นแอป</button><span class="appnote" id="app-on" hidden>เปิดเป็นแอปอยู่แล้ว</span></div></li>
-      <li><b>ได้ตัวเลข context กับโควตาจริง (ไม่บังคับ)</b><p>เพิ่มบรรทัดนี้ใน <code>~/.claude/settings.json</code> ให้ชี้ไปที่ <code>scripts/statusline.js</code> ของ plugin โควตา 5 ชั่วโมงมีเฉพาะแพ็กเกจ Pro/Max</p>
-        <div class="cmd"><code>"statusLine": { "type": "command", "command": "node &lt;โฟลเดอร์ plugin&gt;/scripts/statusline.js" }</code></div></li>
-      <li><b>ดูจากมือถือ (ไม่บังคับ)</b><p>รัน bridge ด้วย <code>ESAN_OFFICE_LAN=1</code> แล้วเปิด <code>http://&lt;IP ของคอม&gt;:4567</code> บนมือถือที่อยู่ Wi-Fi เดียวกัน มือถือดูได้อย่างเดียว และติดตั้งเป็นแอปไม่ได้เพราะไม่ใช่ https</p></li>
-    </ol>
-  </section>
-
   <section class="install" aria-labelledby="usage-h" id="usage">
-    <h2 class="sec" id="usage-h">วิธีใช้งาน</h2>
+    <details class="fold" data-fold="usage"><summary><h2 class="sec" id="usage-h">วิธีใช้งาน</h2><span class="fold-hint">กดเพื่อเปิดดู</span></summary><div class="fold-body">
     <p class="sec-sub">สั่งงาน agent ประจำออฟฟิศครั้งแรก ทำตามนี้ทีละขั้น</p>
     <ol class="steps">
       <li><b>สร้าง agent</b><p data-i18n="use1">กดปุ่ม <b style="display:inline">เพิ่ม agent</b> ด้านบน เลือกหน้าที่สำเร็จรูป เช่น Frontend หรือ QA ตั้งชื่อ แล้วใส่โฟลเดอร์ทำงานเป็น path เต็ม เช่น <code>D:/work/shop-ui</code> เลือกเครื่องมือที่ให้ใช้ได้เลยโดยไม่ต้องถาม กับโมเดล (Haiku ประหยัดที่สุด) แล้วกด <b style="display:inline">สร้าง agent</b> ตัวใหม่จะย่างเข้าประตูมา</p></li>
@@ -215,14 +232,17 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
     </ol>
     <ul class="gl">
       <li class="notch"><span class="ic" style="background:#9FB8AE"></span><b>session ที่เปิดเอง</b><p data-i18n="useOwn">เปิด Claude Code ใน terminal หรือแอปตามปกติ agent จะย่างเข้ามาเอง พิมพ์งานในหน้าต่าง Claude Code แล้วดูความคืบหน้าในออฟฟิศได้ ถ้าขึ้นสีเหลืองให้กดอนุญาตในหน้าต่าง Claude Code</p><code>ดูได้อย่างเดียว</code></li>
-      <li class="notch"><span class="ic" style="background:var(--bad)"></span><b>หยุด เริ่มใหม่ ลบ</b><p>ปุ่ม <b style="display:inline">หยุด</b> ตัดงานที่ทำอยู่และล้างคิว <b style="display:inline">เริ่มบทสนทนาใหม่</b> ให้ agent ลืมเรื่องเก่า <b style="display:inline">ลบ agent</b> ต้องกด 2 ครั้ง</p><code>อยู่ใน "ตั้งค่า agent ตัวนี้"</code></li>
+      <li class="notch"><span class="ic" style="background:var(--bad)"></span><b>หยุด เอาออก ลบ</b><p>ปุ่ม <b style="display:inline">หยุด</b> ที่การ์ดตัดงานที่ทำอยู่และล้างคิว ปุ่ม <b style="display:inline">เอาออก</b> ที่การ์ดของ session ที่เปิดเองใช้กับตัวที่ปิดหน้าต่างไปแล้วแต่ยังค้างในห้อง ทั้งสองปุ่มต้องกด 2 ครั้งเพื่อยืนยัน <b style="display:inline">เริ่มบทสนทนาใหม่</b> ให้ agent ลืมเรื่องเก่า <b style="display:inline">ลบ agent</b> ต้องกด 2 ครั้ง</p><code>เริ่มใหม่กับลบอยู่ใน "ตั้งค่า agent ตัวนี้"</code></li>
       <li class="notch"><span class="ic" style="background:var(--warn)"></span><b>แก้คำสั่งประจำตัว</b><p>เปิด "ตั้งค่า agent ตัวนี้" แก้หน้าที่ โฟลเดอร์ คำสั่งประจำตัว เครื่องมือ หรือโมเดล แล้วกดบันทึก มีผลกับงานถัดไป</p><code>ไม่ต้องสร้างใหม่</code></li>
       <li class="notch"><span class="ic" style="background:var(--good)"></span><b>ประหยัด token</b><p>งานง่ายใช้ Haiku ให้เครื่องมือเท่าที่จำเป็น และกดเริ่มบทสนทนาใหม่เมื่อแถบ context ใกล้หมด ทำพร้อมกันได้ครั้งละ 3 ตัว ที่เหลือจะรอคิว</p><code>ทุกงานที่สั่งกิน token จริง</code></li>
+      <li class="notch"><span class="ic" style="background:var(--accent-deep)"></span><b>ถามด่วน</b><p>พิมพ์คำถามง่าย ๆ ในช่อง <b style="display:inline">ถามด่วน</b> ใต้ปุ่มเพิ่ม agent ระบบใช้ agent ชื่อ Easy Research (Haiku ค้นเว็บได้ ไม่แก้ไฟล์) และเริ่มบทสนทนาใหม่ทุกคำถาม หรือเลือกหน้าที่ Easy Research ตอนเพิ่ม agent ก็ได้</p><code>กิน token แต่น้อย</code></li>
+      <li class="notch"><span class="ic" style="background:var(--bad)"></span><b>แกล้ง agent</b><p>แตะตัว agent ที่กำลังเดินเล่นหรือพักอยู่ จะมีเมนูเล็ก ๆ ให้เลือก ขัดขา จั๊กจี้ สาดน้ำ หรือหลอกผี เป็นแค่ภาพในหน้านี้ ไม่กระทบงาน ตัวที่นั่งทำงานอยู่แกล้งไม่ได้</p><code>ไม่ส่งอะไรไปที่ bridge</code></li>
     </ul>
+    </div></details>
   </section>
 
   <section class="guide" aria-labelledby="guide-h">
-    <h2 class="sec" id="guide-h">สัญลักษณ์ในออฟฟิศ</h2>
+    <details class="fold" data-fold="guide"><summary><h2 class="sec" id="guide-h">สัญลักษณ์ในออฟฟิศ</h2><span class="fold-hint">กดเพื่อเปิดดู</span></summary><div class="fold-body">
     <ul class="gl">
       <li class="notch"><span class="ic" style="background:var(--warn)"></span><b>agent ประจำออฟฟิศ</b><p>กดเพิ่ม agent แล้วเลือกโฟลเดอร์กับหน้าที่ พิมพ์งานส่งได้เลย ทำงานพร้อมกันได้ครั้งละ 3 ตัว ที่เหลือต่อคิว ถ้าต้องใช้เครื่องมือนอกรายการจะขึ้นปุ่มอนุญาตให้กด ทุกงานที่สั่งกิน token จริง</p><code>claude -p ในโฟลเดอร์ของ agent</code></li>
       <li class="notch"><span class="ic" style="background:#7FC6E3"></span><b>โต๊ะคอม 12 ตัว</b><p data-i18n="gDesk">พอคุณพิมพ์ prompt agent จะย่างมานั่งพิมพ์ จอสว่างและมีโค้ดวิ่ง ตอบเสร็จก็ลุกไปพัก ถ้าโต๊ะเต็มจะยืนทำงานในมุมพักแทน</p><code>UserPromptSubmit → Stop</code></li>
@@ -231,7 +251,8 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
       <li class="notch"><span class="ic" style="background:#9FB8AE"></span><b>ประตู</b><p data-i18n="gDoor">เปิด session ใหม่ agent จะย่างเข้าประตูมา ปิด session ก็ย่างกลับบ้าน subagent ใส่หมวกฟ้าเข้ามาช่วยงานแล้วออกไป</p><code>SessionStart, SubagentStart/Stop, SessionEnd</code></li>
       <li class="notch"><span class="ic" style="background:#B8392F;box-shadow:inset -7px 0 0 #2E3F8F"></span><b data-i18n="gLoungeB">มุมพักแบบอีสาน</b><p data-i18n="gLounge">ร้านส้มตำกับกระติบข้าวเหนียว โอ่งน้ำ เสื่อกับหมอนขวาน ตู้อาเขต ลู่วิ่ง เครื่องยกน้ำหนัก โต๊ะโป๊กเกอร์ และสนามมวย agent ที่ว่างจะเลือกไปเอง</p><code>สถานะ: ว่าง</code></li>
     </ul>
-    <p class="foot">ข้อมูลทั้งหมดอยู่ในเครื่องนี้เท่านั้น ถ้าอยากได้ context กับโควตาแบบตัวเลขจริง ให้ตั้ง statusline ตาม README ของ plugin (<code>scripts/statusline.js</code>)</p>
+    </div></details>
+    <p class="foot">ข้อมูลทั้งหมดอยู่ในเครื่องนี้เท่านั้น วิธีติดตั้ง การตั้ง statusline ให้ได้ context กับโควตาแบบตัวเลขจริง และการดูจากมือถือ อยู่ใน <a href="https://github.com/devGreenPink/dev-utility-toolkit/tree/main/plugins/esan-office#readme" target="_blank" rel="noopener">README ของ plugin</a></p>
   </section>
 </main>
 
@@ -254,6 +275,7 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
     </form>
     <p class="err" id="sh-err" hidden></p>
     <p class="watch" id="sh-watch" hidden></p>
+    <div class="sh-save" id="sh-wact" hidden><button type="button" class="notch" id="sh-dismiss">เอาออกจากออฟฟิศ</button></div>
     <details class="sh-set" id="sh-set" hidden>
       <summary id="sh-set-sum">ตั้งค่า agent ตัวนี้</summary>
       <div id="f-preset-w"><label for="f-preset">เริ่มจากหน้าที่สำเร็จรูป</label><select id="f-preset"></select></div>
@@ -301,7 +323,8 @@ const PRESETS=[
   {role:'Security',prompt:'คุณคือ Security reviewer หาช่องโหว่และความลับที่หลุด รายงานอย่างเดียว ห้ามแก้ไฟล์',tools:['Read','Grep','Glob']},
   {role:'Docs',prompt:'คุณคือคนเขียนเอกสาร เขียนภาษาไทยอ่านง่าย และมีตัวอย่างคำสั่งประกอบทุกหัวข้อ',tools:['Read','Grep','Glob','Edit','Write']},
   {role:'Research',prompt:'คุณคือนักค้นคว้า อ้างอิงแหล่งที่มาทุกครั้ง และสรุปเป็นตารางเปรียบเทียบ',tools:['Read','Grep','Glob','WebFetch','WebSearch']},
-  {role:'Planner',prompt:'คุณคือหัวหน้าทีม แตกงานใหญ่เป็นงานย่อย แล้วส่งต่อให้ subagent ที่เหมาะกับงาน',tools:['Read','Grep','Glob','Task']}
+  {role:'Planner',prompt:'คุณคือหัวหน้าทีม แตกงานใหญ่เป็นงานย่อย แล้วส่งต่อให้ subagent ที่เหมาะกับงาน',tools:['Read','Grep','Glob','Task']},
+  {role:'Easy Research',prompt:'คุณคือผู้ช่วยค้นข้อมูลแบบเร็ว ตอบคำถามสั้น ๆ เป็นภาษาไทยอ่านง่าย ไม่เกิน 6 บรรทัด ถ้าค้นจากเว็บให้แนบลิงก์ที่มา ห้ามแก้ไฟล์',tools:['Read','Grep','Glob','WebSearch','WebFetch'],model:'haiku',permMode:'dontAsk'}
 ];
 async function api(p,body){
   const r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/json','X-Esan-Token':TOKEN},body:JSON.stringify(body||{})});
@@ -340,6 +363,20 @@ const THEMES={
     txt:{title:'CDG AI AGENT',color:'#1B3620',board:'ทำงาน',busy:'ทำงาน',toDesk:'เดินไปโต๊ะ',walkRest:'กำลังเดินไปพัก',noSess:'ยังไม่มี session เปิดอยู่',noBridge:'ยังต่อ bridge ไม่ได้',
       hintCmd:'กด "เพิ่ม agent" หรือเปิด Claude Code',hintView:'เปิด Claude Code ที่โหลด plugin นี้',down:'ต่อ bridge ไม่ได้ กำลังลองใหม่…',created:'สร้างแล้ว กำลังเดินเข้าประตูมา',
       emptyCmd:'ยังไม่มี agent กดปุ่ม "เพิ่ม agent" เพื่อสร้างตัวประจำออฟฟิศ หรือเปิด Claude Code ที่โหลด plugin esan-office แล้ว session นั้นจะเดินเข้าประตูมาเอง',
+      emptyView:'ยังไม่มี session เปิด Claude Code ที่โหลด plugin esan-office แล้ว agent จะเดินเข้าประตูมาเอง'}},
+  // Southern (ปักษ์ใต้): krajood mat floor, batik rug, a roti and teh tarik corner, hammock, sea window, nang talung
+  south:{floor:'mat',rug:'batik',lounge:'south',decor:true,
+    pal:Object.assign({},BASE,{k0:'#08161F',wall:'#17404F',trim:'#3E7A8C',floorA:'#B08A5A',floorB:'#A07A4C',seam:'#7E5E36',
+      rug:'#1F6A73',rugEdge:'#0F3F47',pk2:'#F2B84B',pk3:'#F58A70',pkW:'#F5EBD7',
+      desk:'#B07A48',deskHi:'#C48E5A',deskEdge:'#7E5230',deskFront:'#6A4428',chair:'#23858C',chairDk:'#175E63',
+      scrOff:'#12303A',board:'#F2B84B',cyan:'#F5EBD7',kb:'#D8CCB0',table:'#7E5230',machine:'#3E5A60',pot:'#B0602E',
+      carpet:'#6A2E3A',carpetEdge:'#45202A',matA:'#F2B84B',matB:'#1F6A73',leafA:'#2F7A45',leafB:'#5DB36A',
+      good:'#7FD8B0',warn:'#F2B84B',bad:'#F58A70',ink2:'#D8CCB0',ink3:'#F5EBD7'}),
+    labels:{bar:'โรตี',arcade:'อาเขต',gym:'ฟิตเนส',poker:'โป๊กเกอร์',ring:'สนามมวย',door:'ประตู'},
+    act:{coffee:'ชักชาชัก',bar:'กินโรตีหรอยจังฮู้',arcade:'เล่นตู้อาเขต',sofa:'นอนเปลญวน',treadmill:'วิ่งบนลู่วิ่ง',weights:'ยกน้ำหนัก',poker:'เล่นโป๊กเกอร์',ring:'ชกมวยบนเวที'},
+    txt:{title:'PAKTAI AI AGENT',color:'#0F2A3A',board:'ทำงาน',busy:'ทำงาน',toDesk:'เดินไปโต๊ะ',walkRest:'กำลังเดินไปพัก',noSess:'ยังไม่มี session เปิดอยู่',noBridge:'ยังต่อ bridge ไม่ได้',
+      hintCmd:'กด "เพิ่ม agent" หรือเปิด Claude Code',hintView:'เปิด Claude Code ที่โหลด plugin นี้',down:'ต่อ bridge ไม่ได้ กำลังลองใหม่…',created:'สร้างแล้ว กำลังเดินเข้าประตูมา',
+      emptyCmd:'ยังไม่มี agent กดปุ่ม "เพิ่ม agent" เพื่อสร้างตัวประจำออฟฟิศ หรือเปิด Claude Code ที่โหลด plugin esan-office แล้ว session นั้นจะเดินเข้าประตูมาเอง',
       emptyView:'ยังไม่มี session เปิด Claude Code ที่โหลด plugin esan-office แล้ว agent จะเดินเข้าประตูมาเอง'}}
 };
 // Page copy in central Thai for the CDG theme; the Isan version is whatever the HTML already says
@@ -356,9 +393,19 @@ const GREEN_HTML={
   gLoungeB:'มุมพัก',
   gLounge:'บาร์น้ำ ตู้อาเขต ลู่วิ่ง เครื่องยกน้ำหนัก โซฟา เครื่องชงกาแฟ โต๊ะโป๊กเกอร์ และสนามมวย agent ที่ว่างจะเลือกไปเอง'
 };
+// Southern theme: central Thai with a few southern words (หรอย, จังฮู้, แหลง)
+const SOUTH_HTML=Object.assign({},GREEN_HTML,{
+  eyebrow:'แหลงใต้นิดหน่อย · ต่อกับ Claude Code บนเครื่องนี้',
+  title:'PAKTAI AI AGENT',
+  lede:'agent แต่ละตัวคือ session ของ Claude Code ที่เปิดอยู่บนเครื่องนี้ มีงานก็เดินไปนั่งโต๊ะ ว่างก็ไปพัก กินโรตีหรอยจังฮู้ ชักชาชัก นอนเปลญวน หรือขึ้นเวทีมวย แถบบนหัวคือ context ที่เหลืออยู่',
+  gLoungeB:'มุมพักแบบปักษ์ใต้',
+  gLounge:'ร้านโรตีกับชาชัก กาน้ำชา เปลญวน หน้าต่างเห็นทะเลกับเรือหัวโทง หนังตะลุง ว่าววงเดือน เทริดโนรา ตู้อาเขต ลู่วิ่ง เครื่องยกน้ำหนัก โต๊ะโป๊กเกอร์ และสนามมวย agent ที่ว่างจะเลือกไปเอง'
+});
+const PAGE_HTML={green:GREEN_HTML,south:SOUTH_HTML};
 document.querySelectorAll('[data-i18n]').forEach(el=>{el.dataset.orig=el.innerHTML;});
 function applyText(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;el.innerHTML=themeKey==='green'&&GREEN_HTML[k]!=null?GREEN_HTML[k]:el.dataset.orig;});
+  const tbl=PAGE_HTML[themeKey]||{};
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;el.innerHTML=tbl[k]!=null?tbl[k]:el.dataset.orig;});
   document.title=T.txt.title;
   const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=T.txt.color;
   const e=document.querySelector('#roster .empty');if(e)e.remove();
@@ -442,7 +489,9 @@ function sync(instant){
     let sp=S.get(s.id);
     if(s.state==='ended'){if(sp){sp.data=s;sp.want=false;sp.leave=true;seen.add(s.id);}return;}
     if(!sp){sp=mkSprite(s.id,s,false);S.set(s.id,sp);if(instant)placeInstant(sp,s.state==='working');}
-    sp.data=s;sp.want=s.state==='working';sp.label=s.role||s.project||s.name;seen.add(s.id);
+    // back before reaching the door (resumed, or dismissed and then active again): turn around instead of vanishing
+    else if(sp.leave&&!sp.gone){sp.leave=false;if(sp.state==='leaving')sp.state='idle';}
+    sp.data=s;sp.want=s.state==='working';sp.name=s.name;sp.label=s.role||s.project||s.name;seen.add(s.id);
     (s.subs||[]).forEach(u=>{const k=s.id+':'+u.id;let q=S.get(k);
       if(!q){q=mkSprite(k,{type:u.type},true);S.set(k,q);if(instant)placeInstant(q,true);}
       q.data=Object.assign({},u,{parent:s});q.want=true;seen.add(k);});
@@ -510,6 +559,8 @@ function atPoker(a){return atSpot(a,'poker');}
 function atRing(a){return atSpot(a,'ring');}
 
 function step(a,dt){
+  // a prank only pauses an idle agent; the moment it has work (or leaves) the prank is dropped
+  if(a.prank){if(a.want||a.leave){a.prank=null;}else{a.prank.t-=dt;if(a.prank.t<=0)a.prank=null;else return;}}
   if(a.path.length){const p=a.path[0],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy),s=44*dt;
     if(Math.abs(dy)>Math.abs(dx))a.up=dy<0;else if(Math.abs(dx)>0.01)a.up=false;
     if(d<=s){a.x=p.x;a.y=p.y;a.path.shift();if(!a.path.length){a.up=false;arrive(a);}}else{a.x+=dx/d*s;a.y+=dy/d*s;a.walk+=dt*7;}
@@ -540,13 +591,17 @@ function sprite(rows,x0,y0,map,r0,r1){for(let r=r0;r<r1;r++){const row=rows[r];f
 function bar(x,y,v){if(v==null)return;px(x-1,y-1,12,4,P.k0);const w=Math.max(0,Math.round(10*v/100));px(x,y,w,2,v>50?P.good:v>25?P.warn:P.bad);}
 function ctxOf(a){return a.sub||!a.data||!a.data.ctx?null:a.data.ctx.pct;}
 function inUse(id){return L.spots.filter(s=>s.id===id&&s.who&&!s.who.path.length&&s.who.state==='idle');}
-function mapOf(a){return{H:a.hair,S:P.skin,E:P.eye,C:a.shirt,P:P.pants,K:P.shoe,R:'#C8413B',B:'#2E3F8F',W:P.mug};}
+function mapOf(a){return{H:a.hair,S:P.skin,E:P.eye,C:a.shirt,P:P.pants,K:P.shoe,R:'#C8413B',B:'#2E3F8F',W:P.mug,T:'#1F6A73',Y:'#F2B84B'};}
 
 function drawFloor(){
   const{PW,PH}=L;
   if(T.floor==='plank'){
     for(let y=18,r=0;y<PH-4;y+=6,r++){px(4,y,PW-8,6,r%2?P.floorA:P.floorB);px(4,y+5,PW-8,1,P.seam);
       for(let x=4+(r%3)*16;x<PW-4;x+=48)px(x,y,1,5,P.seam);}
+  }else if(T.floor==='mat'){
+    // krajood basket weave: cells alternate horizontal and vertical strands
+    for(let y=18,r=0;y<PH-4;y+=8,r++)for(let x=4,k=0;x<PW-4;x+=8,k++){const w=Math.min(8,PW-4-x),h=Math.min(8,PH-4-y),hz=(r+k)%2;
+      px(x,y,w,h,hz?P.floorA:P.floorB);if(hz){px(x,y+2,w,1,P.seam);if(h>5)px(x,y+5,w,1,P.seam);}else{px(x+2,y,1,h,P.seam);if(w>5)px(x+5,y,1,h,P.seam);}}
   }else{for(let y=18;y<PH-4;y+=8)for(let x=4;x<PW-4;x+=8)px(x,y,8,8,((x/8+y/8)|0)%2?P.floorA:P.floorB);}
 }
 function drawRug(x,y,w,h){
@@ -559,6 +614,12 @@ function drawRug(x,y,w,h){
     for(let k=ix+10;k<ix+iw;k+=12)px(k,iy,1,ih,P.pkW);
     for(let k=iy+10;k<iy+ih;k+=12)px(ix,k,iw,1,P.pkW);
     for(let k=x+3;k<x+w-3;k+=3){px(k,y-1,1,1,P.pkW);px(k,y+h,1,1,P.pkW);}
+  }else if(T.rug==='batik'){
+    // batik: gold border band, cream flowers with a coral heart on a diagonal grid
+    for(let k=ix+1;k<ix+iw-1;k+=4){px(k,iy+1,2,1,P.pk2);px(k,iy+ih-2,2,1,P.pk2);}
+    for(let k=iy+1;k<iy+ih-1;k+=4){px(ix+1,k,1,2,P.pk2);px(ix+iw-2,k,1,2,P.pk2);}
+    for(let b=iy+6,r=0;b<iy+ih-4;b+=10,r++)for(let a=ix+6+(r%2)*8;a<ix+iw-4;a+=16){
+      px(a-1,b,3,1,P.pkW);px(a,b-1,1,3,P.pkW);px(a,b,1,1,P.pk3);px(a-3,b-3,1,1,P.pk2);px(a+3,b+3,1,1,P.pk2);}
   }else for(let k=x+4;k<x+w-4;k+=4){px(k,y+1,2,1,P.rug);px(k,y+h-2,2,1,P.rug);}
 }
 // pixel "CDG" sign for the CDG theme, drawn where the Isan window hangs
@@ -567,6 +628,7 @@ function drawSign(x,y){box(x,y,23,11,P.k0);px(x+1,y+1,21,9,'#1B3620');['C','D','
 function drawDecor(){
   if(themeKey==='green'&&L.decor&&L.decor.window){const[x,,w]=L.decor.window;drawSign(x+Math.round((w-23)/2),3);return;}
   if(!T.decor||!L.decor)return;const D=L.decor;
+  if(T.lounge==='south'){drawSouthDecor(D);return;}
   if(D.khaen){const[x,y]=D.khaen;[10,13,13,10].forEach((h,i)=>{px(x+i*2,y+14-h,1,h,'#D8B27A');px(x+i*2,y+14-h+3,1,1,'#8A6238');});box(x-1,y+8,9,4,'#6E4C2A');px(x+3,y+12,1,2,'#6E4C2A');}
   if(D.phin){const[x,y]=D.phin;box(x,y+4,10,8,'#A0522D');px(x+4,y+7,2,2,'#2A1A10');px(x+10,y+7,14,2,'#8A6238');box(x+24,y+5,4,5,'#6E4C2A');px(x+2,y+8,22,1,'#EDE6D6');px(x+1,y+5,1,1,'#E9B949');px(x+8,y+10,1,1,'#E9B949');}
   if(D.window){const[x,y,w,h]=D.window;box(x,y,w,h,'#2A1A10');px(x+1,y+1,w-2,4,'#8EC9F0');px(x+w-7,y+2,2,2,'#FFD76A');
@@ -577,14 +639,43 @@ function drawDecor(){
   if(D.mask){const[x,y]=D.mask;px(x+1,y,10,2,'#2E3F8F');px(x,y+2,12,11,'#E0604E');px(x+1,y+3,1,9,'#E9B949');px(x+10,y+3,1,9,'#E9B949');
     px(x+2,y+5,3,2,'#FFFFFF');px(x+7,y+5,3,2,'#FFFFFF');px(x+3,y+5,1,1,'#120E0A');px(x+8,y+5,1,1,'#120E0A');px(x+5,y+7,2,5,'#E9B949');px(x+3,y+12,6,1,'#FFFFFF');}
 }
+// Southern wall: same slots as the Isan decor (khaen, phin, window, mask)
+function drawSouthDecor(D){
+  if(D.khaen){const[x,y]=D.khaen; // nang talung: leather shadow puppet with gold punch-work on a rod
+    px(x+3,y,3,3,'#3A2414');px(x+6,y+1,1,1,'#3A2414');px(x+2,y+3,5,7,'#5A3A22');px(x+3,y+4,1,1,'#F2B84B');px(x+5,y+6,1,1,'#F2B84B');px(x+3,y+8,1,1,'#F2B84B');
+    px(x+1,y+4,1,5,'#3A2414');px(x+7,y+3,1,4,'#3A2414');px(x+8,y+2,1,1,'#3A2414');px(x+2,y+10,2,3,'#3A2414');px(x+5,y+10,2,3,'#3A2414');px(x+4,y+10,1,5,'#C49A62');}
+  if(D.phin){const[x,y]=D.phin; // wau bulan kite with its string
+    px(x+4,y,6,1,'#F5EBD7');px(x+6,y+1,2,2,'#F58A70');box(x+2,y+3,10,6,'#F58A70');px(x+4,y+4,6,4,'#F2B84B');px(x+6,y+5,2,2,'#1F6A73');
+    px(x,y+9,14,2,'#F58A70');px(x+1,y+11,3,1,'#F58A70');px(x+10,y+11,3,1,'#F58A70');px(x+5,y+9,4,1,'#F2B84B');
+    px(x+14,y+6,6,1,'#D8CCB0');px(x+20,y+7,5,1,'#D8CCB0');}
+  if(D.window){const[x,y,w,h]=D.window; // Andaman window: sky, sun, sea, sand, a longtail boat and a palm
+    box(x,y,w,h,'#2A1A10');px(x+1,y+1,w-2,5,'#8EC9F0');px(x+w-8,y+2,3,2,'#FFD76A');
+    px(x+1,y+6,w-2,h-9,'#2A8FB0');for(let k=x+2;k<x+w-2;k+=5)px(k,y+8,2,1,'#BDEBFB');px(x+1,y+h-3,w-2,2,'#E9D3A0');
+    const bx=x+5;px(bx,y+7,10,2,'#8A4F2A');px(bx+1,y+9,8,1,'#6E3A1E');px(bx+10,y+6,1,2,'#8A4F2A');px(bx+10,y+5,1,1,'#F58A70');px(bx+2,y+6,2,1,'#F2B84B');
+    px(x+w-5,y+4,1,h-7,'#6E4C2A');px(x+w-7,y+3,5,1,'#2F7A45');px(x+w-8,y+4,2,1,'#2F7A45');px(x+w-4,y+4,2,1,'#2F7A45');
+    px(x+w/2|0,y,1,h,'#2A1A10');}
+  if(D.mask){const[x,y]=D.mask; // soet nora: the tall gold crown of the nora dance
+    px(x+5,y,2,2,'#F2B84B');px(x+4,y+2,4,3,'#F2B84B');px(x+3,y+5,6,3,'#F2B84B');px(x+2,y+8,8,2,'#E0A43A');px(x+1,y+10,10,3,'#F2B84B');
+    px(x+5,y+3,2,1,'#F58A70');px(x+4,y+6,1,1,'#1F6A73');px(x+7,y+6,1,1,'#1F6A73');px(x+3,y+11,1,1,'#F58A70');px(x+6,y+11,1,1,'#1F6A73');px(x+8,y+11,1,1,'#F58A70');}
+}
 function drawLounge(){
-  const F=L.F,isan=T.lounge==='isan';
+  const F=L.F,isan=T.lounge==='isan',south=T.lounge==='south';
   const[mx,my,mw,mh]=F.machine;
-  if(isan){box(mx+2,my+3,mw-4,mh-4,'#8A4F2A');px(mx+4,my+2,mw-8,2,'#6E3A1E');px(mx+4,my+6,1,6,'#B06A3A');px(mx+6,my+10,4,1,'#E9B949');px(mx+7,my+12,2,1,'#E9B949');px(mx+mw-5,my,3,2,'#E9B949');}
+  if(south){ // teh tarik counter: kettle and cup, the tea is pulled while someone stands there
+    box(mx,my+8,mw,mh-8,P.deskFront);px(mx+1,my+8,mw-2,2,P.deskHi);
+    px(mx+2,my+3,6,5,'#C0C6CC');px(mx+3,my+2,4,1,'#9AA3AB');px(mx+8,my+4,2,1,'#C0C6CC');px(mx+1,my+4,1,3,'#9AA3AB');
+    px(mx+11,my+5,4,3,'#F5EBD7');px(mx+12,my+5,2,1,'#C8742E');
+    if(inUse('coffee').length&&!RM&&Math.floor(time*4)%2)px(mx+12,my-2,1,7,'#C8742E');}
+  else if(isan){box(mx+2,my+3,mw-4,mh-4,'#8A4F2A');px(mx+4,my+2,mw-8,2,'#6E3A1E');px(mx+4,my+6,1,6,'#B06A3A');px(mx+6,my+10,4,1,'#E9B949');px(mx+7,my+12,2,1,'#E9B949');px(mx+mw-5,my,3,2,'#E9B949');}
   else{box(mx,my,mw,mh,P.machine);px(mx+3,my+3,mw-6,4,P.k0);px(mx+mw-5,my+4,2,2,P.bad);px(mx+5,my+mh-7,6,5,P.mug);
     if(inUse('coffee').length&&!RM&&Math.floor(time*3)%2)px(mx+7,my+mh-10,1,2,P.mug);}
   const[bx,by,bw,bh]=F.bar;box(bx,by,bw,bh,P.deskFront);px(bx+1,by,bw-2,3,P.deskHi);px(bx,by+bh-3,bw,3,P.deskEdge);
-  if(isan){px(bx+6,by-3,7,4,'#8A5A3A');px(bx+5,by-4,9,1,'#6E4C2A');px(bx+12,by-7,1,5,'#C49A62');
+  if(south){ // roti griddle, condensed-milk can, stacked plates
+    px(bx+4,by-2,12,2,'#3A3A3A');px(bx+5,by-4,10,2,'#E9C27A');px(bx+7,by-4,2,1,'#C8742E');px(bx+11,by-3,2,1,'#C8742E');
+    px(bx+20,by-5,4,5,'#F5EBD7');px(bx+20,by-6,4,1,'#C8413B');px(bx+21,by-3,2,1,'#1F6A73');
+    px(bx+28,by-3,8,3,'#F5EBD7');px(bx+29,by-4,6,1,'#E9C27A');
+    inUse('bar').forEach(s=>{px(s.x-2,by+4,5,2,P.mug);px(s.x-1,by+4,3,1,'#E9C27A');});}
+  else if(isan){px(bx+6,by-3,7,4,'#8A5A3A');px(bx+5,by-4,9,1,'#6E4C2A');px(bx+12,by-7,1,5,'#C49A62');
     px(bx+19,by-5,6,6,'#D8B27A');px(bx+19,by-3,6,1,'#A98840');px(bx+19,by-1,6,1,'#A98840');px(bx+18,by-6,8,1,'#A98840');
     px(bx+29,by-3,5,3,'#6BBF5A');px(bx+30,by-4,2,1,'#3F8A4A');px(bx+36,by-2,2,1,'#E0604E');
     inUse('bar').forEach(s=>{px(s.x-2,by+4,5,2,P.mug);px(s.x-1,by+4,3,1,'#E9A04E');});}
@@ -599,11 +690,15 @@ function drawLounge(){
   else px(ax+3,ay+7,8,6,'#1B2A4A');
   px(ax+1,ay+15,12,4,P.cabHi);px(ax+3,ay+16,2,2,P.bad);px(ax+8,ay+16,2,2,P.cyan);px(ax+11,ay+16,1,2,P.warn);px(ax+1,ay+20,12,2,P.cabDk);
   const[sx,sy,sw,sh]=F.sofa;
-  if(isan){box(sx,sy,sw+2,sh,'#B8392F');for(let yy=sy+1;yy<sy+sh-1;yy+=2)for(let xx=sx+1;xx<sx+sw+1;xx+=2)px(xx,yy,2,2,((xx+yy)/2|0)%2?P.matA:P.matB);
+  if(south){ // hammock slung between two posts
+    px(sx+2,sy,3,4,'#6E4C2A');px(sx+2,sy+sh-4,3,4,'#6E4C2A');px(sx+3,sy+4,1,3,'#D8CCB0');px(sx+3,sy+sh-7,1,3,'#D8CCB0');
+    box(sx+1,sy+7,sw-1,sh-14,'#1F6A73');for(let yy=sy+9;yy<sy+sh-9;yy+=4)px(sx+2,yy,sw-3,1,'#F2B84B');px(sx+sw-1,sy+8,1,sh-16,'#F5EBD7');}
+  else if(isan){box(sx,sy,sw+2,sh,'#B8392F');for(let yy=sy+1;yy<sy+sh-1;yy+=2)for(let xx=sx+1;xx<sx+sw+1;xx+=2)px(xx,yy,2,2,((xx+yy)/2|0)%2?P.matA:P.matB);
     [sy+4,sy+sh-12].forEach(cy=>{px(sx+1,cy,3,8,'#C8413B');px(sx+4,cy+1,2,6,'#C8413B');px(sx+6,cy+2,2,4,'#C8413B');px(sx+1,cy+3,6,1,'#E9B949');});}
   else{box(sx,sy,sw,sh,P.sofaDk);box(sx+4,sy+2,sw-4,sh-4,P.sofa);px(sx+4,sy+sh/2,sw-4,1,P.sofaDk);}
   const[tx,ty,tw,th]=F.table;box(tx,ty,tw,th,P.table);
-  if(isan){px(tx+2,ty+2,4,4,'#D8B27A');px(tx+2,ty+3,4,1,'#A98840');px(tx+7,ty+3,3,2,'#E9A04E');}
+  if(south){px(tx+2,ty+2,4,4,'#C0C6CC');px(tx+1,ty+3,1,2,'#9AA3AB');px(tx+6,ty+3,1,1,'#C0C6CC');px(tx+8,ty+3,2,2,'#F5EBD7');px(tx+8,ty+3,2,1,'#C8742E');}
+  else if(isan){px(tx+2,ty+2,4,4,'#D8B27A');px(tx+2,ty+3,4,1,'#A98840');px(tx+7,ty+3,3,2,'#E9A04E');}
   else{px(tx+3,ty+2,3,3,P.mug);px(tx+2,ty+2,1,2,P.mug);}
   const[qx,qy]=F.tread,run=inUse('treadmill').length>0;
   box(qx,qy,14,36,P.machine);px(qx+2,qy+1,10,4,P.k0);px(qx+4,qy+2,6,2,run?P.scrOn:P.scrOff);
@@ -676,15 +771,23 @@ function walker(a){
   let f=Math.floor(a.walk)%2,bob=0,last=12;
   if(act==='treadmill')f=Math.floor(time*9)%2;
   if(T.lounge==='isan'&&!a.sub)rows[9]='.RBRBRB.';
+  if(T.lounge==='south'&&!a.sub)rows[9]='.TYTTYT.';
   if(moving||act==='treadmill'){if(f){rows[10]=".PP...P.";rows[11]=".KK...KK";}else{rows[10]=".P...PP.";rows[11]="KK...KK.";}if(!RM&&f)bob=1;}
   if(act==='arcade'&&!RM&&Math.floor(time*7)%2)rows[8]=".SCCCCS.";
   if(act==='weights'||act==='ring')rows[8]=".CCCCCC.";
   const map=mapOf(a);
   if(act==='ring'){rows[1]=".WWWWWW.";map.P=a.spot.dir>0?'#E24B4A':'#378ADD';if(!RM&&Math.floor(time*4+a.spot.dir)%2)bob=1;}
-  const x0=Math.round(a.x)-4;let y0=Math.round(a.y)-12-bob;
+  const pk=a.prank;let x0=Math.round(a.x)-4,y0=Math.round(a.y)-12-bob;
   if(act==='sofa'){last=10;y0+=1;}
+  if(pk&&pk.k==='trip'&&pk.t>0.4){ // lying flat after the trip, head to the left
+    const lx=Math.round(a.x)-6,ly=Math.round(a.y)-8;px(lx,Math.round(a.y),12,1,'rgba(0,0,0,0.25)');
+    for(let r=0;r<12;r++)for(let i=0;i<8;i++){const ch=FRONT[r][i];if(ch!=='.'){g.fillStyle=map[ch];g.fillRect(lx+r,ly+i,1,1);}}
+    a.bb=[lx,ly,12,8];bar(lx+1,ly-4,ctxOf(a));return;}
+  if(pk&&pk.k==='tickle'&&!RM)x0+=Math.floor(time*24)%2?1:-1;
+  if(pk&&pk.k==='boo')y0-=RM?2:Math.round(4*Math.abs(Math.sin((PRANK_S-pk.t)*7)));
   px(x0+1,Math.round(a.y),6,1,'rgba(0,0,0,0.25)');
   sprite(rows,x0,y0,map,0,last);a.bb=[x0,y0,8,last];
+  if(pk&&pk.k==='splash')for(let k=0;k<6;k++){const dy=RM?(k%3)*3:(time*30+k*5)%12;px(x0-2+k*2,Math.round(y0-3+dy),1,2,'#8EC9F0');}
   if(act==='ring'){const gl=a.spot.dir>0?'#E24B4A':'#378ADD',dir=a.spot.dir,jab=!RM&&Math.floor(time*3+(dir>0?0:1.5))%3===0?3:0;
     const fx=dir>0?x0+7+jab:x0-1-jab,bx2=dir>0?x0-1:x0+7;px(bx2,y0+6,2,2,gl);px(fx,y0+6,2,2,gl);}
   let barY=y0-4;
@@ -699,7 +802,9 @@ function drawWorld(){
   px(0,16,PW,2,P.trim);px(0,17,PW,1,P.k0);
   px(0,PH-4,PW,4,P.wall);px(d.g0,PH-4,d.g1-d.g0,4,P.rugEdge);px(d.g0,PH-4,d.g1-d.g0,1,P.cyan);
   const[bx,by,bw,bh]=L.board;box(bx,by,bw,bh,P.board);box(bx+1,by+1,bw-2,bh-2,P.k0);
-  const q=quotaPct();px(bx+4,by+9,bw-8,3,P.trim);if(q!=null)px(bx+4,by+9,Math.round((bw-8)*q/100),3,q<60?P.good:q<85?P.warn:P.bad);
+  // two meters: 5-hour on top, weekly below
+  const qcol=v=>v<60?P.good:v<85?P.warn:P.bad;
+  [[quotaPct(),by+9,2],[weekPct(),by+12,1]].forEach(([v,y,h])=>{px(bx+4,y,bw-8,h,P.trim);if(v!=null)px(bx+4,y,Math.round((bw-8)*v/100),h,qcol(v));});
   drawDecor();
   L.islands.forEach(isl=>drawRug(...isl.rug));
   drawLounge();drawPoker();drawRing();
@@ -724,8 +829,10 @@ function drawOverlay(){
   const fs=Math.max(11,Math.round(kc*5.2)),h=fs+8;
   c.font=`500 ${fs}px "Pixelify Sans","Chakra Petch",monospace`;
   const[bx,by,bw]=L.board,q=quotaPct(),live=[...S.values()].filter(a=>!a.sub&&!a.leave),work=live.filter(a=>a.want).length;
-  c.textAlign='left';label('โควตา 5 ชม.',bx+4,by+7.6,P.ink2);
-  c.textAlign='right';label((q==null?'-':q.toFixed(0)+'%')+'  '+T.txt.board+' '+work+'/'+live.length,bx+bw-4,by+7.6,P.cyan);
+  // the board flips between the 5-hour and weekly quota every 4 s (stays on 5 hours with reduced motion)
+  const wk=weekPct(),showWk=wk!=null&&!RM&&Math.floor(time/4)%2===1,qv=showWk?wk:q;
+  c.textAlign='left';label(showWk?'โควตาสัปดาห์':'โควตา 5 ชม.',bx+4,by+7.6,P.ink2);
+  c.textAlign='right';label((qv==null?'-':qv.toFixed(0)+'%')+'  '+T.txt.board+' '+work+'/'+live.length,bx+bw-4,by+7.6,P.cyan);
   c.textAlign='center';L.labels.forEach(([k,x,y])=>label(T.labels[k],x,y,P.ink3));
   const[tx,ty,tw,th]=L.poker.table;
   S.forEach(a=>{
@@ -733,7 +840,8 @@ function drawOverlay(){
     if(seatedWorking(a)){const w=workText(a),s=a.seat,col=w.warn?P.warn:P.cyan;
       if(s.row===0)bubble(w.t,a.x*kc,(s.D0-15)*kc-h-2,col,fs,true);else bubble(w.t,a.x*kc,(s.D0+2*L.DH+18)*kc,col,fs,false);return;}
     c.textAlign='center';label(String(a.label||'').slice(0,12),a.x,a.y+1+fs/kc,P.ink2);
-    if(a.state==='working'&&a.standing&&!a.path.length){const w=workText(a);bubble(w.t,a.x*kc,(a.y-18)*kc-h-2,w.warn?P.warn:P.cyan,fs,true);}
+    if(a.prank)bubble(a.prank.say,a.x*kc,(a.y-18)*kc-h-2,P.warn,fs,true);
+    else if(a.state==='working'&&a.standing&&!a.path.length){const w=workText(a);bubble(w.t,a.x*kc,(a.y-18)*kc-h-2,w.warn?P.warn:P.cyan,fs,true);}
     else if(atRing(a)&&a.pkMsg)bubble(a.pkMsg,a.x*kc,(a.y-18)*kc-h-2,P.bad,fs,true);
   });
   if(!S.size){c.textAlign='center';const cx=L.PW*kc/2,cy=(L.portrait?118:112)*kc;
@@ -744,10 +852,13 @@ function drawOverlay(){
 // ── UI ──
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
 function fmtK(n){return n>=1000?(n/1000).toFixed(1)+'k':String(n);}
-function quotaPct(){const f=snap.rate&&snap.rate.five_hour;return f&&typeof f.used_percentage==='number'?f.used_percentage:null;}
+function limitPct(k){const f=snap.rate&&snap.rate[k];return f&&typeof f.used_percentage==='number'?f.used_percentage:null;}
+function quotaPct(){return limitPct('five_hour');}
+function weekPct(){return limitPct('seven_day');}
 function nowText(a){
   const d=a.data||{};
   if(a.leave)return 'ปิด session แล้ว';
+  if(a.prank)return 'โดนแกล้ง ร้อง '+a.prank.say;
   if(a.sub)return d.tool?d.tool.name+(d.tool.detail?' '+d.tool.detail:''):'ช่วยงาน '+(d.parent?d.parent.name:'');
   if(d.perm)return 'รออนุญาต: '+d.perm.name+(d.perm.detail?' '+d.perm.detail:'');
   if(d.state==='working')return (d.tool?d.tool.name+(d.tool.detail?' '+d.tool.detail:''):'กำลังคิด: '+(d.prompt||''))+(d.queue?` · คิว ${d.queue}`:'');
@@ -758,12 +869,58 @@ function nowText(a){
 }
 function stateOf(a){const d=a.data||{};if(a.leave)return{t:'กลับบ้าน',c:''};if(!a.sub&&d.perm)return{t:'รออนุญาต',c:' wait'};if(a.want)return{t:T.txt.busy,c:' on'};if(d.owned&&d.queue)return{t:'รอคิว',c:''};return d.asleep?{t:'หลับอยู่',c:''}:{t:'ว่าง',c:''};}
 function cmdable(a){return CAN_CMD&&!a.sub&&a.data&&a.data.owned;}
+const PRANKS=[
+  {k:'trip',label:'ขัดขา',tip:'สะดุดล้ม แล้วลุกขึ้นเดินต่อ',say:'โอ๊ย!'},
+  {k:'tickle',label:'จั๊กจี้',tip:'ตัวสั่นหัวเราะอยู่พักหนึ่ง',say:'ฮ่า ๆ ๆ'},
+  {k:'splash',label:'สาดน้ำ',tip:'เปียกทั้งตัว ร้องว่าเย็น',say:'เย็น!'},
+  {k:'boo',label:'หลอกผี',tip:'สะดุ้งกระโดดตกใจ',say:'แว้ก!'}
+];
+const PRANK_S=1.8;
+let prankFor=null;
+function prankable(a){return !!a&&!a.want&&!a.leave&&!a.gone&&!seatedWorking(a)&&!atPoker(a)&&!(a.data&&a.data.perm);}
+function closePrank(){prankFor=null;const p=$('prank');if(p)p.hidden=true;}
+function openPrank(a,cx,cy){
+  prankFor=a;const p=$('prank'),r=stage.getBoundingClientRect();
+  $('pk-t').textContent='แกล้ง '+a.name;
+  $('pk-list').innerHTML=PRANKS.map(x=>`<button type="button" class="notch" data-p="${x.k}">${x.label}<small>${x.tip}</small></button>`).join('')
+    +'<button type="button" class="notch" data-p="">ดูรายละเอียด<small>เปิดแผงของตัวนี้</small></button>';
+  p.hidden=false;
+  const w=p.offsetWidth,h=p.offsetHeight;
+  p.style.left=Math.max(4,Math.min(cx-r.left+8,r.width-w-4))+'px';
+  p.style.top=Math.max(4,Math.min(cy-r.top+8,r.height-h-4))+'px';
+  const first=p.querySelector('button');if(first)first.focus({preventScroll:true});
+}
+// Quick action on a card: stop an office agent's run, or take a quiet watched session out of the office
+function cardAct(a){
+  if(!CAN_CMD||a.sub||a.leave||!a.data)return null;const d=a.data;
+  if(d.owned)return d.state==='working'||d.queue?'stop':null;
+  return d.state==='working'?null:'dismiss';
+}
+function dismissPath(a){return `/api/sessions/${encodeURIComponent(a.data.id)}/dismiss`;}
+// Two-step confirm like "ลบ agent": the first press arms the button for 4 s, the second press does it
+const ARM_MS=4000;
+function confirmed(btn){
+  if(Date.now()-(+btn.dataset.arm||0)<ARM_MS){delete btn.dataset.arm;return true;}
+  btn.dataset.arm=String(Date.now());if(!btn.dataset.label)btn.dataset.label=btn.textContent;btn.textContent='กดอีกครั้งเพื่อยืนยัน';
+  setTimeout(()=>{if(btn.dataset.arm&&Date.now()-(+btn.dataset.arm)>=ARM_MS){delete btn.dataset.arm;btn.textContent=btn.dataset.label;}},ARM_MS+50);
+  return false;
+}
+function isArmed(btn){return Date.now()-(+btn.dataset.arm||0)<ARM_MS;}
+async function cardDo(a,btn){
+  const k=btn.dataset.k;if(!k||btn.dataset.busy)return;
+  btn.dataset.label=k==='stop'?'หยุด':'เอาออก';if(!confirmed(btn))return;btn.dataset.busy='1';
+  try{await api(k==='stop'?`/api/agents/${a.data.agentId}/stop`:dismissPath(a));}
+  catch(e){btn.textContent='ทำไม่สำเร็จ';btn.title=e.message;setTimeout(()=>{btn.title='';ui();},1800);}
+  finally{delete btn.dataset.busy;}
+}
 function ctxText(d){if(!d||!d.ctx)return '-';return (d.ctx.exact?'':'≈')+d.ctx.pct+'%';}
 function ui(){
   const live=[...S.values()].filter(a=>!a.sub&&!a.leave),ctxs=live.map(a=>a.data&&a.data.ctx&&a.data.ctx.pct).filter(v=>typeof v==='number');
   $('s-work').textContent=live.filter(a=>a.want).length+'/'+live.length;
   $('s-ctx').textContent=ctxs.length?Math.round(ctxs.reduce((s,v)=>s+v,0)/ctxs.length)+'%':'-';
   const q=quotaPct();$('s-quota').textContent=q==null?'-':q.toFixed(1)+'%';$('s-quota-h').hidden=q!=null;
+  const wk=weekPct();$('s-week').textContent=wk==null?'-':wk.toFixed(1)+'%';$('s-week-h').hidden=wk!=null;
+  $('quick').hidden=!CAN_CMD||!connected;
   const stt=$('status');stt.classList.toggle('on',connected);
   $('status-t').textContent=connected?`เชื่อมต่อแล้ว · ${live.length} session`:T.txt.down;
   const ul=$('roster');
@@ -774,10 +931,11 @@ function ui(){
   list.forEach((a,idx)=>{
     let li=rosterEls.get(a.key);
     if(!li){li=document.createElement('li');li.className='notch';
-      li.innerHTML='<div class="rh"><span class="dot"></span><span class="nm"></span><span class="role"></span><span class="pill"></span></div><p class="where"></p><div class="rf"><span class="now"></span><span class="seg"></span><span class="pct"></span></div><div class="ra"><button type="button" class="notch">ดูรายละเอียด</button></div>';
-      li.querySelector('button').addEventListener('click',()=>openSheet(a,true));
+      li.innerHTML='<div class="rh"><span class="dot"></span><span class="nm"></span><span class="role"></span><span class="pill"></span></div><p class="where"></p><div class="rf"><span class="now"></span><span class="seg"></span><span class="pct"></span></div><div class="ra"><button type="button" class="notch x2" hidden></button><button type="button" class="notch main">ดูรายละเอียด</button></div>';
+      li.querySelector('.main').addEventListener('click',()=>openSheet(a,true));
+      const x2=li.querySelector('.x2');x2.addEventListener('click',()=>cardDo(a,x2));
       li.querySelector('.dot').style.background=a.shirt;
-      if(cmdable(a))li.querySelector('button').textContent='สั่งงาน';
+      if(cmdable(a))li.querySelector('.main').textContent='สั่งงาน';
       rosterEls.set(a.key,li);}
     if(ul.children[idx]!==li)ul.insertBefore(li,ul.children[idx]||null);
     const d=a.data||{},st=stateOf(a);
@@ -789,6 +947,10 @@ function ui(){
     const p=a.sub||!d.ctx?null:d.ctx.pct,n=p==null?0:Math.round(p/10),col=p==null?'':p>50?'var(--good)':p>25?'var(--warn)':'var(--bad)';
     let seg='';for(let k=0;k<10;k++)seg+=`<i${k<n?` style="background:${col}"`:''}></i>`;
     li.querySelector('.seg').innerHTML=seg;li.querySelector('.pct').textContent=a.sub?'':ctxText(d);
+    const x2=li.querySelector('.x2'),k=cardAct(a);
+    if(isArmed(x2)&&x2.dataset.k!==(k||''))delete x2.dataset.arm; // state changed under a pending confirm: drop it
+    if(!x2.dataset.busy&&!x2.title&&!isArmed(x2)){x2.hidden=!k;x2.dataset.k=k||'';
+      if(k){x2.textContent=k==='stop'?'หยุด':'เอาออก';x2.setAttribute('aria-label',k==='stop'?`หยุดงานของ ${a.name} และล้างคิว`:`เอา ${a.name} ออกจากออฟฟิศ`);}}
   });
   rosterEls.forEach((li,k)=>{if(!S.has(k)){li.remove();rosterEls.delete(k);}});
   const waiting=[...S.values()].filter(x=>cmdable(x)&&x.data.perm);
@@ -810,7 +972,8 @@ function readForm(){return{name:$('f-name').value.trim(),role:$('f-role').value.
 function formMsg(t,bad){const m=$('f-msg');m.textContent=t;m.className='saved'+(bad?' bad':'');m.hidden=!t;}
 function showErr(t){const e=$('sh-err');e.textContent=t||'';e.hidden=!t;}
 function openSheet(a,focus){
-  sheetMode='view';sel=a;delArm=0;$('sheet').hidden=false;showErr('');formMsg('');
+  sheetMode='view';sel=a;delArm=0;$('sheet').hidden=false;showErr('');formMsg('');closePrank();
+  ['sh-stop','sh-dismiss'].forEach(id=>{const b=$(id);if(b.dataset.arm){delete b.dataset.arm;b.textContent=b.dataset.label;}});
   const d=a.data||{};
   if(cmdable(a)){fillForm(Object.assign({name:d.name,role:d.role,cwd:d.cwd},d.cfg||{}));$('sh-input').value='';}
   $('f-preset-w').hidden=true;$('f-save').textContent='บันทึก';$('f-new').hidden=false;$('f-del').hidden=false;$('f-del').textContent='ลบ agent';
@@ -822,7 +985,7 @@ function openCreate(){
   sheetMode='create';sel=null;$('sheet').hidden=false;showErr('');formMsg('');
   $('sh-dot').style.background=P.warn;$('sh-name').textContent='agent ใหม่';$('sh-role').textContent='';$('sh-state').textContent='';$('sh-state').className='';
   $('sh-meta').innerHTML='<span>ตั้งชื่อ เลือกโฟลเดอร์ แล้วใส่คำสั่งประจำตัว agent จะเข้ามาอยู่ในออฟฟิศถาวร</span>';
-  ['sh-perm','sh-view','sh-form','sh-watch'].forEach(id=>$(id).hidden=true);
+  ['sh-perm','sh-view','sh-form','sh-watch','sh-wact'].forEach(id=>$(id).hidden=true);
   $('sh-set').hidden=false;$('sh-set').open=true;$('sh-set-sum').textContent='ข้อมูล agent';
   $('f-preset-w').hidden=false;$('f-save').textContent='สร้าง agent';$('f-new').hidden=true;$('f-del').hidden=true;
   const p=PRESETS[0];$('f-preset').value='0';fillForm({name:'',role:p.role,cwd:'',prompt:p.prompt,allowedTools:p.tools,permMode:'default',model:''});
@@ -840,8 +1003,9 @@ function renderSheet(full){
   $('sh-stop').hidden=!(d.state==='working'||d.queue);
   const w=$('sh-watch');
   if(!cmd){w.hidden=false;w.textContent=a.sub?'subagent ถูกเรียกโดย '+(d.parent?d.parent.name:'agent หลัก')+' ทำเสร็จแล้วจะส่งผลกลับไปเอง สั่งตรงไม่ได้'
-    :d.owned?'ดูจากเครื่องอื่นอยู่ สั่งงานได้เฉพาะบนคอมที่รัน bridge':'session นี้เปิดจาก terminal หรือแอป ออฟฟิศเลยดูได้อย่างเดียว ถ้าจะสั่งงานให้พิมพ์ในหน้าต่างนั้น';}
+    :d.owned?'ดูจากเครื่องอื่นอยู่ สั่งงานได้เฉพาะบนคอมที่รัน bridge':'session นี้เปิดจาก terminal หรือแอป ออฟฟิศเลยดูได้อย่างเดียว ถ้าจะสั่งงานให้พิมพ์ในหน้าต่างนั้น ถ้าปิดหน้าต่างไปแล้วแต่ยังค้างอยู่ในห้อง กดเอาออกได้ (ถ้ายังทำงานอยู่จะกลับเข้ามาเองเมื่อมีความเคลื่อนไหว)';}
   else w.hidden=true;
+  $('sh-wact').hidden=cardAct(a)!=='dismiss'||a.gone;
   $('sh-dot').style.background=a.shirt;$('sh-name').textContent=a.name;
   const rl=$('sh-role');rl.textContent=a.sub?'subagent':(d.role||d.project||'Claude');rl.style.background=a.shirt;
   const pl=$('sh-state');pl.textContent=a.gone?'ออกไปแล้ว':st.t;pl.className='pill'+st.c;
@@ -860,14 +1024,16 @@ function renderSheet(full){
 $('sh-close').addEventListener('click',closeSheet);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sheet').hidden)closeSheet();});
 $('f-preset').innerHTML=PRESETS.map((p,i)=>`<option value="${i}">${esc(p.role)}</option>`).join('');
-$('f-preset').addEventListener('change',()=>{const p=PRESETS[+$('f-preset').value];const f=readForm();fillForm(Object.assign(f,{role:p.role,prompt:p.prompt,allowedTools:p.tools}));});
+$('f-preset').addEventListener('change',()=>{const p=PRESETS[+$('f-preset').value];const f=readForm();
+  fillForm(Object.assign(f,{role:p.role,prompt:p.prompt,allowedTools:p.tools,model:p.model||'',permMode:p.permMode||'default'}));});
 $('f-tools').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true');});
 $('b-add').addEventListener('click',openCreate);
 $('b-perm').addEventListener('click',()=>{const a=[...S.values()].find(x=>cmdable(x)&&x.data.perm);if(a)openSheet(a,false);});
 async function act(fn){try{showErr('');await fn();}catch(e){showErr(e.message);}}
 $('sh-allow').addEventListener('click',()=>act(()=>api(`/api/agents/${sel.data.agentId}/permission`,{allow:true,id:sel.data.perm&&sel.data.perm.key})));
 $('sh-deny').addEventListener('click',()=>act(()=>api(`/api/agents/${sel.data.agentId}/permission`,{allow:false,id:sel.data.perm&&sel.data.perm.key})));
-$('sh-stop').addEventListener('click',()=>act(()=>api(`/api/agents/${sel.data.agentId}/stop`)));
+$('sh-stop').addEventListener('click',()=>{if(sel&&confirmed($('sh-stop')))act(()=>api(`/api/agents/${sel.data.agentId}/stop`));});
+$('sh-dismiss').addEventListener('click',()=>{if(sel&&confirmed($('sh-dismiss')))act(async()=>{await api(dismissPath(sel));closeSheet();});});
 $('sh-input').addEventListener('input',()=>showErr(''));
 $('sh-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();$('sh-form').requestSubmit();}});
 $('sh-form').addEventListener('submit',e=>{
@@ -893,7 +1059,8 @@ cv.addEventListener('click',e=>{
   const r=cv.getBoundingClientRect(),wx=(e.clientX-r.left)/r.width*L.PW,wy=(e.clientY-r.top)/r.height*L.PH;
   let best=null,bd=Infinity;
   S.forEach(a=>{if(!a.bb)return;const[x,y,w,h]=a.bb;if(wx>=x-4&&wx<=x+w+4&&wy>=y-6&&wy<=y+h+4){const dd=Math.hypot(wx-(x+w/2),wy-(y+h/2));if(dd<bd){bd=dd;best=a;}}});
-  if(best)openSheet(best);
+  if(best&&prankable(best))openPrank(best,e.clientX,e.clientY);
+  else{closePrank();if(best)openSheet(best);}
 });
 
 // ── LIVE DATA ──
@@ -920,19 +1087,39 @@ function fit(){
   cv.width=Math.round(s*L.PW);cv.height=Math.round(s*L.PH);
   cv.style.width=(cv.width/dpr)+'px';cv.style.height=(cv.height/dpr)+'px';kc=s/dpr;
 }
-// ── APP ── installable like อีสาน DevTools: service worker + install button
+// ── APP ── installable like อีสาน DevTools: service worker + an install chip that shows only when the browser offers it
 let installEvt=null;
-const standalone=window.matchMedia&&matchMedia('(display-mode: standalone)').matches;
-if(standalone){$('app-on').hidden=false;$('app-hint').textContent='ตอนนี้เปิดเป็นแอปอยู่แล้ว ปักหมุดไว้ที่ taskbar ได้เลย';}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('b-install').hidden=false;});
-window.addEventListener('appinstalled',()=>{installEvt=null;$('b-install').hidden=true;$('app-on').hidden=false;});
+window.addEventListener('appinstalled',()=>{installEvt=null;$('b-install').hidden=true;});
 $('b-install').addEventListener('click',async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice;}catch(e){}installEvt=null;$('b-install').hidden=true;});
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('/sw.js').catch(()=>{});
-document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{
-  const t=b.dataset.copy;let ok=false;
-  try{await navigator.clipboard.writeText(t);ok=true;}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{ok=document.execCommand('copy');}catch(err){}ta.remove();}
-  const old=b.textContent;b.textContent=ok?'คัดลอกแล้ว':'คัดลอกไม่ได้';setTimeout(()=>{b.textContent=old;},1500);
-}));
+
+// ── FOLDS ── "how to use" and the legend start closed; the browser remembers what you opened
+document.querySelectorAll('details.fold').forEach(d=>{
+  const k='esan-office-fold-'+d.dataset.fold;
+  try{d.open=localStorage.getItem(k)==='1';}catch(e){}
+  d.addEventListener('toggle',()=>{try{localStorage.setItem(k,d.open?'1':'0');}catch(e){}});
+});
+
+// ── QUICK ASK ── one-line questions go to the bridge's Easy Research agent (Haiku, fresh conversation each time)
+$('quick').addEventListener('submit',async e=>{
+  e.preventDefault();const t=$('q-in').value.trim(),m=$('q-msg');
+  if(!t){m.textContent='พิมพ์คำถามก่อน แล้วค่อยกดถาม';m.className='q-msg bad';$('q-in').focus();return;}
+  try{
+    const r=await api('/api/easy',{text:t});$('q-in').value='';m.className='q-msg';
+    m.textContent=r.status==='queued'?'รับแล้ว ต่อคิวไว้ คำตอบจะขึ้นในแผงของ Easy Research':'ส่งแล้ว กำลังหาคำตอบ ดูได้ในแผงของ Easy Research';
+    const key='office:'+r.id;if(S.has(key))openSheet(S.get(key),false);else pendingOpen=key;
+  }catch(err){m.textContent=err.message;m.className='q-msg bad';}
+});
+
+// ── PRANKS ── purely visual and only on this page: tap an idle agent and pick one. Working agents are never touched.
+$('pk-list').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||!prankFor)return;const a=prankFor,k=b.dataset.p;closePrank();
+  if(!k){openSheet(a);return;}
+  const p=PRANKS.find(x=>x.k===k);if(p&&prankable(a))a.prank={k,t:PRANK_S,say:p.say};
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('prank').hidden)closePrank();});
+document.addEventListener('click',e=>{if(!$('prank').hidden&&!e.target.closest('#prank')&&e.target!==cv)closePrank();});
 
 setTheme(themeKey);
 fit();
