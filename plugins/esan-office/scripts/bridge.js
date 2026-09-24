@@ -9,7 +9,7 @@ const os = require('os');
 const crypto = require('crypto');
 const { spawn, spawnSync } = require('child_process');
 
-const VERSION = '0.3.1';
+const VERSION = '0.4.0';
 const PORT = Number(process.env.ESAN_OFFICE_PORT) || 4567;
 const LAN = process.env.ESAN_OFFICE_LAN === '1';
 const MAX_RUNNING = Math.max(1, Number(process.env.ESAN_OFFICE_MAX) || 3);
@@ -299,6 +299,33 @@ function createAgent(input) {
   return { id: a.id };
 }
 function runningCount() { let n = 0; for (const rt of runtime.values()) if (rt.child) n++; return n; }
+
+// ── EASY RESEARCH ── the quick-ask box: one cheap, read-only agent, created on first use in its own data folder
+const EASY = {
+  name: 'Easy Research', role: 'Easy Research', model: 'haiku', permMode: 'dontAsk',
+  allowedTools: ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch'],
+  prompt: 'คุณคือผู้ช่วยค้นข้อมูลแบบเร็ว ตอบคำถามสั้น ๆ เป็นภาษาไทยอ่านง่าย ไม่เกิน 6 บรรทัด ถ้าค้นจากเว็บให้แนบลิงก์ที่มา ห้ามแก้ไฟล์',
+};
+function easyAgent() {
+  const found = agents.find((x) => x.easy);
+  if (found) return found;
+  const cwd = path.join(DATA, 'easy-research');
+  fs.mkdirSync(cwd, { recursive: true });
+  const r = createAgent(Object.assign({ cwd }, EASY));
+  if (r.error) return null;
+  const a = agents.find((x) => x.id === r.id);
+  a.easy = true;
+  saveAgents();
+  return a;
+}
+function askEasy(text) {
+  const a = easyAgent();
+  if (!a) return null;
+  const rt = runtime.get(a.id);
+  // every quick question starts a fresh conversation so the context (and the bill) stays small
+  if (!rt.child && !rt.queue.length && a.sessionId) { ownedSids.add(a.sessionId); a.sessionId = null; a.started = false; rt.ctx = null; saveAgents(); }
+  return { id: a.id, status: submitPrompt(a, text) };
+}
 
 // Windows: npm installs `claude` as a .cmd shim, which spawn() can't run without a shell (ENOENT / EINVAL),
 // so go through cmd.exe there and quote the arguments ourselves.
@@ -593,6 +620,21 @@ async function handleAgentApi(req, res, url) {
   if (!isLocal(req) || req.headers['x-esan-token'] !== TOKEN) return json(res, 403, { error: 'สั่งงานได้เฉพาะจากหน้าออฟฟิศบนเครื่องนี้' });
   let body = {};
   try { body = JSON.parse((await readBody(req, 256 * 1024)) || '{}'); } catch { return json(res, 400, { error: 'ข้อมูลไม่ถูกต้อง' }); }
+  // Take a watched session out of the office (e.g. a closed terminal that never sent SessionEnd).
+  // It walks back in on its next hook event if it is still alive.
+  const sm = url.pathname.match(/^\/api\/sessions\/([\w-]+)\/dismiss$/);
+  if (sm) {
+    if (!sessions.delete(sm[1])) return json(res, 404, { error: 'ไม่เจอ session นี้ อาจออกจากออฟฟิศไปแล้ว' });
+    changed();
+    return json(res, 200, { ok: true });
+  }
+  if (url.pathname === '/api/easy') {
+    const text = String(body.text || '').trim();
+    if (!text) return json(res, 400, { error: 'พิมพ์คำถามก่อน' });
+    if (text.length > 2000) return json(res, 400, { error: 'คำถามยาวเกิน 2,000 ตัวอักษร ใช้ agent ประจำออฟฟิศแทน' });
+    const r = askEasy(text);
+    return r ? json(res, 200, r) : json(res, 500, { error: 'สร้าง Easy Research ไม่ได้ ดู bridge.log' });
+  }
   if (url.pathname === '/api/agents') {
     const r = createAgent(body);
     return json(res, r.error ? 400 : 200, r);
@@ -661,7 +703,7 @@ const server = http.createServer(async (req, res) => {
       // PermissionRequest from a watched session is never held: the user's own dialog must not be delayed
       return send(res, 200, 'application/json', '{}');
     }
-    if (req.method === 'POST' && url.pathname.startsWith('/api/agents')) return handleAgentApi(req, res, url);
+    if (req.method === 'POST' && (url.pathname.startsWith('/api/agents') || url.pathname.startsWith('/api/sessions/') || url.pathname === '/api/easy')) return handleAgentApi(req, res, url);
     if (req.method !== 'GET') return send(res, 405, 'text/plain', 'Method not allowed');
     if (url.pathname === '/api/ping') return json(res, 200, { app: 'esan-office', version: VERSION });
     if (url.pathname === '/api/state') return json(res, 200, snapshot());

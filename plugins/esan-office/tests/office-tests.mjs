@@ -3,6 +3,7 @@
 //   ESAN_OFFICE_PERM_WAIT_MS=8000 ESAN_OFFICE_MAX=1 ESAN_OFFICE_LAN=1 ESAN_OFFICE_PLUGIN_DIR=<this plugin folder> node scripts/bridge.js
 // Then: node tests/office-tests.mjs            (full run, spends a little quota on Haiku)
 //       ONLY_FREE=1 node tests/office-tests.mjs (fake events and API checks only, no tokens)
+// Set ESAN_OFFICE_PORT (and ESAN_OFFICE_DATA) for both commands to test a second bridge next to the one you use.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -11,7 +12,8 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const WORK = path.join(os.tmpdir(), 'esan-office-tests');
-const BASE = 'http://127.0.0.1:4567';
+const PORT = Number(process.env.ESAN_OFFICE_PORT) || 4567;
+const BASE = `http://127.0.0.1:${PORT}`;
 const DATA = process.env.ESAN_OFFICE_DATA || path.join(os.homedir(), '.esan-office');
 const TOKEN = fs.readFileSync(path.join(DATA, 'token'), 'utf8').trim();
 const AGENTS_FILE = path.join(DATA, 'agents.json');
@@ -45,10 +47,10 @@ console.log('── ไม่กิน token ──');
 }
 {
   await post('/status', { session_id: 'w-1', model: { id: 'claude-opus-5-5' }, context_window: { remaining_percentage: 61.2, context_window_size: 200000 },
-    rate_limits: { five_hour: { used_percentage: 33.3, resets_at: 1 } } }, { 'X-Esan-Hook': '1' });
+    rate_limits: { five_hour: { used_percentage: 33.3, resets_at: 1 }, seven_day: { used_percentage: 12.5, resets_at: 2 } } }, { 'X-Esan-Hook': '1' });
   await sleep(300);
   const st = await state(), s = st.sessions.find((x) => x.id === 'w-1');
-  check('statusline ส่ง context แบบค่าจริงและโควตา 5 ชม.', s.ctx && s.ctx.exact && s.ctx.pct === 61 && st.rate && st.rate.five_hour.used_percentage === 33.3);
+  check('statusline ส่ง context แบบค่าจริงและโควตา 5 ชม. กับรายสัปดาห์', s.ctx && s.ctx.exact && s.ctx.pct === 61 && st.rate && st.rate.five_hour.used_percentage === 33.3 && st.rate.seven_day.used_percentage === 12.5);
 }
 {
   const out = await new Promise((resolve) => {
@@ -64,7 +66,7 @@ console.log('── ไม่กิน token ──');
   // fetch() can't override Host, so use a raw http request like a rebinding page would produce
   const http = await import('node:http');
   const code = await new Promise((resolve) => {
-    const q = http.request({ host: '127.0.0.1', port: 4567, path: '/api/state', headers: { Host: 'evil.test:4567' } }, (r) => { r.resume(); resolve(r.statusCode); });
+    const q = http.request({ host: '127.0.0.1', port: PORT, path: '/api/state', headers: { Host: `evil.test:${PORT}` } }, (r) => { r.resume(); resolve(r.statusCode); });
     q.on('error', () => resolve(0)); q.end();
   });
   check('Host แปลกปลอม (DNS rebinding) ถูกปฏิเสธ', code === 403, `HTTP ${code}`);
@@ -73,10 +75,10 @@ console.log('── ไม่กิน token ──');
   const noTok = await post('/api/agents', { name: 'x' });
   check('สั่งงานโดยไม่มี token ถูกปฏิเสธ', noTok.status === 403);
 }
-const lanUp = LAN_IP && await fetch(`http://${LAN_IP}:4567/api/ping`).then(() => true, () => false);
+const lanUp = LAN_IP && await fetch(`http://${LAN_IP}:${PORT}/api/ping`).then(() => true, () => false);
 if (!lanUp) console.log('SKIP  LAN: bridge ไม่ได้เปิดด้วย ESAN_OFFICE_LAN=1 หรือไม่เจอ IP ในวง LAN');
 else {
-  const lan = `http://${LAN_IP}:4567`;
+  const lan = `http://${LAN_IP}:${PORT}`;
   const page = await (await fetch(lan + '/')).text();
   check('เปิดจาก IP ในวง LAN ได้หน้าออฟฟิศแบบไม่มี token', page.includes("const TOKEN=''") && !page.includes(TOKEN));
   const st = await fetch(lan + '/api/state');
@@ -93,6 +95,23 @@ const dirA = mkdir('t-a'), dirB = mkdir('t-b');
   check('สร้าง agent ด้วยโฟลเดอร์ที่ไม่มีอยู่ ขึ้น error ภาษาไทย', r1.status === 400 && /โฟลเดอร์/.test(r1.body.error));
   const r2 = await api('/api/agents', { name: '', cwd: dirA });
   check('สร้าง agent ไม่ใส่ชื่อ ขึ้น error', r2.status === 400 && /ชื่อ/.test(r2.body.error));
+}
+{
+  await hook({ hook_event_name: 'SessionStart', session_id: 'w-3', cwd: 'D:/work/stale', source: 'startup' });
+  const noTok = await post('/api/sessions/w-3/dismiss', {});
+  const ok = await api('/api/sessions/w-3/dismiss', {});
+  const gone = !(await state()).sessions.some((x) => x.id === 'w-3');
+  const again = await api('/api/sessions/w-3/dismiss', {});
+  check('เอา session ที่ค้างออกจากออฟฟิศ (ต้องมี token, ไม่เจอตอบ 404)', noTok.status === 403 && ok.status === 200 && gone && again.status === 404);
+  await hook({ hook_event_name: 'UserPromptSubmit', session_id: 'w-3', cwd: 'D:/work/stale', prompt: 'ยังอยู่' });
+  check('session ที่ถูกเอาออกกลับมาเองเมื่อมีเหตุการณ์ใหม่', (await state()).sessions.some((x) => x.id === 'w-3'));
+  await hook({ hook_event_name: 'SessionEnd', session_id: 'w-3' });
+}
+{
+  const empty = await api('/api/easy', { text: '  ' });
+  const long = await api('/api/easy', { text: 'ก'.repeat(2001) });
+  const noTok = await post('/api/easy', { text: 'x' });
+  check('ถามด่วน: คำถามว่าง ยาวเกิน และไม่มี token ถูกปฏิเสธ', empty.status === 400 && long.status === 400 && noTok.status === 403);
 }
 if (process.env.ONLY_FREE) {
   for (const id of ['w-1', 'w-2']) await hook({ hook_event_name: 'SessionEnd', session_id: id });
