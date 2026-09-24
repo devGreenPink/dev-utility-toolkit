@@ -1345,6 +1345,23 @@
       color: var(--accent);
       background: var(--accent-glow);
     }
+    .copy-tip {
+      position: fixed;
+      z-index: 9999;
+      padding: 8px 14px;
+      font-size: .95rem;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 6px 20px rgba(0,0,0,.4);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .12s;
+    }
+    .copy-tip.show { opacity: 1; }
     .mock-field-value.mono-sm {
       font-family: var(--mono);
     }
