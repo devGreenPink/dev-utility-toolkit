@@ -136,7 +136,7 @@ plugin ตั้ง status line ให้เองไม่ได้ ให้�
 | `ESAN_OFFICE_MAX` | `3` | จำนวน agent ประจำออฟฟิศที่ทำงานพร้อมกันได้ |
 | `ESAN_OFFICE_DATA` | `~/.esan-office` | โฟลเดอร์เก็บข้อมูล |
 | `ESAN_OFFICE_PERM_WAIT_MS` | `240000` | รอคำตอบคำขออนุญาตนานเท่าไรก่อนปฏิเสธเอง |
-| `ESAN_CLAUDE_BIN` | `claude` | path ของโปรแกรม claude ถ้าไม่ได้อยู่ใน PATH |
+| `ESAN_CLAUDE_BIN` | `claude` | path ของโปรแกรม claude ถ้าไม่ได้อยู่ใน PATH (บน Windows ใช้ได้ทั้ง `claude.exe` และ `claude.cmd` ที่ npm ติดตั้ง) |
 | `ESAN_OFFICE_PLUGIN_DIR` | ว่าง | ใช้ตอนทดสอบเท่านั้น: โหลด plugin เข้าไปในงานของ agent ประจำออฟฟิศ |
 
 ### หน้าที่ของ session ที่เปิดเอง (`roles.json`)
@@ -313,13 +313,14 @@ claude plugin validate .
 | Claude Code ขึ้น `hook error` | bridge ไม่ได้รัน | เปิด session ใหม่ (bridge จะเปิดเอง) หรือรัน `node scripts/bridge.js` แล้วดู `~/.esan-office/bridge.log` |
 | หน้าเว็บขึ้น "ต่อ bridge ไม่ได้" | bridge ปิดอยู่ | เปิด bridge หน้าเว็บจะต่อใหม่เอง |
 | ไม่มีปุ่ม "เพิ่ม agent" | เปิดจากเครื่องอื่น หรือยังต่อ bridge ไม่ได้ | เปิด <http://localhost:4567> บนคอมที่รัน bridge |
-| agent ขึ้น "หาโปรแกรม claude ไม่เจอ" | `claude` ไม่อยู่ใน PATH ของ bridge | ตั้ง `ESAN_CLAUDE_BIN` เป็น path เต็มของ claude |
+| agent ขึ้น "หาโปรแกรม claude ไม่เจอ" | `claude` ไม่อยู่ใน PATH ของ bridge หรือใช้ bridge เวอร์ชันก่อน 0.3.1 บน Windows ที่ลง claude ผ่าน npm | อัปเดต plugin เป็น 0.3.1 ขึ้นไป หรือตั้ง `ESAN_CLAUDE_BIN` เป็น path เต็มของ claude |
 | สร้าง agent ไม่ได้ "หาโฟลเดอร์ทำงานไม่เจอ" | path ไม่ครบหรือพิมพ์ผิด | ใส่ path เต็มของโฟลเดอร์ที่มีอยู่จริง |
 | port 4567 ชน | มีโปรแกรมอื่นใช้อยู่ | ปิดโปรแกรมนั้น หรือเปลี่ยน `ESAN_OFFICE_PORT` และ url ใน `hooks/hooks.json` |
 | จอโควตาว่าง | ยังไม่ได้ตั้ง statusline หรือไม่ใช่ Pro/Max | ดูหัวข้อ context กับโควตาแบบตัวเลขจริง |
 
 ## เวอร์ชัน
 
+- **0.3.1** แก้ agent ประจำออฟฟิศเปิด `claude` ไม่ได้บน Windows ที่ลงผ่าน npm (`claude.cmd`): รันผ่าน `cmd.exe` และตอนสั่งหยุดปิดทั้ง process tree ด้วย `taskkill`
 - **0.3.0** เพิ่มธีม CDG (CDG AI AGENT ภาษากลาง), ติดตั้งเป็นแอป (PWA), หัวข้อวิธีติดตั้งและวิธีใช้งานในหน้า, ชุดทดสอบใน `tests/`
 - **0.2.0** โหมดสั่งงาน: agent ประจำออฟฟิศ, คิว, พักคำขออนุญาตผ่าน `PreToolUse`, statusline
 - **0.1.0** โหมดดู: hook ทุกเหตุการณ์, ออฟฟิศ 8 บิตธีมอีสาน
