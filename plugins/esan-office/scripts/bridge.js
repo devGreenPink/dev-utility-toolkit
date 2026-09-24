@@ -7,9 +7,9 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 
-const VERSION = '0.3.0';
+const VERSION = '0.3.1';
 const PORT = Number(process.env.ESAN_OFFICE_PORT) || 4567;
 const LAN = process.env.ESAN_OFFICE_LAN === '1';
 const MAX_RUNNING = Math.max(1, Number(process.env.ESAN_OFFICE_MAX) || 3);
@@ -300,6 +300,26 @@ function createAgent(input) {
 }
 function runningCount() { let n = 0; for (const rt of runtime.values()) if (rt.child) n++; return n; }
 
+// Windows: npm installs `claude` as a .cmd shim, which spawn() can't run without a shell (ENOENT / EINVAL),
+// so go through cmd.exe there and quote the arguments ourselves.
+const WIN = process.platform === 'win32';
+function winQuote(s) {
+  s = String(s);
+  if (/^[\w\-.,:/\\=@]+$/.test(s)) return s;
+  return '"' + s.replace(/"/g, '').replace(/(\\+)$/, '$1$1') + '"';
+}
+function spawnClaude(args, opts) {
+  if (!WIN) return spawn(CLAUDE_BIN, args, opts);
+  return spawn([CLAUDE_BIN, ...args].map(winQuote).join(' '), [], Object.assign({}, opts, { shell: true }));
+}
+// With a shell in between, kill() would only stop cmd.exe and leave claude running
+function killRun(child) {
+  if (WIN && child.pid) {
+    try { spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); return; } catch { /* fall back */ }
+  }
+  try { child.kill(); } catch { /* already gone */ }
+}
+
 function submitPrompt(a, text) {
   const rt = runtime.get(a.id);
   addLog(rt, 'you', short(text, 160));
@@ -334,7 +354,7 @@ function startRun(a, rt, text) {
 
   let child;
   try {
-    child = spawn(CLAUDE_BIN, args, { cwd: a.cwd, env: Object.assign({}, process.env, { ESAN_OFFICE_AGENT: a.id }), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
+    child = spawnClaude(args, { cwd: a.cwd, env: Object.assign({}, process.env, { ESAN_OFFICE_AGENT: a.id }), windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
   } catch (e) {
     addLog(rt, 'sys', 'เปิด claude ไม่ได้: ' + e.message);
     changed();
@@ -366,7 +386,9 @@ function startRun(a, rt, text) {
     if (!rt.gotResult && !rt.stopping) {
       const err = short(rt.stderr, 220);
       if (/already in use/i.test(rt.stderr)) { a.started = true; saveAgents(); }
-      addLog(rt, 'sys', `claude จบโดยไม่มีคำตอบ (code ${code})` + (err ? ': ' + err : ''));
+      // through cmd.exe a missing claude is an exit code, not an ENOENT error
+      if (WIN && /is not recognized as an internal or external command/i.test(rt.stderr)) addLog(rt, 'sys', 'หาโปรแกรม claude ไม่เจอ ตั้ง ESAN_CLAUDE_BIN เป็น path ของ claude ก่อนรัน bridge');
+      else addLog(rt, 'sys', `claude จบโดยไม่มีคำตอบ (code ${code})` + (err ? ': ' + err : ''));
     }
     finishRun(a, rt);
   });
@@ -447,7 +469,7 @@ function stopAgent(a) {
   if (rt.child) {
     rt.stopping = true;
     addLog(rt, 'sys', 'สั่งหยุดแล้ว');
-    try { rt.child.kill(); } catch { /* already gone */ }
+    killRun(rt.child);
   }
   changed();
 }
@@ -686,7 +708,7 @@ setInterval(() => {
 }, 20000);
 
 function shutdown() {
-  for (const rt of runtime.values()) if (rt.child) { try { rt.child.kill(); } catch { /* ignore */ } }
+  for (const rt of runtime.values()) if (rt.child) killRun(rt.child);
   process.exit(0);
 }
 process.on('SIGINT', shutdown);
