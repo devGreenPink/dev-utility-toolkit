@@ -1273,12 +1273,41 @@
     }
 
     /* ── MOCK DATA CARDS ── */
+    .mock-layout { display: flex; flex-direction: column; gap: 14px; }
+    /* กล่องเรียงเป็นแถวที่จำนวนช่องใกล้กัน → ขอบล่างตรงกันทุกแถว (กล่องยืดเต็ม cell, แถวในกล่องกระจายเท่ากัน) */
+    .mock-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    @media (min-width: 1100px) {
+      .mock-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+          "personal work"
+          "contact  address"
+          "finance  system";
+      }
+      /* grid-area ใช้เฉพาะตอนมี template — จอแคบเรียงตามลำดับใน HTML */
+      .mock-card-personal { grid-area: personal; }
+      .mock-card-contact  { grid-area: contact; }
+      .mock-card-address  { grid-area: address; }
+      .mock-card-work     { grid-area: work; }
+      .mock-card-finance  { grid-area: finance; }
+      .mock-card-system   { grid-area: system; }
+    }
+    @media (min-width: 1400px) {
+      .mock-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-areas:
+          "personal work   contact"
+          "personal work   address"
+          "finance  system system";
+      }
+    }
     .mock-section-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      margin-bottom: 10px;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     .mock-section-header {
       display: flex;
@@ -1298,6 +1327,7 @@
       text-transform: uppercase;
     }
     .mock-field-row {
+      flex: 1;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -1330,14 +1360,19 @@
       font-weight: 500;
       font-size: .85rem;
       min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      /* ค่ายาวขึ้นบรรทัดใหม่แทนการโดนตัด (Chrome ตัดคำไทยตามพจนานุกรม) */
+      overflow-wrap: anywhere;
       cursor: pointer;
+      /* พื้นที่ hover กว้างขึ้น — margin ติดลบชดเชยให้แถวสูงเท่าเดิม */
+      padding: 7px 10px;
+      margin: -7px 0 -7px -6px;
       border-radius: var(--radius-sm);
-      transition: background .15s;
+      transition: background .15s, box-shadow .15s;
     }
-    .mock-field-value:hover { background: rgba(255,255,255,0.06); }
+    .mock-field-value:hover {
+      background: var(--accent-glow);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
     .mock-field-value:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .mock-field-value:hover + .mock-copy-btn,
     .mock-field-value:focus-visible + .mock-copy-btn {
@@ -1345,6 +1380,23 @@
       color: var(--accent);
       background: var(--accent-glow);
     }
+    .copy-tip {
+      position: fixed;
+      z-index: 9999;
+      padding: 8px 14px;
+      font-size: .95rem;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 6px 20px rgba(0,0,0,.4);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .12s;
+    }
+    .copy-tip.show { opacity: 1; }
     .mock-field-value.mono-sm {
       font-family: var(--mono);
     }

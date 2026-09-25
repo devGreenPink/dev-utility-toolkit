@@ -294,8 +294,26 @@ function copyVal(id){const el=document.getElementById(id);if(el&&el.textContent&
 document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
   el.setAttribute('tabindex','0');
   el.setAttribute('role','button');
-  el.setAttribute('title','คลิกเพื่อ copy');
+  el.setAttribute('aria-label','คลิกเพื่อ copy');
 });
+// tooltip "คลิกเพื่อ copy" แบบ custom (title ของ browser เล็กและปรับขนาดไม่ได้)
+const copyTip=document.createElement('div');
+copyTip.className='copy-tip';copyTip.textContent='📋 คลิกเพื่อ copy';copyTip.setAttribute('aria-hidden','true');
+document.body.appendChild(copyTip);
+function showCopyTip(el){
+  const r=el.getBoundingClientRect();
+  copyTip.classList.add('show');
+  const tw=copyTip.offsetWidth,th=copyTip.offsetHeight;
+  const left=Math.max(8,Math.min(r.left+r.width/2-tw/2,window.innerWidth-tw-8));
+  const top=r.top-th-8<8?r.bottom+8:r.top-th-8;
+  copyTip.style.left=left+'px';copyTip.style.top=top+'px';
+}
+function hideCopyTip(){copyTip.classList.remove('show');}
+document.addEventListener('mouseover',e=>{const v=e.target.closest&&e.target.closest('.mock-field-value[id]');if(v)showCopyTip(v);});
+document.addEventListener('mouseout',e=>{const v=e.target.closest&&e.target.closest('.mock-field-value[id]');if(v&&!v.contains(e.relatedTarget))hideCopyTip();});
+document.addEventListener('focusin',e=>{const v=e.target.closest&&e.target.closest('.mock-field-value[id]');if(v)showCopyTip(v);else hideCopyTip();});
+document.addEventListener('focusout',hideCopyTip);
+document.querySelector('.content-area')?.addEventListener('scroll',hideCopyTip,{passive:true});
 document.addEventListener('click',e=>{
   const val=e.target.closest && e.target.closest('.mock-field-value[id]');
   if(val)copyVal(val.id);
