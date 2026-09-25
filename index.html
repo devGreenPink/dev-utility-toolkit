@@ -4991,15 +4991,21 @@ self.addEventListener('fetch', e => {
             </section>
 
             <section class="card" aria-labelledby="ea-h-quota">
-              <h3 class="ea-h" id="ea-h-quota">ให้โควตาและ context เป็นตัวเลขจริง (ไม่บังคับ)</h3>
-              <p class="ea-sub">ถ้าไม่ตั้ง context จะเป็นค่าประมาณ (มี ≈ นำหน้า) และช่องโควตา 5 ชม. กับรายสัปดาห์จะว่าง เพิ่มบรรทัดนี้ใน <code>~/.claude/settings.json</code></p>
+              <h3 class="ea-h" id="ea-h-quota">ดูโควตา 5 ชม. และรายสัปดาห์</h3>
+              <p class="ea-sub">ออฟฟิศเก็บตัวเลขโควตาได้ 3 ทาง ใช้ค่าที่ใหม่ที่สุด ใต้ตัวเลขบอกว่าอัปเดตเมื่อไรและมาจากทางไหน</p>
+              <ul class="ea-list">
+                <li><b>ปุ่ม อัปเดตโควตา</b> กดที่หน้าออฟฟิศ ใช้ได้เลยแม้ใช้แต่แอป desktop bridge ถาม Haiku สั้น ๆ 1 ครั้ง กิน token นิดเดียว กดได้นาทีละครั้ง</li>
+                <li><b>งานของ agent</b> สั่งงาน agent ประจำออฟฟิศหรือถามด่วนเมื่อไร โควตาอัปเดตเองทุกครั้ง ไม่กิน token เพิ่ม</li>
+                <li><b>statusline</b> สำหรับคนใช้ <code>claude</code> ใน terminal อัปเดตเองทุกครั้งที่ตอบ และทำให้ context เป็นตัวเลขจริง (ไม่มี ≈) เพิ่มบรรทัดนี้ใน <code>~/.claude/settings.json</code></li>
+              </ul>
               <div class="ea-os">Windows (เปลี่ยน &lt;ชื่อผู้ใช้&gt; เป็นชื่อผู้ใช้ Windows ของคุณ)</div>
               <div class="ea-cmd"><code>"statusLine": { "type": "command", "command": "node \"C:/Users/&lt;ชื่อผู้ใช้&gt;/.claude/plugins/marketplaces/esan-devtools/plugins/esan-office/scripts/statusline.js\"" }</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
               <div class="ea-os">macOS / Linux</div>
               <div class="ea-cmd"><code>"statusLine": { "type": "command", "command": "node ~/.claude/plugins/marketplaces/esan-devtools/plugins/esan-office/scripts/statusline.js" }</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
               <ul class="ea-list">
                 <li>ใช้ path ใน <code>plugins/marketplaces/...</code> ตามตัวอย่าง path นี้ไม่เปลี่ยนเวลาอัปเดต plugin</li>
-                <li>โควตามีเฉพาะแพ็กเกจ Pro/Max และส่งมาจาก Claude Code แบบ terminal เท่านั้น session จากแอป desktop ไม่ส่งตัวเลขนี้</li>
+                <li>โควตามีเฉพาะแพ็กเกจ Pro/Max (login ด้วยบัญชี Claude) บัญชีแบบ API key ไม่มีตัวเลขนี้</li>
+                <li>session ในแอป desktop ไม่เรียก statusline ใช้ปุ่ม อัปเดตโควตา แทน</li>
               </ul>
             </section>
 
@@ -5024,7 +5030,7 @@ self.addEventListener('fetch', e => {
                 <dt>Claude Code ขึ้น hook error</dt>
                 <dd>bridge ไม่ได้รัน เปิด session ใหม่ (bridge จะเปิดเอง) ดู log ได้ที่ <code>~/.esan-office/bridge.log</code></dd>
                 <dt>ช่องโควตาว่าง</dt>
-                <dd>ยังไม่ได้ตั้ง statusline, ไม่ใช่แพ็กเกจ Pro/Max หรือใช้แต่ session จากแอป desktop ลองเปิด <code>claude</code> ใน terminal แล้วส่ง prompt 1 ครั้ง</dd>
+                <dd>ยังไม่มีข้อมูลจากทางไหนเลย กดปุ่ม <b>อัปเดตโควตา</b> ที่หน้าออฟฟิศ (ต้องเป็น plugin 0.5.0 ขึ้นไป) ถ้าขึ้นว่าไม่ได้ตัวเลขกลับมา แปลว่าบัญชีนี้ไม่มีโควตาแบบ Pro/Max</dd>
                 <dt>port 4567 ชนกับโปรแกรมอื่น</dt>
                 <dd>ปิดโปรแกรมนั้น หรือเปลี่ยน port ด้วย <code>ESAN_OFFICE_PORT</code> และแก้ url ใน <code>hooks/hooks.json</code> ของ plugin</dd>
               </dl>

@@ -115,6 +115,9 @@ const dirA = mkdir('t-a'), dirB = mkdir('t-b');
   const long = await api('/api/easy', { text: 'ก'.repeat(2001) });
   const noTok = await post('/api/easy', { text: 'x' });
   check('ถามด่วน: คำถามว่าง ยาวเกิน และไม่มี token ถูกปฏิเสธ', empty.status === 400 && long.status === 400 && noTok.status === 403);
+  const q = await post('/api/quota/refresh', {});
+  const st = await state();
+  check('อัปเดตโควตาต้องมี token และ snapshot มีข้อมูลที่มาของโควตา', q.status === 403 && st.quota && 'refreshing' in st.quota && st.quota.src === 'statusline');
 }
 if (process.env.ONLY_FREE) {
   for (const id of ['w-1', 'w-2']) await hook({ hook_event_name: 'SessionEnd', session_id: id });

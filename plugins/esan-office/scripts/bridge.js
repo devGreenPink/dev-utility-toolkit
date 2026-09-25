@@ -9,7 +9,7 @@ const os = require('os');
 const crypto = require('crypto');
 const { spawn, spawnSync } = require('child_process');
 
-const VERSION = '0.4.1';
+const VERSION = '0.5.0';
 const PORT = Number(process.env.ESAN_OFFICE_PORT) || 4567;
 const LAN = process.env.ESAN_OFFICE_LAN === '1';
 const MAX_RUNNING = Math.max(1, Number(process.env.ESAN_OFFICE_MAX) || 3);
@@ -107,8 +107,32 @@ function ctxFromUsage(u, model) {
 
 // ── WATCHED SESSIONS ── sessions the user opened themselves (terminal / desktop app), reported by the plugin hooks
 const sessions = new Map();
-let rate = null;
+let rate = null, rateSrc = null, rateAt = 0; // plan quota: { five_hour, seven_day } in statusline shape, plus where and when it came from
 let letterN = 0;
+
+// Merge quota windows from any source; the newest reading wins per window, a missing window keeps its last value
+function setRate(r, src) {
+  const next = {};
+  for (const k of ['five_hour', 'seven_day']) if (r && r[k] && typeof r[k].used_percentage === 'number') next[k] = r[k];
+  if (!Object.keys(next).length) return;
+  rate = Object.assign({}, rate || {}, next);
+  rateSrc = src; rateAt = Date.now();
+  changed();
+}
+// `claude -p` stream-json emits rate_limit_event; utilization is a 0..1 fraction.
+// unifiedWindows carries both windows; older builds only report the window that triggered the event.
+function rateFromEvent(info) {
+  if (!info) return null;
+  const pct = (w) => (w && typeof w.utilization === 'number' ? { used_percentage: Math.round(w.utilization * 1000) / 10, resets_at: w.resetsAt } : null);
+  const u = info.unifiedWindows || {}, out = {};
+  if (pct(u.five_hour)) out.five_hour = pct(u.five_hour);
+  if (pct(u.seven_day)) out.seven_day = pct(u.seven_day);
+  if (!Object.keys(out).length && (info.rateLimitType === 'five_hour' || info.rateLimitType === 'seven_day')) {
+    const w = pct({ utilization: info.utilization, resetsAt: info.resetsAt });
+    if (w) out[info.rateLimitType] = w;
+  }
+  return out;
+}
 
 function getSession(ev) {
   const id = ev.session_id;
@@ -244,7 +268,7 @@ function onStatus(st) {
     }
     if (st.model) s.modelId = st.model.id || s.modelId;
   }
-  if (st.rate_limits) rate = st.rate_limits;
+  setRate(st.rate_limits, 'statusline');
   changed();
 }
 
@@ -347,6 +371,56 @@ function killRun(child) {
   try { child.kill(); } catch { /* already gone */ }
 }
 
+// ── QUOTA REFRESH ── desktop-app sessions never run the statusline, so the page can ask for one tiny
+// Haiku call and read the plan quota from its rate_limit_event. Manual only, at most once a minute.
+const QUOTA_MIN_MS = 60 * 1000;
+let quotaRun = null, quotaAt = 0, quotaErr = null;
+function refreshQuota() {
+  if (quotaRun) return { status: 'running' };
+  const wait = QUOTA_MIN_MS - (Date.now() - quotaAt);
+  if (wait > 0) return { error: `เพิ่งอัปเดตไป กดใหม่ได้ในอีก ${Math.ceil(wait / 1000)} วินาที`, code: 429 };
+  quotaAt = Date.now();
+  const dir = path.join(DATA, 'quota');
+  fs.mkdirSync(dir, { recursive: true });
+  const sid = crypto.randomUUID();
+  ownedSids.add(sid); // its hooks must not walk into the office as a session
+  const args = ['-p', '--output-format', 'stream-json', '--verbose', '--model', 'haiku', '--max-turns', '1',
+    '--permission-mode', 'dontAsk', '--no-session-persistence', '--session-id', sid];
+  let child;
+  try { child = spawnClaude(args, { cwd: dir, env: process.env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] }); }
+  catch (e) { return { error: 'เปิด claude ไม่ได้: ' + e.message, code: 500 }; }
+  quotaRun = child; quotaErr = null;
+  changed();
+  let buf = '', got = false, stderr = '';
+  const done = (why) => {
+    if (quotaRun !== child) return;
+    quotaRun = null;
+    quotaErr = got ? null : (why || 'ไม่ได้ตัวเลขโควตากลับมา (บัญชีแบบ API key ไม่มีโควตานี้)');
+    if (quotaErr) log('quota refresh failed', quotaErr, short(stderr, 200));
+    changed();
+  };
+  child.stdin.on('error', () => { /* claude exited early */ });
+  child.stdin.end('ตอบคำว่า ok คำเดียว');
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', (d) => {
+    buf += d;
+    let i;
+    while ((i = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, i).trim();
+      buf = buf.slice(i + 1);
+      let o;
+      try { o = JSON.parse(line); } catch { continue; }
+      if (o.type === 'rate_limit_event') { const r = rateFromEvent(o.rate_limit_info); if (r && Object.keys(r).length) { got = true; setRate(r, 'refresh'); } }
+    }
+  });
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (d) => { stderr = (stderr + d).slice(-2000); });
+  child.on('error', (e) => done(e.code === 'ENOENT' ? 'หาโปรแกรม claude ไม่เจอ' : e.message));
+  child.on('close', () => done());
+  setTimeout(() => { if (quotaRun === child) { killRun(child); done('ช้าเกิน 90 วินาที ยกเลิกแล้ว'); } }, 90000).unref();
+  return { status: 'started' };
+}
+
 function submitPrompt(a, text) {
   const rt = runtime.get(a.id);
   addLog(rt, 'you', short(text, 160));
@@ -431,6 +505,9 @@ function onStream(a, rt, line) {
     saveAgents();
     if (o.model) rt.model = o.model;
     if (Array.isArray(o.plugins)) log('run init', a.id, 'plugins=' + o.plugins.map((p) => p.name).join(','));
+  } else if (o.type === 'rate_limit_event') {
+    setRate(rateFromEvent(o.rate_limit_info), 'agent');
+    return;
   } else if (o.type === 'system' && o.subtype === 'api_retry') {
     addLog(rt, 'sys', `API ขัดข้อง กำลังลองใหม่ครั้งที่ ${o.attempt || '?'}`);
   } else if (o.type === 'assistant' && o.message) {
@@ -572,7 +649,7 @@ function snapshot() {
       cfg: { prompt: a.prompt, allowedTools: a.allowedTools, permMode: a.permMode, model: a.model || '' },
     };
   });
-  return { app: 'esan-office', version: VERSION, now, rate, office: { max: MAX_RUNNING, running: runningCount() }, sessions: owned.concat(watched) };
+  return { app: 'esan-office', version: VERSION, now, rate, quota: { src: rateSrc, at: rateAt, refreshing: !!quotaRun, error: quotaErr }, office: { max: MAX_RUNNING, running: runningCount() }, sessions: owned.concat(watched) };
 }
 
 // ── SSE ──
@@ -627,6 +704,10 @@ async function handleAgentApi(req, res, url) {
     if (!sessions.delete(sm[1])) return json(res, 404, { error: 'ไม่เจอ session นี้ อาจออกจากออฟฟิศไปแล้ว' });
     changed();
     return json(res, 200, { ok: true });
+  }
+  if (url.pathname === '/api/quota/refresh') {
+    const r = refreshQuota();
+    return r.error ? json(res, r.code || 500, { error: r.error }) : json(res, 200, r);
   }
   if (url.pathname === '/api/easy') {
     const text = String(body.text || '').trim();
@@ -713,7 +794,7 @@ const server = http.createServer(async (req, res) => {
       setTimeout(shutdown, 50);
       return;
     }
-    if (req.method === 'POST' && (url.pathname.startsWith('/api/agents') || url.pathname.startsWith('/api/sessions/') || url.pathname === '/api/easy')) return handleAgentApi(req, res, url);
+    if (req.method === 'POST' && (url.pathname.startsWith('/api/agents') || url.pathname.startsWith('/api/sessions/') || url.pathname === '/api/easy' || url.pathname === '/api/quota/refresh')) return handleAgentApi(req, res, url);
     if (req.method !== 'GET') return send(res, 405, 'text/plain', 'Method not allowed');
     if (url.pathname === '/api/ping') return json(res, 200, { app: 'esan-office', version: VERSION, pid: process.pid });
     if (url.pathname === '/api/state') return json(res, 200, snapshot());
@@ -761,6 +842,7 @@ setInterval(() => {
 
 function shutdown() {
   for (const rt of runtime.values()) if (rt.child) killRun(rt.child);
+  if (quotaRun) killRun(quotaRun);
   process.exit(0);
 }
 process.on('SIGINT', shutdown);
