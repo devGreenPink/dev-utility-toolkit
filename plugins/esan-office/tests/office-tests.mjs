@@ -74,6 +74,9 @@ console.log('── ไม่กิน token ──');
   check('hook ที่ไม่มี header ถูกปฏิเสธ', noHdr.status === 403);
   const noTok = await post('/api/agents', { name: 'x' });
   check('สั่งงานโดยไม่มี token ถูกปฏิเสธ', noTok.status === 403);
+  const stop = await post('/api/shutdown', {});
+  const ping = await (await fetch(BASE + '/api/ping')).json();
+  check('สั่งปิด bridge โดยไม่มี header ถูกปฏิเสธ และ ping บอก version กับ pid', stop.status === 403 && ping.version && Number.isInteger(ping.pid));
 }
 const lanUp = LAN_IP && await fetch(`http://${LAN_IP}:${PORT}/api/ping`).then(() => true, () => false);
 if (!lanUp) console.log('SKIP  LAN: bridge ไม่ได้เปิดด้วย ESAN_OFFICE_LAN=1 หรือไม่เจอ IP ในวง LAN');

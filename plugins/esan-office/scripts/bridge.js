@@ -9,7 +9,7 @@ const os = require('os');
 const crypto = require('crypto');
 const { spawn, spawnSync } = require('child_process');
 
-const VERSION = '0.4.0';
+const VERSION = '0.4.1';
 const PORT = Number(process.env.ESAN_OFFICE_PORT) || 4567;
 const LAN = process.env.ESAN_OFFICE_LAN === '1';
 const MAX_RUNNING = Math.max(1, Number(process.env.ESAN_OFFICE_MAX) || 3);
@@ -703,9 +703,19 @@ const server = http.createServer(async (req, res) => {
       // PermissionRequest from a watched session is never held: the user's own dialog must not be delayed
       return send(res, 200, 'application/json', '{}');
     }
+    if (req.method === 'POST' && url.pathname === '/api/shutdown') {
+      // A newer plugin version (scripts/start.js) asks this bridge to step aside so the update takes effect.
+      // Same guard as hooks; never while an office agent is running or has queued work.
+      if (!isLocal(req) || req.headers['x-esan-hook'] !== '1') return send(res, 403, 'application/json', '{}');
+      if ([...runtime.values()].some((rt) => rt.child || rt.queue.length)) return json(res, 409, { error: 'agent ประจำออฟฟิศยังทำงานหรือมีคิวอยู่' });
+      log('shutdown requested by a newer plugin version');
+      json(res, 200, { ok: true });
+      setTimeout(shutdown, 50);
+      return;
+    }
     if (req.method === 'POST' && (url.pathname.startsWith('/api/agents') || url.pathname.startsWith('/api/sessions/') || url.pathname === '/api/easy')) return handleAgentApi(req, res, url);
     if (req.method !== 'GET') return send(res, 405, 'text/plain', 'Method not allowed');
-    if (url.pathname === '/api/ping') return json(res, 200, { app: 'esan-office', version: VERSION });
+    if (url.pathname === '/api/ping') return json(res, 200, { app: 'esan-office', version: VERSION, pid: process.pid });
     if (url.pathname === '/api/state') return json(res, 200, snapshot());
     if (url.pathname === '/api/events') {
       res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', Connection: 'keep-alive' });

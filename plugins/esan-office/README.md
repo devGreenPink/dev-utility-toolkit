@@ -42,7 +42,13 @@ claude plugin install esan-office@esan-devtools
 claude plugin update esan-office@esan-devtools
 ```
 
-ถ้ามี bridge ตัวเก่ารันค้างอยู่ ให้ปิดก่อน (ตัวใหม่เจอ port ชนจะออกเงียบ ๆ แล้วตัวเก่าทำงานต่อ) แล้วเปิด session ใหม่
+แล้วเปิด Claude Code session ใหม่ 1 ครั้ง ตั้งแต่ 0.4.1 ขึ้นไป `start.js` จะเห็นว่า bridge ที่รันอยู่เป็นเวอร์ชันเก่ากว่า แล้วขอให้ตัวเก่าปิดเอง แล้วเปิดตัวใหม่แทน รีเฟรชหน้า <http://localhost:4567> ก็ได้หน้าใหม่
+
+- ถ้า agent ประจำออฟฟิศกำลังทำงานหรือมีคิว ตัวเก่าจะยังไม่ปิด รอให้งานเสร็จแล้วเปิด session ใหม่อีกครั้ง
+- bridge 0.4.0 หรือเก่ากว่าไม่รู้จักคำขอนี้ ต้องปิดเองครั้งเดียว: ดูว่าใครใช้ port 4567 แล้วปิด process นั้น
+  - Windows: `netstat -ano | findstr :4567` ดูเลข PID ท้ายบรรทัด แล้ว `taskkill /PID <เลข> /F`
+  - macOS / Linux: `lsof -ti:4567 | xargs kill`
+- เช็กเวอร์ชันที่รันอยู่ได้ที่ <http://localhost:4567/api/ping> (`version` และ `pid`)
 
 ### ลองก่อนติดตั้ง หรือติดตั้งจากโฟลเดอร์ในเครื่อง
 
@@ -327,7 +333,7 @@ node plugins/esan-office/tests/office-tests.mjs               # รัน Claude
 ถ้ามี bridge ตัวจริงรันอยู่ที่ 4567 ให้ทดสอบกับอีก port โดยตั้ง `ESAN_OFFICE_PORT` และ `ESAN_OFFICE_DATA` ให้ทั้ง bridge และชุดทดสอบ เช่น `ESAN_OFFICE_PORT=4599 ESAN_OFFICE_DATA=/tmp/esan-test`
 
 ชุดทดสอบครอบคลุม:
-- **ไม่กิน token:** PermissionRequest ไม่หน่วง, statusline, Host/header/token ถูกปฏิเสธ, LAN ดูได้อย่างเดียว, เอา session ออกจากออฟฟิศและกลับมาเอง, โควตารายสัปดาห์, validation ของฟอร์มและถามด่วน
+- **ไม่กิน token:** PermissionRequest ไม่หน่วง, statusline, Host/header/token ถูกปฏิเสธ, สั่งปิด bridge ต้องมี header, LAN ดูได้อย่างเดียว, เอา session ออกจากออฟฟิศและกลับมาเอง, โควตารายสัปดาห์, validation ของฟอร์มและถามด่วน
 - **รันจริง:** คิว, `--resume` จำบทสนทนา, เริ่มบทสนทนาใหม่, พักและปฏิเสธคำขออัตโนมัติ, หยุด, subagent, ลบระหว่างทำงาน, ไม่เกิด session ซ้ำเมื่อโหลด plugin
 
 ผลล่าสุด (23 ก.ย. 2026, Claude Code 2.1.206, Windows 11): ผ่าน 26/26
@@ -361,11 +367,13 @@ claude plugin validate .
 | agent ขึ้น "หาโปรแกรม claude ไม่เจอ" | `claude` ไม่อยู่ใน PATH ของ bridge หรือใช้ bridge เวอร์ชันก่อน 0.3.1 บน Windows ที่ลง claude ผ่าน npm | อัปเดต plugin เป็น 0.3.1 ขึ้นไป หรือตั้ง `ESAN_CLAUDE_BIN` เป็น path เต็มของ claude |
 | สร้าง agent ไม่ได้ "หาโฟลเดอร์ทำงานไม่เจอ" | path ไม่ครบหรือพิมพ์ผิด | ใส่ path เต็มของโฟลเดอร์ที่มีอยู่จริง |
 | port 4567 ชน | มีโปรแกรมอื่นใช้อยู่ | ปิดโปรแกรมนั้น หรือเปลี่ยน `ESAN_OFFICE_PORT` และ url ใน `hooks/hooks.json` |
+| อัปเดตแล้วหน้ายังเป็นของเก่า | bridge ตัวเก่ายังรันอยู่ (0.4.0 หรือเก่ากว่าไม่ถูกแทนที่อัตโนมัติ) หรือ agent ยังทำงานอยู่ | ดู <http://localhost:4567/api/ping> ถ้า version เก่า ปิด process ตามหัวข้อ "ติดตั้ง plugin" แล้วเปิด session ใหม่ |
 | agent ค้างในห้องทั้งที่ปิด session ไปแล้ว | ปิดหน้าต่างโดยไม่ได้ส่ง SessionEnd ออฟฟิศจะรอ 12 ชั่วโมงก่อนลืม | กด **เอาออก** ที่การ์ด |
 | จอโควตาว่าง | ยังไม่ได้ตั้ง statusline หรือไม่ใช่ Pro/Max | ดูหัวข้อ context กับโควตาแบบตัวเลขจริง |
 
 ## เวอร์ชัน
 
+- **0.4.1** อัปเดตแล้วได้หน้าใหม่ทันที: `start.js` ขอให้ bridge เวอร์ชันเก่ากว่าปิดเอง (`POST /api/shutdown` ไม่ปิดถ้า agent ประจำออฟฟิศยังทำงานหรือมีคิว) แล้วเปิดตัวใหม่แทน ไม่ย้อนเวอร์ชันลง, `/api/ping` บอก `pid`
 - **0.4.0** ธีมใต้ (PAKTAI AI AGENT), ปุ่ม **หยุด** ที่การ์ด agent ประจำออฟฟิศ, ปุ่ม **เอาออก** สำหรับ session ที่ค้าง (`POST /api/sessions/<id>/dismiss`) ทั้งสองปุ่มต้องกดยืนยัน 2 ครั้ง, โควตารายสัปดาห์ (การ์ด จอบนผนัง statusline), ถามด่วน Easy Research (`POST /api/easy`) และหน้าที่สำเร็จรูป Easy Research, แกล้ง agent ที่เดินเล่น, พับหัวข้อวิธีใช้งานกับสัญลักษณ์, ย้ายวิธีติดตั้งจากหน้าออฟฟิศมาไว้ใน README, ปุ่มติดตั้งแอปย้ายไปข้างปุ่มธีม, แก้ agent ที่กลับมาก่อนเดินถึงประตูแล้วหายไป
 - **0.3.1** แก้ agent ประจำออฟฟิศเปิด `claude` ไม่ได้บน Windows ที่ลงผ่าน npm (`claude.cmd`): รันผ่าน `cmd.exe` และตอนสั่งหยุดปิดทั้ง process tree ด้วย `taskkill`
 - **0.3.0** เพิ่มธีม CDG (CDG AI AGENT ภาษากลาง), ติดตั้งเป็นแอป (PWA), หัวข้อวิธีติดตั้งและวิธีใช้งานในหน้า, ชุดทดสอบใน `tests/`

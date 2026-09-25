@@ -22,6 +22,7 @@ const TAB_META = {
   'mq-tab': { title: 'RabbitMQ · Redis · Quarkus', sub: 'Concepts · Animations · Code Examples สำหรับมือใหม่' },
   'storage-tab': { title: 'Browser Storage APIs', sub: 'localStorage · sessionStorage · IndexedDB · Cookies · Cache API · OPFS' },
   'lov-tab': { title: 'LOV Query Template Browser', sub: 'เรียกดู JSON query builder config จากโฟลเดอร์ในเครื่อง · ประกอบ SQL พร้อม copy' },
+  'esan-agent-tab': { title: 'ESAN AI AGENT', sub: 'Claude Code plugin · ติดตั้ง · อัปเดต · เปิดใช้งานที่ localhost:4567 บนเครื่องตัวเอง' },
 };
 
 // ── THEME ──
@@ -146,8 +147,9 @@ function renderFavorites(){
     item.className='nav-item nav-fav-item'+(id===activeTabId?' active':'');
     item.dataset.tab=id;
     item.onclick=e=>openTab(e,id);
-    item.innerHTML=`<span class="nav-icon">${escHtml(icon?icon.textContent:'🔧')}</span>`+
-                   `<span class="nav-label">${escHtml(navLabelOf(src))}</span>`;
+    // clone the icon node so SVG icons survive too (textContent would drop them)
+    item.appendChild(icon?icon.cloneNode(true):Object.assign(document.createElement('span'),{className:'nav-icon',textContent:'🔧'}));
+    const lbl=document.createElement('span');lbl.className='nav-label';lbl.textContent=navLabelOf(src);item.appendChild(lbl);
     item.appendChild(makeFavStar(id));
     makeNavItemFocusable(item);
     list.appendChild(item);
