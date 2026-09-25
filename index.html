@@ -105,7 +105,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.16</div>
+            <div class="app-version">v1.17</div>
           </div>
         </div>
       </div>
@@ -294,6 +294,14 @@
           onclick="openTab(event, 'lov-tab')"
         >
           <span class="nav-icon">🗂️</span> LOV Query Browser
+        </div>
+        <div class="nav-section-label">Claude Code</div>
+        <div
+          class="nav-item"
+          data-tab="esan-agent-tab"
+          onclick="openTab(event, 'esan-agent-tab')"
+        >
+          <span class="nav-icon"><svg class="ea-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> ESAN AI AGENT
         </div>
       </nav>
 
@@ -4867,6 +4875,170 @@ self.addEventListener('fetch', e => {
             <div id="lov-empty" style="display:none;color:var(--text-dim);text-align:center;padding:40px;">ไม่พบไฟล์ JSON ในโฟลเดอร์นี้</div>
           </div>
         </div><!-- /lov-tab -->
+
+        <!-- ESAN AI AGENT guide: how to install / update the Claude Code plugin and where to open it -->
+        <div id="esan-agent-tab" class="tab-content">
+          <div class="ea-wrap">
+
+            <section class="card ea-hero" aria-labelledby="ea-h-top">
+              <div class="ea-kicker">Claude Code plugin · esan-office</div>
+              <h2 class="ea-title" id="ea-h-top">ESAN AI AGENT ออฟฟิศ 8 บิตของ Claude Code</h2>
+              <p class="ea-lede">
+                ทุก session ของ Claude Code ที่เปิดอยู่บนคอมคุณ จะกลายเป็นตัวละคร 1 ตัวในออฟฟิศ มีงานก็เดินไปนั่งโต๊ะ ว่างก็ไปพัก
+                ดูได้ว่าใครกำลังใช้เครื่องมืออะไร context เหลือเท่าไร และสร้าง agent ประจำออฟฟิศไว้สั่งงานจากหน้าเว็บได้
+              </p>
+              <div class="ea-where">
+                <div class="ea-where-main">
+                  <div class="ea-where-k">เปิดใช้งานที่</div>
+                  <code class="ea-url">http://localhost:4567</code>
+                  <div class="ea-where-sub">บนคอมเครื่องที่ติดตั้ง plugin หลังเปิด Claude Code แล้วอย่างน้อย 1 session</div>
+                </div>
+                <a class="btn btn-primary" href="http://localhost:4567" target="_blank" rel="noopener">เปิดออฟฟิศ</a>
+              </div>
+              <p class="ea-note ea-note-warn">
+                <b>ไม่ได้เปิดที่เว็บนี้</b> หน้า อีสาน DevTools บน github.io เป็นแค่คู่มือ ตัวออฟฟิศต้องคุยกับ bridge
+                (โปรแกรมเล็ก ๆ ที่ plugin เปิดไว้ในคอมคุณ) ข้อมูล session ทั้งหมดอยู่ในเครื่อง ไม่ขึ้นอินเทอร์เน็ต
+              </p>
+            </section>
+
+            <section class="card" aria-labelledby="ea-h-how">
+              <h3 class="ea-h" id="ea-h-how">ทำงานยังไง</h3>
+              <ol class="ea-flow">
+                <li><b>Claude Code</b><span>ทุก session ส่งเหตุการณ์ (พิมพ์ prompt, ใช้เครื่องมือ, ตอบเสร็จ) ผ่าน hook ของ plugin</span></li>
+                <li><b>bridge</b><span>รันเบื้องหลังที่ <code>127.0.0.1:4567</code> เปิดเองตอนเริ่ม session รับเหตุการณ์แล้วเก็บสถานะไว้</span></li>
+                <li><b>หน้าออฟฟิศ</b><span>เปิด <code>http://localhost:4567</code> ในเบราว์เซอร์ เห็นทุก session เป็นตัวละครแบบสด</span></li>
+              </ol>
+            </section>
+
+            <section class="card" aria-labelledby="ea-h-install">
+              <h3 class="ea-h" id="ea-h-install">ติดตั้งครั้งแรก</h3>
+              <p class="ea-sub">ทำครั้งเดียว หลังจากนั้นเปิด Claude Code ตามปกติ ออฟฟิศจะทำงานเอง</p>
+              <ol class="ea-steps">
+                <li>
+                  <b>เช็กของที่ต้องมี</b>
+                  <p>Node.js 18 ขึ้นไป (ใช้รัน bridge) และคำสั่ง <code>claude</code> ต้องใช้ได้ใน terminal ถ้าจะติดตั้งเป็นแอปใช้ Chrome หรือ Edge</p>
+                  <div class="ea-cmd"><code>node --version</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                  <div class="ea-cmd"><code>claude --version</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                </li>
+                <li>
+                  <b>เพิ่ม marketplace ของ อีสาน DevTools</b>
+                  <p>บอก Claude Code ว่า plugin นี้มาจาก repo ไหน พิมพ์ใน terminal (cmd, PowerShell หรือ Terminal ของ macOS ก็ได้)</p>
+                  <div class="ea-cmd"><code>claude plugin marketplace add devgreenpink/dev-utility-toolkit</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                </li>
+                <li>
+                  <b>ติดตั้ง plugin</b>
+                  <div class="ea-cmd"><code>claude plugin install esan-office@esan-devtools</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                  <p class="ea-small">หรือพิมพ์ <code>/plugin</code> ในหน้าจอ Claude Code แล้วเพิ่ม marketplace กับติดตั้งจากเมนูแทน 2 คำสั่งข้างบน</p>
+                </li>
+                <li>
+                  <b>เปิด Claude Code session ใหม่</b>
+                  <p>พิมพ์ <code>claude</code> ใน terminal หรือเปิดแท็บ Code ในแอป Claude desktop ก็ได้ พอเริ่ม session bridge จะเปิดเองเบื้องหลัง ไม่ต้องรันอะไรเพิ่ม</p>
+                </li>
+                <li>
+                  <b>เปิดออฟฟิศ</b>
+                  <p>เข้า <a href="http://localhost:4567" target="_blank" rel="noopener">http://localhost:4567</a> จะเห็นตัวละครของ session นั้นเดินเข้าประตูมา ถ้าอยากได้เป็นแอปบนเดสก์ท็อป กดปุ่ม <b>ติดตั้งเป็นแอป</b> ข้างปุ่มธีมมุมขวาบน</p>
+                </li>
+              </ol>
+            </section>
+
+            <section class="card" aria-labelledby="ea-h-update">
+              <h3 class="ea-h" id="ea-h-update">อัปเดตเป็นเวอร์ชันใหม่</h3>
+              <p class="ea-sub">plugin ไม่อัปเดตเอง ทำตามนี้ทุกครั้งที่มีเวอร์ชันใหม่</p>
+              <ol class="ea-steps">
+                <li>
+                  <b>ดึงรายการ plugin ล่าสุดจาก GitHub</b>
+                  <div class="ea-cmd"><code>claude plugin marketplace update esan-devtools</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                </li>
+                <li>
+                  <b>อัปเดต plugin</b>
+                  <div class="ea-cmd"><code>claude plugin update esan-office@esan-devtools</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                  <p class="ea-small">ถ้าขึ้นว่า <code>already at the latest version</code> แปลว่าไฟล์ใหม่ลงแล้ว ไปข้อต่อไปได้เลย</p>
+                </li>
+                <li>
+                  <b>เปิด Claude Code session ใหม่ 1 ครั้ง</b>
+                  <p>คำสั่ง update แค่เปลี่ยนไฟล์ ส่วน bridge ตัวเก่ายังรันอยู่ ตั้งแต่ 0.4.1 ขึ้นไป session ใหม่จะขอให้ตัวเก่าปิดเองแล้วเปิดตัวใหม่แทน</p>
+                </li>
+                <li>
+                  <b>รีเฟรชหน้าออฟฟิศ</b>
+                  <p>กด <kbd>Ctrl</kbd>+<kbd>F5</kbd> ที่ <code>localhost:4567</code> แล้วเช็กว่าได้เวอร์ชันใหม่จริงที่ <a href="http://localhost:4567/api/ping" target="_blank" rel="noopener">localhost:4567/api/ping</a> (ดูค่า <code>version</code>)</p>
+                </li>
+              </ol>
+              <div class="ea-box">
+                <b>ทำครั้งเดียว ถ้าเครื่องยังรัน 0.4.0 หรือเก่ากว่า</b>
+                <p>bridge รุ่นเก่ายังไม่รู้จักคำขอให้ปิดตัว หน้าเลยยังเป็นของเก่าแม้อัปเดตแล้ว ให้ปิด process ที่ใช้ port 4567 เองก่อน แล้วค่อยเปิด session ใหม่</p>
+                <div class="ea-os">Windows (cmd หรือ PowerShell): ดูเลข PID ท้ายบรรทัด</div>
+                <div class="ea-cmd"><code>netstat -ano | findstr :4567</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                <div class="ea-os">แล้วปิดด้วยเลขนั้น เช่น PID 3160</div>
+                <div class="ea-cmd"><code>taskkill /PID 3160 /F</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+                <div class="ea-os">macOS / Linux</div>
+                <div class="ea-cmd"><code>lsof -ti:4567 | xargs kill</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+              </div>
+              <p class="ea-note">ถ้า agent ประจำออฟฟิศกำลังทำงานหรือมีคิวอยู่ bridge ตัวเก่าจะยังไม่ปิด (กันงานหาย) รอให้งานเสร็จแล้วเปิด session ใหม่อีกครั้ง</p>
+            </section>
+
+            <section class="card" aria-labelledby="ea-h-where">
+              <h3 class="ea-h" id="ea-h-where">เปิดที่ไหนได้บ้าง</h3>
+              <div class="ea-table-wrap">
+                <table class="ea-table">
+                  <thead><tr><th scope="col">ที่อยู่</th><th scope="col">ใช้ทำอะไร</th><th scope="col">สั่งงานได้ไหม</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>http://localhost:4567</code></td><td>ใช้งานจริง บนคอมเครื่องที่ติดตั้ง plugin</td><td>ได้</td></tr>
+                    <tr><td><code>http://&lt;IP ของคอม&gt;:4567</code></td><td>ดูจากมือถือหรือเครื่องอื่นใน Wi-Fi เดียวกัน ต้องรัน bridge ด้วย <code>ESAN_OFFICE_LAN=1</code></td><td>ดูอย่างเดียว</td></tr>
+                    <tr><td><code>devgreenpink.github.io</code> (เว็บนี้)</td><td>คู่มือ และโค้ดของ plugin</td><td>ใช้งานออฟฟิศไม่ได้</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card" aria-labelledby="ea-h-quota">
+              <h3 class="ea-h" id="ea-h-quota">ดูโควตา 5 ชม. และรายสัปดาห์</h3>
+              <p class="ea-sub">ออฟฟิศเก็บตัวเลขโควตาได้ 3 ทาง ใช้ค่าที่ใหม่ที่สุด ใต้ตัวเลขบอกว่าอัปเดตเมื่อไรและมาจากทางไหน</p>
+              <ul class="ea-list">
+                <li><b>ปุ่ม อัปเดตโควตา</b> กดที่หน้าออฟฟิศ ใช้ได้เลยแม้ใช้แต่แอป desktop bridge ถาม Haiku สั้น ๆ 1 ครั้ง กิน token นิดเดียว กดได้นาทีละครั้ง</li>
+                <li><b>งานของ agent</b> สั่งงาน agent ประจำออฟฟิศหรือถามด่วนเมื่อไร โควตาอัปเดตเองทุกครั้ง ไม่กิน token เพิ่ม</li>
+                <li><b>statusline</b> สำหรับคนใช้ <code>claude</code> ใน terminal อัปเดตเองทุกครั้งที่ตอบ และทำให้ context เป็นตัวเลขจริง (ไม่มี ≈) เพิ่มบรรทัดนี้ใน <code>~/.claude/settings.json</code></li>
+              </ul>
+              <div class="ea-os">Windows (เปลี่ยน &lt;ชื่อผู้ใช้&gt; เป็นชื่อผู้ใช้ Windows ของคุณ)</div>
+              <div class="ea-cmd"><code>"statusLine": { "type": "command", "command": "node \"C:/Users/&lt;ชื่อผู้ใช้&gt;/.claude/plugins/marketplaces/esan-devtools/plugins/esan-office/scripts/statusline.js\"" }</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+              <div class="ea-os">macOS / Linux</div>
+              <div class="ea-cmd"><code>"statusLine": { "type": "command", "command": "node ~/.claude/plugins/marketplaces/esan-devtools/plugins/esan-office/scripts/statusline.js" }</code><button type="button" class="btn btn-ghost" onclick="copyText(this.previousElementSibling.textContent)">คัดลอก</button></div>
+              <ul class="ea-list">
+                <li>ใช้ path ใน <code>plugins/marketplaces/...</code> ตามตัวอย่าง path นี้ไม่เปลี่ยนเวลาอัปเดต plugin</li>
+                <li>โควตามีเฉพาะแพ็กเกจ Pro/Max (login ด้วยบัญชี Claude) บัญชีแบบ API key ไม่มีตัวเลขนี้</li>
+                <li>session ในแอป desktop ไม่เรียก statusline ใช้ปุ่ม อัปเดตโควตา แทน</li>
+              </ul>
+            </section>
+
+            <section class="card" aria-labelledby="ea-h-use">
+              <h3 class="ea-h" id="ea-h-use">ใช้งานเบื้องต้น</h3>
+              <ul class="ea-list">
+                <li><b>ดู session ที่เปิดเอง</b> เปิด Claude Code ตามปกติ ตัวละครจะเข้ามาเอง ดูได้อย่างเดียว ถ้าปิดหน้าต่างแล้วยังค้าง กด <b>เอาออก</b> ที่การ์ด (กด 2 ครั้งเพื่อยืนยัน)</li>
+                <li><b>agent ประจำออฟฟิศ</b> กด <b>เพิ่ม agent</b> เลือกหน้าที่ ใส่โฟลเดอร์ แล้วส่งงานจากหน้าเว็บ ทุกงานกิน token จริง</li>
+                <li><b>ถามด่วน</b> พิมพ์คำถามง่าย ๆ ในช่องถามด่วน ใช้ Haiku ค้นเว็บได้ ไม่แก้ไฟล์</li>
+                <li><b>แกล้ง agent</b> แตะตัวที่เดินเล่นอยู่ เลือก ขัดขา จั๊กจี้ สาดน้ำ หรือหลอกผี เป็นแค่ภาพ ไม่กระทบงาน</li>
+                <li><b>ธีม</b> อีสาน, CDG หรือใต้ ที่มุมขวาบน หรือเปิดด้วย <code>?theme=isan</code>, <code>?theme=green</code>, <code>?theme=south</code></li>
+              </ul>
+            </section>
+
+            <section class="card" aria-labelledby="ea-h-fix">
+              <h3 class="ea-h" id="ea-h-fix">แก้ปัญหาที่เจอบ่อย</h3>
+              <dl class="ea-faq">
+                <dt>อัปเดตแล้ว แต่หน้ายังเป็นของเก่า</dt>
+                <dd>bridge ตัวเก่ายังรันอยู่ เปิด <code>localhost:4567/api/ping</code> ดู version ถ้ายังเก่า ทำตามกล่อง "ทำครั้งเดียว" ในหัวข้ออัปเดต แล้วเปิด session ใหม่</dd>
+                <dt>เปิด localhost:4567 ไม่ขึ้น</dt>
+                <dd>ยังไม่มี session ไหนเปิดหลังติดตั้ง หรือเครื่องไม่มี Node.js เปิด Claude Code session ใหม่ 1 ครั้ง แล้วลองใหม่</dd>
+                <dt>Claude Code ขึ้น hook error</dt>
+                <dd>bridge ไม่ได้รัน เปิด session ใหม่ (bridge จะเปิดเอง) ดู log ได้ที่ <code>~/.esan-office/bridge.log</code></dd>
+                <dt>ช่องโควตาว่าง</dt>
+                <dd>ยังไม่มีข้อมูลจากทางไหนเลย กดปุ่ม <b>อัปเดตโควตา</b> ที่หน้าออฟฟิศ (ต้องเป็น plugin 0.5.0 ขึ้นไป) ถ้าขึ้นว่าไม่ได้ตัวเลขกลับมา แปลว่าบัญชีนี้ไม่มีโควตาแบบ Pro/Max</dd>
+                <dt>port 4567 ชนกับโปรแกรมอื่น</dt>
+                <dd>ปิดโปรแกรมนั้น หรือเปลี่ยน port ด้วย <code>ESAN_OFFICE_PORT</code> และแก้ url ใน <code>hooks/hooks.json</code> ของ plugin</dd>
+              </dl>
+              <p class="ea-note">รายละเอียดทั้งหมด (ตัวแปร environment, ความปลอดภัย, การทดสอบ) อยู่ใน <a href="https://github.com/devGreenPink/dev-utility-toolkit/tree/main/plugins/esan-office#readme" target="_blank" rel="noopener">README ของ plugin บน GitHub</a></p>
+            </section>
+
+          </div>
+        </div><!-- /esan-agent-tab -->
 
       </div>
       <!-- content-area -->

@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.16-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.17-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -142,6 +142,14 @@
 - ถ้ามี `where.alternate` แสดงแต่ละ case เป็น fragment `AND <condition>` พร้อม required-parameter note (เช่น `Params: zoneId`) — copy ไปต่อท้าย WHERE ได้ทันที
 - Syntax highlighting ด้วย highlight.js (SQL)
 - รองรับเฉพาะ Chrome / Edge (Chromium) — เบราว์เซอร์อื่นแสดงข้อความแจ้งเตือน
+
+### ESAN AI AGENT (Claude Code plugin)
+คู่มือในเมนู **Claude Code → ESAN AI AGENT** สำหรับ plugin ออฟฟิศ 8 บิตที่แสดงทุก session ของ Claude Code บนเครื่อง:
+- วิธีติดตั้งครั้งแรก ทีละขั้น พร้อมปุ่มคัดลอกคำสั่ง
+- วิธีอัปเดตเป็นเวอร์ชันใหม่ และวิธีปิด bridge ตัวเก่าที่ค้างอยู่
+- เปิดใช้งานที่ `http://localhost:4567` บนเครื่องตัวเอง (หน้าเว็บนี้เป็นแค่คู่มือ)
+- ตั้ง statusline ให้โควตาเป็นตัวเลขจริง และแก้ปัญหาที่เจอบ่อย
+- รายละเอียดเต็มอยู่ที่ [`plugins/esan-office/README.md`](plugins/esan-office/README.md)
 
 ---
 

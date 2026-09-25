@@ -74,6 +74,9 @@ console.log('── ไม่กิน token ──');
   check('hook ที่ไม่มี header ถูกปฏิเสธ', noHdr.status === 403);
   const noTok = await post('/api/agents', { name: 'x' });
   check('สั่งงานโดยไม่มี token ถูกปฏิเสธ', noTok.status === 403);
+  const stop = await post('/api/shutdown', {});
+  const ping = await (await fetch(BASE + '/api/ping')).json();
+  check('สั่งปิด bridge โดยไม่มี header ถูกปฏิเสธ และ ping บอก version กับ pid', stop.status === 403 && ping.version && Number.isInteger(ping.pid));
 }
 const lanUp = LAN_IP && await fetch(`http://${LAN_IP}:${PORT}/api/ping`).then(() => true, () => false);
 if (!lanUp) console.log('SKIP  LAN: bridge ไม่ได้เปิดด้วย ESAN_OFFICE_LAN=1 หรือไม่เจอ IP ในวง LAN');
@@ -112,6 +115,9 @@ const dirA = mkdir('t-a'), dirB = mkdir('t-b');
   const long = await api('/api/easy', { text: 'ก'.repeat(2001) });
   const noTok = await post('/api/easy', { text: 'x' });
   check('ถามด่วน: คำถามว่าง ยาวเกิน และไม่มี token ถูกปฏิเสธ', empty.status === 400 && long.status === 400 && noTok.status === 403);
+  const q = await post('/api/quota/refresh', {});
+  const st = await state();
+  check('อัปเดตโควตาต้องมี token และ snapshot มีข้อมูลที่มาของโควตา', q.status === 403 && st.quota && 'refreshing' in st.quota && st.quota.src === 'statusline');
 }
 if (process.env.ONLY_FREE) {
   for (const id of ['w-1', 'w-2']) await hook({ hook_event_name: 'SessionEnd', session_id: id });

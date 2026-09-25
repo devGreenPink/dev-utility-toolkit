@@ -55,6 +55,7 @@ h1 .blink{color:var(--warn)}
 .stat .k{font-size:12px;color:var(--ink-3);line-height:1.4}
 .stat .v{font-family:var(--px);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.3}
 .stat .h{font-size:11px;color:var(--ink-3);line-height:1.3}
+.stat .h.bad{color:var(--bad)}
 button{font-family:var(--px);font-size:15px;line-height:1.2;padding:9px 14px 11px;border:var(--b) solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;box-shadow:inset 0 -4px 0 var(--line)}
 button:hover{background:var(--panel)}
 button:active{transform:translateY(2px);box-shadow:inset 0 -2px 0 var(--line)}
@@ -196,12 +197,13 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
   <section class="stats" aria-label="สรุปสถานะ">
     <div class="stat notch"><div class="k" data-i18n="statWork">กำลังเฮ็ดเวียก</div><div class="v" id="s-work">0/0</div></div>
     <div class="stat notch"><div class="k">Context เฉลี่ยคงเหลือ</div><div class="v" id="s-ctx">-</div></div>
-    <div class="stat notch"><div class="k">โควตา 5 ชม. ใช้ไป</div><div class="v" id="s-quota">-</div><div class="h" id="s-quota-h">ยังไม่มีข้อมูล ตั้ง statusline ตาม README</div></div>
-    <div class="stat notch"><div class="k">โควตาสัปดาห์ ใช้ไป</div><div class="v" id="s-week">-</div><div class="h" id="s-week-h">ยังไม่มีข้อมูล ตั้ง statusline ตาม README</div></div>
+    <div class="stat notch"><div class="k">โควตา 5 ชม. ใช้ไป</div><div class="v" id="s-quota">-</div><div class="h" id="s-quota-h">ยังไม่มีข้อมูล กด "อัปเดตโควตา" หรือตั้ง statusline</div></div>
+    <div class="stat notch"><div class="k">โควตาสัปดาห์ ใช้ไป</div><div class="v" id="s-week">-</div><div class="h" id="s-week-h">ยังไม่มีข้อมูล กด "อัปเดตโควตา" หรือตั้ง statusline</div></div>
   </section>
 
   <div class="controls">
     <button type="button" class="primary notch" id="b-add" hidden>เพิ่ม agent</button>
+    <button type="button" class="notch" id="b-quota" hidden title="ถาม Haiku สั้น ๆ 1 ครั้งเพื่ออ่านโควตา กิน token นิดเดียว">อัปเดตโควตา</button>
     <button type="button" class="notch permbtn" id="b-perm" hidden>มีคำขออนุญาต <span id="perm-n">1</span> รายการ</button>
     <div class="status" id="status" role="status"><i aria-hidden="true"></i><span id="status-t">กำลังต่อ bridge…</span></div>
   </div>
@@ -918,8 +920,15 @@ function ui(){
   const live=[...S.values()].filter(a=>!a.sub&&!a.leave),ctxs=live.map(a=>a.data&&a.data.ctx&&a.data.ctx.pct).filter(v=>typeof v==='number');
   $('s-work').textContent=live.filter(a=>a.want).length+'/'+live.length;
   $('s-ctx').textContent=ctxs.length?Math.round(ctxs.reduce((s,v)=>s+v,0)/ctxs.length)+'%':'-';
-  const q=quotaPct();$('s-quota').textContent=q==null?'-':q.toFixed(1)+'%';$('s-quota-h').hidden=q!=null;
-  const wk=weekPct();$('s-week').textContent=wk==null?'-':wk.toFixed(1)+'%';$('s-week-h').hidden=wk!=null;
+  const q=quotaPct();$('s-quota').textContent=q==null?'-':q.toFixed(1)+'%';
+  const wk=weekPct();$('s-week').textContent=wk==null?'-':wk.toFixed(1)+'%';
+  // where the quota came from and when, or why it is missing
+  const qm=snap.quota||{},err=quotaMsg||qm.error;
+  const from={statusline:'statusline',agent:'งานของ agent',refresh:'ปุ่มอัปเดต'}[qm.src]||'';
+  const when=qm.at?new Date(qm.at).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):'';
+  const qh=err||(qm.at?`อัปเดต ${when} จาก${from}`:'ยังไม่มีข้อมูล กด "อัปเดตโควตา" หรือตั้ง statusline');
+  ['s-quota-h','s-week-h'].forEach(id=>{const h=$(id);h.textContent=qh;h.className='h'+(err?' bad':'');h.hidden=false;});
+  const bq=$('b-quota');bq.hidden=!CAN_CMD||!connected;bq.textContent=qm.refreshing?'กำลังอัปเดตโควตา…':'อัปเดตโควตา';bq.setAttribute('aria-busy',qm.refreshing?'true':'false');
   $('quick').hidden=!CAN_CMD||!connected;
   const stt=$('status');stt.classList.toggle('on',connected);
   $('status-t').textContent=connected?`เชื่อมต่อแล้ว · ${live.length} session`:T.txt.down;
@@ -1028,6 +1037,12 @@ $('f-preset').addEventListener('change',()=>{const p=PRESETS[+$('f-preset').valu
   fillForm(Object.assign(f,{role:p.role,prompt:p.prompt,allowedTools:p.tools,model:p.model||'',permMode:p.permMode||'default'}));});
 $('f-tools').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true');});
 $('b-add').addEventListener('click',openCreate);
+// quota refresh: one tiny Haiku call on the bridge; the answer arrives with the next snapshot
+let quotaMsg='';
+$('b-quota').addEventListener('click',async()=>{
+  if(snap.quota&&snap.quota.refreshing)return;
+  quotaMsg='';try{await api('/api/quota/refresh');}catch(e){quotaMsg=e.message;setTimeout(()=>{quotaMsg='';ui();},6000);}ui();
+});
 $('b-perm').addEventListener('click',()=>{const a=[...S.values()].find(x=>cmdable(x)&&x.data.perm);if(a)openSheet(a,false);});
 async function act(fn){try{showErr('');await fn();}catch(e){showErr(e.message);}}
 $('sh-allow').addEventListener('click',()=>act(()=>api(`/api/agents/${sel.data.agentId}/permission`,{allow:true,id:sel.data.perm&&sel.data.perm.key})));
