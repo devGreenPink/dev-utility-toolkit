@@ -1,4 +1,4 @@
-const CACHE = 'isaan-devtools-v17';
+const CACHE = 'isaan-devtools-v18';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -9,8 +9,10 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', e => {
+  // cache: 'reload' skips the HTTP cache (GitHub Pages sends max-age=600), so a new CACHE never
+  // gets filled with the previous deploy's files
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(STATIC_ASSETS))
+    caches.open(CACHE).then(c => c.addAll(STATIC_ASSETS.map(u => new Request(u, { cache: 'reload' }))))
   );
   self.skipWaiting();
 });
@@ -32,7 +34,23 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-  // Cache-first for same-origin assets
+  // Network-first for the page itself, so a new deploy shows on the first reload; cached copy when offline.
+  // A navigate-mode Request can't take init options, hence fetching by URL.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }).then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return res;
+      }).catch(() =>
+        caches.match(e.request, { ignoreSearch: true }).then(hit => hit || caches.match('./index.html'))
+      )
+    );
+    return;
+  }
+  // Cache-first for same-origin assets (refreshed by bumping CACHE on each release)
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
