@@ -1,4 +1,4 @@
-const CACHE = 'isaan-devtools-v20';
+const CACHE = 'isaan-devtools-v21';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -50,17 +50,16 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-  // Cache-first for same-origin assets (refreshed by bumping CACHE on each release)
+  // Network-first for same-origin assets too, revalidated against the server (an unchanged file costs a 304).
+  // Cache-first used to serve the previous deploy's app.js/style.css under the new page on the first load
+  // after a release; the cache is now only the offline fallback.
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(res => {
-        if (res.ok) {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return res;
-      });
-    })
+    fetch(e.request, { cache: 'no-cache' }).then(res => {
+      if (res.ok) {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+      }
+      return res;
+    }).catch(() => caches.match(e.request))
   );
 });

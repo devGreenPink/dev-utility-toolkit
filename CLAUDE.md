@@ -24,7 +24,7 @@ The app is a single HTML page with a few companion files:
 - `assets/js/app.js` — all JavaScript in one file, organized into `// ── SECTION ──`-delimited blocks (one per tool/feature — grep for `// ── ` to get the full tool list).
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
 - `manifest.json` — PWA metadata.
-- `sw.js` — service worker: cache-first for same-origin assets, network-first (with cache fallback) for cross-origin (CDN/fonts). See Versioning below for why its `CACHE` constant must stay in sync with the app version.
+- `sw.js` — service worker: network-first for everything, with the cache only as the offline fallback. Same-origin files are fetched with `cache: 'no-cache'` (ETag revalidation) so GitHub Pages' `max-age=600` can't serve the previous deploy's `app.js`/`style.css` under a new page. Before v1.21 assets were cache-first, which did exactly that on the first load after each release. See Versioning below for its `CACHE` constant.
 
 ### Tab/navigation system
 
@@ -58,8 +58,8 @@ that badge and auto-creates a matching git tag + GitHub release (skips silently 
 exists — merges that don't bump the version don't fail the build). When bumping the version, keep
 these in sync manually:
 - `.app-version` in `index.html`
-- `CACHE` constant in `sw.js` (e.g. `isaan-devtools-v14`) — must be bumped on any deploy that
-  changes cached assets, or returning users keep getting stale files from the service worker
+- `CACHE` constant in `sw.js` (e.g. `isaan-devtools-v14`) — bump it on every release: changing
+  `sw.js` is what makes browsers install the new worker, and the new name drops the old offline copy
 - the version badge in `README.md` (CI only warns on mismatch here, doesn't fail)
 
 ### External dependencies (CDN, no local copy)
