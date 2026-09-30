@@ -105,7 +105,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.18</div>
+            <div class="app-version">v1.19</div>
           </div>
         </div>
       </div>
@@ -338,7 +338,7 @@
           ></div>
           <div
             class="theme-dot"
-            style="background: #f8fafc; border: 2px solid #94a3b8"
+            style="background: #e8ebf0; border: 2px solid #94a3b8"
             data-theme-id="light"
             onclick="setTheme('light', this)"
             title="☀️ Light"
@@ -349,6 +349,28 @@
             data-theme-id="kitty"
             onclick="setTheme('kitty', this)"
             title="🐱 Kitty"
+          ></div>
+          <!-- palettes of the ESAN AI AGENT office themes (plugins/esan-office) -->
+          <div
+            class="theme-dot"
+            style="background: linear-gradient(135deg,#e9b949 50%,#232850 50%)"
+            data-theme-id="isan"
+            onclick="setTheme('isan', this)"
+            title="อีสาน"
+          ></div>
+          <div
+            class="theme-dot"
+            style="background: linear-gradient(135deg,#bdebfb 50%,#1b3620 50%)"
+            data-theme-id="cdg"
+            onclick="setTheme('cdg', this)"
+            title="CDG"
+          ></div>
+          <div
+            class="theme-dot"
+            style="background: linear-gradient(135deg,#3fc1c9 50%,#0f2a3a 50%)"
+            data-theme-id="south"
+            onclick="setTheme('south', this)"
+            title="ใต้"
           ></div>
         </div>
       </div>
@@ -994,7 +1016,7 @@
                 </div>
               </div>
               <div>
-                <div class="field-label" style="color: var(--accent)">
+                <div class="field-label" style="color: var(--accent-fg)">
                   TREE VIEW
                 </div>
                 <div
@@ -1168,7 +1190,7 @@
                   min-width: 200px;
                   padding: 8px 12px;
                   background: var(--surface2);
-                  border: 1px solid var(--border);
+                  border: 1px solid var(--line);
                   border-radius: var(--radius-sm);
                   color: var(--text);
                   font-family: var(--mono);
@@ -1620,7 +1642,7 @@
                   id="regex-count"
                   style="
                     font-size: 0.76rem;
-                    color: var(--accent);
+                    color: var(--accent-fg);
                     font-family: var(--mono);
                   "
                   >0 matches</span
@@ -1687,7 +1709,7 @@
           <div id="jwt-result" style="margin-top: 12px"></div>
 
           <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
-            <div class="field-label" style="color:var(--accent);margin-bottom:12px;letter-spacing:.05em;">✏️ JWT ENCODER (HS256)</div>
+            <div class="field-label" style="color:var(--accent-fg);margin-bottom:12px;letter-spacing:.05em;">✏️ JWT ENCODER (HS256)</div>
             <div class="space-y">
               <div>
                 <div class="field-label">PAYLOAD (JSON)</div>
@@ -4860,19 +4882,23 @@ self.addEventListener('fetch', e => {
           </div>
 
           <div id="lov-main">
-            <div class="section-header">
+            <div class="section-header" id="lov-toolbar">
               <div class="toolbar">
                 <button class="btn btn-primary" id="lov-pick-btn" onclick="lovPickFolder()">📂 เลือกโฟลเดอร์</button>
+                <button class="btn btn-green" id="lov-new-btn" onclick="lovNewFile()" style="display:none;">➕ สร้างใหม่</button>
                 <button class="btn btn-ghost" id="lov-refresh-btn" onclick="lovRefresh()" style="display:none;">🔄 โหลดใหม่</button>
                 <button class="btn btn-danger" id="lov-forget-btn" onclick="lovForgetFolder()" style="display:none;">✖ ลืมโฟลเดอร์</button>
               </div>
             </div>
-            <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px;">ยังไม่ได้เลือกโฟลเดอร์</div>
-            <div style="margin-bottom:16px;">
-              <input type="text" id="lov-search" placeholder="🔍 ค้นหาด้วย id หรือชื่อไฟล์... เช่น lovCpsComp" oninput="lovFilter(this.value)" disabled />
+            <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px;">ยังไม่ได้เลือกโฟลเดอร์ — เลือกโฟลเดอร์ <code>src/main/resources/template/query</code> ของรีโปที่ต้องการ</div>
+            <div id="lov-browse">
+              <div style="margin-bottom:16px;">
+                <input type="text" id="lov-search" placeholder="🔍 ค้นหาด้วย id, ชื่อไฟล์ หรือ description... เช่น lovCpsComp" oninput="lovFilter(this.value)" disabled />
+              </div>
+              <div id="lov-list" class="rxjs-acc-group"></div>
+              <div id="lov-empty" style="display:none;color:var(--text-dim);text-align:center;padding:40px;">ไม่พบไฟล์ JSON ในโฟลเดอร์นี้</div>
             </div>
-            <div id="lov-list" class="rxjs-acc-group"></div>
-            <div id="lov-empty" style="display:none;color:var(--text-dim);text-align:center;padding:40px;">ไม่พบไฟล์ JSON ในโฟลเดอร์นี้</div>
+            <div id="lov-editor" class="lov-ed" style="display:none;"></div>
           </div>
         </div><!-- /lov-tab -->
 

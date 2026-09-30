@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.18-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.19-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -134,13 +134,16 @@
 - **Cache API** — Service Worker intercept log animation (Cache Miss / Cache Hit / Offline)
 - **Security** — XSS attack visualization เลือกดูแต่ละ storage ว่าโดน/ปลอดภัย + Decision Tree แนะนำ storage ที่เหมาะสม
 
-### 🗂️ LOV Query Browser
-เปิดดู query-template JSON (LOV/SimpleLovContainer) จากโฟลเดอร์ในเครื่องโดยตรง — ไม่ต้อง upload:
-- เลือกโฟลเดอร์ผ่าน **File System Access API** (`showDirectoryPicker`) — จำโฟลเดอร์ไว้ข้าม session ด้วย IndexedDB
-- แสดงเป็น **Accordion** ต่อไฟล์ — ค้นหาได้ด้วย `id` หรือชื่อไฟล์
-- ประกอบ **SQL Query** จาก `select` / `from` / `where.main` อัตโนมัติ
-- ถ้ามี `where.alternate` แสดงแต่ละ case เป็น fragment `AND <condition>` พร้อม required-parameter note (เช่น `Params: zoneId`) — copy ไปต่อท้าย WHERE ได้ทันที
-- Syntax highlighting ด้วย highlight.js (SQL)
+### 🗂️ LOV Query Browser / Editor
+ดู แก้ สร้าง และลบ query-template (`*.lov.json`, SimpleLovContainer) ในโฟลเดอร์ของรีโปได้โดยตรง — ใช้แทน `cdgs-template-designer` ได้โดยไม่ต้องรัน Java:
+- เลือกโฟลเดอร์ `src/main/resources/template/query` ผ่าน **File System Access API** (`showDirectoryPicker`) — จำโฟลเดอร์ไว้ข้าม session ด้วย IndexedDB; สิทธิ์เขียนไฟล์จะถูกขอเมื่อกดบันทึก/ลบ
+- แสดงเป็น **Accordion** ต่อไฟล์ — ค้นหาได้ด้วย `id`, ชื่อไฟล์ หรือ `description`
+- ประกอบ **SQL Query** จาก `select` / `from` / `where.main` / `groupByAndHaving` + `DISTINCT` และ `ORDER BY` ของ sort ที่ `use: "auto"` (เรียงตาม `piority` แบบเดียวกับ backend)
+- แต่ละ `where.alternate` แสดงเป็น `alternates=<ชื่อ>` + fragment `AND <condition>` พร้อม parameter ที่ต้องส่ง และมี **ตัวอย่าง request** (`alternates`, `orders`, `offset`, `limit`)
+- **Editor** — แก้ทุกส่วนของไฟล์ (คอลัมน์ + sort, from/where, alternate, group by, order, parameter) พร้อม preview SQL/JSON สด; parameter (`:name`) ถูกดึงจาก SQL ให้อัตโนมัติ
+- **วาง SQL → LOV** — แยก SELECT/FROM/WHERE/GROUP BY/ORDER BY (รองรับ subquery ในคอลัมน์), alias เก็บตามที่เขียน, ORDER BY กลายเป็น sort แบบ `auto`
+- บันทึกเป็นรูปแบบเดียวกับ designer (Jackson pretty print, CRLF) — ไฟล์ที่ไม่ได้แก้จะได้ byte เดิม; ชื่อไฟล์ใหม่ตามกฎ designer (`getFooBar` → `get.foo.bar.lov.json`), เปลี่ยน id = เปลี่ยนชื่อไฟล์; ตรวจ id/ชื่อไฟล์ซ้ำ และเตือนถ้าไฟล์ถูกแก้จากที่อื่นระหว่างเปิดอยู่
+- `Ctrl+S` / `Ctrl+Enter` บันทึก · เตือนเมื่อจะออกทั้งที่ยังไม่บันทึก
 - รองรับเฉพาะ Chrome / Edge (Chromium) — เบราว์เซอร์อื่นแสดงข้อความแจ้งเตือน
 
 ### ESAN AI AGENT (Claude Code plugin)
@@ -184,7 +187,7 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 
 ## 🎨 Themes
 
-6 themes ให้เลือก บันทึกใน `localStorage`:
+9 themes ให้เลือก บันทึกใน `localStorage`:
 
 | Theme | Accent |
 |---|---|
@@ -194,6 +197,11 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 | **Dracula** | `#bd93f9` |
 | **Light** | สีอ่อน |
 | **Kitty** 🐱 | ชมพู pastel `#e8549a` + ลาเวนเดอร์ |
+| **อีสาน** | ทอง `#e9b949` บนกรมท่า — โทนสีจากออฟฟิศ ESAN AI AGENT |
+| **CDG** | ฟ้า `#bdebfb` บนเขียวเข้ม — โทนสีจากออฟฟิศ ESAN AI AGENT |
+| **ใต้** | เทอร์ควอยซ์ `#3fc1c9` บนน้ำเงินทะเล — โทนสีจากออฟฟิศ ESAN AI AGENT |
+
+ค่าสีหลัก (CSS token) ของทุก theme ผ่านเกณฑ์ contrast: ตัวอักษร ≥ 4.5:1, ขอบช่องกรอก/ปุ่ม/checkbox (`--line`) ≥ 3:1 เทียบพื้นการ์ด — สีที่ hard-code ไว้ในบาง component (เช่น diff, badge) ยังไม่ได้ปรับ
 
 ---
 
@@ -217,7 +225,7 @@ HTML + CSS + Vanilla JavaScript (no build step, no npm, no framework)
 ├── RxJS 7.8.1            — RxJS Playground runtime (CDN)
 ├── CodeMirror 5.65.16    — RxJS Playground editor + syntax highlighting (CDN)
 ├── highlight.js 11.9.0   — TypeScript / Java / SQL / JavaScript syntax highlighting for code blocks (CDN)
-├── File System Access API — LOV Query Browser: local folder read (Chromium only)
+├── File System Access API — LOV Query Browser: local folder read/write (Chromium only)
 ├── IndexedDB             — LOV Query Browser: persist directory handle across sessions
 └── Google Fonts          — IBM Plex Sans Thai, JetBrains Mono
 ```

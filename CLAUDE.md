@@ -78,7 +78,10 @@ these in sync manually:
 
 ### Themes
 
-5 themes set via `data-theme` attribute on `<body>`. Default (Indigo) uses no attribute value. Stored in `localStorage`.
+9 themes set via `data-theme` attribute on `<body>`. Default (Indigo) uses no attribute value. Stored in `localStorage`.
+`isan` / `cdg` / `south` reuse the colour palettes of the esan-office page (colours only, no pixel styling).
+Each theme block also sets the contrast tokens described at the top of `style.css` (`--line`, `--accent-fg`,
+`--on-accent`, border alphas) — a new theme must define them too, or it inherits the Indigo values.
 
 ## Key patterns in app.js
 
