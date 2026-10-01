@@ -4466,19 +4466,21 @@ let _lovSkipped = 0;
 let _lovCanWrite = false;
 let _lovRecent = []; // folders opened before, most recent first: { label, handle, path?, lastOpened }
 let _lovEdit = null; // open editor: { entry (null = new file), model, dirty, showPaste, pasteSql, saving }
-let _lovFormat = 'dlpw'; // template-query version of the open folder (LOV_FORMATS key)
+let _lovFormat = 'v8'; // template-query version of the open folder (LOV_FORMATS key)
 const LOV_RECENT_MAX = 10;
 
 // Two template-query versions are in use. Both read the same SQL parts; they differ in the sort keys,
 // the `use` enum case, extra keys, file names and the REST route (checked against the 10.1.0 jar's model).
 const LOV_FORMATS = {
-  dlpw: { // DLPW repos: cdgs-extension 0.2.0-dlpw, cdgs-template-designer 2.1.1, src/main/resources/template/query
-    name: 'cdgs-extension 0.2.0-dlpw', short: '0.2.0-dlpw', prio: 'piority', auto: 'auto', optional: 'optional',
+  v8: { // src/main/resources/template/query, cdgs-template-designer 2.1.1: cdgs-extension 8.x and the forks built on it
+    name: 'cdgs-extension 8.x', short: '8.x', usedBy: 'LED 8.1.x, BDE EIA 8.2.0, BDE bde-0.x, DLPW 0.2.0-dlpw',
+    prio: 'piority', auto: 'auto', optional: 'optional',
     route: 'query/template', type: 'SimpleLovContainer',
     like: 'String.Like', equal: 'String.Equal', in: 'String.In', idType: 'Long',
   },
-  v10: { // EWFUND repos: cdgs-extension 10.1.0, src/main/resources/queries (filters: Like/Equal/In, String.* also accepted)
-    name: 'cdgs-extension 10.1.0', short: '10.1.0', prio: 'priority', auto: 'AUTO', optional: 'OPTIONAL',
+  v10: { // src/main/resources/queries (filters: Like/Equal/In, String.* also accepted)
+    name: 'cdgs-extension 10.1.0', short: '10.1.0', usedBy: 'EWFUND',
+    prio: 'priority', auto: 'AUTO', optional: 'OPTIONAL',
     route: 'template/query', type: 'SimpleQuery',
     like: 'Like', equal: 'Equal', in: 'In', idType: 'Integer',
   },
@@ -4487,7 +4489,7 @@ const LOV_FORMATS = {
 // Version badge: the short name, with what that version means for the file on hover
 function lovVersionBadge(fmt, extraClass = '') {
   const f = LOV_FORMATS[fmt];
-  const tip = `${f.name} · sort: ${f.prio} + ${f.optional}/${f.auto} · filter: ${f.like}/${f.equal}/${f.in}`
+  const tip = `${f.name} (${f.usedBy}) · sort: ${f.prio} + ${f.optional}/${f.auto} · filter: ${f.like}/${f.equal}/${f.in}`
     + ` · ไฟล์ ${lovIdToFileName('getFooBar', fmt)} · GET <root-path>/${f.route}/<id>`;
   return `<span class="lov-ver${extraClass}" title="${lovAttr(tip)}">LOV ${lovHtml(f.short)}</span>`;
 }
@@ -4500,23 +4502,23 @@ function lovFileFormat(json) {
   const orders = [...Object.values(obj(json.order)), ...Object.values(obj(json.select)).map(c => obj(c).order)];
   for (const o of orders.filter(o => o && typeof o === 'object')) {
     if ('priority' in o || /^[A-Z]+$/.test(o.use || '')) return 'v10';
-    if ('piority' in o || /^[a-z]+$/.test(o.use || '')) return 'dlpw';
+    if ('piority' in o || /^[a-z]+$/.test(o.use || '')) return 'v8';
   }
-  if (Object.values(obj(json.select)).some(c => c && typeof c === 'object' && 'visible' in c)) return 'v10';
+  // Column `visible` is no sign of 10.1.0: some BDE (8.x) files carry it too
   return null;
 }
 
 // Majority of the files decides; an empty or undecided folder goes by its name (EWFUND's is "queries")
 function lovDetectFormat(files, dirName) {
-  const votes = { dlpw: 0, v10: 0 };
+  const votes = { v8: 0, v10: 0 };
   files.forEach(f => {
     const fmt = lovFileFormat(f.json);
     if (fmt) votes[fmt]++;
-    else if (f.fileName === lovIdToFileName(f.json.id || '', 'v10') && f.fileName !== lovIdToFileName(f.json.id || '', 'dlpw')) votes.v10++;
-    else if (f.fileName === lovIdToFileName(f.json.id || '', 'dlpw') && f.fileName !== lovIdToFileName(f.json.id || '', 'v10')) votes.dlpw++;
+    else if (f.fileName === lovIdToFileName(f.json.id || '', 'v10') && f.fileName !== lovIdToFileName(f.json.id || '', 'v8')) votes.v10++;
+    else if (f.fileName === lovIdToFileName(f.json.id || '', 'v8') && f.fileName !== lovIdToFileName(f.json.id || '', 'v10')) votes.v8++;
   });
-  if (votes.v10 !== votes.dlpw) return votes.v10 > votes.dlpw ? 'v10' : 'dlpw';
-  return dirName === 'queries' ? 'v10' : 'dlpw';
+  if (votes.v10 !== votes.v8) return votes.v10 > votes.v8 ? 'v10' : 'v8';
+  return dirName === 'queries' ? 'v10' : 'v8';
 }
 
 function lovIdbOpen() {
@@ -4594,8 +4596,7 @@ async function lovRecentMatch(handle) {
 }
 
 // The API never exposes a path and the query folder is "query"/"queries" in every repo, so picking the repo
-// itself is what names a chip. DLPW repos (cdgs-extension 0.2.0-dlpw) keep templates in template/query,
-// EWFUND ones (10.1.0) in queries.
+// itself is what names a chip. cdgs-extension 8.x repos keep templates in template/query, 10.1.0 ones in queries.
 const LOV_QUERY_DIRS = ['src/main/resources/template/query', 'src/main/resources/queries'];
 
 async function lovFindQueryDir(root) {
@@ -4863,9 +4864,9 @@ async function lovLoadFiles() {
   lovFilter(search ? search.value : '');
 }
 
-// 0.2.0-dlpw spells it `piority`, 10.1.0 `priority`
+// 8.x spells it `piority`, 10.1.0 `priority`
 const lovOrderPrio = o => ('piority' in o ? o.piority : o.priority);
-// `auto`/`optional` in 0.2.0-dlpw, `AUTO`/`OPTIONAL` in 10.1.0
+// `auto`/`optional` in 8.x, `AUTO`/`OPTIONAL` in 10.1.0
 const lovIsAuto = use => String(use || '').toLowerCase() === 'auto';
 
 // Mirrors the backend: global `order` first, then column orders, stable-sorted by priority ascending
@@ -4931,7 +4932,7 @@ function lovRouteNote() {
   return _lovFormat === 'v10' ? 'path ตาม cdgs.template.query.root-path ใน application.properties' : '';
 }
 
-// Both versions write with Jackson INDENT_OUTPUT. File names: cdgs-template-designer 2.1.1 (0.2.0-dlpw) turns
+// Both versions write with Jackson INDENT_OUTPUT. File names: cdgs-template-designer 2.1.1 (8.x) turns
 // id "getFooBar" into get.foo.bar.lov.json; 10.1.0 keeps the id as is (getFooBar.lov.json)
 const LOV_JSON_ESC = { '"': '\\"', '\\': '\\\\', '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r' };
 
@@ -5510,9 +5511,10 @@ function lovRenderEditor() {
   const ed = _lovEdit, m = ed.model, f = lovEdFmt();
   const units = lovFolderUnitNames();
   const usedNote = units.length ? `ไฟล์ในโฟลเดอร์นี้ใช้: ${units.map(u => `${u.name} ×${u.count}`).join(', ')}` : '';
-  // The QueryTemplateConfiguration rule belongs to DLPW repos (0.2.0-dlpw), so it goes by the folder, not the file
+  // A repo rule, so it goes by the folder, not the file. 8.x repos (DLPW, LED, EIA) map unitName in
+  // QueryTemplateConfiguration.java; BDE's bde-0.x forks set it up elsewhere.
   const unitHint = _lovFormat === 'v10' ? usedNote
-    : 'ต้องตรงกับ key ใน QueryTemplateConfiguration.java ของรีโปนั้น' + (usedNote ? ` · ${usedNote}` : '');
+    : 'ต้องตรงกับ persistence unit ที่รีโปนั้นตั้งไว้ (เช่น key ใน QueryTemplateConfiguration.java)' + (usedNote ? ` · ${usedNote}` : '');
   const unitValues = units.map(u => u.name).filter(n => n !== '(ว่าง)');
   const bool = (f, label) => `<label class="mode-label"><input type="checkbox" data-f="${f}"${m[f] ? ' checked' : ''}> ${label}</label>`;
   const text = (f, label, extra = '') => `<div class="lov-ed-field${extra}">
@@ -5529,7 +5531,7 @@ function lovRenderEditor() {
   document.getElementById('lov-editor').innerHTML = `
     ${dl('lov-dl-coltype', ['String', 'Long', 'Date', 'BigDecimal', 'Integer', 'Double', 'Boolean'])}
     ${dl('lov-dl-ptype', ['Any', 'String', 'Long', 'Date', 'BigDecimal'])}
-    ${dl('lov-dl-unit', [...new Set([...unitValues, ...(_lovFormat === 'v10' ? [] : ['dlpw', 'dlpwDS'])])])}
+    ${dl('lov-dl-unit', unitValues)}
     ${dl('lov-dl-lovtype', [...new Set([f.type, 'SimpleLovContainer'])])}
     <div class="card lov-ed-bar">
       <div class="lov-ed-head">

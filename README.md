@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.23-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.24-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -138,9 +138,9 @@
 ดู แก้ สร้าง และลบ query-template (`*.lov.json`) ในโฟลเดอร์ของรีโปได้โดยตรง — ใช้แทน `cdgs-template-designer` ได้โดยไม่ต้องรัน Java:
 - เลือก **โฟลเดอร์รีโป** ผ่าน **File System Access API** (`showDirectoryPicker`) แล้วจะหา `src/main/resources/template/query` หรือ `src/main/resources/queries` ให้เอง (เลือกโฟลเดอร์ query ตรง ๆ ก็ได้) — สิทธิ์เขียนไฟล์จะถูกขอเมื่อกดบันทึก/ลบ
 - **โฟลเดอร์ที่เคยเปิด** — จำได้สูงสุด 10 โฟลเดอร์ข้าม session ด้วย IndexedDB แสดงเป็นชิปชื่อรีโปให้กดสลับได้ทันที (เปิดหน้าใหม่จะเปิดโฟลเดอร์ล่าสุดให้เอง); เลือกโฟลเดอร์ query ตรง ๆ จะถามชื่อเรียก และเปลี่ยนชื่อได้ด้วย 🏷️; ✕ บนชิปแค่เอาออกจากรายการ ไม่ลบไฟล์
-- **รองรับ LOV 2 เวอร์ชัน** — ตรวจจากไฟล์ในโฟลเดอร์แล้วแสดงป้าย `LOV 0.2.0-dlpw` / `LOV 10.1.0` (ไฟล์ที่ไม่ตรงกับโฟลเดอร์มีป้ายสีเหลืองแยก) แก้/สร้าง/บันทึกตามรูปแบบของเวอร์ชันนั้น:
+- **รองรับ LOV 2 เวอร์ชัน** — ตรวจจากไฟล์ในโฟลเดอร์แล้วแสดงป้าย `LOV 8.x` / `LOV 10.1.0` (ไฟล์ที่ไม่ตรงกับโฟลเดอร์มีป้ายสีเหลืองแยก) แก้/สร้าง/บันทึกตามรูปแบบของเวอร์ชันนั้น:
 
-  | | `0.2.0-dlpw` (DLPW, `template/query`) | `10.1.0` (EWFUND, `queries`) |
+  | | `8.x` (`template/query` — LED 8.1.x, BDE EIA 8.2.0, BDE bde-0.x, DLPW 0.2.0-dlpw) | `10.1.0` (`queries` — EWFUND) |
   |---|---|---|
   | sort | `piority` + `auto`/`optional` | `priority` + `AUTO`/`OPTIONAL` |
   | filter | `String.Like`/`String.Equal`/`String.In` | `Like`/`Equal`/`In` |
