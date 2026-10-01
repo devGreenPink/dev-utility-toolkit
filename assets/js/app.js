@@ -4464,7 +4464,9 @@ let _lovDirHandle = null;
 let _lovFiles = [];
 let _lovSkipped = 0;
 let _lovCanWrite = false;
+let _lovRecent = []; // folders opened before, most recent first: { label, handle, lastOpened }
 let _lovEdit = null; // open editor: { entry (null = new file), model, dirty, showPaste, pasteSql, saving }
+const LOV_RECENT_MAX = 10;
 
 function lovIdbOpen() {
   return new Promise((resolve, reject) => {
@@ -4474,38 +4476,79 @@ function lovIdbOpen() {
     req.onerror = () => reject(req.error);
   });
 }
-async function lovIdbGetHandle() {
+async function lovIdbGet(key) {
   try {
     const db = await lovIdbOpen();
     return await new Promise((resolve, reject) => {
       const tx = db.transaction('handles', 'readonly');
-      const req = tx.objectStore('handles').get('lastDir');
+      const req = tx.objectStore('handles').get(key);
       req.onsuccess = () => resolve(req.result || null);
       req.onerror = () => reject(req.error);
     });
   } catch (e) { return null; }
 }
-async function lovIdbSetHandle(handle) {
+async function lovIdbPut(key, value) {
   try {
     const db = await lovIdbOpen();
     await new Promise((resolve, reject) => {
       const tx = db.transaction('handles', 'readwrite');
-      tx.objectStore('handles').put(handle, 'lastDir');
+      tx.objectStore('handles').put(value, key);
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error);
     });
   } catch (e) {}
 }
-async function lovIdbClearHandle() {
+async function lovIdbDelete(key) {
   try {
     const db = await lovIdbOpen();
     await new Promise((resolve, reject) => {
       const tx = db.transaction('handles', 'readwrite');
-      tx.objectStore('handles').delete('lastDir');
+      tx.objectStore('handles').delete(key);
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error);
     });
   } catch (e) {}
+}
+
+// Up to v1.21 only one folder was kept, under `lastDir` — it becomes the first recent entry
+async function lovRecentLoad() {
+  let list = await lovIdbGet('recentDirs');
+  if (!Array.isArray(list)) {
+    const last = await lovIdbGet('lastDir');
+    list = last ? [{ label: last.name, handle: last, lastOpened: Date.now() }] : [];
+    if (last) {
+      await lovIdbPut('recentDirs', list);
+      await lovIdbDelete('lastDir');
+    }
+  }
+  _lovRecent = list.filter(r => r && r.handle);
+}
+
+async function lovRecentSave() {
+  await lovIdbPut('recentDirs', _lovRecent);
+}
+
+function lovRecentFind(handle) {
+  return _lovRecent.find(r => r.handle === handle) || null;
+}
+
+// A freshly picked handle is a new object even for a folder already in the list
+async function lovRecentMatch(handle) {
+  const known = lovRecentFind(handle);
+  if (known) return known;
+  for (const r of _lovRecent.slice()) {
+    try { if (await r.handle.isSameEntry(handle)) return r; } catch (e) {}
+  }
+  return null;
+}
+
+// The API only exposes the folder name, and every repo's folder is usually just "query"
+function lovFreeLabel(label, skip) {
+  const taken = l => _lovRecent.some(r => r !== skip && r.label === l);
+  if (!taken(label)) return label;
+  let n = 2;
+  while (taken(`${label} ${n}`)) n++;
+  return `${label} ${n}`;
 }
 
 async function lovVerifyPermission(handle, mode, requestIfNeeded) {
@@ -4534,9 +4577,20 @@ function lovSetStatus(msg) {
 
 function lovUpdateStatus() {
   if (!_lovDirHandle) return;
+  const entry = lovRecentFind(_lovDirHandle);
   const skipNote = _lovSkipped ? ` (ข้าม ${_lovSkipped} ไฟล์ที่อ่านไม่ได้)` : '';
   const mode = _lovCanWrite ? '✏️ แก้ไขได้' : '🔒 อ่านอย่างเดียว (จะขอสิทธิ์ตอนบันทึก/ลบ)';
-  lovSetStatus(`โฟลเดอร์: ${_lovDirHandle.name} · พบ ${_lovFiles.length} query${skipNote} · ${mode}`);
+  lovSetStatus(`โฟลเดอร์: ${entry ? entry.label : _lovDirHandle.name} · พบ ${_lovFiles.length} query${skipNote} · ${mode}`);
+}
+
+// Status text plus one action button (re-grant access, drop a missing folder, ...)
+function lovSetStatusAction(msg, btnText, onclick) {
+  lovSetStatus(msg);
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-ghost';
+  btn.textContent = btnText;
+  btn.onclick = onclick;
+  document.getElementById('lov-status').appendChild(btn);
 }
 
 async function lovPickFolder() {
@@ -4544,8 +4598,14 @@ async function lovPickFolder() {
   try {
     // Read access is enough to browse; write access is asked for on the first save/delete (lovEnsureWrite)
     const handle = await window.showDirectoryPicker();
-    await lovIdbSetHandle(handle);
-    await lovOpenFolder(handle);
+    const known = await lovRecentMatch(handle);
+    let label = known ? known.label : handle.name;
+    if (!known && _lovRecent.some(r => r.label === label)) {
+      const def = lovFreeLabel(label);
+      const input = prompt(`มีโฟลเดอร์ชื่อ "${label}" ในรายการแล้ว — ตั้งชื่อเรียกโฟลเดอร์นี้ (เช่น ชื่อรีโป)`, def);
+      label = lovFreeLabel((input || '').trim() || def);
+    }
+    await lovOpenFolder(handle, label);
   } catch (err) {
     if (err && err.name === 'AbortError') return;
     showToast('✗ ไม่สามารถเปิดโฟลเดอร์ได้');
@@ -4553,10 +4613,80 @@ async function lovPickFolder() {
   }
 }
 
-async function lovOpenFolder(handle) {
+// Opens a folder and moves it to the front of the recent list (keeps its label unless one is given)
+async function lovOpenFolder(handle, label) {
   _lovDirHandle = handle;
-  _lovCanWrite = await lovVerifyPermission(handle, 'readwrite', false);
+  const canWrite = await lovVerifyPermission(handle, 'readwrite', false);
+  const entry = await lovRecentMatch(handle) || { label: handle.name };
+  if (_lovDirHandle !== handle) return; // another folder was opened meanwhile
+  _lovCanWrite = canWrite;
+  Object.assign(entry, { handle, lastOpened: Date.now() }, label ? { label } : {});
+  // Move by object, not index: the list may have changed during the awaits (e.g. a double click)
+  _lovRecent = [entry, ..._lovRecent.filter(r => r !== entry)].slice(0, LOV_RECENT_MAX);
+  lovRenderRecent();
+  await lovRecentSave();
   await lovLoadFiles();
+}
+
+// The chip click is the user gesture requestPermission needs, so ask before reading anything.
+// Read only — write access is still asked for on the first save/delete (lovEnsureWrite).
+async function lovOpenRecent(i) {
+  const entry = _lovRecent[i];
+  if (!entry || !lovCloseEditor()) return;
+  if (!await lovVerifyPermission(entry.handle, 'read', true)) {
+    showToast('✗ ไม่ได้รับสิทธิ์เข้าถึงโฟลเดอร์');
+    return;
+  }
+  await lovOpenFolder(entry.handle);
+}
+
+// Only drops the entry from the list — nothing on disk is touched
+async function lovRemoveRecent(i) {
+  const entry = _lovRecent[i];
+  if (!entry) return;
+  if (entry.handle === _lovDirHandle) { await lovForgetFolder(); return; }
+  _lovRecent.splice(i, 1);
+  lovRenderRecent();
+  await lovRecentSave();
+}
+
+async function lovRenameFolder() {
+  const entry = lovRecentFind(_lovDirHandle);
+  if (!entry) return;
+  const input = prompt(`ตั้งชื่อเรียกโฟลเดอร์ "${entry.handle.name}" (เช่น ชื่อรีโป)`, entry.label);
+  if (input === null) return;
+  entry.label = lovFreeLabel(input.trim() || entry.handle.name, entry);
+  lovRenderRecent();
+  lovUpdateStatus();
+  await lovRecentSave();
+}
+
+function lovRenderRecent() {
+  const box = document.getElementById('lov-recent');
+  if (!box) return;
+  box.style.display = _lovRecent.length ? '' : 'none';
+  document.getElementById('lov-recent-list').innerHTML = _lovRecent.map((r, i) => {
+    const active = r.handle === _lovDirHandle;
+    const title = [r.label, r.label === r.handle.name ? '' : `โฟลเดอร์ ${r.handle.name}`,
+      `เปิดล่าสุด ${new Date(r.lastOpened).toLocaleString('th-TH')}`].filter(Boolean).join(' · ');
+    return `<span class="lov-recent-chip${active ? ' lov-recent-active' : ''}">
+      <button class="lov-recent-open" title="${lovAttr(title)}"${active ? ' aria-current="true"' : ''} onclick="lovOpenRecent(${i})">📁 ${lovHtml(r.label)}</button>
+      <button class="lov-recent-x" title="เอาออกจากรายการ (ไม่ลบไฟล์)" aria-label="เอา ${lovAttr(r.label)} ออกจากรายการ (ไม่ลบไฟล์)" onclick="lovRemoveRecent(${i})">✕</button>
+    </span>`;
+  }).join('');
+}
+
+// Back to "no folder open"; the recent list is kept
+function lovClearView(msg) {
+  _lovDirHandle = null;
+  _lovFiles = [];
+  _lovCanWrite = false;
+  lovSetStatus(msg);
+  const search = document.getElementById('lov-search');
+  if (search) { search.value = ''; search.disabled = true; }
+  ['lov-refresh-btn', 'lov-rename-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = 'none'; });
+  lovRenderList([]);
+  lovRenderRecent();
 }
 
 async function lovRefresh() {
@@ -4564,35 +4694,42 @@ async function lovRefresh() {
   await lovLoadFiles();
 }
 
+// Forgets the open folder: closes it and drops it from the recent list
 async function lovForgetFolder() {
   if (!lovCloseEditor()) return;
-  _lovDirHandle = null;
-  _lovFiles = [];
-  _lovCanWrite = false;
-  await lovIdbClearHandle();
-  lovSetStatus('ยังไม่ได้เลือกโฟลเดอร์');
-  const search = document.getElementById('lov-search');
-  if (search) { search.value = ''; search.disabled = true; }
-  ['lov-refresh-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = 'none'; });
-  lovRenderList([]);
+  const entry = lovRecentFind(_lovDirHandle);
+  if (entry) _lovRecent.splice(_lovRecent.indexOf(entry), 1);
+  lovClearView('ยังไม่ได้เลือกโฟลเดอร์');
+  await lovRecentSave();
+}
+
+// The folder was moved or deleted after it was saved
+function lovFolderUnreadable(dir) {
+  const entry = lovRecentFind(dir);
+  // Sent to the back so the next page load restores a folder that still works
+  if (entry) {
+    _lovRecent = [..._lovRecent.filter(r => r !== entry), entry];
+    lovRecentSave();
+  }
+  lovClearView('');
+  const msg = `เปิดโฟลเดอร์ ${entry ? entry.label : dir.name} ไม่ได้ — อาจถูกย้ายหรือลบไปแล้ว`;
+  if (!entry) { lovSetStatus(msg); return; }
+  lovSetStatusAction(`${msg} — `, '✕ เอาออกจากรายการ', async () => {
+    await lovRemoveRecent(_lovRecent.indexOf(entry));
+    lovSetStatus('ยังไม่ได้เลือกโฟลเดอร์');
+  });
 }
 
 async function lovRestoreFolder() {
-  const handle = await lovIdbGetHandle();
-  if (!handle) return;
-  if (await lovVerifyPermission(handle, 'read', false)) {
-    await lovOpenFolder(handle);
+  await lovRecentLoad();
+  lovRenderRecent();
+  const last = _lovRecent[0];
+  if (!last) return;
+  if (await lovVerifyPermission(last.handle, 'read', false)) {
+    await lovOpenFolder(last.handle);
   } else {
-    lovSetStatus(`โฟลเดอร์ที่บันทึกไว้: ${handle.name} — `);
-    const btn = document.createElement('button');
-    btn.className = 'btn btn-ghost';
-    btn.textContent = '🔓 ขอสิทธิ์เข้าถึงโฟลเดอร์อีกครั้ง';
-    btn.onclick = async () => {
-      const ok = await lovVerifyPermission(handle, 'readwrite', true) || await lovVerifyPermission(handle, 'read', true);
-      if (ok) await lovOpenFolder(handle);
-      else showToast('✗ ไม่ได้รับสิทธิ์เข้าถึงโฟลเดอร์');
-    };
-    document.getElementById('lov-status').appendChild(btn);
+    lovSetStatusAction(`โฟลเดอร์ล่าสุด: ${last.label} — `, '🔓 ขอสิทธิ์เข้าถึงโฟลเดอร์อีกครั้ง',
+      () => lovOpenRecent(_lovRecent.indexOf(last)));
   }
 }
 
@@ -4610,28 +4747,36 @@ function lovMakeEntry(fileName, handle, raw, lastModified) {
 }
 
 async function lovLoadFiles() {
-  if (!_lovDirHandle) return;
+  const dir = _lovDirHandle;
+  if (!dir) return;
   lovSetStatus('กำลังโหลดไฟล์...');
   const files = [];
   let skipped = 0;
-  for await (const [name, handle] of _lovDirHandle.entries()) {
-    if (handle.kind !== 'file') continue; // flat-only: subfolders intentionally not recursed
-    if (!name.toLowerCase().endsWith('.json')) continue;
-    try {
-      const file = await handle.getFile();
-      files.push(lovMakeEntry(name, handle, await file.text(), file.lastModified));
-    } catch (e) {
-      console.warn('LOV: skip malformed file', name, e);
-      skipped++;
+  try {
+    for await (const [name, handle] of dir.entries()) {
+      if (handle.kind !== 'file') continue; // flat-only: subfolders intentionally not recursed
+      if (!name.toLowerCase().endsWith('.json')) continue;
+      try {
+        const file = await handle.getFile();
+        files.push(lovMakeEntry(name, handle, await file.text(), file.lastModified));
+      } catch (e) {
+        console.warn('LOV: skip malformed file', name, e);
+        skipped++;
+      }
     }
+  } catch (err) {
+    console.error(err);
+    if (_lovDirHandle === dir) lovFolderUnreadable(dir);
+    return;
   }
+  if (_lovDirHandle !== dir) return; // another folder was opened while this one was loading
   files.sort((a, b) => a.id.localeCompare(b.id));
   _lovFiles = files;
   _lovSkipped = skipped;
   lovUpdateStatus();
   const search = document.getElementById('lov-search');
   if (search) search.disabled = false;
-  ['lov-refresh-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = ''; });
+  ['lov-refresh-btn', 'lov-rename-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = ''; });
   lovFilter(search ? search.value : '');
 }
 

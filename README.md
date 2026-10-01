@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.21-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.22-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -136,7 +136,8 @@
 
 ### 🗂️ LOV Query Browser / Editor
 ดู แก้ สร้าง และลบ query-template (`*.lov.json`, SimpleLovContainer) ในโฟลเดอร์ของรีโปได้โดยตรง — ใช้แทน `cdgs-template-designer` ได้โดยไม่ต้องรัน Java:
-- เลือกโฟลเดอร์ `src/main/resources/template/query` ผ่าน **File System Access API** (`showDirectoryPicker`) — จำโฟลเดอร์ไว้ข้าม session ด้วย IndexedDB; สิทธิ์เขียนไฟล์จะถูกขอเมื่อกดบันทึก/ลบ
+- เลือกโฟลเดอร์ `src/main/resources/template/query` ผ่าน **File System Access API** (`showDirectoryPicker`) — สิทธิ์เขียนไฟล์จะถูกขอเมื่อกดบันทึก/ลบ
+- **โฟลเดอร์ที่เคยเปิด** — จำได้สูงสุด 10 โฟลเดอร์ข้าม session ด้วย IndexedDB แสดงเป็นชิปให้กดสลับรีโปได้ทันที (เปิดหน้าใหม่จะเปิดโฟลเดอร์ล่าสุดให้เอง); โฟลเดอร์ชื่อซ้ำ (เช่น `query` ทุกรีโป) จะถามชื่อเรียก และเปลี่ยนชื่อได้ด้วย 🏷️; ✕ บนชิปแค่เอาออกจากรายการ ไม่ลบไฟล์
 - แสดงเป็น **Accordion** ต่อไฟล์ — ค้นหาได้ด้วย `id`, ชื่อไฟล์ หรือ `description`
 - ประกอบ **SQL Query** จาก `select` / `from` / `where.main` / `groupByAndHaving` + `DISTINCT` และ `ORDER BY` ของ sort ที่ `use: "auto"` (เรียงตาม `piority` แบบเดียวกับ backend)
 - แต่ละ `where.alternate` แสดงเป็น `alternates=<ชื่อ>` + fragment `AND <condition>` พร้อม parameter ที่ต้องส่ง และมี **ตัวอย่าง request** (`alternates`, `orders`, `offset`, `limit`)
@@ -226,7 +227,7 @@ HTML + CSS + Vanilla JavaScript (no build step, no npm, no framework)
 ├── CodeMirror 5.65.16    — RxJS Playground editor + syntax highlighting (CDN)
 ├── highlight.js 11.9.0   — TypeScript / Java / SQL / JavaScript syntax highlighting for code blocks (CDN)
 ├── File System Access API — LOV Query Browser: local folder read/write (Chromium only)
-├── IndexedDB             — LOV Query Browser: persist directory handle across sessions
+├── IndexedDB             — LOV Query Browser: persist recent directory handles across sessions
 └── Google Fonts          — IBM Plex Sans Thai, JetBrains Mono
 ```
 

@@ -1734,6 +1734,20 @@
     .lov-acc-desc { color: var(--text-dim); font-weight: 400; font-size: 0.76rem; }
     .lov-acc-actions { margin-bottom: 14px; }
     .lov-note { font-size: 0.72rem; color: var(--warning); }
+    #lov-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
+    .lov-recent { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .lov-recent-title { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+    .lov-recent-list { display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; }
+    .lov-recent-chip { display: inline-flex; align-items: center; max-width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; transition: border-color 0.15s; }
+    .lov-recent-chip:hover { border-color: var(--border-strong); }
+    .lov-recent-active { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface2)); }
+    .lov-recent-open, .lov-recent-x { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 0.75rem; color: var(--text-dim); }
+    .lov-recent-open { padding: 4px 4px 4px 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lov-recent-open:hover { color: var(--text); }
+    .lov-recent-active .lov-recent-open { color: var(--accent-fg); font-weight: 600; }
+    .lov-recent-x { padding: 4px 10px 4px 6px; }
+    .lov-recent-x:hover { color: var(--danger); }
+    .lov-recent-open:focus-visible, .lov-recent-x:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 99px; }
 
     /* LOV editor */
     .lov-ed .card { margin-bottom: 12px; }

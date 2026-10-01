@@ -105,7 +105,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.21</div>
+            <div class="app-version">v1.22</div>
           </div>
         </div>
       </div>
@@ -4887,7 +4887,12 @@ self.addEventListener('fetch', e => {
                 <button class="btn btn-primary" id="lov-pick-btn" onclick="lovPickFolder()">📂 เลือกโฟลเดอร์</button>
                 <button class="btn btn-green" id="lov-new-btn" onclick="lovNewFile()" style="display:none;">➕ สร้างใหม่</button>
                 <button class="btn btn-ghost" id="lov-refresh-btn" onclick="lovRefresh()" style="display:none;">🔄 โหลดใหม่</button>
-                <button class="btn btn-danger" id="lov-forget-btn" onclick="lovForgetFolder()" style="display:none;">✖ ลืมโฟลเดอร์</button>
+                <button class="btn btn-ghost" id="lov-rename-btn" onclick="lovRenameFolder()" style="display:none;">🏷️ ตั้งชื่อโฟลเดอร์</button>
+                <button class="btn btn-danger" id="lov-forget-btn" onclick="lovForgetFolder()" style="display:none;">✖ ลืมโฟลเดอร์นี้</button>
+              </div>
+              <div id="lov-recent" class="lov-recent" style="display:none;">
+                <span class="lov-recent-title">โฟลเดอร์ที่เคยเปิด</span>
+                <div id="lov-recent-list" class="lov-recent-list"></div>
               </div>
             </div>
             <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px;">ยังไม่ได้เลือกโฟลเดอร์ — เลือกโฟลเดอร์ <code>src/main/resources/template/query</code> ของรีโปที่ต้องการ</div>
