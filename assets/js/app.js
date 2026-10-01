@@ -4464,9 +4464,60 @@ let _lovDirHandle = null;
 let _lovFiles = [];
 let _lovSkipped = 0;
 let _lovCanWrite = false;
-let _lovRecent = []; // folders opened before, most recent first: { label, handle, lastOpened }
+let _lovRecent = []; // folders opened before, most recent first: { label, handle, path?, lastOpened }
 let _lovEdit = null; // open editor: { entry (null = new file), model, dirty, showPaste, pasteSql, saving }
+let _lovFormat = 'dlpw'; // template-query version of the open folder (LOV_FORMATS key)
 const LOV_RECENT_MAX = 10;
+
+// Two template-query versions are in use. Both read the same SQL parts; they differ in the sort keys,
+// the `use` enum case, extra keys, file names and the REST route (checked against the 10.1.0 jar's model).
+const LOV_FORMATS = {
+  dlpw: { // DLPW repos: cdgs-extension 0.2.0-dlpw, cdgs-template-designer 2.1.1, src/main/resources/template/query
+    name: 'cdgs-extension 0.2.0-dlpw', short: '0.2.0-dlpw', prio: 'piority', auto: 'auto', optional: 'optional',
+    route: 'query/template', type: 'SimpleLovContainer',
+    like: 'String.Like', equal: 'String.Equal', in: 'String.In', idType: 'Long',
+  },
+  v10: { // EWFUND repos: cdgs-extension 10.1.0, src/main/resources/queries (filters: Like/Equal/In, String.* also accepted)
+    name: 'cdgs-extension 10.1.0', short: '10.1.0', prio: 'priority', auto: 'AUTO', optional: 'OPTIONAL',
+    route: 'template/query', type: 'SimpleQuery',
+    like: 'Like', equal: 'Equal', in: 'In', idType: 'Integer',
+  },
+};
+
+// Version badge: the short name, with what that version means for the file on hover
+function lovVersionBadge(fmt, extraClass = '') {
+  const f = LOV_FORMATS[fmt];
+  const tip = `${f.name} · sort: ${f.prio} + ${f.optional}/${f.auto} · filter: ${f.like}/${f.equal}/${f.in}`
+    + ` · ไฟล์ ${lovIdToFileName('getFooBar', fmt)} · GET <root-path>/${f.route}/<id>`;
+  return `<span class="lov-ver${extraClass}" title="${lovAttr(tip)}">LOV ${lovHtml(f.short)}</span>`;
+}
+
+// null when the file has nothing that tells the versions apart (no sorts, no 10.1.0-only keys)
+function lovFileFormat(json) {
+  if (!json || typeof json !== 'object') return null;
+  if (['publicApi', 'roles', 'permissions', 'cdgsPrivilege'].some(k => k in json) || json.type === 'SimpleQuery') return 'v10';
+  const obj = v => ((v && typeof v === 'object') ? v : {});
+  const orders = [...Object.values(obj(json.order)), ...Object.values(obj(json.select)).map(c => obj(c).order)];
+  for (const o of orders.filter(o => o && typeof o === 'object')) {
+    if ('priority' in o || /^[A-Z]+$/.test(o.use || '')) return 'v10';
+    if ('piority' in o || /^[a-z]+$/.test(o.use || '')) return 'dlpw';
+  }
+  if (Object.values(obj(json.select)).some(c => c && typeof c === 'object' && 'visible' in c)) return 'v10';
+  return null;
+}
+
+// Majority of the files decides; an empty or undecided folder goes by its name (EWFUND's is "queries")
+function lovDetectFormat(files, dirName) {
+  const votes = { dlpw: 0, v10: 0 };
+  files.forEach(f => {
+    const fmt = lovFileFormat(f.json);
+    if (fmt) votes[fmt]++;
+    else if (f.fileName === lovIdToFileName(f.json.id || '', 'v10') && f.fileName !== lovIdToFileName(f.json.id || '', 'dlpw')) votes.v10++;
+    else if (f.fileName === lovIdToFileName(f.json.id || '', 'dlpw') && f.fileName !== lovIdToFileName(f.json.id || '', 'v10')) votes.dlpw++;
+  });
+  if (votes.v10 !== votes.dlpw) return votes.v10 > votes.dlpw ? 'v10' : 'dlpw';
+  return dirName === 'queries' ? 'v10' : 'dlpw';
+}
 
 function lovIdbOpen() {
   return new Promise((resolve, reject) => {
@@ -4542,7 +4593,22 @@ async function lovRecentMatch(handle) {
   return null;
 }
 
-// The API only exposes the folder name, and every repo's folder is usually just "query"
+// The API never exposes a path and the query folder is "query"/"queries" in every repo, so picking the repo
+// itself is what names a chip. DLPW repos (cdgs-extension 0.2.0-dlpw) keep templates in template/query,
+// EWFUND ones (10.1.0) in queries.
+const LOV_QUERY_DIRS = ['src/main/resources/template/query', 'src/main/resources/queries'];
+
+async function lovFindQueryDir(root) {
+  for (const path of LOV_QUERY_DIRS) {
+    try {
+      let dir = root;
+      for (const part of path.split('/')) dir = await dir.getDirectoryHandle(part);
+      return { dir, path };
+    } catch (e) {}
+  }
+  return null;
+}
+
 function lovFreeLabel(label, skip) {
   const taken = l => _lovRecent.some(r => r !== skip && r.label === l);
   if (!taken(label)) return label;
@@ -4581,6 +4647,15 @@ function lovUpdateStatus() {
   const skipNote = _lovSkipped ? ` (ข้าม ${_lovSkipped} ไฟล์ที่อ่านไม่ได้)` : '';
   const mode = _lovCanWrite ? '✏️ แก้ไขได้' : '🔒 อ่านอย่างเดียว (จะขอสิทธิ์ตอนบันทึก/ลบ)';
   lovSetStatus(`โฟลเดอร์: ${entry ? entry.label : _lovDirHandle.name} · พบ ${_lovFiles.length} query${skipNote} · ${mode}`);
+  lovShowVersion(_lovFormat);
+}
+
+// The open folder's LOV version, shown in front of the status line (null hides it)
+function lovShowVersion(fmt) {
+  const el = document.getElementById('lov-version');
+  if (!el) return;
+  el.innerHTML = fmt ? lovVersionBadge(fmt) : '';
+  el.style.display = fmt ? '' : 'none';
 }
 
 // Status text plus one action button (re-grant access, drop a missing folder, ...)
@@ -4597,15 +4672,19 @@ async function lovPickFolder() {
   if (!lovCloseEditor()) return;
   try {
     // Read access is enough to browse; write access is asked for on the first save/delete (lovEnsureWrite)
-    const handle = await window.showDirectoryPicker();
+    const picked = await window.showDirectoryPicker();
+    const found = await lovFindQueryDir(picked);
+    const handle = found ? found.dir : picked;
     const known = await lovRecentMatch(handle);
-    let label = known ? known.label : handle.name;
-    if (!known && _lovRecent.some(r => r.label === label)) {
-      const def = lovFreeLabel(label);
-      const input = prompt(`มีโฟลเดอร์ชื่อ "${label}" ในรายการแล้ว — ตั้งชื่อเรียกโฟลเดอร์นี้ (เช่น ชื่อรีโป)`, def);
+    let label = known ? known.label : null;
+    if (found) {
+      label = lovFreeLabel(picked.name, known); // also renames a chip added from the query folder itself
+    } else if (!known) {
+      const def = lovFreeLabel(handle.name);
+      const input = prompt(`ตั้งชื่อเรียกโฟลเดอร์ "${handle.name}" (เช่น ชื่อรีโป)\nถ้าเลือกโฟลเดอร์รีโปแทน จะหา template/query หรือ queries และตั้งชื่อให้เอง`, def);
       label = lovFreeLabel((input || '').trim() || def);
     }
-    await lovOpenFolder(handle, label);
+    await lovOpenFolder(handle, label, found ? `${picked.name}/${found.path}` : undefined);
   } catch (err) {
     if (err && err.name === 'AbortError') return;
     showToast('✗ ไม่สามารถเปิดโฟลเดอร์ได้');
@@ -4613,14 +4692,14 @@ async function lovPickFolder() {
   }
 }
 
-// Opens a folder and moves it to the front of the recent list (keeps its label unless one is given)
-async function lovOpenFolder(handle, label) {
+// Opens a folder and moves it to the front of the recent list (keeps its label/path unless new ones are given)
+async function lovOpenFolder(handle, label, path) {
   _lovDirHandle = handle;
   const canWrite = await lovVerifyPermission(handle, 'readwrite', false);
   const entry = await lovRecentMatch(handle) || { label: handle.name };
   if (_lovDirHandle !== handle) return; // another folder was opened meanwhile
   _lovCanWrite = canWrite;
-  Object.assign(entry, { handle, lastOpened: Date.now() }, label ? { label } : {});
+  Object.assign(entry, { handle, lastOpened: Date.now() }, label ? { label } : {}, path ? { path } : {});
   // Move by object, not index: the list may have changed during the awaits (e.g. a double click)
   _lovRecent = [entry, ..._lovRecent.filter(r => r !== entry)].slice(0, LOV_RECENT_MAX);
   lovRenderRecent();
@@ -4667,7 +4746,8 @@ function lovRenderRecent() {
   box.style.display = _lovRecent.length ? '' : 'none';
   document.getElementById('lov-recent-list').innerHTML = _lovRecent.map((r, i) => {
     const active = r.handle === _lovDirHandle;
-    const title = [r.label, r.label === r.handle.name ? '' : `โฟลเดอร์ ${r.handle.name}`,
+    const where = r.path || (r.label === r.handle.name ? '' : `โฟลเดอร์ ${r.handle.name}`);
+    const title = [r.label, where,
       `เปิดล่าสุด ${new Date(r.lastOpened).toLocaleString('th-TH')}`].filter(Boolean).join(' · ');
     return `<span class="lov-recent-chip${active ? ' lov-recent-active' : ''}">
       <button class="lov-recent-open" title="${lovAttr(title)}"${active ? ' aria-current="true"' : ''} onclick="lovOpenRecent(${i})">📁 ${lovHtml(r.label)}</button>
@@ -4682,6 +4762,7 @@ function lovClearView(msg) {
   _lovFiles = [];
   _lovCanWrite = false;
   lovSetStatus(msg);
+  lovShowVersion(null);
   const search = document.getElementById('lov-search');
   if (search) { search.value = ''; search.disabled = true; }
   ['lov-refresh-btn', 'lov-rename-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = 'none'; });
@@ -4750,6 +4831,7 @@ async function lovLoadFiles() {
   const dir = _lovDirHandle;
   if (!dir) return;
   lovSetStatus('กำลังโหลดไฟล์...');
+  lovShowVersion(null);
   const files = [];
   let skipped = 0;
   try {
@@ -4773,6 +4855,7 @@ async function lovLoadFiles() {
   files.sort((a, b) => a.id.localeCompare(b.id));
   _lovFiles = files;
   _lovSkipped = skipped;
+  _lovFormat = lovDetectFormat(files, dir.name);
   lovUpdateStatus();
   const search = document.getElementById('lov-search');
   if (search) search.disabled = false;
@@ -4780,21 +4863,26 @@ async function lovLoadFiles() {
   lovFilter(search ? search.value : '');
 }
 
-// Mirrors the backend: global `order` first, then column orders, stable-sorted by piority ascending
+// 0.2.0-dlpw spells it `piority`, 10.1.0 `priority`
+const lovOrderPrio = o => ('piority' in o ? o.piority : o.priority);
+// `auto`/`optional` in 0.2.0-dlpw, `AUTO`/`OPTIONAL` in 10.1.0
+const lovIsAuto = use => String(use || '').toLowerCase() === 'auto';
+
+// Mirrors the backend: global `order` first, then column orders, stable-sorted by priority ascending
 function lovCollectOrders(json) {
   const out = [];
   const order = (json.order && typeof json.order === 'object') ? json.order : {};
   Object.entries(order).forEach(([key, o]) => {
-    if (o && typeof o === 'object') out.push({ key, sql: o.sql || key, type: o.type || 'ASC', use: o.use, piority: o.piority });
-    else if (o) out.push({ key, sql: key, type: String(o), use: 'auto', piority: 100 });
+    if (o && typeof o === 'object') out.push({ key, sql: o.sql || key, type: o.type || 'ASC', use: o.use, prio: lovOrderPrio(o) });
+    else if (o) out.push({ key, sql: key, type: String(o), use: 'auto', prio: 100 });
   });
   const select = (json.select && typeof json.select === 'object') ? json.select : {};
   Object.entries(select).forEach(([key, c]) => {
     if (c && typeof c === 'object' && c.order && typeof c.order === 'object') {
-      out.push({ key, sql: c.sql, type: c.order.type || 'ASC', use: c.order.use, piority: c.order.piority });
+      out.push({ key, sql: c.sql, type: c.order.type || 'ASC', use: c.order.use, prio: lovOrderPrio(c.order) });
     }
   });
-  const prio = o => (Number.isFinite(Number(o.piority)) ? Number(o.piority) : 100);
+  const prio = o => (Number.isFinite(Number(o.prio)) ? Number(o.prio) : 100);
   return out.sort((a, b) => prio(a) - prio(b));
 }
 
@@ -4805,7 +4893,7 @@ function lovBuildSql(json) {
   const main = (typeof where.main === 'string' && where.main.trim()) ? where.main.trim() : '';
   const groupBy = (typeof json.groupByAndHaving === 'string') ? json.groupByAndHaving.trim() : '';
   const orders = lovCollectOrders(json);
-  const auto = orders.filter(o => o.use === 'auto');
+  const auto = orders.filter(o => lovIsAuto(o.use));
   const baseSql = [
     `SELECT${json.distinct ? ' DISTINCT' : ''} ${cols.join(',\n  ') || '*'}`,
     `FROM ${json.from || ''}`,
@@ -4835,10 +4923,16 @@ function lovRequestExample(id, built) {
   built.cases.forEach(c => { qs.push(`alternates=${c.key}`); c.params.forEach(addParam); });
   if (built.sortKeys.length) qs.push(`orders=${built.sortKeys[0]}[ASC]`);
   qs.push('offset=0', 'limit=10');
-  return `GET <root-path>/query/template/${id}?${qs.join('&')}`;
+  return `GET <root-path>/${LOV_FORMATS[_lovFormat].route}/${id}?${qs.join('&')}`;
 }
 
-// File format and naming match cdgs-template-designer 2.1.1 (Jackson INDENT_OUTPUT, id "getFooBar" → get.foo.bar.lov.json)
+// 10.1.0 takes the route from config (framework default api/query); every EWFUND repo sets /template/query
+function lovRouteNote() {
+  return _lovFormat === 'v10' ? 'path ตาม cdgs.template.query.root-path ใน application.properties' : '';
+}
+
+// Both versions write with Jackson INDENT_OUTPUT. File names: cdgs-template-designer 2.1.1 (0.2.0-dlpw) turns
+// id "getFooBar" into get.foo.bar.lov.json; 10.1.0 keeps the id as is (getFooBar.lov.json)
 const LOV_JSON_ESC = { '"': '\\"', '\\': '\\\\', '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r' };
 
 function lovJsonString(s) {
@@ -4861,8 +4955,8 @@ function lovJacksonStringify(value, eol = '\r\n', level = 0) {
     + eol + '  '.repeat(level) + '}';
 }
 
-function lovIdToFileName(id) {
-  return id.replace(/[A-Z]/g, c => '.' + c.toLowerCase()) + '.lov.json';
+function lovIdToFileName(id, fmt = _lovFormat) {
+  return (fmt === 'v10' ? id : id.replace(/[A-Z]/g, c => '.' + c.toLowerCase())) + '.lov.json';
 }
 
 function lovToCamelCase(str) {
@@ -4943,8 +5037,10 @@ function lovSplitSqlClauses(sql) {
 
 const LOV_SQL_WORDS = /^(and|as|asc|case|desc|else|end|from|in|is|like|not|null|or|then|when)$/i;
 
-// Column id/type/filter guesses follow the designer: *id|*ref → Long, *date → Date, else String
-function lovToColumn(colSql) {
+// Column id/type/filter guesses follow each version's designer: *id|*ref → Long (2.1.1) / Integer (10.1.0),
+// *date → Date, else String
+function lovToColumn(colSql, fmt = _lovFormat) {
+  const f = LOV_FORMATS[fmt];
   let sql = colSql.trim(), id = '';
   // "<expr> AS alias" or "<expr> alias" — an implicit alias needs expr to end in ), a quote or a word
   const alias = sql.match(/^([\s\S]*?\S)\s+as\s+("?)(\w+)\2$/i) || sql.match(/^([\s\S]*\S)\s+("?)(\w+)\2$/);
@@ -4957,17 +5053,17 @@ function lovToColumn(colSql) {
     id = last && !LOV_SQL_WORDS.test(last[1]) ? last[1] : '';
     if (id.includes('_') || (id === id.toUpperCase() && /[A-Z]/.test(id))) id = lovToCamelCase(id);
   }
-  let type = 'String', filter = 'String.Like';
-  if (/(id|ref)$/i.test(id)) { type = 'Long'; filter = 'String.Equal'; }
-  else if (/date$/i.test(id)) { type = 'Date'; filter = 'String.Equal'; }
+  let type = 'String', filter = f.like;
+  if (/(id|ref)$/i.test(id)) { type = f.idType; filter = f.equal; }
+  else if (/date$/i.test(id)) { type = 'Date'; filter = f.equal; }
   return { id, column: { order: null, sql, type, search: false, filter } };
 }
 
 // Paste-SQL → LOV parts. ORDER BY becomes use:"auto" (the backend applies only auto orders by default),
 // attached to the matching select column when there is one, else a global order entry.
-function lovTransformLov(sql) {
+function lovTransformLov(sql, fmt = _lovFormat) {
   const parts = lovSplitSqlClauses(lovStripComments(sql || ''));
-  const cols = lovSplitTopLevelCommas(parts.columns).map(lovToColumn);
+  const cols = lovSplitTopLevelCommas(parts.columns).map(c => lovToColumn(c, fmt));
   const select = {};
   cols.forEach(({ id, column }) => { select[id] = column; });
   const norm = s => s.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -4976,7 +5072,7 @@ function lovTransformLov(sql) {
     lovSplitTopLevelCommas(parts.orderBy).forEach((item, i) => {
       const dir = item.match(/\s+(asc|desc)$/i);
       const orderSql = dir ? item.slice(0, dir.index).trim() : item;
-      const def = { type: dir && /desc/i.test(dir[1]) ? 'DESC' : 'ASC', use: 'auto', piority: 100 + i };
+      const def = { type: dir && /desc/i.test(dir[1]) ? 'DESC' : 'ASC', use: 'auto', prio: 100 + i };
       const byPos = /^\d+$/.test(orderSql) ? cols[Number(orderSql) - 1] : null;
       const hit = byPos || cols.find(c => c.id === orderSql || norm(c.column.sql) === norm(orderSql));
       if (hit && !hit.column.order) hit.column.order = def;
@@ -5024,7 +5120,7 @@ function lovPreviewHtml(id, built) {
   const sortNote = built.sortKeys.length ? `sort ได้ (orders=key[ASC|DESC]): ${built.sortKeys.join(', ')}` : '';
   return lovSqlBlockHtml('SQL Query', built.baseSql, built.parameter, sortNote)
     + built.cases.map(c => lovSqlBlockHtml(`alternates=${c.key}`, c.sql, c.params)).join('\n')
-    + lovSqlBlockHtml('ตัวอย่าง request', lovRequestExample(id, built), [], '', 'plaintext');
+    + lovSqlBlockHtml('ตัวอย่าง request', lovRequestExample(id, built), [], lovRouteNote(), 'plaintext');
 }
 
 const lovAttr = s => escHtml(s == null ? '' : String(s)).replace(/"/g, '&quot;');
@@ -5044,9 +5140,12 @@ function lovRenderList(files) {
     const acc = document.createElement('div');
     acc.className = 'rxjs-acc';
     const file = lovAttr(entry.fileName);
+    // Only a file that isn't the folder's version gets its own badge
+    const fileFmt = lovFileFormat(entry.json);
+    const odd = fileFmt && fileFmt !== _lovFormat ? ' ' + lovVersionBadge(fileFmt, ' lov-ver-odd') : '';
     acc.innerHTML = `<button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
       <span class="lov-acc-title">
-        <span>${lovHtml(entry.id)} <span class="lov-acc-file">(${lovHtml(entry.fileName)})</span></span>
+        <span>${lovHtml(entry.id)} <span class="lov-acc-file">(${lovHtml(entry.fileName)})</span>${odd}</span>
         ${entry.description ? `<span class="lov-acc-desc">${lovHtml(entry.description)}</span>` : ''}
       </span>
       <span class="rxjs-acc-chevron">›</span>
@@ -5119,25 +5218,43 @@ function lovParamList(obj) {
   });
 }
 
-function lovParamObj(list) {
+// 10.1.0 parameters carry `multiple` (the designer writes false); existing ones are left as they are
+function lovParamObj(list, fmt) {
   const out = {};
-  list.forEach(p => { out[p.name] = lovPick(p.orig, { type: p.type }); });
+  list.forEach(p => {
+    const isNew = !Object.keys(p.orig).length;
+    out[p.name] = lovPick(p.orig, fmt === 'v10' && isNew ? { type: p.type, multiple: false } : { type: p.type });
+  });
   return out;
 }
 
-function lovModelFromJson(json) {
+// One sort definition in the file's own spelling (`piority`/`priority`); new ones follow the file's version,
+// with the keys in the order that version's designer writes them
+function lovOrderFields(origOrder, o, fmt, withSql) {
+  const f = LOV_FORMATS[fmt];
+  const key = 'piority' in origOrder ? 'piority' : ('priority' in origOrder ? 'priority' : f.prio);
+  const sql = withSql ? { sql: o.sql } : {};
+  return fmt === 'v10'
+    ? { ...sql, use: o.use, type: o.type, [key]: o.prio }
+    : { ...sql, type: o.type, use: o.use, [key]: o.prio };
+}
+
+// fmt: the file's own version, or the folder's when the file doesn't show it
+function lovModelFromJson(json, folderFmt = _lovFormat) {
   const obj = v => ((v && typeof v === 'object') ? v : {});
   const where = obj(json.where);
+  const fmt = lovFileFormat(json) || folderFmt;
   return {
-    orig: json,
+    orig: json, fmt,
     id: json.id, description: json.description, type: json.type, autoDeclare: json.autoDeclare,
     unitName: json.unitName, distinct: json.distinct, from: json.from, main: where.main,
     groupByAndHaving: json.groupByAndHaving,
     select: Object.entries(obj(json.select)).map(([id, c]) => {
       const col = (c && typeof c === 'object') ? c : { sql: c };
+      const o = (col.order && typeof col.order === 'object') ? col.order : null;
       return {
         id, orig: obj(c), sql: col.sql, type: col.type, search: col.search, filter: col.filter,
-        order: (col.order && typeof col.order === 'object') ? { ...col.order } : null,
+        order: o ? { type: o.type, use: o.use, prio: lovOrderPrio(o) } : null,
       };
     }),
     alternate: Object.entries(obj(where.alternate)).map(([id, a]) => {
@@ -5148,30 +5265,31 @@ function lovModelFromJson(json) {
       return { id, orig: obj(a), sql: obj(a).sql, parameter: lovParamList(obj(a).parameter) };
     }),
     order: Object.entries(obj(json.order)).map(([id, o]) => {
-      const ord = (o && typeof o === 'object') ? o : { sql: id, type: String(o), use: 'auto', piority: 100 };
-      return { id, orig: obj(o), sql: ord.sql, type: ord.type, use: ord.use, piority: ord.piority };
+      const ord = (o && typeof o === 'object') ? o : { sql: id, type: String(o), use: LOV_FORMATS[fmt].auto, priority: 100 };
+      return { id, orig: obj(o), sql: ord.sql, type: ord.type, use: ord.use, prio: lovOrderPrio(ord) };
     }),
     parameter: lovParamList(json.parameter),
   };
 }
 
 // Key order for new keys follows the designer: id, description, type, autoDeclare, unitName, distinct,
-// select, from, where{main, alternate}, groupByAndHaving, order, parameter
+// select, from, where{main, alternate}, groupByAndHaving, order, parameter (10.1.0 files get theirs from
+// lovNewTemplate). A new 10.1.0 column is written like its designer does: sql…filter, visible, order.
 function lovJsonFromModel(m) {
   const o = (m.orig && typeof m.orig === 'object') ? m.orig : {};
   const ow = (o.where && typeof o.where === 'object') ? o.where : {};
   const select = {};
   m.select.forEach(c => {
     const origOrder = (c.orig.order && typeof c.orig.order === 'object') ? c.orig.order : {};
-    select[c.id] = lovPick(c.orig, {
-      order: c.order ? lovPick(origOrder, { type: c.order.type, use: c.order.use, piority: c.order.piority }) : null,
-      sql: c.sql, type: c.type, search: c.search, filter: c.filter,
-    });
+    const order = c.order ? lovPick(origOrder, lovOrderFields(origOrder, c.order, m.fmt, false)) : null;
+    const fields = { sql: c.sql, type: c.type, search: c.search, filter: c.filter };
+    select[c.id] = lovPick(c.orig, m.fmt === 'v10' && !Object.keys(c.orig).length
+      ? { ...fields, visible: true, order } : { order, ...fields });
   });
   const alternate = {};
-  m.alternate.forEach(a => { alternate[a.id] = lovPick(a.orig, { sql: a.sql, parameter: lovParamObj(a.parameter) }); });
+  m.alternate.forEach(a => { alternate[a.id] = lovPick(a.orig, { sql: a.sql, parameter: lovParamObj(a.parameter, m.fmt) }); });
   const order = {};
-  m.order.forEach(r => { order[r.id] = lovPick(r.orig, { sql: r.sql, type: r.type, use: r.use, piority: r.piority }); });
+  m.order.forEach(r => { order[r.id] = lovPick(r.orig, lovOrderFields(r.orig, r, m.fmt, true)); });
   const where = lovPick(ow, { main: m.main, alternate: (m.alternate.length || 'alternate' in ow) ? alternate : undefined });
   return lovPick(o, {
     id: m.id, description: m.description, type: m.type, autoDeclare: m.autoDeclare, unitName: m.unitName,
@@ -5179,7 +5297,7 @@ function lovJsonFromModel(m) {
     where: (Object.keys(where).length || 'where' in o) ? where : undefined,
     groupByAndHaving: m.groupByAndHaving,
     order: (m.order.length || 'order' in o) ? order : undefined,
-    parameter: (m.parameter.length || 'parameter' in o) ? lovParamObj(m.parameter) : undefined,
+    parameter: (m.parameter.length || 'parameter' in o) ? lovParamObj(m.parameter, m.fmt) : undefined,
   });
 }
 
@@ -5195,11 +5313,16 @@ function lovFolderUnitNames() {
   return Object.keys(counts).sort((a, b) => counts[b] - counts[a]).map(name => ({ name, count: counts[name] }));
 }
 
-function lovNewTemplate() {
-  return {
-    id: '', description: '', type: 'SimpleLovContainer', autoDeclare: true, unitName: null,
-    distinct: false, select: {}, from: '', where: { main: '1=1', alternate: {} }, groupByAndHaving: null, order: {}, parameter: {},
-  };
+// Same defaults and key order as each version's designer writes a new file
+function lovNewTemplate(fmt = _lovFormat) {
+  const rest = { distinct: false, select: {}, from: '', where: { main: '1=1', alternate: {} }, groupByAndHaving: null, order: {}, parameter: {} };
+  if (fmt === 'v10') {
+    return {
+      id: '', type: 'SimpleQuery', description: '', autoDeclare: true, publicApi: false, roles: [], permissions: [],
+      cdgsPrivilege: { programs: [], permissions: [] }, unitName: null, ...rest,
+    };
+  }
+  return { id: '', description: '', type: 'SimpleLovContainer', autoDeclare: true, unitName: null, ...rest };
 }
 
 function lovSqlParamNames(sqls) {
@@ -5238,6 +5361,7 @@ const lovIdOk = s => typeof s === 'string' && /^[A-Za-z0-9_.$-]+$/.test(s);
 
 function lovValidate(m, entry) {
   const errs = [];
+  const prioName = LOV_FORMATS[m.fmt].prio;
   const badId = s => !lovIdOk(s);
   const blank = s => typeof s !== 'string' || !s.trim();
   const dupes = (rows, what) => {
@@ -5251,7 +5375,7 @@ function lovValidate(m, entry) {
     if (typeof c.id !== 'string' || !/^\S+$/.test(c.id)) errs.push(`${n}: id ต้องไม่ว่างและห้ามมีช่องว่าง`);
     if (blank(c.sql)) errs.push(`${n}: sql ว่าง`);
     if (typeof c.type !== 'string' || !/^\S+$/.test(c.type)) errs.push(`${n}: type ต้องไม่ว่างและห้ามมีช่องว่าง`);
-    if (c.order && !Number.isInteger(c.order.piority)) errs.push(`${n}: piority ต้องเป็นจำนวนเต็ม`);
+    if (c.order && !Number.isInteger(c.order.prio)) errs.push(`${n}: ${prioName} ต้องเป็นจำนวนเต็ม`);
   });
   dupes(m.select, 'คอลัมน์');
   if (blank(m.from)) errs.push('FROM ต้องไม่ว่าง');
@@ -5265,7 +5389,7 @@ function lovValidate(m, entry) {
     const n = `order ที่ ${i + 1}${r.id ? ` (${r.id})` : ''}`;
     if (typeof r.id !== 'string' || !/^\S+$/.test(r.id)) errs.push(`${n}: id ต้องไม่ว่างและห้ามมีช่องว่าง`);
     if (blank(r.sql)) errs.push(`${n}: sql ว่าง`);
-    if (!Number.isInteger(r.piority)) errs.push(`${n}: piority ต้องเป็นจำนวนเต็ม`);
+    if (!Number.isInteger(r.prio)) errs.push(`${n}: ${prioName} ต้องเป็นจำนวนเต็ม`);
   });
   dupes(m.order, 'order');
   if (!badId(m.id)) {
@@ -5282,9 +5406,10 @@ function lovValidate(m, entry) {
 
 // ── LOV editor: UI ──
 const LOV_ROW_LISTS = { select: 'select', alt: 'alternate', order: 'order', param: 'parameter' };
-const LOV_FILTERS = [['', '---'], ['String.Like', 'Like'], ['String.Equal', 'Equal'], ['String.In', 'In']];
+const lovFilters = f => [['', '---'], [f.like, 'Like'], [f.equal, 'Equal'], [f.in, 'In']];
 const LOV_ORDER_TYPES = [['ASC', 'ASC'], ['DESC', 'DESC']];
-const LOV_ORDER_USES = [['optional', 'optional'], ['auto', 'auto']];
+const lovEdFmt = () => LOV_FORMATS[_lovEdit.model.fmt];
+const lovOrderUses = f => [[f.optional, f.optional], [f.auto, f.auto]];
 const _lovTimers = {};
 
 function lovLater(key, fn, ms = 600) {
@@ -5305,17 +5430,18 @@ function lovRows(text) {
 function lovColRowHtml(c, i) {
   const o = c.order;
   const off = o ? '' : ' disabled';
+  const f = lovEdFmt();
   return `<div class="lov-ed-row lov-ed-col" data-sec="select" data-i="${i}">
     <input type="text" data-f="id" value="${lovAttr(c.id)}" placeholder="id" aria-label="คอลัมน์ ${i + 1} id">
     <textarea data-f="sql" rows="${lovRows(c.sql)}" placeholder="sql เช่น U.USER_NAME" aria-label="คอลัมน์ ${i + 1} sql">${lovHtml(c.sql)}</textarea>
     <input type="text" data-f="type" list="lov-dl-coltype" value="${lovAttr(c.type)}" aria-label="คอลัมน์ ${i + 1} type">
-    <select data-f="filter" aria-label="คอลัมน์ ${i + 1} filter">${lovOptions(LOV_FILTERS, c.filter)}</select>
+    <select data-f="filter" aria-label="คอลัมน์ ${i + 1} filter">${lovOptions(lovFilters(f), c.filter)}</select>
     <label class="mode-label"><input type="checkbox" data-f="search"${c.search ? ' checked' : ''}> search</label>
     <div class="lov-ed-order">
       <label class="mode-label"><input type="checkbox" data-f="orderOn"${o ? ' checked' : ''}> sort</label>
       <select data-f="order.type" aria-label="คอลัมน์ ${i + 1} order type"${off}>${lovOptions(LOV_ORDER_TYPES, o ? o.type : 'ASC')}</select>
-      <select data-f="order.use" aria-label="คอลัมน์ ${i + 1} order use"${off}>${lovOptions(LOV_ORDER_USES, o ? o.use : 'optional')}</select>
-      <input type="number" data-f="order.piority" value="${lovAttr(o ? o.piority : 100)}" aria-label="คอลัมน์ ${i + 1} piority"${off}>
+      <select data-f="order.use" aria-label="คอลัมน์ ${i + 1} order use"${off}>${lovOptions(lovOrderUses(f), o ? o.use : f.optional)}</select>
+      <input type="number" data-f="order.prio" value="${lovAttr(o ? o.prio : 100)}" aria-label="คอลัมน์ ${i + 1} ${f.prio}"${off}>
     </div>
     <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('select', ${i})" aria-label="ลบคอลัมน์ ${i + 1}">✕</button>
   </div>`;
@@ -5352,12 +5478,13 @@ function lovAltRowHtml(a, i) {
 }
 
 function lovOrderRowHtml(r, i) {
+  const f = lovEdFmt();
   return `<div class="lov-ed-row lov-ed-ord" data-sec="order" data-i="${i}">
     <input type="text" data-f="id" value="${lovAttr(r.id)}" placeholder="id" aria-label="order ${i + 1} id">
     <textarea data-f="sql" rows="${lovRows(r.sql)}" placeholder="sql เช่น T.DATE DESC, T.NO" aria-label="order ${i + 1} sql">${lovHtml(r.sql)}</textarea>
     <select data-f="type" aria-label="order ${i + 1} type">${lovOptions(LOV_ORDER_TYPES, r.type)}</select>
-    <select data-f="use" aria-label="order ${i + 1} use">${lovOptions(LOV_ORDER_USES, r.use)}</select>
-    <input type="number" data-f="piority" value="${lovAttr(r.piority)}" aria-label="order ${i + 1} piority">
+    <select data-f="use" aria-label="order ${i + 1} use">${lovOptions(lovOrderUses(f), r.use)}</select>
+    <input type="number" data-f="prio" value="${lovAttr(r.prio)}" aria-label="order ${i + 1} ${f.prio}">
     <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('order', ${i})" aria-label="ลบ order ${i + 1}">✕</button>
   </div>`;
 }
@@ -5380,10 +5507,12 @@ function lovRenderEdSection(sec) {
 }
 
 function lovRenderEditor() {
-  const ed = _lovEdit, m = ed.model;
+  const ed = _lovEdit, m = ed.model, f = lovEdFmt();
   const units = lovFolderUnitNames();
-  const unitHint = 'ต้องตรงกับ key ใน QueryTemplateConfiguration.java ของรีโปนั้น'
-    + (units.length ? ` · ไฟล์ในโฟลเดอร์นี้ใช้: ${units.map(u => `${u.name} ×${u.count}`).join(', ')}` : '');
+  const usedNote = units.length ? `ไฟล์ในโฟลเดอร์นี้ใช้: ${units.map(u => `${u.name} ×${u.count}`).join(', ')}` : '';
+  // The QueryTemplateConfiguration rule belongs to DLPW repos (0.2.0-dlpw), so it goes by the folder, not the file
+  const unitHint = _lovFormat === 'v10' ? usedNote
+    : 'ต้องตรงกับ key ใน QueryTemplateConfiguration.java ของรีโปนั้น' + (usedNote ? ` · ${usedNote}` : '');
   const unitValues = units.map(u => u.name).filter(n => n !== '(ว่าง)');
   const bool = (f, label) => `<label class="mode-label"><input type="checkbox" data-f="${f}"${m[f] ? ' checked' : ''}> ${label}</label>`;
   const text = (f, label, extra = '') => `<div class="lov-ed-field${extra}">
@@ -5399,13 +5528,13 @@ function lovRenderEditor() {
 
   document.getElementById('lov-editor').innerHTML = `
     ${dl('lov-dl-coltype', ['String', 'Long', 'Date', 'BigDecimal', 'Integer', 'Double', 'Boolean'])}
-    ${dl('lov-dl-ptype', ['Any', 'String', 'Long', 'Date'])}
-    ${dl('lov-dl-unit', [...new Set([...unitValues, 'dlpw', 'dlpwDS'])])}
-    ${dl('lov-dl-lovtype', ['SimpleLovContainer'])}
+    ${dl('lov-dl-ptype', ['Any', 'String', 'Long', 'Date', 'BigDecimal'])}
+    ${dl('lov-dl-unit', [...new Set([...unitValues, ...(_lovFormat === 'v10' ? [] : ['dlpw', 'dlpwDS'])])])}
+    ${dl('lov-dl-lovtype', [...new Set([f.type, 'SimpleLovContainer'])])}
     <div class="card lov-ed-bar">
       <div class="lov-ed-head">
         <div>
-          <div class="card-title">${ed.entry ? 'แก้ไข LOV' : 'สร้าง LOV ใหม่'} <span id="lov-ed-dirty" class="lov-ed-dirty"></span></div>
+          <div class="card-title">${ed.entry ? 'แก้ไข LOV' : 'สร้าง LOV ใหม่'} ${lovVersionBadge(m.fmt, m.fmt === _lovFormat ? '' : ' lov-ver-odd')} <span id="lov-ed-dirty" class="lov-ed-dirty"></span></div>
           <div class="lov-ed-file" id="lov-ed-file"></div>
         </div>
         <div class="toolbar">
@@ -5416,6 +5545,7 @@ function lovRenderEditor() {
         </div>
       </div>
       ${ed.entry && !ed.entry.designerFormat ? '<div class="lov-ed-warn">⚠️ ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer — บันทึกแล้วจะจัดรูปแบบใหม่ทั้งไฟล์ (ค่าเดิมไม่เปลี่ยน แต่ git diff จะใหญ่)</div>' : ''}
+      ${m.fmt !== _lovFormat ? `<div class="lov-ed-warn">⚠️ ไฟล์นี้เป็น LOV ${lovHtml(f.short)} แต่โฟลเดอร์นี้เป็น LOV ${lovHtml(LOV_FORMATS[_lovFormat].short)} — แก้และบันทึกตามรูปแบบของไฟล์ (${lovHtml(f.prio)}, ${lovHtml(f.optional)}/${lovHtml(f.auto)})</div>` : ''}
       <div id="lov-ed-errors" class="lov-ed-errors" role="alert"></div>
     </div>
 
@@ -5444,7 +5574,7 @@ function lovRenderEditor() {
     <div class="card">
       <div class="card-title">SELECT <span class="lov-ed-count" id="lov-ed-select-count"></span></div>
       <div class="lov-ed-row lov-ed-col lov-ed-row-hd" id="lov-ed-select-hd" aria-hidden="true">
-        <span>id</span><span>sql</span><span>type</span><span>filter</span><span></span><span>sort · type · use · piority</span><span></span>
+        <span>id</span><span>sql</span><span>type</span><span>filter</span><span></span><span>sort · type · use · ${f.prio}</span><span></span>
       </div>
       <div class="lov-ed-rows" id="lov-ed-select-rows"></div>
       <button class="btn btn-ghost" onclick="lovEdAdd('select')">＋ เพิ่มคอลัมน์</button>
@@ -5531,14 +5661,14 @@ function lovEdOnInput(e) {
     const sec = row.dataset.sec, i = Number(row.dataset.i);
     const item = m[LOV_ROW_LISTS[sec]][i];
     if (f === 'orderOn') {
-      if (val) item.order = item.lastOrder || { type: 'ASC', use: 'optional', piority: 100 };
+      if (val) item.order = item.lastOrder || { type: 'ASC', use: lovEdFmt().optional, prio: 100 };
       else { item.lastOrder = item.order; item.order = null; }
       row.querySelectorAll('[data-f^="order."]').forEach(x => { x.disabled = !val; });
     } else if (f.startsWith('order.')) {
       const k = f.slice(6);
-      item.order[k] = k === 'piority' ? lovToInt(val) : val;
-    } else if (f === 'piority') {
-      item.piority = lovToInt(val);
+      item.order[k] = k === 'prio' ? lovToInt(val) : val;
+    } else if (f === 'prio') {
+      item.prio = lovToInt(val);
     } else if (f === 'filter') {
       item.filter = val || null;
     } else {
@@ -5557,7 +5687,7 @@ function lovEdAutoColumnId(item) {
   if (!_lovEdit || item.id || !item.sql) return;
   const i = _lovEdit.model.select.indexOf(item);
   if (i < 0) return;
-  const guess = lovToColumn(item.sql);
+  const guess = lovToColumn(item.sql, _lovEdit.model.fmt);
   const row = document.querySelector(`#lov-ed-select-rows [data-i="${i}"]`);
   item.id = guess.id;
   if (row) row.querySelector('[data-f="id"]').value = item.id;
@@ -5605,7 +5735,7 @@ function lovEdAdd(sec) {
   const m = _lovEdit.model;
   if (sec === 'select') m.select.push({ id: '', orig: {}, sql: '', type: 'String', search: false, filter: null, order: null });
   if (sec === 'alt') m.alternate.push({ id: '', orig: {}, sql: '', parameter: [] });
-  if (sec === 'order') m.order.push({ id: '', orig: {}, sql: '', type: 'ASC', use: 'optional', piority: 100 });
+  if (sec === 'order') m.order.push({ id: '', orig: {}, sql: '', type: 'ASC', use: lovEdFmt().optional, prio: 100 });
   lovEdMarkDirty();
   lovRenderEdSection(sec);
   lovEdRefreshPreview();
@@ -5674,22 +5804,24 @@ function lovApplyPaste() {
   const ed = _lovEdit;
   const sql = document.getElementById('lov-ed-paste-sql').value;
   if (!sql.trim()) { showToast('✗ ยังไม่ได้วาง SQL'); return; }
-  const t = lovTransformLov(sql);
+  const t = lovTransformLov(sql, ed.model.fmt);
   const cols = Object.entries(t.select);
   if (!cols.length || !t.from) { showToast('✗ อ่าน SELECT / FROM ไม่ได้'); return; }
   const m = ed.model;
+  const auto = LOV_FORMATS[m.fmt].auto; // `auto` or `AUTO`, as this file's version spells it
   const hasOrderBy = Object.keys(t.order).length > 0 || cols.some(([, c]) => c.order);
   const prev = {};
   m.select.forEach(c => { prev[c.id] = c; });
   m.select = cols.map(([id, col]) => {
+    const order = col.order ? { ...col.order, use: auto } : null;
     const old = prev[id];
-    if (!old) return { id, orig: {}, sql: col.sql, type: col.type, search: col.search, filter: col.filter, order: col.order };
+    if (!old) return { id, orig: {}, sql: col.sql, type: col.type, search: col.search, filter: col.filter, order };
     // An ORDER BY replaces default sorts; UI-requested (optional) sorts on existing columns stay
-    const keepOld = !hasOrderBy || (old.order && old.order.use !== 'auto');
-    return { ...old, sql: col.sql, order: col.order || (keepOld ? old.order : null) };
+    const keepOld = !hasOrderBy || (old.order && !lovIsAuto(old.order.use));
+    return { ...old, sql: col.sql, order: order || (keepOld ? old.order : null) };
   });
   if (hasOrderBy) {
-    m.order = Object.entries(t.order).map(([id, o]) => ({ id, orig: {}, sql: o.sql, type: o.type, use: o.use, piority: o.piority }));
+    m.order = Object.entries(t.order).map(([id, o]) => ({ id, orig: {}, sql: o.sql, type: o.type, use: auto, prio: o.prio }));
   }
   m.distinct = t.distinct;
   m.from = t.from;

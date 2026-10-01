@@ -1748,6 +1748,9 @@
     .lov-recent-x { padding: 4px 10px 4px 6px; }
     .lov-recent-x:hover { color: var(--danger); }
     .lov-recent-open:focus-visible, .lov-recent-x:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 99px; }
+    .lov-status-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .lov-ver { display: inline-block; padding: 1px 8px; border: 1px solid var(--accent); border-radius: 99px; background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent-fg); font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0; text-transform: none; white-space: nowrap; vertical-align: middle; cursor: help; }
+    .lov-ver-odd { border-color: var(--warning); background: color-mix(in srgb, var(--warning) 10%, transparent); color: var(--warning); }
 
     /* LOV editor */
     .lov-ed .card { margin-bottom: 12px; }

@@ -105,7 +105,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.22</div>
+            <div class="app-version">v1.23</div>
           </div>
         </div>
       </div>
@@ -4895,7 +4895,10 @@ self.addEventListener('fetch', e => {
                 <div id="lov-recent-list" class="lov-recent-list"></div>
               </div>
             </div>
-            <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px;">ยังไม่ได้เลือกโฟลเดอร์ — เลือกโฟลเดอร์ <code>src/main/resources/template/query</code> ของรีโปที่ต้องการ</div>
+            <div class="lov-status-row">
+              <span id="lov-version" style="display:none;"></span>
+              <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);">ยังไม่ได้เลือกโฟลเดอร์ — เลือกโฟลเดอร์รีโป (เช่น <code>dlpw-ctl-quarkus</code>) แล้วจะหา <code>src/main/resources/template/query</code> หรือ <code>src/main/resources/queries</code> ให้เอง · เลือกโฟลเดอร์ query ตรง ๆ ก็ได้</div>
+            </div>
             <div id="lov-browse">
               <div style="margin-bottom:16px;">
                 <input type="text" id="lov-search" placeholder="🔍 ค้นหาด้วย id, ชื่อไฟล์ หรือ description... เช่น lovCpsComp" oninput="lovFilter(this.value)" disabled />

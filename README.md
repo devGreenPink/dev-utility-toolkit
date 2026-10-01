@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.22-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-1.23-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -135,15 +135,23 @@
 - **Security** — XSS attack visualization เลือกดูแต่ละ storage ว่าโดน/ปลอดภัย + Decision Tree แนะนำ storage ที่เหมาะสม
 
 ### 🗂️ LOV Query Browser / Editor
-ดู แก้ สร้าง และลบ query-template (`*.lov.json`, SimpleLovContainer) ในโฟลเดอร์ของรีโปได้โดยตรง — ใช้แทน `cdgs-template-designer` ได้โดยไม่ต้องรัน Java:
-- เลือกโฟลเดอร์ `src/main/resources/template/query` ผ่าน **File System Access API** (`showDirectoryPicker`) — สิทธิ์เขียนไฟล์จะถูกขอเมื่อกดบันทึก/ลบ
-- **โฟลเดอร์ที่เคยเปิด** — จำได้สูงสุด 10 โฟลเดอร์ข้าม session ด้วย IndexedDB แสดงเป็นชิปให้กดสลับรีโปได้ทันที (เปิดหน้าใหม่จะเปิดโฟลเดอร์ล่าสุดให้เอง); โฟลเดอร์ชื่อซ้ำ (เช่น `query` ทุกรีโป) จะถามชื่อเรียก และเปลี่ยนชื่อได้ด้วย 🏷️; ✕ บนชิปแค่เอาออกจากรายการ ไม่ลบไฟล์
+ดู แก้ สร้าง และลบ query-template (`*.lov.json`) ในโฟลเดอร์ของรีโปได้โดยตรง — ใช้แทน `cdgs-template-designer` ได้โดยไม่ต้องรัน Java:
+- เลือก **โฟลเดอร์รีโป** ผ่าน **File System Access API** (`showDirectoryPicker`) แล้วจะหา `src/main/resources/template/query` หรือ `src/main/resources/queries` ให้เอง (เลือกโฟลเดอร์ query ตรง ๆ ก็ได้) — สิทธิ์เขียนไฟล์จะถูกขอเมื่อกดบันทึก/ลบ
+- **โฟลเดอร์ที่เคยเปิด** — จำได้สูงสุด 10 โฟลเดอร์ข้าม session ด้วย IndexedDB แสดงเป็นชิปชื่อรีโปให้กดสลับได้ทันที (เปิดหน้าใหม่จะเปิดโฟลเดอร์ล่าสุดให้เอง); เลือกโฟลเดอร์ query ตรง ๆ จะถามชื่อเรียก และเปลี่ยนชื่อได้ด้วย 🏷️; ✕ บนชิปแค่เอาออกจากรายการ ไม่ลบไฟล์
+- **รองรับ LOV 2 เวอร์ชัน** — ตรวจจากไฟล์ในโฟลเดอร์แล้วแสดงป้าย `LOV 0.2.0-dlpw` / `LOV 10.1.0` (ไฟล์ที่ไม่ตรงกับโฟลเดอร์มีป้ายสีเหลืองแยก) แก้/สร้าง/บันทึกตามรูปแบบของเวอร์ชันนั้น:
+
+  | | `0.2.0-dlpw` (DLPW, `template/query`) | `10.1.0` (EWFUND, `queries`) |
+  |---|---|---|
+  | sort | `piority` + `auto`/`optional` | `priority` + `AUTO`/`OPTIONAL` |
+  | filter | `String.Like`/`String.Equal`/`String.In` | `Like`/`Equal`/`In` |
+  | ไฟล์ใหม่ | `SimpleLovContainer`, `get.foo.bar.lov.json` | `SimpleQuery` + `publicApi`/`roles`/`permissions`/`cdgsPrivilege`, `visible`, `multiple`, `getFooBar.lov.json` |
+  | route | `GET <root>/query/template/<id>` | `GET <root>/template/query/<id>` (ตาม `cdgs.template.query.root-path`) |
 - แสดงเป็น **Accordion** ต่อไฟล์ — ค้นหาได้ด้วย `id`, ชื่อไฟล์ หรือ `description`
-- ประกอบ **SQL Query** จาก `select` / `from` / `where.main` / `groupByAndHaving` + `DISTINCT` และ `ORDER BY` ของ sort ที่ `use: "auto"` (เรียงตาม `piority` แบบเดียวกับ backend)
+- ประกอบ **SQL Query** จาก `select` / `from` / `where.main` / `groupByAndHaving` + `DISTINCT` และ `ORDER BY` ของ sort ที่ `use` เป็น `auto`/`AUTO` (เรียงตาม `piority`/`priority` แบบเดียวกับ backend)
 - แต่ละ `where.alternate` แสดงเป็น `alternates=<ชื่อ>` + fragment `AND <condition>` พร้อม parameter ที่ต้องส่ง และมี **ตัวอย่าง request** (`alternates`, `orders`, `offset`, `limit`)
 - **Editor** — แก้ทุกส่วนของไฟล์ (คอลัมน์ + sort, from/where, alternate, group by, order, parameter) พร้อม preview SQL/JSON สด; parameter (`:name`) ถูกดึงจาก SQL ให้อัตโนมัติ
 - **วาง SQL → LOV** — แยก SELECT/FROM/WHERE/GROUP BY/ORDER BY (รองรับ subquery ในคอลัมน์), alias เก็บตามที่เขียน, ORDER BY กลายเป็น sort แบบ `auto`
-- บันทึกเป็นรูปแบบเดียวกับ designer (Jackson pretty print, CRLF) — ไฟล์ที่ไม่ได้แก้จะได้ byte เดิม; ชื่อไฟล์ใหม่ตามกฎ designer (`getFooBar` → `get.foo.bar.lov.json`), เปลี่ยน id = เปลี่ยนชื่อไฟล์; ตรวจ id/ชื่อไฟล์ซ้ำ และเตือนถ้าไฟล์ถูกแก้จากที่อื่นระหว่างเปิดอยู่
+- บันทึกเป็นรูปแบบเดียวกับ designer (Jackson pretty print, CRLF) — ไฟล์ที่ไม่ได้แก้จะได้ byte เดิม; ชื่อไฟล์ใหม่ตามกฎ designer ของเวอร์ชันนั้น, เปลี่ยน id = เปลี่ยนชื่อไฟล์; ตรวจ id/ชื่อไฟล์ซ้ำ และเตือนถ้าไฟล์ถูกแก้จากที่อื่นระหว่างเปิดอยู่
 - `Ctrl+S` / `Ctrl+Enter` บันทึก · เตือนเมื่อจะออกทั้งที่ยังไม่บันทึก
 - รองรับเฉพาะ Chrome / Edge (Chromium) — เบราว์เซอร์อื่นแสดงข้อความแจ้งเตือน
 
