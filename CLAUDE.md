@@ -21,7 +21,7 @@ Push to `main` → GitHub Actions (`.github/workflows/static.yml`) deploys the w
 The app is a single HTML page with a few companion files:
 
 - `index.html` — all tool UI markup. Each tool lives in a `<div id="<name>-tab" class="tab-content">` block.
-- `assets/js/app.js` — all JavaScript in one file, organized into `// ── SECTION ──`-delimited blocks (one per tool/feature — grep for `// ── ` to get the full tool list).
+- `assets/js/app.js` — all JavaScript in one file, organized into `// ── SECTION ──`-delimited blocks (one per tool/feature — grep for `// ── ` to get the full tool list). Exception: the K8s Secret Decoder lives in `assets/js/k8s-secret.js` (loaded after `app.js`, also listed in `sw.js` `STATIC_ASSETS`).
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
 - `manifest.json` — PWA metadata.
 - `sw.js` — service worker: network-first for everything, with the cache only as the offline fallback. Same-origin files are fetched with `cache: 'no-cache'` (ETag revalidation) so GitHub Pages' `max-age=600` can't serve the previous deploy's `app.js`/`style.css` under a new page. Before v1.21 assets were cache-first, which did exactly that on the first load after each release. See Versioning below for its `CACHE` constant.
