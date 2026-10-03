@@ -181,13 +181,12 @@ function injectFavStars(){
     makeNavItemFocusable(item);
   });
 }
-// Enter/Space activates any focused .nav-item (static + dynamically-rendered favorites)
+function isActivateKey(e){return e.key==='Enter'||e.key===' '||e.key==='Spacebar';}
+// Enter/Space activates a focused .nav-item (static + favorites) or copies a focused mock value
 document.addEventListener('keydown',e=>{
-  const isEnter=e.key==='Enter'||e.keyCode===13||e.which===13;
-  const isSpace=e.key===' '||e.key==='Spacebar'||e.keyCode===32||e.which===32;
-  if(!isEnter&&!isSpace)return;
-  const item=e.target.closest && e.target.closest('.nav-item');
-  if(!item||!item.classList.contains('nav-item'))return;
+  if(!isActivateKey(e)||!e.target.closest)return;
+  const item=e.target.closest('.nav-item, .mock-field-value[id]');
+  if(!item)return;
   e.preventDefault();
   item.click();
 });
@@ -335,15 +334,6 @@ document.querySelector('.content-area')?.addEventListener('scroll',hideCopyTip,{
 document.addEventListener('click',e=>{
   const val=e.target.closest && e.target.closest('.mock-field-value[id]');
   if(val)copyVal(val.id);
-});
-document.addEventListener('keydown',e=>{
-  const isEnter=e.key==='Enter'||e.keyCode===13||e.which===13;
-  const isSpace=e.key===' '||e.key==='Spacebar'||e.keyCode===32||e.which===32;
-  if(!isEnter&&!isSpace)return;
-  const val=e.target.closest && e.target.closest('.mock-field-value[id]');
-  if(!val)return;
-  e.preventDefault();
-  copyVal(val.id);
 });
 function copyElText(id){const el=document.getElementById(id);if(el)copyText(el.value!==undefined?el.value:el.textContent);}
 function copyArea(id){const el=document.getElementById(id);if(el)copyText(el.value||el.textContent);}
@@ -1781,9 +1771,7 @@ function renderCmdList(cmds,containerId,searchQuery){
       copyBtn.onclick=e=>{e.stopPropagation();copyText(item.cmd);};
       card.onclick=()=>copyText(item.cmd);
       card.onkeydown=e=>{
-        const isEnter=e.key==='Enter'||e.keyCode===13||e.which===13;
-        const isSpace=e.key===' '||e.key==='Spacebar'||e.keyCode===32||e.which===32;
-        if(!isEnter&&!isSpace)return;
+        if(!isActivateKey(e))return;
         e.preventDefault();
         copyText(item.cmd);
       };
