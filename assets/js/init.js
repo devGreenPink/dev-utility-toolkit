@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Restore saved timezone
   try{
-    const savedTz=localStorage.getItem('isaan-devtools-tz');
+    const savedTz=localStorage.getItem('esan-devtools-tz');
     if(savedTz){
       cronTz=savedTz;
       const sel=document.getElementById('cron-tz');
@@ -48,13 +48,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Persist last input for key tools (restore on load, save on input)
   const PERSIST_FIELDS = [
-    {id:'sql-input',     key:'isaan-devtools-sql-last'},
-    {id:'b64-input',     key:'isaan-devtools-b64-last'},
-    {id:'url-input',     key:'isaan-devtools-url-last'},
-    {id:'hash-input',    key:'isaan-devtools-hash-last'},
-    {id:'regex-pattern', key:'isaan-devtools-regex-pat'},
-    {id:'regex-flags',   key:'isaan-devtools-regex-flg'},
-    {id:'regex-input',   key:'isaan-devtools-regex-txt'},
+    {id:'sql-input',     key:'esan-devtools-sql-last'},
+    {id:'b64-input',     key:'esan-devtools-b64-last'},
+    {id:'url-input',     key:'esan-devtools-url-last'},
+    {id:'hash-input',    key:'esan-devtools-hash-last'},
+    {id:'regex-pattern', key:'esan-devtools-regex-pat'},
+    {id:'regex-flags',   key:'esan-devtools-regex-flg'},
+    {id:'regex-input',   key:'esan-devtools-regex-txt'},
   ];
   PERSIST_FIELDS.forEach(({id, key}) => {
     const el = document.getElementById(id);
@@ -64,9 +64,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   // Trigger post-restore reactions for tools that need it
   try {
-    if (localStorage.getItem('isaan-devtools-sql-last')) detectSqlMode(document.getElementById('sql-input').value);
-    if (localStorage.getItem('isaan-devtools-hash-last')) computeHash();
-    if (localStorage.getItem('isaan-devtools-regex-pat') || localStorage.getItem('isaan-devtools-regex-txt')) runRegex();
+    if (localStorage.getItem('esan-devtools-sql-last')) detectSqlMode(document.getElementById('sql-input').value);
+    if (localStorage.getItem('esan-devtools-hash-last')) computeHash();
+    if (localStorage.getItem('esan-devtools-regex-pat') || localStorage.getItem('esan-devtools-regex-txt')) runRegex();
   } catch(e) {}
 
   // Register Service Worker for PWA offline support (HTTPS only)

@@ -27,8 +27,8 @@ const TAB_META = {
 };
 
 // ── THEME ──
-const STORAGE_KEY='isaan-devtools-theme';
-const STORAGE_TAB='isaan-devtools-tab';
+const STORAGE_KEY='esan-devtools-theme';
+const STORAGE_TAB='esan-devtools-tab';
 function setTheme(t,btn){
   document.body.setAttribute('data-theme',t==='default'?'':t);
   document.querySelectorAll('.theme-dot').forEach(b=>b.classList.remove('active'));
@@ -58,7 +58,7 @@ function closeSidebar(){
 // Interface: load() -> Promise<string[]>, save(ids: string[]) -> Promise<void>
 // วันหลังถ้าจะเก็บบน backend ก็เขียน impl ใหม่ที่มี 2 เมธอดนี้ แล้วเรียก
 // setFavoritesStore(ApiFavoritesStore) ก่อน initFavorites() — ตัว feature ไม่ต้องแก้
-const STORAGE_FAV='isaan-devtools-favorites';
+const STORAGE_FAV='esan-devtools-favorites';
 
 const LocalStorageFavoritesStore={
   name:'localStorage',
@@ -202,7 +202,7 @@ function initFavorites(){
 }
 
 // ── NAV FILTER ──
-const STORAGE_NAVSEARCH='isaan-devtools-navsearch';
+const STORAGE_NAVSEARCH='esan-devtools-navsearch';
 function filterNav(q){
   const query=q.toLowerCase().trim();
   document.querySelectorAll('#sidebar-nav .nav-item').forEach(item=>{

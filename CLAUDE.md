@@ -32,7 +32,7 @@ The app is a single HTML page with a few companion files:
 
 ### Tab/navigation system
 
-`openTab(evt, id)` shows the matching `.tab-content` div and persists the active tab to `localStorage` (`isaan-devtools-tab`). Tab metadata (title/subtitle shown in the top bar) is declared in the `TAB_META` object at the top of `core.js`.
+`openTab(evt, id)` shows the matching `.tab-content` div and persists the active tab to `localStorage` (`esan-devtools-tab`). Tab metadata (title/subtitle shown in the top bar) is declared in the `TAB_META` object at the top of `core.js`.
 
 Adding a new tool requires four things:
 1. A `<div id="newtool-tab" class="tab-content">` block in `index.html`
@@ -47,10 +47,10 @@ Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`
 ### State persistence
 
 `localStorage` keys used:
-- `isaan-devtools-theme` — active theme name
-- `isaan-devtools-tab` — last active tab id
-- `isaan-devtools-navsearch` — last sidebar search query
-- `isaan-devtools-favorites` — favorited tool ids (see Favorites below)
+- `esan-devtools-theme` — active theme name
+- `esan-devtools-tab` — last active tab id
+- `esan-devtools-navsearch` — last sidebar search query
+- `esan-devtools-favorites` — favorited tool ids (see Favorites below)
 
 ### Favorites store
 
@@ -67,7 +67,7 @@ that badge and auto-creates a matching git tag + GitHub release (skips silently 
 exists — merges that don't bump the version don't fail the build). When bumping the version, keep
 these in sync manually:
 - `.app-version` in `index.html`
-- `CACHE` constant in `sw.js` (e.g. `isaan-devtools-v14`) — bump it on every release: changing
+- `CACHE` constant in `sw.js` (e.g. `esan-devtools-v14`) — bump it on every release: changing
   `sw.js` is what makes browsers install the new worker, and the new name drops the old offline copy
 - the version badge in `README.md` (CI only warns on mismatch here, doesn't fail)
 

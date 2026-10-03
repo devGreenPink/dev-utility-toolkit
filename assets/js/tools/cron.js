@@ -5,7 +5,7 @@ function onCronTzChange(){
   cronTz=document.getElementById('cron-tz').value;
   updateCronDisplay(currentCron);
   updateTzClock();
-  try{localStorage.setItem('isaan-devtools-tz',cronTz);}catch(e){}
+  try{localStorage.setItem('esan-devtools-tz',cronTz);}catch(e){}
 }
 function updateTzClock(){
   const el=document.getElementById('cron-tz-now');if(!el)return;

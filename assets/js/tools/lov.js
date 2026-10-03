@@ -62,7 +62,7 @@ function lovDetectFormat(files, dirName) {
 
 function lovIdbOpen() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open('isaan-devtools-fsah', 1);
+    const req = indexedDB.open('esan-devtools-fsah', 1);
     req.onupgradeneeded = () => { req.result.createObjectStore('handles'); };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
