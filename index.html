@@ -72,20 +72,20 @@
     />
 
     <!-- ── External Libraries ── -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.8.1/rxjs.umd.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.8.1/rxjs.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/properties.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/properties.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
 
     <!-- ── App Styles ── -->
     <link rel="stylesheet" href="assets/css/style.css" />
@@ -105,7 +105,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
-            <div class="app-version">v1.24</div>
+            <div class="app-version">v1.26</div>
           </div>
         </div>
       </div>
@@ -140,6 +140,13 @@
           onclick="openTab(event, 'random-tab')"
         >
           <span class="nav-icon">🎲</span> Mock Data Generator
+        </div>
+        <div
+          class="nav-item"
+          data-tab="k8s-secret-tab"
+          onclick="openTab(event, 'k8s-secret-tab')"
+        >
+          <span class="nav-icon">🗝️</span> K8s Secret Decoder
         </div>
         <div
           class="nav-item"
@@ -354,8 +361,8 @@
           <div
             class="theme-dot"
             style="background: linear-gradient(135deg,#e9b949 50%,#232850 50%)"
-            data-theme-id="isan"
-            onclick="setTheme('isan', this)"
+            data-theme-id="esan"
+            onclick="setTheme('esan', this)"
             title="อีสาน"
           ></div>
           <div
@@ -1693,6 +1700,43 @@
             >
           </div>
           <div id="hash-results" style="margin-top: 14px"></div>
+        </div>
+
+        <!-- K8S SECRET -->
+        <div id="k8s-secret-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearK8sSecret()">
+              ✖ ล้างทั้งหมด
+            </button>
+          </div>
+          <div class="space-y">
+            <div>
+              <div class="field-label">SECRET YAML / JSON</div>
+              <textarea
+                id="k8s-input"
+                rows="10"
+                spellcheck="false"
+                placeholder="วางเนื้อหาไฟล์ secret.yml หรือผลลัพธ์ kubectl get secret &lt;name&gt; -o yaml / -o json ..."
+              ></textarea>
+            </div>
+            <div class="flex-row">
+              <button
+                class="btn btn-green"
+                style="flex: 1"
+                onclick="decodeK8sSecret()"
+              >
+                🔓 Decode Secret
+              </button>
+              <button class="btn btn-ghost" onclick="copyK8sEnv()">
+                Copy as .env
+              </button>
+            </div>
+            <div
+              id="k8s-error"
+              style="color: var(--danger); font-size: 0.8rem; display: none"
+            ></div>
+            <div id="k8s-output"></div>
+          </div>
         </div>
 
         <!-- JWT -->
@@ -5050,7 +5094,7 @@ self.addEventListener('fetch', e => {
                 <li><b>agent ประจำออฟฟิศ</b> กด <b>เพิ่ม agent</b> เลือกหน้าที่ ใส่โฟลเดอร์ แล้วส่งงานจากหน้าเว็บ ทุกงานกิน token จริง</li>
                 <li><b>ถามด่วน</b> พิมพ์คำถามง่าย ๆ ในช่องถามด่วน ใช้ Haiku ค้นเว็บได้ ไม่แก้ไฟล์</li>
                 <li><b>แกล้ง agent</b> แตะตัวที่เดินเล่นอยู่ เลือก ขัดขา จั๊กจี้ สาดน้ำ หรือหลอกผี เป็นแค่ภาพ ไม่กระทบงาน</li>
-                <li><b>ธีม</b> อีสาน, CDG หรือใต้ ที่มุมขวาบน หรือเปิดด้วย <code>?theme=isan</code>, <code>?theme=green</code>, <code>?theme=south</code></li>
+                <li><b>ธีม</b> อีสาน, CDG หรือใต้ ที่มุมขวาบน หรือเปิดด้วย <code>?theme=esan</code>, <code>?theme=green</code>, <code>?theme=south</code></li>
               </ul>
             </section>
 
@@ -5107,7 +5151,30 @@ self.addEventListener('fetch', e => {
       </button>
     </div>
 
-    <!-- ── App Script ── -->
-    <script src="assets/js/app.js"></script>
+    <!-- ── App Scripts (classic globals, defer keeps this order: core → tools → init) ── -->
+    <script defer src="assets/js/core.js"></script>
+    <script defer src="assets/js/tools/mock-data.js"></script>
+    <script defer src="assets/js/tools/sql.js"></script>
+    <script defer src="assets/js/tools/diff.js"></script>
+    <script defer src="assets/js/tools/json.js"></script>
+    <script defer src="assets/js/tools/unix.js"></script>
+    <script defer src="assets/js/tools/base64.js"></script>
+    <script defer src="assets/js/tools/cron.js"></script>
+    <script defer src="assets/js/tools/regex.js"></script>
+    <script defer src="assets/js/tools/numbase.js"></script>
+    <script defer src="assets/js/tools/hash.js"></script>
+    <script defer src="assets/js/tools/jwt.js"></script>
+    <script defer src="assets/js/tools/url.js"></script>
+    <script defer src="assets/js/tools/color-picker.js"></script>
+    <script defer src="assets/js/tools/cheatsheets.js"></script>
+    <script defer src="assets/js/tools/http-status.js"></script>
+    <script defer src="assets/js/tools/image-color-picker.js"></script>
+    <script defer src="assets/js/tools/rxjs.js"></script>
+    <script defer src="assets/js/tools/angular.js"></script>
+    <script defer src="assets/js/tools/mq.js"></script>
+    <script defer src="assets/js/tools/storage.js"></script>
+    <script defer src="assets/js/tools/lov.js"></script>
+    <script defer src="assets/js/tools/k8s-secret.js"></script>
+    <script defer src="assets/js/init.js"></script>
   </body>
 </html>

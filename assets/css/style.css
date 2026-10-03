@@ -137,7 +137,7 @@
     }
 
     /* Palettes of the ESAN AI AGENT office themes (plugins/esan-office/office/index.html) — colours only */
-    [data-theme="isan"] {
+    [data-theme="esan"] {
       --bg: #141730;
       --surface: #1c1f3a;
       --surface2: #232850;
