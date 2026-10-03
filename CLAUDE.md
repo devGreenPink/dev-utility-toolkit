@@ -35,6 +35,10 @@ Adding a new tool requires three things:
 2. A `<div class="nav-item" data-tab="newtool-tab" onclick="openTab(event,'newtool-tab')">` in the sidebar nav
 3. An entry in `TAB_META` in `app.js`
 
+Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`, not in the
+`DOMContentLoaded` init — it runs once on the tab's first open. All `<script>` tags are `defer`
+(order preserved), so app code can rely on the CDN globals being loaded.
+
 ### State persistence
 
 `localStorage` keys used:

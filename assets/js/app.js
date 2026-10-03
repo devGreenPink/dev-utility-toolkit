@@ -237,6 +237,13 @@ function restoreNavSearch(){
 
 // ── NAV ──
 let activeTabId='random-tab';
+// Heavy per-tab setup (mostly highlight.js, ~360ms cold) runs on the tab's first open, not at page load
+const TAB_INIT={
+  'rxjs-tab':initRxjs,
+  'angular-tab':()=>{initAngular();highlightCode('#angular-tab pre.rxjs-code code');},
+  'mq-tab':()=>highlightCode('#mq-tab pre.mq-code code'),
+  'storage-tab':storInitHljs,
+};
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});
@@ -244,6 +251,8 @@ function openTab(evt,id){
   // mark ทุก nav item ที่ชี้ tab นี้ (ตัวใน section ปกติ + ตัวใน รายการโปรด)
   document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>{b.classList.add('active');b.setAttribute('aria-selected','true');});
   activeTabId=id;
+  const init=TAB_INIT[id];
+  if(init){delete TAB_INIT[id];init();}
   const meta=TAB_META[id]||{title:'',sub:''};
   document.getElementById('topbar-title').textContent=meta.title;
   document.getElementById('topbar-sub').textContent=meta.sub;
@@ -338,6 +347,11 @@ document.addEventListener('keydown',e=>{
 });
 function copyElText(id){const el=document.getElementById(id);if(el)copyText(el.value!==undefined?el.value:el.textContent);}
 function copyArea(id){const el=document.getElementById(id);if(el)copyText(el.value||el.textContent);}
+// highlight.js marks what it has done with data-highlighted, so this is safe to call repeatedly
+function highlightCode(sel){
+  if(!window.hljs)return;
+  document.querySelectorAll(sel).forEach(el=>{if(!el.dataset.highlighted)window.hljs.highlightElement(el);});
+}
 function highlightText(text,query){if(!query)return escHtml(text);const re=new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return escHtml(text).replace(re,'<span class="cmd-highlight">$1</span>');}
 
 // ── MOCK DATA ──
@@ -2641,11 +2655,7 @@ function initRxjs(){
   renderRxjsCats();
   renderRxjsOps();
   rxjsInitPlayground();
-  if(window.hljs){
-    document.querySelectorAll('#rxjs-tab pre.rxjs-code code, #angular-tab pre.rxjs-code code').forEach(el=>{
-      if(!el.dataset.highlighted)window.hljs.highlightElement(el);
-    });
-  }
+  highlightCode('#rxjs-tab pre.rxjs-code code');
 }
 
 function renderRxjsCats(){
@@ -2680,7 +2690,7 @@ function renderRxjsOps(){
   </div>
   <div class="rxjs-op-summary">${escHtml(op.s)}</div>
   <div class="rxjs-op-when"><span class="rxjs-when-ok">✓ ใช้เมื่อ</span>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<span class="rxjs-when-no">✗ หลีกเลี่ยง</span>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join('')}`:''}</div>
-  <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>${hlTS(op.code)}</code></pre></div></details>
+  <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code data-highlighted="yes">${hlTS(op.code)}</code></pre></div></details>
   ${op.rel.length?`<div class="rxjs-op-rel">เทียบกับ: ${op.rel.map(r=>`<button class="rxjs-rel-btn" onclick="rxjsJumpTo('${r}')">${r}</button>`).join('')}</div>`:''}
 </div>`).join('');
 }
@@ -5097,15 +5107,6 @@ function lovCopyBlock(btn) {
   copyText(code.textContent);
 }
 
-function lovInitHljs() {
-  if (!window.hljs) return;
-  document.querySelectorAll('#lov-tab pre.rxjs-code code').forEach(code => {
-    if (code.dataset.hlInit) return;
-    code.dataset.hlInit = '1';
-    window.hljs.highlightElement(code);
-  });
-}
-
 function lovSqlBlockHtml(label, sql, params, note, lang = 'sql') {
   const paramsNote = (params && params.length) ? `<span class="lov-params-note">Params: ${escHtml(params.join(', '))}</span>` : '';
   const extraNote = note ? `<span class="lov-params-note">${escHtml(note)}</span>` : '';
@@ -5164,7 +5165,7 @@ function lovRenderList(files) {
     </div>`;
     container.appendChild(acc);
   }
-  lovInitHljs();
+  highlightCode('#lov-tab pre.rxjs-code code');
 }
 
 function lovFilter(q) {
@@ -5637,7 +5638,7 @@ function lovEdRefreshPreview() {
   }
   document.getElementById('lov-ed-file').textContent = label;
   document.getElementById('lov-ed-dirty').textContent = _lovEdit.dirty ? '● ยังไม่บันทึก' : '';
-  lovInitHljs();
+  highlightCode('#lov-tab pre.rxjs-code code');
 }
 
 function lovEdMarkDirty() {
@@ -5926,19 +5927,11 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   initColorWheel();
   initHttp();
-  initRxjs();
-  initAngular();
-  if(window.hljs){
-    document.querySelectorAll('#mq-tab pre.mq-code code').forEach(el=>{
-      if(!el.dataset.highlighted)window.hljs.highlightElement(el);
-    });
-  }
   // Init storage tab
   storIdbRender();
   storXssRender();
   storDtInit();
   storLocalRefresh();
-  storInitHljs();
   initJsonLineNumbers();
   lovInit();
 
