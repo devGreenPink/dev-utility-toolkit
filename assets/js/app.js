@@ -8,6 +8,7 @@ const TAB_META = {
   'base64-tab': { title: 'Base64 Encode / Decode', sub: 'รองรับ plain text, Unicode, ภาษาไทย และ URL-safe Base64' },
   'url-tab': { title: 'URL Encode / Decode', sub: 'encodeURIComponent / decodeURIComponent · รองรับ Unicode และภาษาไทย' },
   'hash-tab': { title: 'Hash Generator', sub: 'SHA-256 / SHA-512 / SHA-1 — คำนวณฝั่ง client ทั้งหมด' },
+  'k8s-secret-tab': { title: 'K8s Secret Decoder', sub: 'วาง Secret YAML / JSON แล้ว decode data: ทุก key · รองรับหลาย Secret (---)' },
   'jwt-tab': { title: 'JWT Decoder', sub: 'แกะ JWT token ดู header, payload, signature · client-side ล้วน' },
   'cron-tab': { title: 'Cron Expression Builder', sub: 'สร้าง cron expression สำหรับ Linux, Spring @Scheduled, Quartz' },
   'regex-tab': { title: 'Regex Tester', sub: 'ทดสอบ Regular Expression พร้อม highlight และ capture groups' },
@@ -271,6 +272,7 @@ document.addEventListener('keydown',e=>{
       case'cron-tab':parseCronManual();break;
       case'hash-tab':computeHash();break;
       case'jwt-tab':decodeJWT_UI();break;
+      case'k8s-secret-tab':decodeK8sSecret();break;
       case'url-tab':urlEncode();break;
       case'regex-tab':runRegex();break;
       case'numbase-tab':numBaseConvert('dec',document.getElementById('nb-dec')?.value||'');break;

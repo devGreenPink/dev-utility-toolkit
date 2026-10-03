@@ -143,6 +143,13 @@
         </div>
         <div
           class="nav-item"
+          data-tab="k8s-secret-tab"
+          onclick="openTab(event, 'k8s-secret-tab')"
+        >
+          <span class="nav-icon">🗝️</span> K8s Secret Decoder
+        </div>
+        <div
+          class="nav-item"
           data-tab="sql-tab"
           onclick="openTab(event, 'sql-tab')"
         >
@@ -1693,6 +1700,43 @@
             >
           </div>
           <div id="hash-results" style="margin-top: 14px"></div>
+        </div>
+
+        <!-- K8S SECRET -->
+        <div id="k8s-secret-tab" class="tab-content">
+          <div class="section-header">
+            <button class="btn btn-danger" onclick="clearK8sSecret()">
+              ✖ ล้างทั้งหมด
+            </button>
+          </div>
+          <div class="space-y">
+            <div>
+              <div class="field-label">SECRET YAML / JSON</div>
+              <textarea
+                id="k8s-input"
+                rows="10"
+                spellcheck="false"
+                placeholder="วางเนื้อหาไฟล์ secret.yml หรือผลลัพธ์ kubectl get secret &lt;name&gt; -o yaml / -o json ..."
+              ></textarea>
+            </div>
+            <div class="flex-row">
+              <button
+                class="btn btn-green"
+                style="flex: 1"
+                onclick="decodeK8sSecret()"
+              >
+                🔓 Decode Secret
+              </button>
+              <button class="btn btn-ghost" onclick="copyK8sEnv()">
+                Copy as .env
+              </button>
+            </div>
+            <div
+              id="k8s-error"
+              style="color: var(--danger); font-size: 0.8rem; display: none"
+            ></div>
+            <div id="k8s-output"></div>
+          </div>
         </div>
 
         <!-- JWT -->
@@ -5109,5 +5153,6 @@ self.addEventListener('fetch', e => {
 
     <!-- ── App Script ── -->
     <script src="assets/js/app.js"></script>
+    <script src="assets/js/k8s-secret.js"></script>
   </body>
 </html>

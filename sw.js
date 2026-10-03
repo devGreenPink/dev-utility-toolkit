@@ -4,6 +4,7 @@ const STATIC_ASSETS = [
   './index.html',
   './assets/css/style.css',
   './assets/js/app.js',
+  './assets/js/k8s-secret.js',
   './assets/images/favicon.svg',
   './manifest.json',
 ];
