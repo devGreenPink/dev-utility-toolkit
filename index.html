@@ -5151,8 +5151,30 @@ self.addEventListener('fetch', e => {
       </button>
     </div>
 
-    <!-- ── App Script ── -->
-    <script defer src="assets/js/app.js"></script>
-    <script defer src="assets/js/k8s-secret.js"></script>
+    <!-- ── App Scripts (classic globals, defer keeps this order: core → tools → init) ── -->
+    <script defer src="assets/js/core.js"></script>
+    <script defer src="assets/js/tools/mock-data.js"></script>
+    <script defer src="assets/js/tools/sql.js"></script>
+    <script defer src="assets/js/tools/diff.js"></script>
+    <script defer src="assets/js/tools/json.js"></script>
+    <script defer src="assets/js/tools/unix.js"></script>
+    <script defer src="assets/js/tools/base64.js"></script>
+    <script defer src="assets/js/tools/cron.js"></script>
+    <script defer src="assets/js/tools/regex.js"></script>
+    <script defer src="assets/js/tools/numbase.js"></script>
+    <script defer src="assets/js/tools/hash.js"></script>
+    <script defer src="assets/js/tools/jwt.js"></script>
+    <script defer src="assets/js/tools/url.js"></script>
+    <script defer src="assets/js/tools/color-picker.js"></script>
+    <script defer src="assets/js/tools/cheatsheets.js"></script>
+    <script defer src="assets/js/tools/http-status.js"></script>
+    <script defer src="assets/js/tools/image-color-picker.js"></script>
+    <script defer src="assets/js/tools/rxjs.js"></script>
+    <script defer src="assets/js/tools/angular.js"></script>
+    <script defer src="assets/js/tools/mq.js"></script>
+    <script defer src="assets/js/tools/storage.js"></script>
+    <script defer src="assets/js/tools/lov.js"></script>
+    <script defer src="assets/js/tools/k8s-secret.js"></script>
+    <script defer src="assets/js/init.js"></script>
   </body>
 </html>
