@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th" data-theme="isan">
+<html lang="th" data-theme="esan">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600&family=Chakra+Petch:wght@400;500;600&display=swap">
-<script>try{var q=new URLSearchParams(location.search).get('theme'),t=q||localStorage.getItem('esan-office-theme');if(/^(isan|green|south)$/.test(t))document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{var q=new URLSearchParams(location.search).get('theme'),t=q||localStorage.getItem('esan-office-theme');if(/^(esan|green|south)$/.test(t))document.documentElement.dataset.theme=t;}catch(e){}</script>
 <style>
 :root{
   --bg:#1C1F3A;--bg-deep:#141730;--panel:#232850;--line:#3B447A;
@@ -184,7 +184,7 @@ details.sh-set summary{font-family:var(--px);font-size:15px;cursor:pointer;color
     <div class="top">
       <span class="eyebrow notch" id="eyebrow" data-i18n="eyebrow">สบายดีบ่ · ต่อกับ Claude Code บนเครื่องนี้</span>
       <div class="themes"><div class="themes" role="group" aria-label="ธีม">ธีม
-        <button type="button" class="chip" data-set-theme="isan">อีสาน</button>
+        <button type="button" class="chip" data-set-theme="esan">อีสาน</button>
         <button type="button" class="chip" data-set-theme="green">CDG</button>
         <button type="button" class="chip" data-set-theme="south">ใต้</button>
       </div><button type="button" class="chip" id="b-install" hidden>ติดตั้งเป็นแอป</button></div>
@@ -340,7 +340,7 @@ const BASE={skin:'#F1C9A5',eye:'#0B1A10',pants:'#2A3A4A',shoe:'#0B1A10',scrOn:'#
   cab:'#4A3585',cabHi:'#6B4FB8',cabDk:'#2E2160',belt:'#16221C',beltLine:'#2E3F36',felt:'#2E7D46',feltHi:'#3E9A58',
   leafA:'#3F8A4A',leafB:'#6BBF5A',sofa:'#C8563E',sofaDk:'#8F3526'};
 const THEMES={
-  isan:{floor:'plank',rug:'plaid',lounge:'isan',decor:true,
+  esan:{floor:'plank',rug:'plaid',lounge:'esan',decor:true,
     pal:Object.assign({},BASE,{k0:'#120E0A',wall:'#4A2F1F',trim:'#7A5234',floorA:'#6E4A2E',floorB:'#664429',seam:'#4E331F',
       rug:'#B8392F',rugEdge:'#2E3F8F',pk2:'#2E3F8F',pk3:'#1F2B66',pkW:'#E8DCC0',
       desk:'#C49A62',deskHi:'#D8B27A',deskEdge:'#8A6238',deskFront:'#6E4C2A',chair:'#2E3F8F',chairDk:'#1F2B66',
@@ -381,7 +381,7 @@ const THEMES={
       emptyCmd:'ยังไม่มี agent กดปุ่ม "เพิ่ม agent" เพื่อสร้างตัวประจำออฟฟิศ หรือเปิด Claude Code ที่โหลด plugin esan-office แล้ว session นั้นจะเดินเข้าประตูมาเอง',
       emptyView:'ยังไม่มี session เปิด Claude Code ที่โหลด plugin esan-office แล้ว agent จะเดินเข้าประตูมาเอง'}}
 };
-// Page copy in central Thai for the CDG theme; the Isan version is whatever the HTML already says
+// Page copy in central Thai for the CDG theme; the Esan version is whatever the HTML already says
 const GREEN_HTML={
   eyebrow:'ต่อกับ Claude Code บนเครื่องนี้',
   title:'CDG AI AGENT',
@@ -412,7 +412,7 @@ function applyText(){
   const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=T.txt.color;
   const e=document.querySelector('#roster .empty');if(e)e.remove();
 }
-let themeKey=THEMES[root.dataset.theme]?root.dataset.theme:'isan',T=THEMES[themeKey],P=T.pal;
+let themeKey=THEMES[root.dataset.theme]?root.dataset.theme:'esan',T=THEMES[themeKey],P=T.pal;
 function setTheme(k){
   if(!THEMES[k])return;themeKey=k;T=THEMES[k];P=T.pal;root.dataset.theme=k;
   try{localStorage.setItem('esan-office-theme',k);}catch(e){}
@@ -624,7 +624,7 @@ function drawRug(x,y,w,h){
       px(a-1,b,3,1,P.pkW);px(a,b-1,1,3,P.pkW);px(a,b,1,1,P.pk3);px(a-3,b-3,1,1,P.pk2);px(a+3,b+3,1,1,P.pk2);}
   }else for(let k=x+4;k<x+w-4;k+=4){px(k,y+1,2,1,P.rug);px(k,y+h-2,2,1,P.rug);}
 }
-// pixel "CDG" sign for the CDG theme, drawn where the Isan window hangs
+// pixel "CDG" sign for the CDG theme, drawn where the Esan window hangs
 const GLYPH={C:[".XXXX","X....","X....","X....","X....","X....",".XXXX"],D:["XXXX.","X...X","X...X","X...X","X...X","X...X","XXXX."],G:[".XXXX","X....","X....","X..XX","X...X","X...X",".XXX."]};
 function drawSign(x,y){box(x,y,23,11,P.k0);px(x+1,y+1,21,9,'#1B3620');['C','D','G'].forEach((ch,k)=>GLYPH[ch].forEach((row,r)=>{for(let i=0;i<5;i++)if(row[i]==='X')px(x+3+k*6+i,y+2+r,1,1,P.cyan);}));}
 function drawDecor(){
@@ -641,7 +641,7 @@ function drawDecor(){
   if(D.mask){const[x,y]=D.mask;px(x+1,y,10,2,'#2E3F8F');px(x,y+2,12,11,'#E0604E');px(x+1,y+3,1,9,'#E9B949');px(x+10,y+3,1,9,'#E9B949');
     px(x+2,y+5,3,2,'#FFFFFF');px(x+7,y+5,3,2,'#FFFFFF');px(x+3,y+5,1,1,'#120E0A');px(x+8,y+5,1,1,'#120E0A');px(x+5,y+7,2,5,'#E9B949');px(x+3,y+12,6,1,'#FFFFFF');}
 }
-// Southern wall: same slots as the Isan decor (khaen, phin, window, mask)
+// Southern wall: same slots as the Esan decor (khaen, phin, window, mask)
 function drawSouthDecor(D){
   if(D.khaen){const[x,y]=D.khaen; // nang talung: leather shadow puppet with gold punch-work on a rod
     px(x+3,y,3,3,'#3A2414');px(x+6,y+1,1,1,'#3A2414');px(x+2,y+3,5,7,'#5A3A22');px(x+3,y+4,1,1,'#F2B84B');px(x+5,y+6,1,1,'#F2B84B');px(x+3,y+8,1,1,'#F2B84B');
@@ -661,14 +661,14 @@ function drawSouthDecor(D){
     px(x+5,y+3,2,1,'#F58A70');px(x+4,y+6,1,1,'#1F6A73');px(x+7,y+6,1,1,'#1F6A73');px(x+3,y+11,1,1,'#F58A70');px(x+6,y+11,1,1,'#1F6A73');px(x+8,y+11,1,1,'#F58A70');}
 }
 function drawLounge(){
-  const F=L.F,isan=T.lounge==='isan',south=T.lounge==='south';
+  const F=L.F,esan=T.lounge==='esan',south=T.lounge==='south';
   const[mx,my,mw,mh]=F.machine;
   if(south){ // teh tarik counter: kettle and cup, the tea is pulled while someone stands there
     box(mx,my+8,mw,mh-8,P.deskFront);px(mx+1,my+8,mw-2,2,P.deskHi);
     px(mx+2,my+3,6,5,'#C0C6CC');px(mx+3,my+2,4,1,'#9AA3AB');px(mx+8,my+4,2,1,'#C0C6CC');px(mx+1,my+4,1,3,'#9AA3AB');
     px(mx+11,my+5,4,3,'#F5EBD7');px(mx+12,my+5,2,1,'#C8742E');
     if(inUse('coffee').length&&!RM&&Math.floor(time*4)%2)px(mx+12,my-2,1,7,'#C8742E');}
-  else if(isan){box(mx+2,my+3,mw-4,mh-4,'#8A4F2A');px(mx+4,my+2,mw-8,2,'#6E3A1E');px(mx+4,my+6,1,6,'#B06A3A');px(mx+6,my+10,4,1,'#E9B949');px(mx+7,my+12,2,1,'#E9B949');px(mx+mw-5,my,3,2,'#E9B949');}
+  else if(esan){box(mx+2,my+3,mw-4,mh-4,'#8A4F2A');px(mx+4,my+2,mw-8,2,'#6E3A1E');px(mx+4,my+6,1,6,'#B06A3A');px(mx+6,my+10,4,1,'#E9B949');px(mx+7,my+12,2,1,'#E9B949');px(mx+mw-5,my,3,2,'#E9B949');}
   else{box(mx,my,mw,mh,P.machine);px(mx+3,my+3,mw-6,4,P.k0);px(mx+mw-5,my+4,2,2,P.bad);px(mx+5,my+mh-7,6,5,P.mug);
     if(inUse('coffee').length&&!RM&&Math.floor(time*3)%2)px(mx+7,my+mh-10,1,2,P.mug);}
   const[bx,by,bw,bh]=F.bar;box(bx,by,bw,bh,P.deskFront);px(bx+1,by,bw-2,3,P.deskHi);px(bx,by+bh-3,bw,3,P.deskEdge);
@@ -677,7 +677,7 @@ function drawLounge(){
     px(bx+20,by-5,4,5,'#F5EBD7');px(bx+20,by-6,4,1,'#C8413B');px(bx+21,by-3,2,1,'#1F6A73');
     px(bx+28,by-3,8,3,'#F5EBD7');px(bx+29,by-4,6,1,'#E9C27A');
     inUse('bar').forEach(s=>{px(s.x-2,by+4,5,2,P.mug);px(s.x-1,by+4,3,1,'#E9C27A');});}
-  else if(isan){px(bx+6,by-3,7,4,'#8A5A3A');px(bx+5,by-4,9,1,'#6E4C2A');px(bx+12,by-7,1,5,'#C49A62');
+  else if(esan){px(bx+6,by-3,7,4,'#8A5A3A');px(bx+5,by-4,9,1,'#6E4C2A');px(bx+12,by-7,1,5,'#C49A62');
     px(bx+19,by-5,6,6,'#D8B27A');px(bx+19,by-3,6,1,'#A98840');px(bx+19,by-1,6,1,'#A98840');px(bx+18,by-6,8,1,'#A98840');
     px(bx+29,by-3,5,3,'#6BBF5A');px(bx+30,by-4,2,1,'#3F8A4A');px(bx+36,by-2,2,1,'#E0604E');
     inUse('bar').forEach(s=>{px(s.x-2,by+4,5,2,P.mug);px(s.x-1,by+4,3,1,'#E9A04E');});}
@@ -695,12 +695,12 @@ function drawLounge(){
   if(south){ // hammock slung between two posts
     px(sx+2,sy,3,4,'#6E4C2A');px(sx+2,sy+sh-4,3,4,'#6E4C2A');px(sx+3,sy+4,1,3,'#D8CCB0');px(sx+3,sy+sh-7,1,3,'#D8CCB0');
     box(sx+1,sy+7,sw-1,sh-14,'#1F6A73');for(let yy=sy+9;yy<sy+sh-9;yy+=4)px(sx+2,yy,sw-3,1,'#F2B84B');px(sx+sw-1,sy+8,1,sh-16,'#F5EBD7');}
-  else if(isan){box(sx,sy,sw+2,sh,'#B8392F');for(let yy=sy+1;yy<sy+sh-1;yy+=2)for(let xx=sx+1;xx<sx+sw+1;xx+=2)px(xx,yy,2,2,((xx+yy)/2|0)%2?P.matA:P.matB);
+  else if(esan){box(sx,sy,sw+2,sh,'#B8392F');for(let yy=sy+1;yy<sy+sh-1;yy+=2)for(let xx=sx+1;xx<sx+sw+1;xx+=2)px(xx,yy,2,2,((xx+yy)/2|0)%2?P.matA:P.matB);
     [sy+4,sy+sh-12].forEach(cy=>{px(sx+1,cy,3,8,'#C8413B');px(sx+4,cy+1,2,6,'#C8413B');px(sx+6,cy+2,2,4,'#C8413B');px(sx+1,cy+3,6,1,'#E9B949');});}
   else{box(sx,sy,sw,sh,P.sofaDk);box(sx+4,sy+2,sw-4,sh-4,P.sofa);px(sx+4,sy+sh/2,sw-4,1,P.sofaDk);}
   const[tx,ty,tw,th]=F.table;box(tx,ty,tw,th,P.table);
   if(south){px(tx+2,ty+2,4,4,'#C0C6CC');px(tx+1,ty+3,1,2,'#9AA3AB');px(tx+6,ty+3,1,1,'#C0C6CC');px(tx+8,ty+3,2,2,'#F5EBD7');px(tx+8,ty+3,2,1,'#C8742E');}
-  else if(isan){px(tx+2,ty+2,4,4,'#D8B27A');px(tx+2,ty+3,4,1,'#A98840');px(tx+7,ty+3,3,2,'#E9A04E');}
+  else if(esan){px(tx+2,ty+2,4,4,'#D8B27A');px(tx+2,ty+3,4,1,'#A98840');px(tx+7,ty+3,3,2,'#E9A04E');}
   else{px(tx+3,ty+2,3,3,P.mug);px(tx+2,ty+2,1,2,P.mug);}
   const[qx,qy]=F.tread,run=inUse('treadmill').length>0;
   box(qx,qy,14,36,P.machine);px(qx+2,qy+1,10,4,P.k0);px(qx+4,qy+2,6,2,run?P.scrOn:P.scrOff);
@@ -772,7 +772,7 @@ function walker(a){
   const rows=((act?a.spot.face==='up':a.up)?BACK:FRONT).slice();
   let f=Math.floor(a.walk)%2,bob=0,last=12;
   if(act==='treadmill')f=Math.floor(time*9)%2;
-  if(T.lounge==='isan'&&!a.sub)rows[9]='.RBRBRB.';
+  if(T.lounge==='esan'&&!a.sub)rows[9]='.RBRBRB.';
   if(T.lounge==='south'&&!a.sub)rows[9]='.TYTTYT.';
   if(moving||act==='treadmill'){if(f){rows[10]=".PP...P.";rows[11]=".KK...KK";}else{rows[10]=".P...PP.";rows[11]="KK...KK.";}if(!RM&&f)bob=1;}
   if(act==='arcade'&&!RM&&Math.floor(time*7)%2)rows[8]=".SCCCCS.";

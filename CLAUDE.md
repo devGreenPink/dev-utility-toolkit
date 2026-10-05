@@ -21,31 +21,40 @@ Push to `main` → GitHub Actions (`.github/workflows/static.yml`) deploys the w
 The app is a single HTML page with a few companion files:
 
 - `index.html` — all tool UI markup. Each tool lives in a `<div id="<name>-tab" class="tab-content">` block.
-- `assets/js/app.js` — all JavaScript in one file, organized into `// ── SECTION ──`-delimited blocks (one per tool/feature — grep for `// ── ` to get the full tool list).
+- `assets/js/` — plain classic scripts sharing one global scope (no modules, no bundler — `index.html`'s inline `onclick="fn()"` handlers need globals), all `defer`-loaded in the order listed in `index.html`:
+  - `core.js` — app shell: `TAB_META`, theme, favorites, nav/`openTab`/`TAB_INIT`, keyboard shortcuts, shared utils (`showToast`, `copyText`, `escHtml`, `highlightCode`), PWA install, sparkle effect.
+  - `tools/<tool>.js` — one file per tool (`cheatsheets.js` holds kubectl/Linux/Git, which share `renderCmdList`).
+  - `init.js` — the `DOMContentLoaded` init; loads last.
+  - A file's top-level code may only *call* functions from files loaded before it (calls inside functions/handlers are fine — they run after every file has loaded). A new file goes in both `index.html` and `sw.js` `STATIC_ASSETS`.
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
 - `manifest.json` — PWA metadata.
 - `sw.js` — service worker: network-first for everything, with the cache only as the offline fallback. Same-origin files are fetched with `cache: 'no-cache'` (ETag revalidation) so GitHub Pages' `max-age=600` can't serve the previous deploy's `app.js`/`style.css` under a new page. Before v1.21 assets were cache-first, which did exactly that on the first load after each release. See Versioning below for its `CACHE` constant.
 
 ### Tab/navigation system
 
-`openTab(evt, id)` shows the matching `.tab-content` div and persists the active tab to `localStorage` (`isaan-devtools-tab`). Tab metadata (title/subtitle shown in the top bar) is declared in the `TAB_META` object at the top of `app.js`.
+`openTab(evt, id)` shows the matching `.tab-content` div and persists the active tab to `localStorage` (`esan-devtools-tab`). Tab metadata (title/subtitle shown in the top bar) is declared in the `TAB_META` object at the top of `core.js`.
 
-Adding a new tool requires three things:
+Adding a new tool requires four things:
 1. A `<div id="newtool-tab" class="tab-content">` block in `index.html`
 2. A `<div class="nav-item" data-tab="newtool-tab" onclick="openTab(event,'newtool-tab')">` in the sidebar nav
-3. An entry in `TAB_META` in `app.js`
+3. An entry in `TAB_META` in `core.js`
+4. Its logic in `assets/js/tools/newtool.js`, as a `<script defer>` before `init.js` in `index.html` and in `sw.js` `STATIC_ASSETS`
+
+Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`, not in the
+`DOMContentLoaded` init — it runs once on the tab's first open. All `<script>` tags are `defer`
+(order preserved), so app code can rely on the CDN globals being loaded.
 
 ### State persistence
 
 `localStorage` keys used:
-- `isaan-devtools-theme` — active theme name
-- `isaan-devtools-tab` — last active tab id
-- `isaan-devtools-navsearch` — last sidebar search query
-- `isaan-devtools-favorites` — favorited tool ids (see Favorites below)
+- `esan-devtools-theme` — active theme name
+- `esan-devtools-tab` — last active tab id
+- `esan-devtools-navsearch` — last sidebar search query
+- `esan-devtools-favorites` — favorited tool ids (see Favorites below)
 
 ### Favorites store
 
-Favorites persistence is behind a swappable interface (`assets/js/app.js:56`): any store object
+Favorites persistence is behind a swappable interface (`FAVORITES STORE` in `assets/js/core.js`): any store object
 implementing `load() -> Promise<string[]>` and `save(ids) -> Promise<void>` can replace
 `LocalStorageFavoritesStore` via `setFavoritesStore(store)` before `initFavorites()` runs — e.g.
 to move favorites to a backend later without touching the feature code itself.
@@ -58,7 +67,7 @@ that badge and auto-creates a matching git tag + GitHub release (skips silently 
 exists — merges that don't bump the version don't fail the build). When bumping the version, keep
 these in sync manually:
 - `.app-version` in `index.html`
-- `CACHE` constant in `sw.js` (e.g. `isaan-devtools-v14`) — bump it on every release: changing
+- `CACHE` constant in `sw.js` (e.g. `esan-devtools-v14`) — bump it on every release: changing
   `sw.js` is what makes browsers install the new worker, and the new name drops the old offline copy
 - the version badge in `README.md` (CI only warns on mismatch here, doesn't fail)
 
@@ -79,13 +88,13 @@ these in sync manually:
 ### Themes
 
 9 themes set via `data-theme` attribute on `<body>`. Default (Indigo) uses no attribute value. Stored in `localStorage`.
-`isan` / `cdg` / `south` reuse the colour palettes of the esan-office page (colours only, no pixel styling).
+`esan` / `cdg` / `south` reuse the colour palettes of the esan-office page (colours only, no pixel styling).
 Each theme block also sets the contrast tokens described at the top of `style.css` (`--line`, `--accent-fg`,
 `--on-accent`, border alphas) — a new theme must define them too, or it inherits the Indigo values.
 
-## Key patterns in app.js
+## Key patterns in assets/js
 
-- All tool logic is in plain functions (no classes). Functions are grouped with `// ── SECTION ──` comments.
+- All tool logic is in plain functions (no classes). Within a file, functions are grouped with `// ── SECTION ──` comments.
 - `showToast(msg)` — displays a 2-second toast notification.
 - `copyText(txt)` — copies to clipboard (Clipboard API + execCommand fallback).
 - `escHtml(s)` — escapes HTML for safe insertion into `innerHTML`.
@@ -128,7 +137,7 @@ don't duplicate them here.
   the plugin is `esan-office`. Install: `claude plugin marketplace add devgreenpink/dev-utility-toolkit`
   then `claude plugin install esan-office@esan-devtools`.
 - Zero-dependency Node: `scripts/bridge.js` (server on `127.0.0.1:4567`), `scripts/start.js`
-  (SessionStart hook), `office/index.html` (single-file page, three themes: `isan`, `green`/CDG, and `south`).
+  (SessionStart hook), `office/index.html` (single-file page, three themes: `esan`, `green`/CDG, and `south`).
 - GitHub Pages deploys these files too (whole repo is the artifact); runtime data
   (agents, token, log) lives in `~/.esan-office/`, never in the repo.
 - Gotchas: `start.js` must never write to stdout (SessionStart stdout enters Claude's

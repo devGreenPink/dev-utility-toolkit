@@ -177,7 +177,7 @@ macOS / Linux ใช้ `node ~/.claude/plugins/marketplaces/esan-devtools/plugi
 ### ธีม
 
 กดเลือก **อีสาน** **CDG** หรือ **ใต้** ที่มุมขวาบน ระบบจำธีมที่เลือกไว้ในเบราว์เซอร์
-เปิดธีมที่ต้องการจากลิงก์ได้ด้วย `?theme=isan` `?theme=green` หรือ `?theme=south` เช่น <http://localhost:4567/?theme=south>
+เปิดธีมที่ต้องการจากลิงก์ได้ด้วย `?theme=esan` `?theme=green` หรือ `?theme=south` เช่น <http://localhost:4567/?theme=south>
 
 | | อีสาน | CDG | ใต้ |
 |---|---|---|---|
