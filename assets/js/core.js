@@ -316,9 +316,9 @@ function renderFavorites(){
   });
 }
 function makeNavItemFocusable(item){
-  item.setAttribute('role','tab');
+  item.setAttribute('role','button');
   item.setAttribute('tabindex','0');
-  item.setAttribute('aria-selected',item.classList.contains('active')?'true':'false');
+  if(item.classList.contains('active'))item.setAttribute('aria-current','page');else item.removeAttribute('aria-current');
 }
 function injectFavStars(){
   document.querySelectorAll('#sidebar-nav .nav-item').forEach(item=>{
@@ -429,10 +429,10 @@ const TAB_INIT={
 };
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});
+  document.querySelectorAll('.nav-item').forEach(b=>{b.classList.remove('active');b.removeAttribute('aria-current');});
   document.getElementById(id).classList.add('active');
   // mark ทุก nav item ที่ชี้ tab นี้ (ตัวใน section ปกติ + ตัวใน รายการโปรด)
-  document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>{b.classList.add('active');b.setAttribute('aria-selected','true');});
+  document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>{b.classList.add('active');b.setAttribute('aria-current','page');});
   activeTabId=id;
   // opening a tool (palette, favorites) inside a collapsed group expands that group
   const grp=srcNavItem(id)?.closest('.nav-group.collapsed');
@@ -595,7 +595,7 @@ function copyVal(id){const el=document.getElementById(id);if(el&&el.textContent&
 document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
   el.setAttribute('tabindex','0');
   el.setAttribute('role','button');
-  el.setAttribute('aria-label','คลิกเพื่อ copy');
+  el.setAttribute('aria-describedby','copy-hint');
 });
 // tooltip "คลิกเพื่อ copy" แบบ custom (title ของ browser เล็กและปรับขนาดไม่ได้)
 const copyTip=document.createElement('div');
@@ -648,7 +648,11 @@ function pwsInstall(){
 const STORAGE_CLICKFX='esan-devtools-clickfx'; // '1' | '0' | unset
 let clickFx=!reduceMotionMQ.matches;
 try{const v=localStorage.getItem(STORAGE_CLICKFX);if(v!==null)clickFx=v!=='0';}catch(e){}
-function applyFx(){document.body.classList.toggle('fx-off',!clickFx);}
+function applyFx(){
+  let explicit=false;try{explicit=localStorage.getItem(STORAGE_CLICKFX)!==null;}catch(e){}
+  document.body.classList.toggle('fx-off',!clickFx);
+  document.body.classList.toggle('fx-on',clickFx&&explicit);
+}
 applyFx();
 reduceMotionMQ.addEventListener('change',()=>{
   let v=null;try{v=localStorage.getItem(STORAGE_CLICKFX);}catch(e){}

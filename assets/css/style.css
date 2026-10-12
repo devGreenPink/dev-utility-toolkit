@@ -2550,18 +2550,18 @@
     .rxjs-code .hljs-title.class_,
     .rxjs-code .hljs-title.function_                { color: #61afef; }
     .rxjs-code .hljs-string                         { color: #98c379; }
-    .rxjs-code .hljs-comment                        { color: #7c848e; font-style: italic; }
+    .rxjs-code .hljs-comment                        { color: #9aa1ad; font-style: italic; }
     .rxjs-code .hljs-number                         { color: #d19a66; }
     .rxjs-code .hljs-literal                        { color: #56b6c2; }
     .rxjs-code .hljs-attr,
-    .rxjs-code .hljs-property                       { color: #e06c75; }
+    .rxjs-code .hljs-property                       { color: #f0838b; }
     .rxjs-code .hljs-built_in                       { color: #e5c07b; }
     .rxjs-code .hljs-params                         { color: #abb2bf; }
-    .rxjs-code .hljs-meta                           { color: #e06c75; }
+    .rxjs-code .hljs-meta                           { color: #f0838b; }
     .rxjs-code .hljs-punctuation,
     .rxjs-code .hljs-operator                       { color: #abb2bf; }
     .rxjs-code .hljs-variable,
-    .rxjs-code .hljs-subst                          { color: #e06c75; }
+    .rxjs-code .hljs-subst                          { color: #f0838b; }
     .rxjs-code .hljs-type                           { color: #e5c07b; }
 
     /* Light + Kitty: darker saturated tones for WCAG-passing contrast */
@@ -2576,29 +2576,29 @@
     [data-theme="kitty"] .rxjs-code .hljs-title.class_,
     [data-theme="kitty"] .rxjs-code .hljs-title.function_ { color: #1d4ed8; }
     [data-theme="light"] .rxjs-code .hljs-string,
-    [data-theme="kitty"] .rxjs-code .hljs-string    { color: #15803d; }
+    [data-theme="kitty"] .rxjs-code .hljs-string    { color: #12703a; }
     [data-theme="light"] .rxjs-code .hljs-comment,
     [data-theme="kitty"] .rxjs-code .hljs-comment   { color: #475569; font-style: italic; }
     [data-theme="light"] .rxjs-code .hljs-number,
-    [data-theme="kitty"] .rxjs-code .hljs-number    { color: #c2410c; }
+    [data-theme="kitty"] .rxjs-code .hljs-number    { color: #b23a0b; }
     [data-theme="light"] .rxjs-code .hljs-literal,
-    [data-theme="kitty"] .rxjs-code .hljs-literal   { color: #0891b2; }
+    [data-theme="kitty"] .rxjs-code .hljs-literal   { color: #0a7285; }
     [data-theme="light"] .rxjs-code .hljs-attr,
     [data-theme="light"] .rxjs-code .hljs-property,
     [data-theme="kitty"] .rxjs-code .hljs-attr,
-    [data-theme="kitty"] .rxjs-code .hljs-property  { color: #dc2626; }
+    [data-theme="kitty"] .rxjs-code .hljs-property  { color: #c21f1f; }
     [data-theme="light"] .rxjs-code .hljs-built_in,
-    [data-theme="kitty"] .rxjs-code .hljs-built_in  { color: #b45309; }
+    [data-theme="kitty"] .rxjs-code .hljs-built_in  { color: #a65200; }
     [data-theme="light"] .rxjs-code .hljs-params,
     [data-theme="kitty"] .rxjs-code .hljs-params    { color: #334155; }
     [data-theme="light"] .rxjs-code .hljs-meta,
-    [data-theme="kitty"] .rxjs-code .hljs-meta      { color: #dc2626; }
+    [data-theme="kitty"] .rxjs-code .hljs-meta      { color: #c21f1f; }
     [data-theme="light"] .rxjs-code .hljs-punctuation,
     [data-theme="light"] .rxjs-code .hljs-operator,
     [data-theme="kitty"] .rxjs-code .hljs-punctuation,
     [data-theme="kitty"] .rxjs-code .hljs-operator  { color: #475569; }
     [data-theme="light"] .rxjs-code .hljs-type,
-    [data-theme="kitty"] .rxjs-code .hljs-type      { color: #b45309; }
+    [data-theme="kitty"] .rxjs-code .hljs-type      { color: #a65200; }
 
     /* ══════════════════════════════════════════════════════════════
        RabbitMQ · Redis · Quarkus Tab (mq-tab)
@@ -2720,7 +2720,7 @@
     .mq-qline-skip  { background: color-mix(in srgb, var(--c-red) 40%, transparent); }
     .mq-exv-qbox { display: flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: var(--radius-sm); border: 1px solid; font-size: 0.72rem; flex: 1; min-width: 0; }
     .mq-qbox-match { border-color: color-mix(in srgb, var(--c-green) 30%, transparent); background: color-mix(in srgb, var(--c-green) 6%, transparent); }
-    .mq-qbox-skip  { border-color: color-mix(in srgb, var(--c-red) 15%, transparent); background: color-mix(in srgb, var(--c-red) 4%, transparent); opacity: .6; }
+    .mq-qbox-skip  { border-color: color-mix(in srgb, var(--c-red) 15%, transparent); background: color-mix(in srgb, var(--c-red) 4%, transparent); border-style: dashed; }
     .mq-exv-qname { font-weight: 600; white-space: nowrap; }
     .mq-exv-binding { font-family: var(--mono); font-size: 0.62rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .mq-exv-tick { margin-left: auto; font-size: 0.78rem; flex-shrink: 0; }
@@ -3011,12 +3011,12 @@
     .mq-code .hljs-title.class_,
     .mq-code .hljs-title.function_       { color: #61afef; }
     .mq-code .hljs-string                { color: #98c379; }
-    .mq-code .hljs-comment               { color: #7c848e; font-style: italic; }
+    .mq-code .hljs-comment               { color: #9aa1ad; font-style: italic; }
     .mq-code .hljs-number                { color: #d19a66; }
     .mq-code .hljs-type,
     .mq-code .hljs-built_in              { color: #e5c07b; }
     .mq-code .hljs-meta,
-    .mq-code .hljs-meta .hljs-string     { color: #e06c75; }
+    .mq-code .hljs-meta .hljs-string     { color: #f0838b; }
     .mq-code .hljs-attr                  { color: #61afef; }
     .mq-code .hljs-literal               { color: #56b6c2; }
     [data-theme="light"] .mq-code .hljs-keyword  { color: #7c3aed; }
@@ -3358,16 +3358,16 @@
   #storage-tab .stor-code .hljs-title.class_,
   #storage-tab .stor-code .hljs-title.function_       { color: #61afef; }
   #storage-tab .stor-code .hljs-string                { color: #98c379; }
-  #storage-tab .stor-code .hljs-comment               { color: #7c848e; font-style: italic; }
+  #storage-tab .stor-code .hljs-comment               { color: #9aa1ad; font-style: italic; }
   #storage-tab .stor-code .hljs-number                { color: #d19a66; }
   #storage-tab .stor-code .hljs-literal               { color: #56b6c2; }
   #storage-tab .stor-code .hljs-built_in              { color: #e5c07b; }
   #storage-tab .stor-code .hljs-params                { color: #abb2bf; }
   #storage-tab .stor-code .hljs-attr,
-  #storage-tab .stor-code .hljs-property              { color: #e06c75; }
+  #storage-tab .stor-code .hljs-property              { color: #f0838b; }
   #storage-tab .stor-code .hljs-variable,
-  #storage-tab .stor-code .hljs-subst                 { color: #e06c75; }
-  #storage-tab .stor-code .hljs-meta                  { color: #e06c75; }
+  #storage-tab .stor-code .hljs-subst                 { color: #f0838b; }
+  #storage-tab .stor-code .hljs-meta                  { color: #f0838b; }
   #storage-tab .stor-code .hljs-type                  { color: #e5c07b; }
   #storage-tab .stor-code .hljs-punctuation,
   #storage-tab .stor-code .hljs-operator              { color: #abb2bf; }
@@ -3542,12 +3542,24 @@
     /* tool icon containers (mq-concept-icon, rxjs-fn-icon, ...) tint their glyph with the accent */
     [class$="-icon"] > .i:not([class*="t-"]), [class*="-icon "] > .i:not([class*="t-"]) { color: var(--accent-fg); }
 
-    /* Effects off (Settings switch, defaults to the OS reduce-motion preference): keep the feedback, drop the travel */
+    /* Effects off (Settings switch; follows the OS reduce-motion preference until the user picks):
+       keep the feedback, drop the travel. The media query covers the first paint before core.js runs
+       and steps aside once the user explicitly turns effects on (body.fx-on). */
     .fx-off, .fx-off *, .fx-off *::before, .fx-off *::after {
       animation-duration: .01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: .01ms !important;
       scroll-behavior: auto !important;
+    }
+    .fx-off .logo-star { animation: none !important; opacity: .85; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      body:not(.fx-on), body:not(.fx-on) *, body:not(.fx-on) *::before, body:not(.fx-on) *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+      body:not(.fx-on) .logo-star { animation: none !important; opacity: .85; transform: none; }
     }
 
     /* ════════════════════════════════════════════════════════════════════
@@ -3756,3 +3768,10 @@
     .rxjs-copy-btn { display: inline-flex; align-items: center; gap: 4px; }
     /* narrow phones: swatch/hex above the channel inputs so R/G/B keep a 24px+ target */
     @media (max-width: 480px) { .cp-input-row { grid-template-columns: minmax(0, 1fr); } }
+    /* reference code wraps instead of scrolling, so it needs no extra tab stop */
+    .ref-card .rxjs-code { max-height: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+    [tabindex="0"]:is(pre, .ng-timeline-wrap):focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    /* light code panes: tokens without a light colour of their own would inherit the dark-pane red */
+    [data-theme="light"] .rxjs-code :is(.hljs-variable, .hljs-template-variable, .hljs-subst, .hljs-name, .hljs-tag, .hljs-selector-tag, .hljs-symbol, .hljs-regexp, .hljs-section, .hljs-bullet, .hljs-attribute),
+    [data-theme="kitty"] .rxjs-code :is(.hljs-variable, .hljs-template-variable, .hljs-subst, .hljs-name, .hljs-tag, .hljs-selector-tag, .hljs-symbol, .hljs-regexp, .hljs-section, .hljs-bullet, .hljs-attribute) { color: #c21f1f; }
+    [data-theme="light"] .yx-line.has-note:hover, [data-theme="light"] .yx-line.active { background: color-mix(in srgb, var(--accent) 9%, transparent); }

@@ -60,7 +60,7 @@ function renderCmdList(cmds,containerId,searchQuery){
     const gt=document.createElement('div');gt.className='kubectl-group-title';gt.textContent=grp;gDiv.appendChild(gt);
     for(const item of items){
       const card=document.createElement('div');card.className='cmd-card';
-      card.tabIndex=0;card.setAttribute('role','button');card.title='คลิกเพื่อ copy';
+      card.title='คลิกเพื่อ copy';
       const txt=document.createElement('div');txt.style.flex='1';
       const codeEl=document.createElement('div');codeEl.className='cmd-code';
       const descEl=document.createElement('div');descEl.className='cmd-desc';
@@ -71,14 +71,9 @@ function renderCmdList(cmds,containerId,searchQuery){
         codeEl.textContent=item.cmd;descEl.textContent=item.desc;
       }
       txt.appendChild(codeEl);txt.appendChild(descEl);
-      const copyBtn=document.createElement('button');copyBtn.className='btn btn-ghost';copyBtn.textContent='Copy';
+      const copyBtn=document.createElement('button');copyBtn.className='btn btn-ghost';copyBtn.textContent='Copy';copyBtn.setAttribute('aria-label','Copy '+item.cmd);
       copyBtn.onclick=e=>{e.stopPropagation();copyText(item.cmd);};
       card.onclick=()=>copyText(item.cmd);
-      card.onkeydown=e=>{
-        if(!isActivateKey(e))return;
-        e.preventDefault();
-        copyText(item.cmd);
-      };
       card.appendChild(txt);card.appendChild(copyBtn);
       gDiv.appendChild(card);
     }

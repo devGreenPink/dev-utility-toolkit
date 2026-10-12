@@ -171,7 +171,7 @@ function k8sInit(){
     `<button type="button" class="json-view-btn" role="tab" data-m="${m.id}" onclick="k8sShow('${m.id}')">${escHtml(m.label)}</button>`).join('')}</div>
   <p class="k8s-intro" id="k8s-intro"></p>
   <div class="yx">
-    <div class="yx-code rxjs-code" id="k8s-code" role="list" aria-label="บรรทัดของไฟล์"></div>
+    <div class="yx-code rxjs-code" id="k8s-code" aria-label="บรรทัดของไฟล์"></div>
     <aside class="yx-note" id="k8s-note" aria-live="polite"></aside>
   </div>`;
   k8sShow(_k8sCur);
@@ -186,8 +186,8 @@ function k8sShow(id){
   code.innerHTML=m.lines.map(([ln,note],i)=>{
     const html=window.hljs&&ln.trim()?hljs.highlight(ln,{language:m.lang,ignoreIllegals:true}).value:escHtml(ln);
     return note
-      ?`<button type="button" class="yx-line has-note" role="listitem" data-i="${i}" onmouseenter="k8sNote(${i})" onfocus="k8sNote(${i})" onclick="k8sNote(${i})"><span class="yx-ln">${i+1}</span><code>${html||' '}</code></button>`
-      :`<div class="yx-line" role="listitem"><span class="yx-ln">${i+1}</span><code>${html||' '}</code></div>`;
+      ?`<button type="button" class="yx-line has-note" data-i="${i}" onmouseenter="k8sNote(${i})" onfocus="k8sNote(${i})" onclick="k8sNote(${i})"><span class="yx-ln">${i+1}</span><code>${html||' '}</code></button>`
+      :`<div class="yx-line"><span class="yx-ln">${i+1}</span><code>${html||' '}</code></div>`;
   }).join('')+`<button type="button" class="btn btn-ghost yx-copy" onclick="k8sCopy()">${ic('copy')} Copy ทั้งไฟล์</button>`;
   const first=m.lines.findIndex(l=>l[1]);
   k8sNote(first);
