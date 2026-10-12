@@ -11,10 +11,14 @@ Live: https://devgreenpink.github.io/dev-utility-toolkit/
 ## Running Locally
 
 Open `index.html` directly in a browser, or serve it with VS Code Live Server. No build or install step needed.
+The `static-server` entry in `.claude/launch.json` is `http.server` plus `Cache-Control: no-cache`: plain
+`python -m http.server` sends no cache header, so Chrome guesses a lifetime and keeps serving the old JS after
+an edit whenever the page is not going through the service worker.
 
 `node tests/tools.test.mjs` self-checks the pure converters and parsers (BAHTTEXT / Thai ID in
 `thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`, smart paste / share link / file drop in
-`home.js`, and the explorer data in `k8s-ref.js` / `jenkins.js`) by loading the tool files into one
+`home.js`, curl / HAR / XML parsing, EMVCo QR parsing in `qr.js`, chunking in `translate.js`, and the
+explorer data in `k8s-ref.js` / `jenkins.js`) by loading the tool files into one
 `vm` context, the same way the page loads them. Keep new parsing logic in pure functions so it can be
 covered there.
 
@@ -52,7 +56,13 @@ The app is a single HTML page with a few companion files:
     fields (JWT, secrets) are never put in it, `shareParse` drops anything malformed, and `applyShareLink`
     (init.js, `hashchange`) fills the tab then clears the hash. And file drop: a text file dropped onto a
     field fills it, anywhere else `spDetectFile(name, text)` picks the tool (file name first, then
-    `spDetect`); the image color picker's own drop zone wins because it calls `preventDefault`.
+    `spDetect`); an image goes to the QR reader; the image color picker's own drop zone wins because it
+    calls `preventDefault`. Smart paste also takes a curl command (offers its token / JSON body / URL),
+    a HAR file (summary of failed and slow requests) and XML (converted to JSON).
+  - `tools/qr.js` — QR reader (BarcodeDetector, else jsQR from jsDelivr via `loadLib('jsqr')`); `emvInfo`
+    splits PromptPay / Thai QR payment payloads and checks their CRC (`crc16`).
+  - `tools/translate.js` — Chrome's on-device Translator API first; MyMemory's free API only when the user
+    presses แปล, with a notice that the text leaves the browser (the one place the app sends user data out).
   - `init.js` — the `DOMContentLoaded` init; loads last.
   - A file's top-level code may only *call* functions from files loaded before it (calls inside functions/handlers are fine — they run after every file has loaded). A new file goes in both `index.html` and `sw.js` `STATIC_ASSETS`.
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
@@ -81,9 +91,14 @@ Tool layout (every converter follows it):
   `Ctrl+Enter` still runs the tool.
 - Search boxes use `.search-field` with an inline `.search-clear` that only shows when there is text.
 - `.btn-danger` is only for wiping stored data (Settings "ล้างข้อมูลที่จำไว้", LOV "ลืมโฟลเดอร์").
+- Outputs worth chaining get a "ส่งต่อ" action: `sendTo(btn, id, skipKinds)` / `sendText(btn, text, skipKinds)`
+  in core.js run `spDetect` on the output and list the tools that understand it (`fieldMenu`).
 
 Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`, not in the
-`DOMContentLoaded` init — it runs once on the tab's first open. All `<script>` tags are `defer`
+`DOMContentLoaded` init — it runs once on the tab's first open. The heaviest tabs (MQ, Storage, RxJS,
+ESAN AI AGENT, Cron, Angular) also ship their markup inside `<template class="tab-lazy">`: `openTab` turns
+it into DOM on first open, then runs `TAB_INIT`, `initRememberedInputs(tab)` and `initHistory(tab)`. Code for
+such a tab must not touch its elements before that (no load-time `getElementById` on them). All `<script>` tags are `defer`
 (order preserved), so app code can rely on the CDN globals being loaded.
 
 ### State persistence
@@ -100,9 +115,12 @@ Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`
 - `esan-devtools-navsearch` — last sidebar search query
 - `esan-devtools-favorites` — favorited tool ids (see Favorites below)
 - `esan-devtools-recent` — last 8 opened tool ids, shown on the home tab
+- `esan-devtools-tips` — `1` once the home page tips card was dismissed
+- `esan-devtools-hist:<element id>` — the last 5 values of a main input (one whose `.field-head` has a
+  `label[for]`), saved on `change` and by smart paste / drop; shown by the "ประวัติ" field action
 - `esan-devtools-remember` — `0` when the Settings switch "จำข้อมูลที่กรอกไว้" is off (unset = on)
 - `esan-devtools-in:<key>` — a tool option remembered with the inputs via `rememberOpt` / `recallOpt`
-  (`py-dir`, `b64-mode`, `url-dir`), so a restored input is converted the same way
+  (`py-dir`, `b64-mode`, `url-dir`, `tr-from`, `tr-to`, `tr-engine`), so a restored input is converted the same way
 - `esan-devtools-in:<element id>` — last value of every `textarea`/text/number `input` with an id inside a
   `.tab-content`, restored on load by `initRememberedInputs()` (core.js), which replays the field's `input`
   event so outputs come back too. Values are saved on input and again on `pagehide`, which catches clear
@@ -140,6 +158,8 @@ falls back to plain text if the CDN fails.
 - **CodeMirror 5.65.16** — RxJS Playground editor (loaded when the RxJS tab opens)
 - **RxJS 7.8.1** — RxJS Playground runtime
 - **jsdiff 5.1.0** (`diff.min.js` from cdnjs) — Text/JSON diff
+- **jsQR 1.4.0** (jsDelivr; not on cdnjs — `LIBS` takes a full URL) — QR reader when the browser has no BarcodeDetector
+- **MyMemory API** (`api.mymemory.translated.net`, free, no key) — translate fallback, on button press only
 - **Google Fonts** — IBM Plex Sans Thai, JetBrains Mono
 - **Web Crypto API** — Hash generation (`crypto.subtle`), UUID v4 (`crypto.randomUUID`)
 - **Canvas API** — Color Picker SV square, hue/alpha sliders, image color picker loupe
@@ -149,7 +169,8 @@ falls back to plain text if the CDN fails.
 ### Keyboard shortcuts
 
 - `Ctrl+Enter` — triggers the primary action of the active tool
-- `Ctrl+K` / `⌘K` — opens the command palette (tools from the sidebar + `PALETTE_CMDS` in `core.js`)
+- `Ctrl+K` / `⌘K` — opens the command palette (tools from the sidebar + `PALETTE_CMDS` in `core.js`); the strip
+  under the list (`renderPalettePreview`) describes the selected tool before it is opened
 - `Esc` — closes the palette, then any open popover, then the mobile sidebar
 
 ### Themes

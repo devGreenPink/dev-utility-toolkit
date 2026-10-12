@@ -6,8 +6,8 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway']) {
+const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, debounced: f => f });
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'translate']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -197,6 +197,9 @@ t('share link: parse keeps only well-formed parts', () => {
   assert.equal(run(`shareParse('#t=<img onerror=x>-tab')`), null);
   assert.equal(run(`shareParse('')`), null);
   assert.deepEqual(run(`shareParse('#t=jwt-tab&s=%%%').st.f`), {});
+  // the decompressed JSON of a `z` link is handed in by applyShareLink
+  assert.deepEqual(run(`shareParse('#t=url-tab&z=xx', '{"f":{"url-input":"a b"}}').st.f`), { 'url-input': 'a b' });
+  assert.deepEqual(run(`shareParse('#t=url-tab&z=xx', '').st.f`), {});
 });
 t('file drop: the file name decides before the content', () => {
   const kinds = (name, text) => run(`spDetectFile(${JSON.stringify(name)}, ${JSON.stringify(text)}).map(d => d.kind)`);
@@ -207,6 +210,69 @@ t('file drop: the file name decides before the content', () => {
   assert.equal(kinds('data.json', '{"a":1}')[0], 'json');
   assert.equal(kinds('server.log', 'Exception in thread "main" java.lang.IllegalStateException: x\n\tat a.B.c(B.java:1)')[0], 'stacktrace');
   assert.deepEqual(kinds('notes.txt', 'hello world'), []);
+});
+
+// ── CURL / HAR / XML ──
+t('curl: quotes, continuations, headers and body', () => {
+  const cmd = "curl -X POST 'https://shop.example.com/order-api/orders?page=2&q=a%20b' \\\n  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ4In0.abc' \\\n  -H \"Content-Type: application/json\" \\\n  --data-raw '{\"sku\":\"A-1\",\"qty\":2}'";
+  const c = run(`spCurl(${JSON.stringify(cmd)})`);
+  assert.equal(c.method, 'POST');
+  assert.equal(c.url, 'https://shop.example.com/order-api/orders?page=2&q=a%20b');
+  assert.equal(c.headers['content-type'], 'application/json');
+  assert.equal(c.body, '{"sku":"A-1","qty":2}');
+  assert.equal(c.bearer, 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ4In0.abc');
+  assert.deepEqual(run(`spDetect(${JSON.stringify(cmd)}).map(d => d.kind)`), ['curl-jwt', 'curl-body', 'curl-url']);
+  assert.equal(run(`spCurl('curl https://x.example.com/a').method`), 'GET');
+  assert.equal(run(`spCurl('wget https://x')`), null);
+});
+t('HAR: detected before plain JSON, failures and slowest calls', () => {
+  const har = JSON.stringify({ log: { entries: [
+    { request: { method: 'GET', url: 'https://x/api/a' }, response: { status: 200 }, time: 120 },
+    { request: { method: 'POST', url: 'https://x/api/b' }, response: { status: 500 }, time: 900 },
+    { request: { method: 'GET', url: 'https://x/api/c' }, response: { status: 0 }, time: 30 } ] } });
+  assert.equal(run(`spDetect(${JSON.stringify(har)})[0].kind`), 'har');
+  const s = run(`harSummary(${JSON.stringify(har)})`);
+  assert.equal(s.count, 3);
+  assert.deepEqual(s.failed.map(r => r.status), [500, 0]);
+  assert.equal(s.slow[0].url, 'https://x/api/b');
+});
+t('XML: recognised, MyBatis mapper still goes to the SQL parser', () => {
+  assert.equal(run(`spDetect('<?xml version="1.0"?>\\n<order id="1"><item>A</item></order>')[0].kind`), 'xml');
+  assert.equal(run(`spDetect('<note><to>A</to></note>')[0].kind`), 'xml');
+  assert.equal(run(`spDetect('<select id="find">SELECT * FROM T WHERE ID = #{id}</select>')[0].kind`), 'sql-java');
+});
+
+// ── QR (EMVCo / PromptPay) ──
+t('crc16: CRC-16/CCITT-FALSE check value', () => assert.equal(run(`crc16('123456789')`), '29B1'));
+t('PromptPay QR: fields, phone number, amount and CRC', () => {
+  const body = '000201010212' + '2937' + '0016A000000677010111' + '01130066812345678' + '5802TH' + '5303764' + '540550.00' + '6304';
+  const qr = body + run(`crc16(${JSON.stringify(body)})`);
+  const info = run(`emvInfo(${JSON.stringify(qr)})`);
+  assert.equal(info.kind, 'PromptPay');
+  assert.equal(info.crcOk, true);
+  assert.deepEqual(info.target, { name: 'เบอร์มือถือ', value: '0812345678' });
+  assert.equal(info.amount, '50.00');
+  const tampered = qr.replace('540550.00', '540599.00');
+  assert.equal(run(`emvInfo(${JSON.stringify(tampered)}).crcOk`), false);
+  assert.equal(run(`emvInfo('https://shop.example.com')`), null);
+  assert.equal(run(`emvParse('0002ABC')`), null);
+});
+// ── TRANSLATE ──
+t('translate: script detection', () => {
+  const d = s => run(`trDetect(${JSON.stringify(s)})`);
+  assert.equal(d('สวัสดีครับ'), 'th');
+  assert.equal(d('Hello world'), 'en');
+  assert.equal(d('こんにちは世界'), 'ja');
+  assert.equal(d('你好世界'), 'zh');
+  assert.equal(d('안녕하세요'), 'ko');
+  assert.equal(d('Xin chào thế giới'), 'vi');
+});
+t('translate: chunks stay under the byte limit and join back to the text', () => {
+  const text = 'ประโยคแรกยาวพอสมควร. ' + 'ภาษาไทยไม่มีช่องว่างระหว่างคำเลย'.repeat(30) + '\n\nSecond paragraph. Short one! ' + 'word '.repeat(200);
+  const chunks = run(`trChunks(${JSON.stringify(text)}, 120)`);
+  assert.equal(chunks.join(''), text);
+  assert.ok(chunks.every(c => new TextEncoder().encode(c).length <= 120), 'a chunk is too long');
+  assert.ok(chunks.length > 5);
 });
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

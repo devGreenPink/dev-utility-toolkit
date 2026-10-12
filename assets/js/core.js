@@ -34,6 +34,8 @@ const TAB_META = {
   'ngrx-tab': { title: 'NgRx / Redux', sub: 'Action · Reducer · Selector · Effect แบบเห็นภาพทีละขั้น' },
   'k8sref-tab': { title: 'Docker & K8s', sub: 'ไฟล์ตัวอย่างอ่านทีละบรรทัด · mount ไฟล์ · Helm · ArgoCD · แก้ปัญหา Pod' },
   'gateway-tab': { title: 'Request Path', sub: 'Browser → Load Balancer → Kong → Service → Pod · nginx' },
+  'qr-tab': { title: 'QR Code Reader', sub: 'อ่าน QR จากรูป คลิปบอร์ด หรือกล้อง · แยกฟิลด์ PromptPay / Thai QR พร้อมตรวจ CRC' },
+  'translate-tab': { title: 'แปลภาษา', sub: 'แปลในเครื่องด้วย Chrome หรือ MyMemory (ฟรี) · ไทย อังกฤษ ญี่ปุ่น จีน เกาหลี' },
   'jenkins-tab': { title: 'Jenkins CI/CD', sub: 'Jenkinsfile ทีละบรรทัด · shared library · CD แบบ GitOps · แก้ปัญหา pipeline' },
   'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
   'home-tab': { title: 'หน้าแรก', sub: 'วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด' },
@@ -449,7 +451,14 @@ const TAB_INIT={
   'angular-tab':()=>loadLib('hljs').then(()=>{initAngular();highlightCode('#angular-tab pre.rxjs-code code');}),
   'compare-tab':()=>loadLib('diff'),
   'mq-tab':()=>highlightCode('#mq-tab pre.mq-code code'),
-  'storage-tab':()=>storInitHljs(),
+  'storage-tab':()=>{storIdbRender();storXssRender();storDtInit();storLocalRefresh();storInitHljs();},
+  'cron-tab':()=>cronInit(),
+  'http-tab':()=>initHttp(),
+  'kubectl-tab':()=>renderCmdList(KUBECTL_CMDS,'kubectl-list',''),
+  'linux-tab':()=>renderCmdList(LINUX_CMDS,'linux-list',''),
+  'git-tab':()=>renderCmdList(GIT_CMDS,'git-list',''),
+  'lov-tab':()=>lovInit(),
+  'translate-tab':()=>trInit(),
   'sqlref-tab':()=>refInit('sqlref'),
   'db2err-tab':()=>refInit('db2err'),
   'javaex-tab':()=>refInit('javaex'),
@@ -468,7 +477,11 @@ const TAB_INIT={
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>{b.classList.remove('active');b.removeAttribute('aria-current');});
-  document.getElementById(id).classList.add('active');
+  const tabEl=document.getElementById(id);
+  tabEl.classList.add('active');
+  // heavy tabs ship as <template>: they become DOM on first open, which keeps the start-up DOM small
+  const lazy=tabEl.querySelector(':scope > template.tab-lazy');
+  if(lazy)tabEl.replaceChildren(lazy.content.cloneNode(true));
   // mark ทุก nav item ที่ชี้ tab นี้ (ตัวใน section ปกติ + ตัวใน รายการโปรด)
   document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>{b.classList.add('active');b.setAttribute('aria-current','page');});
   activeTabId=id;
@@ -477,6 +490,7 @@ function openTab(evt,id){
   if(grp)toggleNavGroup(grp.querySelector('.nav-section-label'));
   const init=TAB_INIT[id];
   if(init){delete TAB_INIT[id];init();}
+  if(lazy){initRememberedInputs(tabEl);initHistory(tabEl);} // its fields did not exist when the page set up the others
   const meta=TAB_META[id]||{title:'',sub:''};
   document.getElementById('topbar-title').textContent=meta.title;
   document.getElementById('topbar-sub').textContent=meta.sub;
@@ -515,6 +529,7 @@ document.addEventListener('keydown',e=>{
       case'json2type-tab':j2tConvert();break;
       case'props-tab':pyConvert();break;
       case'home-tab':spOpenFirst();break;
+      case'translate-tab':trTranslate(true);break;
     }
   }
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'&&activeTabId==='lov-tab'&&_lovEdit){
@@ -548,13 +563,13 @@ function paletteItems(q){
   const words=q.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const tools=Array.from(document.querySelectorAll('#sidebar-nav .nav-group .nav-item')).map(el=>{
     const id=el.dataset.tab,meta=TAB_META[id]||{},label=navLabelOf(el);
-    return{group:'เครื่องมือ',label,sub:el.closest('.nav-group').querySelector('.nav-section-label').textContent.trim(),
+    return{group:'เครื่องมือ',id,label,title:meta.title,desc:meta.sub,sub:el.closest('.nav-group').querySelector('.nav-section-label').textContent.trim(),
       icon:el.querySelector('.nav-icon')?.innerHTML||'',hay:`${label} ${meta.title||''} ${meta.sub||''}`.toLowerCase(),run:()=>openTab(null,id)};
   });
-  const cmds=PALETTE_CMDS.map(([label,sub,icon,run])=>({group:'คำสั่ง',label,sub,icon:ic(icon),hay:`${label} ${sub}`.toLowerCase(),run}));
+  const cmds=PALETTE_CMDS.map(([label,sub,icon,run])=>({group:'คำสั่ง',label,sub,desc:sub,icon:ic(icon),hay:`${label} ${sub}`.toLowerCase(),run}));
   // a pasted value (JWT, timestamp, SQLCODE...) offers the tools that understand it
   const text=q.trim();
-  const smart=spDetect(text).map(d=>({group:'เปิดข้อความนี้ใน',label:d.tool,sub:d.label,icon:ic('sparkles'),run:()=>spOpen(d.kind,text)}));
+  const smart=spDetect(text).map(d=>({group:'เปิดข้อความนี้ใน',label:d.tool,sub:d.label,desc:`ข้อความที่พิมพ์ดูเหมือน${d.label} จะเปิดใน ${d.tool} พร้อมกรอกให้`,icon:ic('sparkles'),run:()=>spOpen(d.kind,text)}));
   // label hits rank above subtitle-only hits; sort is stable, so nav order holds within a rank
   const rank=x=>{const l=x.label.toLowerCase();return words.every(w=>l.includes(w))?(l.startsWith(words[0]||'')?0:1):2;};
   const match=list=>list.filter(x=>words.every(w=>x.hay.includes(w))).sort((a,b)=>rank(a)-rank(b));
@@ -567,6 +582,7 @@ function renderPalette(){
   if(!_cmdk.items.length){
     list.innerHTML=`<div class="cmdk-empty">ไม่พบ "${escHtml(input.value)}" ลองคำอื่น เช่น json, jwt, cron</div>`;
     input.removeAttribute('aria-activedescendant');
+    renderPalettePreview();
     return;
   }
   let html='',grp='';
@@ -576,6 +592,18 @@ function renderPalette(){
   });
   list.innerHTML=html;
   input.setAttribute('aria-activedescendant','cmdk-opt-'+_cmdk.sel);
+  renderPalettePreview();
+}
+// what the selected row opens, before opening it: the tool's description and whether it is a favorite / recent
+function renderPalettePreview(){
+  const el=document.getElementById('cmdk-preview'),x=_cmdk.items[_cmdk.sel];
+  if(!el)return;
+  if(!x){el.innerHTML='';return;}
+  const tags=[];
+  if(x.id&&isFavorite(x.id))tags.push(ic('star','i-fill')+'รายการโปรด');
+  if(x.id&&recentTabs().includes(x.id))tags.push(ic('clock')+'ใช้ล่าสุด');
+  el.innerHTML=`<span class="gw-ic">${x.icon}</span><span class="cmdk-pv-txt"><span class="cmdk-pv-t">${escHtml(x.title||x.label)}</span><span class="cmdk-pv-d">${escHtml(x.desc||'')}</span></span>`
+    +(tags.length?`<span class="cmdk-pv-tags">${tags.map(t=>`<span>${t}</span>`).join('')}</span>`:'');
 }
 function movePaletteSel(d){
   if(!_cmdk.items.length)return;
@@ -583,6 +611,7 @@ function movePaletteSel(d){
   document.querySelectorAll('.cmdk-item').forEach(el=>el.setAttribute('aria-selected',String(+el.dataset.i===_cmdk.sel)));
   document.getElementById('cmdk-opt-'+_cmdk.sel)?.scrollIntoView({block:'nearest'});
   document.getElementById('cmdk-input').setAttribute('aria-activedescendant','cmdk-opt-'+_cmdk.sel);
+  renderPalettePreview();
 }
 function openPalette(){
   const p=document.getElementById('cmdk');
@@ -642,8 +671,8 @@ document.addEventListener('click',e=>{
   _copySrc=e.target.closest?e.target.closest('button,[role="button"],.mock-field-value,.cmd-card'):null;
   setTimeout(()=>{_copySrc=null;}); // only this click's own handler may use it
 },true);
-function copyText(txt,msg){
-  const src=_copySrc;
+function copyText(txt,msg,from){
+  const src=from||_copySrc; // `from`: the control, when the copy runs after an await
   const done=ok=>{
     if(!ok){showToast('คัดลอกไม่ได้ ลองเลือกข้อความแล้วกด Ctrl+C','err');return;}
     flashCopied(src);
@@ -711,6 +740,7 @@ const CDN='https://cdnjs.cloudflare.com/ajax/libs/';
 const LIBS={ // the first file is the core; the rest need it and load after it in parallel
   hljs:['highlight.js/11.9.0/highlight.min.js',...['typescript','java','properties','sql','nginx','dockerfile','groovy'].map(l=>`highlight.js/11.9.0/languages/${l}.min.js`)],
   diff:['jsdiff/5.1.0/diff.min.js'],
+  jsqr:['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'], // not on cdnjs
   rxjs:['rxjs/7.8.1/rxjs.umd.min.js'],
   codemirror:['codemirror/5.65.16/codemirror.min.js','codemirror/5.65.16/codemirror.min.css','codemirror/5.65.16/theme/dracula.min.css',
     'codemirror/5.65.16/mode/javascript/javascript.min.js','codemirror/5.65.16/addon/edit/closebrackets.min.js',
@@ -721,8 +751,9 @@ function loadAsset(path){
   return new Promise(done=>{
     const css=path.endsWith('.css'),el=document.createElement(css?'link':'script');
     el.onload=el.onerror=()=>done(); // a failed load leaves the tool on its plain-text fallback
-    if(!css){el.src=CDN+path;document.head.appendChild(el);return;}
-    el.rel='stylesheet';el.href=CDN+path;
+    const url=/^https:/.test(path)?path:CDN+path;
+    if(!css){el.src=url;document.head.appendChild(el);return;}
+    el.rel='stylesheet';el.href=url;
     // before style.css, so the app's own overrides still win
     document.head.insertBefore(el,document.querySelector('link[href$="style.css"]'));
   });
@@ -753,6 +784,76 @@ window.addEventListener('appinstalled',()=>{
 function pwsInstall(){
   if(!_pwaPrompt){showToast('เปิดใน Chrome/Edge แล้วลองใหม่');return;}
   _pwaPrompt.prompt();_pwaPrompt.userChoice.then(()=>{_pwaPrompt=null;document.getElementById('pwa-banner').classList.remove('show');});
+}
+
+// ── FIELD MENU ── a short list under a field-head button (send to another tool, input history)
+let _fmenu=null;
+function closeFieldMenu(refocus){
+  if(!_fmenu)return;
+  const{el,btn}=_fmenu;_fmenu=null;
+  el.remove();btn.setAttribute('aria-expanded','false');
+  if(refocus)btn.focus();
+}
+function fieldMenu(btn,items,empty){
+  const again=_fmenu&&_fmenu.btn===btn;
+  closeFieldMenu(false);
+  if(again)return; // second click on the same button closes it
+  const el=document.createElement('div');
+  el.className='field-menu';el.setAttribute('role','group');el.setAttribute('aria-label',btn.textContent.trim());
+  el.innerHTML=items.length?items.map((it,i)=>`<button type="button" class="field-menu-item" data-i="${i}">${it.html}</button>`).join('')
+    :`<div class="field-menu-empty">${escHtml(empty)}</div>`;
+  el.addEventListener('click',e=>{const b=e.target.closest('.field-menu-item');if(!b)return;const it=items[+b.dataset.i];closeFieldMenu(false);it.run();});
+  el.addEventListener('keydown',e=>{
+    const bs=Array.from(el.querySelectorAll('.field-menu-item')),i=bs.indexOf(document.activeElement);
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeFieldMenu(true);}
+    else if(e.key==='ArrowDown'&&bs.length){e.preventDefault();bs[(i+1)%bs.length].focus();}
+    else if(e.key==='ArrowUp'&&bs.length){e.preventDefault();bs[(i-1+bs.length)%bs.length].focus();}
+  });
+  btn.closest('.field-head').appendChild(el);
+  btn.setAttribute('aria-expanded','true');
+  _fmenu={el,btn};
+  (el.querySelector('.field-menu-item')||btn).focus();
+}
+document.addEventListener('click',e=>{if(_fmenu&&!_fmenu.el.contains(e.target)&&!_fmenu.btn.contains(e.target))closeFieldMenu(false);},true);
+
+// ── SEND TO ── hand an output to the next tool (Base64 → JSON → Type …); smart paste picks the targets
+function sendText(btn,text,skip){
+  text=String(text||'').trim();
+  if(!text){showToast('ยังไม่มีผลลัพธ์ให้ส่งต่อ','info');return;}
+  const hits=spDetect(text).filter(d=>!(skip||[]).includes(d.kind));
+  fieldMenu(btn,hits.map(d=>({html:`${ic('arrow-right')}<span>${escHtml(d.tool)}</span><span class="field-menu-sub">${escHtml(d.label)}</span>`,
+    run:()=>{spOpen(d.kind,text);showToast('ส่งไป '+d.tool+' แล้ว','info');}})),'ไม่รู้ว่าผลลัพธ์นี้ควรไปเครื่องมือไหน ลองคัดลอกไปวางที่หน้าแรก');
+}
+function sendTo(btn,id,skip){
+  const el=document.getElementById(id);
+  sendText(btn,el?(/^(TEXTAREA|INPUT)$/.test(el.tagName)?el.value:el.textContent):'',skip);
+}
+
+// ── INPUT HISTORY ── the last 5 distinct values of each main input (one with a field-head label), saved on change
+const STORAGE_HIST='esan-devtools-hist:'; // + element id
+const HIST_MAX=5,HIST_ITEM_MAX=20000;
+function histGet(id){try{const v=JSON.parse(localStorage.getItem(STORAGE_HIST+id)||'[]');return Array.isArray(v)?v.filter(x=>typeof x==='string'):[];}catch(e){return[];}}
+function histPush(el){
+  if(!rememberInputs||!el||INPUT_NEVER.includes(el.id))return;
+  const v=el.value.trim();
+  if(!v||v.length>HIST_ITEM_MAX)return;
+  try{localStorage.setItem(STORAGE_HIST+el.id,JSON.stringify([v,...histGet(el.id).filter(x=>x!==v)].slice(0,HIST_MAX)));}catch(e){}
+}
+function histOpen(btn,id){
+  const el=document.getElementById(id);
+  fieldMenu(btn,histGet(id).map(v=>({html:`${ic('clock')}<span class="field-menu-mono">${escHtml(v.replace(/\s+/g,' ').slice(0,80))}</span>`,
+    run:()=>{el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));el.focus();}})),'ยังไม่มีประวัติ ค่าที่กรอกจะถูกเก็บไว้ที่นี่ 5 ค่าล่าสุด');
+}
+// adds the "ประวัติ" button to every main input under root
+function initHistory(root){
+  (root||document).querySelectorAll('.field-head > label.field-label[for], .field-head .field-head-l > label.field-label[for]').forEach(lab=>{
+    const el=document.getElementById(lab.htmlFor),head=lab.closest('.field-head');
+    if(!el||el.readOnly||head.querySelector('.hist-btn')||INPUT_NEVER.includes(el.id)||!(el.tagName==='TEXTAREA'||el.type==='text'||el.type==='number'))return;
+    let acts=head.querySelector('.field-acts');
+    if(!acts){acts=document.createElement('span');acts.className='field-acts';head.appendChild(acts);}
+    acts.insertAdjacentHTML('afterbegin',`<button type="button" class="field-act hist-btn" aria-haspopup="true" aria-expanded="false" onclick="histOpen(this,'${el.id}')">${ic('clock')}ประวัติ</button>`);
+    el.addEventListener('change',()=>histPush(el));
+  });
 }
 
 // ── EFFECTS ── one Settings switch for the click sparkle, the logo animation and UI transitions.
@@ -806,11 +907,16 @@ function saveRememberedInputs(){
 // a tool's remembered option (direction, mode), cleared together with the inputs
 function rememberOpt(key,val){try{if(rememberInputs)localStorage.setItem(STORAGE_INPUT+key,val);}catch(e){}}
 function recallOpt(key,def){try{return localStorage.getItem(STORAGE_INPUT+key)||def;}catch(e){return def;}}
-function initRememberedInputs(){
-  _remembered=rememberedFields();
-  addEventListener('pagehide',saveRememberedInputs);
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)saveRememberedInputs();});
-  _remembered.forEach(el=>{
+let _rememberWired=false;
+function initRememberedInputs(root){
+  const fresh=rememberedFields().filter(el=>!el.dataset.remembered&&(!root||root.contains(el)));
+  fresh.forEach(el=>{el.dataset.remembered='1';_remembered.push(el);});
+  if(!_rememberWired){
+    _rememberWired=true;
+    addEventListener('pagehide',saveRememberedInputs);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)saveRememberedInputs();});
+  }
+  fresh.forEach(el=>{
     let saved=null;
     if(rememberInputs)try{saved=localStorage.getItem(inputKey(el.id));}catch(e){}
     if(saved!==null&&saved!==el.value){
@@ -831,7 +937,7 @@ function initRememberedInputs(){
 }
 function forgetRemembered(){
   try{
-    Object.keys(localStorage).filter(k=>k.startsWith(STORAGE_INPUT)).forEach(k=>localStorage.removeItem(k));
+    Object.keys(localStorage).filter(k=>k.startsWith(STORAGE_INPUT)||k.startsWith(STORAGE_HIST)).forEach(k=>localStorage.removeItem(k));
     Object.values(INPUT_LEGACY_KEYS).concat(STORAGE_RECENT).forEach(k=>localStorage.removeItem(k));
   }catch(e){}
   if(activeTabId==='home-tab')homeRender();

@@ -6,37 +6,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   restoreTab();
   restoreNavSearch();
 
-  // Restore saved timezone
-  try{
-    const savedTz=localStorage.getItem('esan-devtools-tz');
-    if(savedTz){
-      cronTz=savedTz;
-      const sel=document.getElementById('cron-tz');
-      if(sel){
-        const opt=Array.from(sel.options).find(o=>o.value===savedTz);
-        if(opt)sel.value=savedTz;
-      }
-    }
-  }catch(e){}
-
-  renderCmdList(KUBECTL_CMDS,'kubectl-list','');
-  renderCmdList(LINUX_CMDS,'linux-list','');
-  renderCmdList(GIT_CMDS,'git-list','');
-  updateCronDisplay('* * * * *');
-
-  // Real-time clock — update every second
-  updateTzClock();
-  setInterval(updateTzClock, 1000);
-
+  // cron, storage, cheatsheets, HTTP and LOV set themselves up on first open (TAB_INIT in core.js)
   initColorWheel();
-  initHttp();
-  // Init storage tab
-  storIdbRender();
-  storXssRender();
-  storDtInit();
-  storLocalRefresh();
   initJsonLineNumbers();
-  lovInit();
 
   // Sync JSON Live checkbox state
   try {
@@ -50,6 +22,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Restore every tool's last input (Settings → จำข้อมูลที่กรอกไว้)
   initRememberedInputs();
   applyShareLink(); // a shared link wins over what this browser remembered
+  initHistory();
 
   // Register Service Worker for PWA offline support (HTTPS only)
   if ('serviceWorker' in navigator) {

@@ -50,16 +50,16 @@ function decodeJWT_UI(){
         ${meta?`<div class="jwt-meta">${meta}</div>`:''}
       </div>
       <div class="jwt-section">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div class="field-head">
           <div class="jwt-section-title">HEADER</div>
-          <button class="btn btn-ghost" onclick="copyJwtPart('header')">คัดลอก</button>
+          <button type="button" class="field-act" onclick="copyJwtPart('header')">${ic('copy')}คัดลอก</button>
         </div>
         <div class="jwt-json">${escHtml(JSON.stringify(header,null,2))}</div>
       </div>
       <div class="jwt-section">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div class="field-head">
           <div class="jwt-section-title">PAYLOAD</div>
-          <button class="btn btn-ghost" onclick="copyJwtPart('payload')">คัดลอก</button>
+          <span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendText(this,JSON.stringify(_jwtPayload,null,2),['jwt'])">${ic('arrow-right')}ส่งต่อ</button><button type="button" class="field-act" onclick="copyJwtPart('payload')">${ic('copy')}คัดลอก</button></span>
         </div>
         <div class="jwt-json">${escHtml(JSON.stringify(payload,null,2))}</div>
       </div>

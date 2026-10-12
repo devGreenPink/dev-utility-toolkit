@@ -95,7 +95,7 @@
       <symbol id="i-briefcase" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
       <symbol id="i-bug" viewBox="0 0 24 24"><path d="M12 20v-9"/><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"/><path d="M14.12 3.88 16 2"/><path d="M21 21a4 4 0 0 0-3.81-4"/><path d="M21 5a4 4 0 0 1-3.55 3.97"/><path d="M22 13h-4"/><path d="M3 21a4 4 0 0 1 3.81-4"/><path d="M3 5a4 4 0 0 0 3.55 3.97"/><path d="M6 13H2"/><path d="m8 2 1.88 1.88"/><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"/></symbol>
       <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></symbol>
-      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></symbol>
+      <symbol id="i-qr-code" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></symbol><symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
       <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
       <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
@@ -293,6 +293,12 @@
             </div>
             <div class="nav-item" data-tab="jwt-tab" onclick="openTab(event, 'jwt-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-id-card"/></svg></span> JWT Decoder
+            </div>
+            <div class="nav-item" data-tab="qr-tab" onclick="openTab(event, 'qr-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-qr-code"/></svg></span> QR Code Reader
+            </div>
+            <div class="nav-item" data-tab="translate-tab" onclick="openTab(event, 'translate-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-languages"/></svg></span> แปลภาษา
             </div>
           </div></div>
         </div>
@@ -495,6 +501,19 @@
               <button type="button" class="rxjs-chip" onclick="spTry('1234567890121')">เลข 13 หลัก</button>
             </div>
           </section>
+          <section class="card home-tips" id="home-tips" aria-labelledby="home-tips-h" hidden>
+            <div class="home-tips-head">
+              <h2 class="card-title" id="home-tips-h"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg>เคล็ดลับที่ช่วยให้ใช้เร็วขึ้น</h2>
+              <button type="button" class="field-act" onclick="homeTipsDismiss()"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>เข้าใจแล้ว</button>
+            </div>
+            <ul class="home-tips-list">
+              <li><kbd class="home-mod">Ctrl</kbd><kbd>K</kbd><span>ค้นหาเครื่องมือหรือวางข้อความได้จากทุกหน้า แถบล่างบอกว่าแต่ละตัวทำอะไรก่อนเปิด</span></li>
+              <li><svg class="i i-fill t-yellow" aria-hidden="true"><use href="#i-star"/></svg><span>กดดาวข้างชื่อเครื่องมือในเมนูซ้าย เพื่อปักไว้ที่รายการโปรดด้านบนสุด</span></li>
+              <li><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg><span>ลากไฟล์ (JSON, YAML, Dockerfile, log) มาวางที่ไหนก็ได้ ระบบเปิดในเครื่องมือที่ใช่ให้</span></li>
+              <li><svg class="i" aria-hidden="true"><use href="#i-link"/></svg><span>ปุ่มลิงก์มุมขวาบน คัดลอกลิงก์ของเครื่องมือพร้อมข้อมูลที่กรอก ส่งให้เพื่อนเปิดเห็นแบบเดียวกัน (ไม่รวม token / secret)</span></li>
+              <li><svg class="i" aria-hidden="true"><use href="#i-save"/></svg><span>ข้อความที่กรอกถูกจำไว้ในเบราว์เซอร์นี้ ปิดหรือล้างได้ที่ปุ่มตั้งค่า</span></li>
+            </ul>
+          </section>
           <div class="home-cols">
             <section class="card home-card" aria-labelledby="home-recent-h">
               <h2 class="card-title" id="home-recent-h"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>ใช้ล่าสุด</h2>
@@ -518,73 +537,17 @@
 
         <!-- MOCK DATA -->
         <div id="random-tab" class="tab-content">
-          <!-- Action Bar -->
-          <div
-            style="
-              display: flex;
-              gap: 10px;
-              margin-bottom: 20px;
-              flex-wrap: wrap;
-              align-items: center;
-            "
-          >
-            <button
-              class="btn btn-primary"
-              style="
-                flex: 1;
-                min-width: 160px;
-                padding: 11px 20px;
-                font-size: 0.9rem;
-              "
-              onclick="generateAll()"
-            >
-              <span style="font-size: 1.1em"><svg class="i" aria-hidden="true"><use href="#i-dices"/></svg></span> สุ่มข้อมูลใหม่
-            </button>
-            <button
-              class="btn btn-ghost"
-              onclick="clearMock()"
-              style="padding: 11px 16px"
-            >
-              <span><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></span> ล้าง
-            </button>
-            <div
-              style="
-                margin-left: auto;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                background: var(--surface2);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-sm);
-                padding: 4px 4px 4px 12px;
-              "
-            >
-              <span
-                style="
-                  font-size: 0.75rem;
-                  color: var(--text-dim);
-                  white-space: nowrap;
-                "
-                >จำนวน records</span
-              >
-              <input
-                type="number"
-                id="bulk-count" aria-label="จำนวน records"
-                value="10"
-                min="1"
-                max="500"
-                style="width: 64px; padding: 5px 8px; font-size: 0.82rem"
-              />
-              <button
-                class="btn btn-green"
-                style="padding: 6px 12px; font-size: 0.78rem"
-                onclick="exportBulkJSON()"
-              >
-                <svg class="i" aria-hidden="true"><use href="#i-download"/></svg> Export
-              </button>
+          <div class="section-header">
+            <div class="toolbar">
+              <button class="btn btn-primary" onclick="generateAll()"><svg class="i" aria-hidden="true"><use href="#i-dices"/></svg> สุ่มข้อมูลใหม่</button>
+              <button class="btn btn-ghost" onclick="clearMock()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+            </div>
+            <div class="toolbar mock-bulk">
+              <label class="field-label" for="bulk-count">สร้างหลาย record</label>
+              <input type="number" id="bulk-count" value="10" min="1" max="500" />
+              <button class="btn btn-ghost" onclick="exportBulkJSON()"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg> สร้างเป็น JSON</button>
             </div>
           </div>
-
           <div class="mock-layout">
             <!-- Data fields: grid-template-areas in style.css -->
             <div class="mock-cards">
@@ -800,39 +763,11 @@
 
             <!-- Bulk output -->
             <div id="bulk-output-area" style="display: none">
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  margin-bottom: 8px;
-                "
-              >
-                <div>
-                  <span class="field-label">JSON OUTPUT</span>
-                  <span
-                    id="bulk-count-badge"
-                    style="
-                      font-size: 0.68rem;
-                      color: var(--accent2);
-                      font-family: var(--mono);
-                      margin-left: 8px;
-                    "
-                  ></span>
-                </div>
-                <button
-                  class="btn btn-ghost"
-                  onclick="copyArea('bulk-json-output')"
-                >
-                  <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอกทั้งหมด
-                </button>
+              <div class="field-head">
+                <span class="field-head-l"><label class="field-label" for="bulk-json-output">JSON</label><span id="bulk-count-badge" class="sql-badge"></span></span>
+                <span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'bulk-json-output',[])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyArea('bulk-json-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span>
               </div>
-              <textarea
-                id="bulk-json-output"
-                rows="22"
-                readonly
-                style="color: var(--accent2); font-size: 0.75rem"
-              ></textarea>
+              <textarea id="bulk-json-output" class="bulk-json" rows="22" readonly></textarea>
             </div>
           </div>
         </div>
@@ -926,7 +861,7 @@
           </div>
 
           <div id="json-editor-pane">
-            <div class="field-head"><label class="field-label" for="json-input">JSON</label><span class="field-acts"><button type="button" class="field-act" onclick="copyArea('json-input')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button><button type="button" class="field-act" onclick="clearJSON()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+            <div class="field-head"><label class="field-label" for="json-input">JSON</label><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'json-input',['json'])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyArea('json-input')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button><button type="button" class="field-act" onclick="clearJSON()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
             <div class="textarea-container">
               <div class="textarea-gutter" id="json-gutter"><div>1</div></div>
               <textarea
@@ -1122,7 +1057,7 @@
               <textarea id="b64-input" rows="10" placeholder="วางข้อความหรือ Base64 ที่ต้องการแปลง" oninput="b64Convert()"></textarea>
             </div>
             <div>
-              <div class="field-head"><span class="field-label">ผลลัพธ์</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('b64-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div class="field-head"><span class="field-label">ผลลัพธ์</span><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'b64-output',['base64','b64enc'])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyElText('b64-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
               <div id="b64-output" class="output-mono tool-result" data-empty="ผลลัพธ์จะขึ้นที่นี่ทันทีที่พิมพ์"></div>
               <div id="b64-error" class="tool-error-text" style="display: none"></div>
             </div>
@@ -1130,7 +1065,7 @@
         </div>
 
         <!-- CRON -->
-        <div id="cron-tab" class="tab-content">
+        <div id="cron-tab" class="tab-content"><template class="tab-lazy">
           <div class="section-header">
             <button class="btn btn-ghost" onclick="clearCron()"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
           </div>
@@ -1498,7 +1433,7 @@
               <span style="color: var(--text)">* * * * *</span>
             </div>
           </div>
-        </div>
+        </template></div>
 
         <!-- REGEX -->
         <div id="regex-tab" class="tab-content">
@@ -1680,13 +1615,73 @@
                 </div>
               </div>
               <div>
-                <div class="field-head"><span class="field-label">Token</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('jwt-enc-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+                <div class="field-head"><span class="field-label">Token</span><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'jwt-enc-output',[])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyElText('jwt-enc-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
                 <div id="jwt-enc-output" class="output-mono tool-result jwt-enc-out" data-empty="กรอก payload และ secret แล้ว token จะขึ้นที่นี่"></div>
                 <div id="jwt-enc-error" class="tool-error-text" style="display: none"></div>
               </div>
             </div>
             <div class="tool-note"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ใช้สำหรับทดสอบเท่านั้น: ประมวลผลใน browser ทั้งหมด ไม่ส่งข้อมูลออกไปไหน</div>
           </section>
+        </div>
+
+        <!-- QR CODE READER -->
+        <div id="qr-tab" class="tab-content">
+          <div class="section-header">
+            <div class="toolbar">
+              <button class="btn btn-primary" id="qr-cam-btn" aria-pressed="false" onclick="qrCamera()"><svg class="i" aria-hidden="true"><use href="#i-camera"/></svg> เปิดกล้อง</button>
+              <button class="btn btn-ghost" onclick="document.getElementById('qr-file').click()"><svg class="i" aria-hidden="true"><use href="#i-image"/></svg> เลือกรูป</button>
+              <input type="file" id="qr-file" accept="image/*" hidden onchange="qrPickFile(this)" />
+            </div>
+            <span class="tool-note">หรือกด <kbd class="cmdk-mod">Ctrl</kbd><kbd>V</kbd> วางรูป / ลากรูปมาวาง · อ่านในเครื่อง ไม่ส่งรูปออกไป</span>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="field-head"><span class="field-label">รูป / กล้อง</span><span class="field-acts"><button type="button" class="field-act" onclick="qrClear()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <div class="qr-stage" id="qr-stage" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="qrDrop(event)">
+                <video id="qr-video" playsinline muted hidden aria-label="ภาพจากกล้อง"></video>
+                <canvas id="qr-preview" width="0" height="0" hidden role="img" aria-label="รูปที่ใช้อ่าน QR"></canvas>
+                <div class="qr-empty" id="qr-empty"><svg class="i" aria-hidden="true"><use href="#i-qr-code"/></svg><span>ลากรูปที่มี QR code มาวางที่นี่ วางด้วย Ctrl+V หรือเปิดกล้อง</span><span class="qr-empty-sub">อ่าน PromptPay / Thai QR ได้: แยกเบอร์ เลขประจำตัว จำนวนเงิน และตรวจ CRC ให้</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="field-head"><span class="field-label">ข้อความใน QR</span><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'qr-output',[])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyElText('qr-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div id="qr-output" class="output-mono qr-out" data-empty="ข้อความที่อ่านได้จะขึ้นที่นี่" aria-live="polite"></div>
+              <div id="qr-error" class="tool-error-text" style="display: none" role="alert"></div>
+              <div id="qr-extra"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRANSLATE -->
+        <div id="translate-tab" class="tab-content">
+          <div class="section-header">
+            <div class="toolbar">
+              <label class="field-label" for="tr-from">จาก</label>
+              <select id="tr-from" class="tr-select" onchange="trChanged()"></select>
+              <button type="button" class="btn btn-ghost" onclick="trSwap()" aria-label="สลับภาษา" title="สลับภาษา"><svg class="i" aria-hidden="true"><use href="#i-arrow-left-right"/></svg></button>
+              <label class="field-label" for="tr-to">เป็น</label>
+              <select id="tr-to" class="tr-select" onchange="trChanged()"></select>
+            </div>
+            <div class="toolbar">
+              <div class="json-view-toggle" id="tr-engine" role="group" aria-label="วิธีแปล">
+                <button type="button" class="json-view-btn active" data-v="device" aria-pressed="true" onclick="trSetEngine('device')"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> ในเครื่อง</button>
+                <button type="button" class="json-view-btn" data-v="mymemory" aria-pressed="false" onclick="trSetEngine('mymemory')"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg> MyMemory</button>
+              </div>
+              <button class="btn btn-primary" id="tr-go" onclick="trTranslate(true)"><svg class="i" aria-hidden="true"><use href="#i-languages"/></svg> แปล</button>
+            </div>
+          </div>
+          <div class="tool-note tr-status" id="tr-status" aria-live="polite"></div>
+          <div class="grid-2">
+            <div>
+              <div class="field-head"><label class="field-label" for="tr-input">ข้อความ</label><span class="field-acts"><button type="button" class="field-act" onclick="clearTranslate()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <textarea id="tr-input" rows="10" placeholder="พิมพ์หรือวางข้อความที่ต้องการแปล" oninput="trLive()"></textarea>
+            </div>
+            <div>
+              <div class="field-head"><span class="field-label">คำแปล</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('tr-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div id="tr-output" class="output-mono tool-result tr-out" data-empty="คำแปลจะขึ้นที่นี่" aria-live="polite"></div>
+              <div id="tr-error" class="tool-error-text" style="display: none" role="alert"></div>
+            </div>
+          </div>
         </div>
 
         <!-- URL ENCODE/DECODE -->
@@ -1707,7 +1702,7 @@
               <textarea id="url-input" rows="10" placeholder="วางข้อความหรือ URL ที่ต้องการแปลง" oninput="urlConvert()"></textarea>
             </div>
             <div>
-              <div class="field-head"><span class="field-label">ผลลัพธ์</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('url-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div class="field-head"><span class="field-label">ผลลัพธ์</span><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'url-output',['url-enc'])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyElText('url-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
               <div id="url-output" class="output-mono tool-result" data-empty="ผลลัพธ์จะขึ้นที่นี่ทันทีที่พิมพ์"></div>
               <div id="url-error" class="tool-error-text" style="display: none"></div>
             </div>
@@ -2189,34 +2184,20 @@
         </div>
 
         <!-- RXJS REFERENCE -->
-        <div id="rxjs-tab" class="tab-content">
+        <div id="rxjs-tab" class="tab-content"><template class="tab-lazy">
 
-          <!-- Top bar -->
-          <div class="rxjs-topbar">
-            <div class="rxjs-topbar-left">
-              <span class="rxjs-topbar-badge"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
-              <div>
-                <div class="rxjs-topbar-title">RxJS Reference</div>
-                <div class="rxjs-topbar-sub">คำอธิบายภาษาไทย · 57 operators · พร้อมตัวอย่างโค้ด</div>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <div class="rxjs-view-tabs">
-                <button class="rxjs-view-tab rxjs-view-tab-active" id="rxjs-vtab-ref" onclick="rxjsSwitchView('ref')"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Reference</button>
-                <button class="rxjs-view-tab" id="rxjs-vtab-pg" onclick="rxjsSwitchView('pg')"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Playground</button>
-              </div>
-              <button class="btn btn-ghost" id="rxjs-clear-btn" onclick="clearRxjs()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+          <div class="section-header">
+            <div class="json-view-toggle" id="rxjs-view" role="group" aria-label="มุมมอง">
+              <button type="button" class="json-view-btn active" data-v="ref" aria-pressed="true" onclick="rxjsSwitchView('ref')"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Reference</button>
+              <button type="button" class="json-view-btn" data-v="pg" aria-pressed="false" onclick="rxjsSwitchView('pg')"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Playground</button>
             </div>
           </div>
-
           <!-- ═══ REFERENCE VIEW ═══ -->
           <div id="rxjs-ref-view">
 
           <!-- Search + Filter -->
           <div class="rxjs-search-area">
-            <input type="text" id="rxjs-search" class="rxjs-search-input"
-              placeholder="ค้นหา operator... เช่น cancel, state, debounce, async"
-              oninput="rxjsSearch(this.value)" />
+            <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="rxjs-search" placeholder="ค้นหา operator เช่น cancel, state, debounce, async" aria-label="ค้นหา operator" oninput="rxjsSearch(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearRxjs();document.getElementById('rxjs-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
             <div class="rxjs-uc-row">
               <span class="rxjs-uc-label">ลองดู:</span>
               <button class="rxjs-uc-tag" onclick="rxjsUcClick('debounce')"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> Search autocomplete</button>
@@ -2645,7 +2626,7 @@ store.count$.subscribe(n => countEl.textContent = n);</code></pre></div>
                 <div class="rxjs-pg-pane-hd">
                   <span class="rxjs-pg-pane-title"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> Code</span>
                   <div class="rxjs-pg-run-btns">
-                    <button class="rxjs-pg-run-btn rxjs-pg-run-primary" onclick="rxjsRunCode()">▶ Run</button>
+                    <button class="rxjs-pg-run-btn rxjs-pg-run-primary" onclick="rxjsRunCode()"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Run</button>
                     <button class="rxjs-pg-run-btn" id="rxjs-pg-stop-btn" onclick="rxjsStopCode()" disabled><svg class="i" aria-hidden="true"><use href="#i-square"/></svg> Stop</button>
                     <button class="rxjs-pg-run-btn" onclick="rxjsClearOutput()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
                   </div>
@@ -2679,10 +2660,10 @@ catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
 
           </div><!-- /rxjs-pg-view -->
 
-        </div>
+        </template></div>
 
         <!-- ANGULAR LIFECYCLE -->
-        <div id="angular-tab" class="tab-content">
+        <div id="angular-tab" class="tab-content"><template class="tab-lazy">
           <div class="rxjs-topbar">
             <div class="rxjs-topbar-left">
               <span class="rxjs-topbar-badge"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></span>
@@ -2846,12 +2827,12 @@ ngAfterViewInit(): void {
             </div>
 
           </div><!-- /rxjs-acc-group -->
-        </div><!-- /angular-tab -->
+        </template></div><!-- /angular-tab -->
 
         <!-- ══════════════════════════════════════════════════════════
              RabbitMQ · Redis · Quarkus Reference Tab
         ══════════════════════════════════════════════════════════ -->
-        <div id="mq-tab" class="tab-content">
+        <div id="mq-tab" class="tab-content"><template class="tab-lazy">
 
           <!-- Top bar -->
           <div class="mq-topbar">
@@ -4121,12 +4102,12 @@ public class RateLimiter {
 
           </div><!-- /mq-quarkus-view -->
 
-        </div><!-- /mq-tab -->
+        </template></div><!-- /mq-tab -->
 
         <!-- ══════════════════════════════════════════
              BROWSER STORAGE APIS TAB
         ══════════════════════════════════════════ -->
-        <div id="storage-tab" class="tab-content">
+        <div id="storage-tab" class="tab-content"><template class="tab-lazy">
 
           <!-- Sub-nav -->
           <div class="stor-subnav">
@@ -4721,7 +4702,7 @@ self.addEventListener('fetch', e => {
 
           </div><!-- /stor-security -->
 
-        </div><!-- /storage-tab -->
+        </template></div><!-- /storage-tab -->
 
         <div id="lov-tab" class="tab-content">
           <div id="lov-unsupported" class="card" style="display:none;">
@@ -4736,7 +4717,7 @@ self.addEventListener('fetch', e => {
             <div class="section-header" id="lov-toolbar">
               <div class="toolbar">
                 <button class="btn btn-primary" id="lov-pick-btn" onclick="lovPickFolder()"><svg class="i" aria-hidden="true"><use href="#i-folder-open"/></svg> เลือกโฟลเดอร์</button>
-                <button class="btn btn-green" id="lov-new-btn" onclick="lovNewFile()" style="display:none;"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg> สร้างใหม่</button>
+                <button class="btn btn-ghost" id="lov-new-btn" onclick="lovNewFile()" style="display:none;"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg> สร้างใหม่</button>
                 <button class="btn btn-ghost" id="lov-refresh-btn" onclick="lovRefresh()" style="display:none;"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> โหลดใหม่</button>
                 <button class="btn btn-ghost" id="lov-rename-btn" onclick="lovRenameFolder()" style="display:none;"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> ตั้งชื่อโฟลเดอร์</button>
                 <button class="btn btn-danger" id="lov-forget-btn" onclick="lovForgetFolder()" style="display:none;"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ลืมโฟลเดอร์นี้</button>
@@ -4759,11 +4740,9 @@ self.addEventListener('fetch', e => {
               </ol>
             </section>
             <div id="lov-browse">
-              <div style="margin-bottom:16px;">
-                <input type="text" id="lov-search" placeholder="ค้นหาด้วย id, ชื่อไฟล์ หรือ description... เช่น lovCpsComp" oninput="lovFilter(this.value)" disabled />
-              </div>
+              <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="lov-search" placeholder="ค้นหาด้วย id, ชื่อไฟล์ หรือ description" aria-label="ค้นหา query template" oninput="lovFilter(this.value)" disabled /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="document.getElementById('lov-search').value='';lovFilter('');document.getElementById('lov-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
               <div id="lov-list" class="rxjs-acc-group"></div>
-              <div id="lov-empty" style="display:none;color:var(--text-dim);text-align:center;padding:40px;">ไม่พบไฟล์ JSON ในโฟลเดอร์นี้</div>
+              <div id="lov-empty" class="lov-empty" style="display:none;">ไม่พบไฟล์ JSON ในโฟลเดอร์นี้</div>
             </div>
             <div id="lov-editor" class="lov-ed" style="display:none;"></div>
           </div>
@@ -4822,7 +4801,7 @@ self.addEventListener('fetch', e => {
               <textarea id="py-input" rows="20" spellcheck="false" placeholder="quarkus.http.port=8080" oninput="pyLive()"></textarea>
             </div>
             <div>
-              <div class="field-head"><span class="field-label" id="py-out-label">application.yaml</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('py-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div class="field-head"><span class="field-label" id="py-out-label">application.yaml</span><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'py-output',['props','yaml'])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyElText('py-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
               <div class="rxjs-code-block tool-out"><pre class="rxjs-code"><code id="py-output" class="language-yaml" data-empty="ผลลัพธ์จะขึ้นที่นี่"></code></pre></div>
               <div class="tool-error" id="py-error" role="alert" hidden></div>
             </div>
@@ -4951,7 +4930,7 @@ self.addEventListener('fetch', e => {
         </div>
 
         <!-- ESAN AI AGENT guide: how to install / update the Claude Code plugin and where to open it -->
-        <div id="esan-agent-tab" class="tab-content">
+        <div id="esan-agent-tab" class="tab-content"><template class="tab-lazy">
           <div class="ea-wrap">
 
             <section class="card ea-hero" aria-labelledby="ea-h-top">
@@ -5112,7 +5091,7 @@ self.addEventListener('fetch', e => {
             </section>
 
           </div>
-        </div><!-- /esan-agent-tab -->
+        </template></div><!-- /esan-agent-tab -->
 
       </div>
       <!-- content-area -->
@@ -5128,6 +5107,7 @@ self.addEventListener('fetch', e => {
           <kbd>Esc</kbd>
         </div>
         <div class="cmdk-list" id="cmdk-list" role="listbox" aria-label="ผลการค้นหา"></div>
+        <div class="cmdk-preview" id="cmdk-preview" aria-hidden="true"></div>
         <div class="cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd> เลือก</span><span><kbd>Enter</kbd> เปิด</span><span><kbd>Esc</kbd> ปิด</span></div>
       </div>
     </div>
@@ -5198,6 +5178,8 @@ self.addEventListener('fetch', e => {
     <script defer src="assets/js/tools/k8s-ref.js"></script>
     <script defer src="assets/js/tools/gateway.js"></script>
     <script defer src="assets/js/tools/jenkins.js"></script>
+    <script defer src="assets/js/tools/qr.js"></script>
+    <script defer src="assets/js/tools/translate.js"></script>
     <script defer src="assets/js/tools/ngrx.js"></script>
     <script defer src="assets/js/tools/home.js"></script>
     <script defer src="assets/js/init.js"></script>

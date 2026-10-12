@@ -703,15 +703,10 @@ function rxjsSwitchView(v){
   rxjsCurrentView=v;
   const ref=document.getElementById('rxjs-ref-view');
   const pg=document.getElementById('rxjs-pg-view');
-  const tabRef=document.getElementById('rxjs-vtab-ref');
-  const tabPg=document.getElementById('rxjs-vtab-pg');
-  const clearBtn=document.getElementById('rxjs-clear-btn');
   if(!ref||!pg)return;
   ref.style.display=v==='ref'?'block':'none';
   pg.style.display=v==='pg'?'block':'none';
-  tabRef.classList.toggle('rxjs-view-tab-active',v==='ref');
-  tabPg.classList.toggle('rxjs-view-tab-active',v==='pg');
-  if(clearBtn)clearBtn.innerHTML=ic('x')+(v==='pg'?' ล้าง output':' ล้าง');
+  setSegmented('rxjs-view',v);
   if(v==='pg'&&rxjsPgEditor)setTimeout(()=>{rxjsPgEditor.refresh();rxjsPgEditor.focus();},0);
 }
 

@@ -82,3 +82,14 @@ function renderNextRuns(expr){
     return`<div class="next-run-item"><span class="next-run-num">${i+1}.</span><span class="next-run-time">${tzStr}</span><span class="next-run-rel">อีก ${rel}</span></div>`;
   }).join('');
 }
+// first open of the tab (TAB_INIT): saved timezone, the current expression and the clock
+function cronInit(){
+  try{
+    const saved=localStorage.getItem('esan-devtools-tz');
+    const sel=document.getElementById('cron-tz');
+    if(saved&&sel&&Array.from(sel.options).some(o=>o.value===saved)){cronTz=saved;sel.value=saved;}
+  }catch(e){}
+  updateCronDisplay(currentCron);
+  updateTzClock();
+  setInterval(()=>{if(activeTabId==='cron-tab')updateTzClock();},1000); // only while visible: it restyles every second
+}

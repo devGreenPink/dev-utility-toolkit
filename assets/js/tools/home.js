@@ -3,17 +3,20 @@
 // Smart paste: [kind, label, test]. Order matters: the first hits are the most specific.
 // Each kind opens a tool through SP_OPEN below; a text can match several kinds (13 digits: Thai ID and ms timestamp).
 const SP_RULES=[
+  ['curl','คำสั่ง curl',t=>/^curl\s/i.test(t)],
   ['jwt','JWT token',t=>/^(Bearer\s+)?eyJ[\w-]+\.eyJ[\w-]+\.[\w-]*$/.test(t)],
   ['stacktrace','Java stack trace',t=>/\n\s*at\s+[\w$.<>\/-]+\([^)]*\)/.test(t)||/^(Caused by:|Exception in thread )/m.test(t)],
   ['k8s-secret','Kubernetes Secret',t=>/^\s*kind:\s*Secret\b/m.test(t)&&/^\s*(data|stringData):/m.test(t)],
   ['k8s-yaml','Kubernetes manifest',t=>/^apiVersion:\s*\S+/m.test(t)&&/^kind:\s*\w+/m.test(t)&&!/^\s*kind:\s*Secret\b/m.test(t)],
   ['jenkinsfile','Jenkinsfile',t=>/^\s*@Library\(/m.test(t)||/^\s*(pipeline|node)\s*(\(.*\))?\s*\{/m.test(t)&&/\bstages?\s*[({]/.test(t)],
   ['dockerfile','Dockerfile',t=>/^FROM\s+\S+/im.test(t)&&/^(RUN|COPY|ENTRYPOINT|CMD|WORKDIR)\s/im.test(t)],
+  ['har','HAR (บันทึก network จาก DevTools)',t=>/^\{/.test(t)&&/"log"\s*:/.test(t)&&/"entries"\s*:/.test(t)&&spIsJson(t)&&Array.isArray(JSON.parse(t).log?.entries)],
   ['json','JSON',t=>/^[[{]/.test(t)&&spIsJson(t)],
   ['sql-java','SQL ใน Java / MyBatis',t=>/(StringBuilder|\.append\s*\(|"""|@Query|prepareStatement|<(select|insert|update|delete)\b)/i.test(t)&&/\b(select|insert|update|delete)\b/i.test(t)],
   ['sql','SQL',t=>/^\s*(select|insert|update|delete|with|merge)\b/i.test(t)],
   ['db2code','DB2 SQLCODE',t=>/SQLCODE\s*=\s*-?\d+/i.test(t)||/^[-+]\d{3,5}$/.test(t)],
   ['exception','Java exception',t=>/^([a-z_$][\w$]*\.)*[A-Z][\w$]*(Exception|Error)$/.test(t)],
+  ['xml','XML',t=>/^(<\?xml[^>]*>\s*)?(<!--[\s\S]*?-->\s*)*<[A-Za-z_][\w:.-]*[\s/>]/.test(t)&&/(<\/[A-Za-z_][\w:.-]*\s*>|\/>)$/.test(t)],
   ['props','application.properties',t=>spIsProps(t)],
   ['yaml','YAML',t=>!/^[[{]/.test(t)&&/^["%\w][\w."%-]*:\s*$/m.test(t)&&/^\s{2,}["%\w][\w."%-]*:/m.test(t)],
   ['thai-id','เลข 13 หลัก (บัตร / นิติบุคคล)',t=>/^\d[- ]?\d{4}[- ]?\d{5}[- ]?\d{2}[- ]?\d$/.test(t)&&thaiIdInfo(t).ok],
@@ -39,6 +42,14 @@ const SP_OPEN={
   }],
   jenkinsfile:['Jenkins CI/CD',t=>spExplorer('jenkins-tab','jk-explorer',/@Library\(/.test(t)&&!/pipeline\s*\{/.test(t)?'lib-use':'ci')],
   dockerfile:['Docker & K8s',t=>spExplorer('k8sref-tab','k8s-explorer',/nginx/i.test(t)?'nginx':/quarkus-micro/i.test(t)?'docker-native':/openjdk|run-java/i.test(t)?'docker-jvm':'docker')],
+  'curl-jwt':['JWT Decoder (token)',t=>spFill('jwt-tab','jwt-input',spCurl(t).bearer)],
+  'curl-body':['JSON Tools (body)',t=>spFill('json-tab','json-input',spCurl(t).body,()=>formatJSON(2))],
+  'curl-url':['URL Decode (URL)',t=>{urlSetMode('dec');spFill('url-tab','url-input',spCurl(t).url);}],
+  har:['JSON Tools (Tree)',t=>{spFill('json-tab','json-input',t,()=>formatJSON(2));switchJsonView('tree');}],
+  xml:['JSON Tools (แปลงจาก XML)',t=>{
+    let json;try{json=JSON.stringify(xmlToJson(t),null,2);}catch(e){showToast(e.message,'warn');return;}
+    spFill('json-tab','json-input',json,()=>formatJSON(2));
+  }],
   json:['JSON Tools',t=>spFill('json-tab','json-input',t,()=>formatJSON(4))],
   json2type:['JSON → Type',t=>spFill('json2type-tab','j2t-input',t,()=>j2tConvert())],
   'sql-java':['SQL Parser',t=>spFill('sql-tab','sql-input',t,()=>convertSQL())],
@@ -80,6 +91,7 @@ function spDetect(input){
   for(const[kind,label,test]of SP_RULES){
     let hit=false;try{hit=test(t);}catch(e){}
     if(!hit)continue;
+    if(kind==='curl'){out.push(...spCurlTargets(t));continue;}
     out.push({kind,label,tool:SP_OPEN[kind][0]});
     if(kind==='json')out.push({kind:'json2type',label:'JSON',tool:SP_OPEN.json2type[0]});
   }
@@ -93,6 +105,7 @@ function spFill(tab,id,value,after){
   if(!el)return;
   el.value=value;
   el.dispatchEvent(new Event('input',{bubbles:true})); // live tools react and the value is remembered
+  histPush(el);
   if(after)after();
   el.focus({preventScroll:true});
 }
@@ -127,7 +140,7 @@ function spRender(){
       _spActs=['hash','b64enc','regex'].map(k=>({label:'เปิดใน '+SP_OPEN[k][0],run:()=>spOpen(k,t)}));
     }
   }
-  out.innerHTML=`<span class="sp-label">${head}</span><span class="sp-acts">`
+  out.innerHTML=`<span class="sp-label">${head}</span>`+(hits[0]&&hits[0].kind==='har'?spHarHtml(t):'')+`<span class="sp-acts">`
     +_spActs.map((a,i)=>`<button type="button" class="btn ${i?'btn-ghost':'btn-primary'}" onclick="spAct(${i})">${i?'':ic('arrow-right')}${escHtml(a.label)}</button>`).join('')+'</span>';
 }
 function spOpenFirst(){clearTimeout(_spTimer);spRender();spAct(0);}
@@ -148,9 +161,17 @@ function homeToolRow(id){
   const group=src.closest('.nav-group').querySelector('.nav-section-label').textContent.trim();
   return `<button type="button" class="home-item" onclick="openTab(null,'${id}')"><span class="gw-ic">${src.querySelector('.nav-icon').innerHTML}</span><span class="home-item-t">${escHtml(navLabelOf(src))}</span><span class="home-item-sub">${escHtml(group)}</span></button>`;
 }
+const STORAGE_TIPS='esan-devtools-tips'; // '1' once the tips card was dismissed
+function homeTipsDismiss(){
+  try{localStorage.setItem(STORAGE_TIPS,'1');}catch(e){}
+  document.getElementById('home-tips').hidden=true;
+  document.getElementById('sp-input')?.focus();
+}
 function homeRender(){
   const rec=document.getElementById('home-recent'),fav=document.getElementById('home-fav');
   if(!rec)return;
+  let seen=false;try{seen=localStorage.getItem(STORAGE_TIPS)==='1';}catch(e){}
+  document.getElementById('home-tips').hidden=seen;
   const recent=recentTabs().map(homeToolRow).filter(Boolean);
   rec.innerHTML=recent.length?recent.join(''):'<div class="home-empty">ยังไม่มี เครื่องมือที่เปิดจะขึ้นที่นี่</div>';
   const favs=(typeof favorites!=='undefined'?favorites:[]).map(homeToolRow).filter(Boolean);
@@ -175,21 +196,104 @@ function spTry(text){
   el.focus();
 }
 
-// ── SHARE LINK ── #t=<tab>&s=<base64url JSON>: the open tool and what is typed in it. The hash never reaches a
-// server, but the link carries the data wherever it is pasted, so secret fields (INPUT_NEVER) are left out.
-const SHARE_MAX=8000; // ponytail: plain base64; a bigger state gets a tool-only link — CompressionStream would stretch it
-function b64uEncode(s){
-  let bin='';for(const b of new TextEncoder().encode(s))bin+=String.fromCharCode(b);
-  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+// ── CURL / HAR / XML ── parts of what smart paste recognises
+// Pure: a curl command → {url, method, headers, body, bearer}; shell quoting and line continuations understood
+function spCurl(text){
+  const src=String(text).replace(/\\\r?\n/g,' ');
+  const tok=[];let cur='',q=null,has=false;
+  for(let i=0;i<src.length;i++){
+    const c=src[i];
+    if(q==="'"){if(c==="'")q=null;else cur+=c;continue;}
+    if(q==='"'){if(c==='\\'&&/["\\$`]/.test(src[i+1]||'')){cur+=src[++i];}else if(c==='"')q=null;else cur+=c;continue;}
+    if(c==="'"||c==='"'){q=c;has=true;continue;}
+    if(c==='\\'){cur+=src[++i]||'';has=true;continue;}
+    if(/\s/.test(c)){if(cur||has)tok.push(cur);cur='';has=false;continue;}
+    cur+=c;
+  }
+  if(cur||has)tok.push(cur);
+  if(!/^curl$/i.test(tok[0]||''))return null;
+  const ARG=new Set(['-X','--request','-H','--header','-d','--data','--data-raw','--data-binary','--data-urlencode','--json','-u','--user','-b','--cookie','-A','--user-agent','-o','--output','-e','--referer','--url','-F','--form','-m','--max-time','--connect-timeout','-x','--proxy','--cacert','--cert','--key']);
+  const r={url:'',method:'',headers:{},body:'',bearer:''};
+  for(let i=1;i<tok.length;i++){
+    const a=tok[i];
+    if(!a.startsWith('-')||a==='-'){if(!r.url)r.url=a;continue;}
+    const v=ARG.has(a)?tok[++i]??'':'';
+    if(a==='-X'||a==='--request')r.method=v.toUpperCase();
+    else if(a==='-H'||a==='--header'){const k=v.indexOf(':');if(k>0)r.headers[v.slice(0,k).trim().toLowerCase()]=v.slice(k+1).trim();}
+    else if(/^(-d|--data(-raw|-binary|-urlencode)?|--json)$/.test(a))r.body=r.body?r.body+'&'+v:v;
+    else if(a==='--url')r.url=v;
+  }
+  const auth=r.headers.authorization||'';
+  if(/^Bearer\s+/i.test(auth))r.bearer=auth.replace(/^Bearer\s+/i,'').trim();
+  if(!r.method)r.method=r.body?'POST':'GET';
+  return r;
 }
-function b64uDecode(s){return new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0)));}
-// Pure: location.hash → {tab, st} or null; anything malformed is dropped, so a crafted link can only fill fields
-function shareParse(hash){
+function spCurlTargets(t){
+  const c=spCurl(t);
+  if(!c)return[];
+  const out=[];
+  if(/^eyJ[\w-]+\.eyJ[\w-]+\.[\w-]*$/.test(c.bearer))out.push({kind:'curl-jwt',label:'curl: token ใน Authorization',tool:SP_OPEN['curl-jwt'][0]});
+  if(c.body&&/^[[{]/.test(c.body.trim())&&spIsJson(c.body.trim()))out.push({kind:'curl-body',label:'curl: body เป็น JSON',tool:SP_OPEN['curl-body'][0]});
+  if(c.url)out.push({kind:'curl-url',label:'curl: URL และ query',tool:SP_OPEN['curl-url'][0]});
+  return out;
+}
+// Pure: HAR JSON → request count, failures and the slowest calls
+function harSummary(text){
+  const entries=JSON.parse(text).log.entries||[];
+  const rows=entries.map(e=>({method:e.request?.method||'',url:e.request?.url||'',status:e.response?.status??0,time:Math.round(e.time||0)}));
+  return{count:rows.length,failed:rows.filter(r=>!r.status||r.status>=400),slow:rows.slice().sort((a,b)=>b.time-a.time).slice(0,3)};
+}
+function spHarHtml(t){
+  let s;try{s=harSummary(t);}catch(e){return '';}
+  const path=u=>{try{const x=new URL(u);return x.pathname+x.search;}catch(e){return u;}};
+  const row=(r,extra)=>`<li><code>${escHtml(r.method)}</code> <span class="sp-har-url">${escHtml(path(r.url))}</span> ${extra}</li>`;
+  return `<div class="sp-har"><div>${s.count} request · <b class="${s.failed.length?'t-red':'t-green'}">ล้มเหลว ${s.failed.length}</b></div>`
+    +(s.failed.length?`<ul>${s.failed.slice(0,5).map(r=>row(r,`<b class="t-red">${r.status||'ไม่มีคำตอบ'}</b>`)).join('')}</ul>`:'')
+    +`<div>ช้าที่สุด</div><ul>${s.slow.map(r=>row(r,`<b>${r.time} ms</b>`)).join('')}</ul></div>`;
+}
+// XML → JSON: attributes become "@name", text next to attributes "#text", repeated tags an array
+function xmlToJson(text){
+  const doc=new DOMParser().parseFromString(text,'application/xml');
+  const err=doc.querySelector('parsererror');
+  if(err)throw new Error('XML ไม่ถูกต้อง: '+err.textContent.split('\n')[0]);
+  const conv=el=>{
+    const o={};
+    for(const a of el.attributes)o['@'+a.name]=a.value;
+    const kids=Array.from(el.children);
+    if(!kids.length){const tx=el.textContent.trim();return Object.keys(o).length?(tx?{...o,'#text':tx}:o):tx;}
+    for(const k of kids){
+      const v=conv(k);
+      if(k.tagName in o){if(!Array.isArray(o[k.tagName]))o[k.tagName]=[o[k.tagName]];o[k.tagName].push(v);}
+      else o[k.tagName]=v;
+    }
+    return o;
+  };
+  return{[doc.documentElement.tagName]:conv(doc.documentElement)};
+}
+
+// ── SHARE LINK ── #t=<tab>&z=<base64url deflate JSON> (or &s=<base64url JSON> where CompressionStream is missing):
+// the open tool and what is typed in it. The hash never reaches a server, but the link carries the data wherever
+// it is pasted, so secret fields (INPUT_NEVER) are left out.
+const SHARE_MAX=8000; // URL length that chat apps keep intact; compressed, that is roughly 20-40 KB of typical text
+function b64uFromBytes(bytes){let bin='';for(const b of bytes)bin+=String.fromCharCode(b);return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function b64uBytes(s){return Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));}
+function b64uEncode(s){return b64uFromBytes(new TextEncoder().encode(s));}
+function b64uDecode(s){return new TextDecoder().decode(b64uBytes(s));}
+const shareZip=(bytes,mode)=>new Response(new Blob([bytes]).stream().pipeThrough(mode==='in'?new CompressionStream('deflate-raw'):new DecompressionStream('deflate-raw'))).arrayBuffer();
+// the state's JSON text from `z` (compressed); null = read `s` instead
+async function shareJson(hash){
+  const z=new URLSearchParams(String(hash||'').replace(/^#/,'')).get('z');
+  if(!z||typeof DecompressionStream==='undefined')return null;
+  try{return new TextDecoder().decode(await shareZip(b64uBytes(z),'out'));}catch(e){return '';}
+}
+// Pure: location.hash (+ the decompressed JSON) → {tab, st} or null; anything malformed is dropped,
+// so a crafted link can only fill fields
+function shareParse(hash,json){
   const p=new URLSearchParams(String(hash||'').replace(/^#/,''));
   const tab=p.get('t');
   if(!tab||!/^[a-z0-9-]+-tab$/.test(tab))return null;
   let raw={};
-  try{if(p.get('s'))raw=JSON.parse(b64uDecode(p.get('s')));}catch(e){raw={};}
+  try{raw=JSON.parse(json!=null?json:p.get('s')?b64uDecode(p.get('s')):'{}');}catch(e){raw={};}
   const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
   const pick=(o,ok)=>Object.fromEntries(Object.entries(obj(o)).filter(([k,v])=>/^[\w-]+$/.test(k)&&ok(v)));
   return{tab,st:{f:pick(raw.f,v=>typeof v==='string'),c:pick(raw.c,v=>typeof v==='boolean'),r:pick(raw.r,v=>typeof v==='string'),
@@ -199,7 +303,8 @@ function shareFields(root){
   return Array.from(root.querySelectorAll('textarea[id], input[id]'))
     .filter(el=>!INPUT_NEVER.includes(el.id)&&!el.readOnly&&(el.tagName==='TEXTAREA'||['text','number','url','search'].includes(el.type)));
 }
-function shareLink(){
+async function shareLink(){
+  const src=_copySrc; // the clicked button, before awaiting the compression
   const tab=activeTabId,root=document.getElementById(tab);
   const st={f:{},c:{},r:{},t:{},x:{}};
   shareFields(root).forEach(el=>{if(el.value)st.f[el.id]=el.value;});
@@ -209,13 +314,22 @@ function shareLink(){
   Object.entries(_yx).forEach(([id,x])=>{if(root.contains(document.getElementById(id)))st.x[id]=x.cur;});
   const base=location.origin+location.pathname+'#t='+tab;
   const any=Object.values(st).some(o=>Object.keys(o).length);
-  const full=any?base+'&s='+b64uEncode(JSON.stringify(st)):base;
+  let full=base;
+  if(any){
+    const json=JSON.stringify(st);
+    full=base+'&s='+b64uEncode(json);
+    if(typeof CompressionStream!=='undefined'){
+      const z=base+'&z='+b64uFromBytes(new Uint8Array(await shareZip(new TextEncoder().encode(json),'in')));
+      if(z.length<full.length)full=z;
+    }
+  }
   const skipped=Array.from(root.querySelectorAll('textarea[id], input[id]')).some(el=>INPUT_NEVER.includes(el.id)&&el.id!=='sp-input'&&el.value);
-  if(full.length>SHARE_MAX){copyText(base,'ข้อมูลยาวเกินใส่ในลิงก์ได้ คัดลอกเฉพาะลิงก์ของเครื่องมือ');return;}
-  copyText(full,Object.keys(st.f).length?'คัดลอกลิงก์แล้ว ข้อมูลที่กรอกอยู่ในลิงก์ด้วย ส่งให้เฉพาะคนที่ควรเห็น'+(skipped?' (ไม่รวม token / secret)':''):'คัดลอกลิงก์ของเครื่องมือนี้แล้ว');
+  if(full.length>SHARE_MAX){copyText(base,'ข้อมูลยาวเกินใส่ในลิงก์ได้ คัดลอกเฉพาะลิงก์ของเครื่องมือ',src);return;}
+  copyText(full,Object.keys(st.f).length?'คัดลอกลิงก์แล้ว ข้อมูลที่กรอกอยู่ในลิงก์ด้วย ส่งให้เฉพาะคนที่ควรเห็น'+(skipped?' (ไม่รวม token / secret)':''):'คัดลอกลิงก์ของเครื่องมือนี้แล้ว',src);
 }
-function applyShareLink(){
-  const s=shareParse(location.hash);
+async function applyShareLink(){
+  const hash=location.hash;
+  const s=shareParse(hash,await shareJson(hash));
   if(!s)return;
   const root=document.getElementById(s.tab);
   if(!root||!root.classList.contains('tab-content'))return;
@@ -261,6 +375,7 @@ function spOpenFile(name,text){
 async function spPickFile(input){
   const f=input.files[0];input.value='';
   if(!f)return;
+  if(f.type.startsWith('image/')){openTab(null,'qr-tab');qrDecodeBlob(f);return;}
   const text=await spReadFile(f);
   if(text!=null)spOpenFile(f.name,text);
 }
@@ -279,10 +394,11 @@ async function spPickFile(input){
     const files=e.dataTransfer.files;
     if(!files.length)return;
     if(files.length>1)showToast('เปิดได้ทีละไฟล์ ใช้ไฟล์แรก','info');
+    if(files[0].type.startsWith('image/')){openTab(null,'qr-tab');qrDecodeBlob(files[0]);return;}
     const field=e.target.closest&&e.target.closest('.tab-content textarea, .tab-content input[type="text"]');
     const text=await spReadFile(files[0]);
     if(text==null)return;
-    if(field){field.value=text;field.dispatchEvent(new Event('input',{bubbles:true}));field.focus();showToast(`ใส่ ${files[0].name} แล้ว`);return;}
+    if(field){field.value=text;field.dispatchEvent(new Event('input',{bubbles:true}));histPush(field);field.focus();showToast(`ใส่ ${files[0].name} แล้ว`);return;}
     spOpenFile(files[0].name,text);
   });
 })();
