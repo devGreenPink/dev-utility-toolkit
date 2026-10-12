@@ -305,7 +305,7 @@ function convertSQL(){
       });
       hdr.appendChild(legend);
     }
-    const btn=document.createElement('button');btn.className='btn btn-ghost btn-sm';btn.textContent='📋 Copy';
+    const btn=document.createElement('button');btn.className='btn btn-ghost btn-sm';btn.innerHTML=ic('copy')+' Copy';
     hdr.appendChild(btn);
     // Body
     const pre=document.createElement('pre');pre.className='sql-result-body';

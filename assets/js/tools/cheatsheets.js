@@ -207,8 +207,8 @@ const GIT_CMDS=[
   {group:'UNDO / RESET',cmd:'git revert <hash>',desc:'undo commit โดยสร้าง commit ใหม่ — safe สำหรับ shared branch'},
   {group:'UNDO / RESET',cmd:'git reset --soft HEAD~1',desc:'ย้อน 1 commit กลับมา staging area (เก็บ changes)'},
   {group:'UNDO / RESET',cmd:'git reset --mixed HEAD~1',desc:'ย้อน 1 commit กลับมา working tree (unstaged)'},
-  {group:'UNDO / RESET',cmd:'git reset --hard HEAD~1',desc:'⚠️ ย้อน 1 commit และทิ้งการเปลี่ยนแปลงทั้งหมด'},
-  {group:'UNDO / RESET',cmd:'git clean -fd',desc:'⚠️ ลบไฟล์ untracked ทั้งหมด (-f force, -d รวม directory)'},
+  {group:'UNDO / RESET',cmd:'git reset --hard HEAD~1',desc:'ระวัง: ย้อน 1 commit และทิ้งการเปลี่ยนแปลงทั้งหมด'},
+  {group:'UNDO / RESET',cmd:'git clean -fd',desc:'ระวัง: ลบไฟล์ untracked ทั้งหมด (-f force, -d รวม directory)'},
   {group:'UNDO / RESET',cmd:'git reflog',desc:'ดู history ทุกการเคลื่อนไหวของ HEAD — ใช้กู้คืน commit ที่หายไป'},
   // STASH
   {group:'STASH',cmd:'git stash push -m "wip: xxx"',desc:'บันทึก work-in-progress ชั่วคราวพร้อม message'},

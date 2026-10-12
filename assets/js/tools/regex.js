@@ -9,7 +9,7 @@ function runRegex(){
   if(!patStr){hlEl.textContent=input;grEl.innerHTML='';cntEl.textContent='0 matches';return;}
   let regex;
   try{const f=flags.includes('g')?flags:flags+'g';regex=new RegExp(patStr,f);}
-  catch(e){errEl.textContent='⚠ '+e.message;hlEl.textContent=input;return;}
+  catch(e){errEl.textContent=e.message;hlEl.textContent=input;return;}
   const matches=[];let lastIndex=-1;
   const scanRe=new RegExp(patStr,flags.includes('g')?flags:flags+'g');let m;
   while((m=scanRe.exec(input))!==null){

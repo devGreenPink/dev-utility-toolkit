@@ -46,9 +46,9 @@ function mqCopyCode(btn) {
   const pre = btn.nextElementSibling;
   if (!pre) return;
   copyText(pre.textContent || pre.innerText);
-  const orig = btn.textContent;
-  btn.textContent = '✓ copied';
-  setTimeout(() => { btn.textContent = orig; }, 1500);
+  const orig = btn.innerHTML;
+  btn.innerHTML = ic('check') + ' copied';
+  setTimeout(() => { btn.innerHTML = orig; }, 1500);
 }
 
 // ── Reset animation helpers ──
@@ -88,7 +88,7 @@ function mqResetAnim(name) {
     const status = document.getElementById('mq-cache-redis-status');
     if (status) { status.textContent = ''; status.style.color = ''; }
     const steps = document.getElementById('mq-cache-steps');
-    if (steps) steps.innerHTML = '<div class="mq-lc-step" id="mq-cache-s0">กด ✅ Cache Hit หรือ ❌ Cache Miss เพื่อดู flow</div>';
+    if (steps) steps.innerHTML = '<div class="mq-lc-step" id="mq-cache-s0">กด '+ic('circle-check','t-green')+' Cache Hit หรือ '+ic('circle-x','t-red')+' Cache Miss เพื่อดู flow</div>';
     const stepLabel = document.getElementById('mq-cache-step');
     if (stepLabel) stepLabel.textContent = 'เลือก Hit หรือ Miss เพื่อดู animation';
   }
@@ -142,7 +142,7 @@ function mqRunAnim(name) {
         document.getElementById('mq-lc-exchange')?.classList.remove('mq-lc-active');
         document.getElementById('mq-lc-queue')?.classList.add('mq-lc-active');
         const qi = document.getElementById('mq-lc-queue-items');
-        if (qi) { qi.innerHTML = ''; ['📨','📨','📨'].forEach(e => { const d = document.createElement('span'); d.className = 'mq-lc-qi'; d.textContent = e; qi.appendChild(d); }); }
+        if (qi) { qi.innerHTML = ''; [0, 1, 2].forEach(() => { const d = document.createElement('span'); d.className = 'mq-lc-qi'; d.innerHTML = ic('mail'); qi.appendChild(d); }); }
       },
       // Step 3: Consumer receives
       () => {
@@ -224,11 +224,11 @@ function mqCacheAnim(type) {
     if (type === 'hit') {
       // Redis HIT
       if (redisNode) { redisNode.classList.add('mq-node-hit'); redisNode.classList.add('mq-node-active'); }
-      if (status) { status.textContent = '✅ HIT'; status.style.color = 'var(--success)'; }
+      if (status) { status.innerHTML = ic('circle-check') + ' HIT'; status.style.color = 'var(--success)'; }
       if (time1) time1.textContent = '~1ms';
       setSteps(`
         <div class="mq-lc-step mq-step-active">1. App ส่ง GET product:123 ไปที่ Redis</div>
-        <div class="mq-lc-step mq-step-active">2. Redis ✅ HIT — มีข้อมูลใน cache</div>
+        <div class="mq-lc-step mq-step-active">2. Redis ${ic('circle-check','t-green')} HIT — มีข้อมูลใน cache</div>
         <div class="mq-lc-step mq-step-active">3. คืนข้อมูลทันที ~1ms — ไม่ต้องไป DB</div>
       `);
       if (stepLabel) stepLabel.textContent = 'Cache HIT — คืนข้อมูลจาก Redis ~1ms';
@@ -237,9 +237,9 @@ function mqCacheAnim(type) {
     } else {
       // Redis MISS
       if (redisNode) { redisNode.classList.add('mq-node-miss'); }
-      if (status) { status.textContent = '❌ MISS'; status.style.color = 'var(--danger)'; }
+      if (status) { status.innerHTML = ic('circle-x') + ' MISS'; status.style.color = 'var(--danger)'; }
       if (stepLabel) stepLabel.textContent = 'Step 2: Cache MISS → ไป query DB';
-      setSteps(`<div class="mq-lc-step mq-step-active">1. App ส่ง GET product:123 → Redis ❌ MISS (key ไม่มี)</div>`);
+      setSteps(`<div class="mq-lc-step mq-step-active">1. App ส่ง GET product:123 → Redis ${ic('circle-x','t-red')} MISS (key ไม่มี)</div>`);
       // Go to DB
       setTimeout(() => {
         if (conn2) conn2.classList.add('mq-conn-active');
@@ -248,7 +248,7 @@ function mqCacheAnim(type) {
         if (time2) time2.textContent = '~50-200ms';
         if (stepLabel) stepLabel.textContent = 'Step 3: Query DB — ช้ากว่า 50-200x';
         setSteps(`
-          <div class="mq-lc-step mq-step-active">1. Redis ❌ MISS</div>
+          <div class="mq-lc-step mq-step-active">1. Redis ${ic('circle-x','t-red')} MISS</div>
           <div class="mq-lc-step mq-step-active">2. App query DB (SELECT ...) — ~50-200ms</div>
         `);
         setTimeout(() => {
@@ -257,7 +257,7 @@ function mqCacheAnim(type) {
           if (status) { status.textContent = 'SET + EX 300'; status.style.color = 'var(--accent2)'; }
           if (stepLabel) stepLabel.textContent = 'Step 4: Store ใน Redis พร้อม TTL 300s';
           setSteps(`
-            <div class="mq-lc-step mq-step-active">1. Redis ❌ MISS</div>
+            <div class="mq-lc-step mq-step-active">1. Redis ${ic('circle-x','t-red')} MISS</div>
             <div class="mq-lc-step mq-step-active">2. DB query สำเร็จ (~50ms)</div>
             <div class="mq-lc-step mq-step-active">3. SET product:123 "{...}" EX 300 → store ใน Redis</div>
             <div class="mq-lc-step mq-step-active">4. Request ถัดไปจะ Cache HIT ทันที</div>
@@ -288,16 +288,16 @@ function mqToggleQFill() {
   } else {
     mqQRunning = true;
     const btn = document.getElementById('mq-qfill-btn');
-    if (btn) btn.textContent = '⏸ หยุด';
+    if (btn) btn.innerHTML = ic('pause') + ' หยุด';
     // Producer adds 1 msg per second
     mqQFillTimer = setInterval(() => {
       if (mqQItems.length < MQ_Q_MAX) {
-        mqQItems.push('📨');
+        mqQItems.push(ic('mail'));
         mqRenderQ();
       }
       const status = document.getElementById('mq-qfill-status');
       if (status) {
-        if (mqQItems.length >= MQ_Q_MAX) status.textContent = '⚠️ Queue เต็ม! Producer ถูกบล็อกหรือ message หาย';
+        if (mqQItems.length >= MQ_Q_MAX) status.textContent = 'Queue เต็ม! Producer ถูกบล็อกหรือ message หาย';
         else status.textContent = 'Queue กำลังเต็ม... Consumer ดึงช้ากว่า';
       }
     }, 1000);

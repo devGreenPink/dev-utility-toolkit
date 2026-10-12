@@ -69,8 +69,8 @@ function decodeJWT_UI(){
       </div>`;
   }catch(e){
     let hint='';
-    if(e.message.includes('3 ส่วน'))hint='<div style="margin-top:6px;font-size:.74rem;color:var(--text-dim);">💡 JWT มีรูปแบบ: eyXXX.eyXXX.XXXXX — วาง token ทั้งก้อน หรือลบ "Bearer " ออก</div>';
-    container.innerHTML=`<div class="jwt-error">⚠ ${escHtml(e.message)}${hint}</div>`;
+    if(e.message.includes('3 ส่วน'))hint='<div style="margin-top:6px;font-size:.74rem;color:var(--text-dim);">'+ic('lightbulb')+' JWT มีรูปแบบ: eyXXX.eyXXX.XXXXX — วาง token ทั้งก้อน หรือลบ "Bearer " ออก</div>';
+    container.innerHTML=`<div class="jwt-error">${ic('triangle-alert')} ${escHtml(e.message)}${hint}</div>`;
   }
 }
 function clearJWT(){document.getElementById('jwt-input').value='';document.getElementById('jwt-result').innerHTML='';_jwtHeader=null;_jwtPayload=null;}
@@ -88,10 +88,10 @@ async function jwtEncode() {
   const errEl = document.getElementById('jwt-enc-error');
   errEl.style.display = 'none';
   outEl.textContent = '—';
-  if (!payloadStr) { errEl.textContent = '⚠ กรอก payload JSON'; errEl.style.display = 'block'; return; }
-  if (!secret) { errEl.textContent = '⚠ กรอก secret key'; errEl.style.display = 'block'; return; }
+  if (!payloadStr) { errEl.textContent = 'กรอก payload JSON'; errEl.style.display = 'block'; return; }
+  if (!secret) { errEl.textContent = 'กรอก secret key'; errEl.style.display = 'block'; return; }
   let payload;
-  try { payload = JSON.parse(payloadStr); } catch (e) { errEl.textContent = '⚠ payload ไม่ใช่ JSON ที่ถูกต้อง: ' + e.message; errEl.style.display = 'block'; return; }
+  try { payload = JSON.parse(payloadStr); } catch (e) { errEl.textContent = 'payload ไม่ใช่ JSON ที่ถูกต้อง: ' + e.message; errEl.style.display = 'block'; return; }
   try {
     const enc = new TextEncoder();
     const header = { alg: 'HS256', typ: 'JWT' };
@@ -101,9 +101,9 @@ async function jwtEncode() {
     const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
     const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
     outEl.textContent = `${data}.${b64urlEncodeBytes(new Uint8Array(sig))}`;
-    showToast('JWT สร้างแล้ว ✓');
+    showToast('JWT สร้างแล้ว');
   } catch (e) {
-    errEl.textContent = '⚠ Error: ' + e.message;
+    errEl.textContent = 'Error: ' + e.message;
     errEl.style.display = 'block';
   }
 }

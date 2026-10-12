@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded',()=>{
   restoreTheme();
   initFavorites();
+  restoreNavGroups();
   restoreTab();
   restoreNavSearch();
 

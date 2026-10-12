@@ -4,8 +4,8 @@
   "description": "Developer toolkit สำหรับนักพัฒนาไทย — 21 เครื่องมือในหน้าเดียว ทำงานใน browser ล้วน ไม่มี backend",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0f1117",
-  "theme_color": "#6366f1",
+  "background_color": "#1c1c1e",
+  "theme_color": "#1c1c1e",
   "lang": "th",
   "icons": [
     {

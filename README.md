@@ -3,7 +3,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-1.26-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-2.0-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -189,28 +189,22 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 | Shortcut | Action |
 |---|---|
 | `Ctrl + Enter` | Run tool ปัจจุบัน / Run RxJS Playground |
-| `Ctrl + K` | Focus search (kubectl / Linux tab) |
+| `Ctrl + K` (`⌘K` บน Mac) | เปิด Command Palette ค้นหาเครื่องมือและคำสั่ง |
+| `Esc` | ปิด Palette / popover / เมนู |
 | `Ctrl + /` | Toggle comment (RxJS Playground) |
 
 ---
 
 ## 🎨 Themes
 
-9 themes ให้เลือก บันทึกใน `localStorage`:
+หน้าตาแบบ macOS ตั้งค่าได้จากปุ่มเฟืองบน toolbar บันทึกใน `localStorage`:
 
-| Theme | Accent |
-|---|---|
-| **Indigo** (default) | `#6366f1` |
-| **Matrix** | `#00ff41` |
-| **Nord** | `#88c0d0` |
-| **Dracula** | `#bd93f9` |
-| **Light** | สีอ่อน |
-| **Kitty** 🐱 | ชมพู pastel `#e8549a` + ลาเวนเดอร์ |
-| **อีสาน** | ทอง `#e9b949` บนกรมท่า — โทนสีจากออฟฟิศ ESAN AI AGENT |
-| **CDG** | ฟ้า `#bdebfb` บนเขียวเข้ม — โทนสีจากออฟฟิศ ESAN AI AGENT |
-| **ใต้** | เทอร์ควอยซ์ `#3fc1c9` บนน้ำเงินทะเล — โทนสีจากออฟฟิศ ESAN AI AGENT |
+- **ลักษณะ** สว่าง / มืด / อัตโนมัติ (ตามการตั้งค่าเครื่อง)
+- **สีเน้น** 8 สีแบบ macOS (ฟ้า ม่วง ชมพู แดง ส้ม เหลือง เขียว กราไฟต์) หรือ **กำหนดเอง** จาก color picker — ระบบปรับเฉดให้ตัวอักษรและปุ่มผ่าน contrast 4.5:1 อัตโนมัติ
+- **ธีมพิเศษ** Matrix, Nord, Dracula, Kitty
+- **เอฟเฟกต์ตอนคลิก** เปิด/ปิดได้ และปิดเองถ้าเครื่องตั้งลดการเคลื่อนไหว (reduce motion)
 
-ค่าสีหลัก (CSS token) ของทุก theme ผ่านเกณฑ์ contrast: ตัวอักษร ≥ 4.5:1, ขอบช่องกรอก/ปุ่ม/checkbox (`--line`) ≥ 3:1 เทียบพื้นการ์ด — สีที่ hard-code ไว้ในบาง component (เช่น diff, badge) ยังไม่ได้ปรับ
+ค่าสีทุกตัวมาจาก CSS token ชุดเดียว (รวม badge / diff / status ที่เคย hard-code ไว้) ตัวอักษร ≥ 4.5:1 และขอบช่องกรอก/ปุ่ม/checkbox (`--line`) ≥ 3:1 ทั้งโหมดสว่างและมืด
 
 ---
 

@@ -185,7 +185,7 @@ function lovUpdateStatus() {
   if (!_lovDirHandle) return;
   const entry = lovRecentFind(_lovDirHandle);
   const skipNote = _lovSkipped ? ` (ข้าม ${_lovSkipped} ไฟล์ที่อ่านไม่ได้)` : '';
-  const mode = _lovCanWrite ? '✏️ แก้ไขได้' : '🔒 อ่านอย่างเดียว (จะขอสิทธิ์ตอนบันทึก/ลบ)';
+  const mode = _lovCanWrite ? 'แก้ไขได้' : 'อ่านอย่างเดียว (จะขอสิทธิ์ตอนบันทึก/ลบ)';
   lovSetStatus(`โฟลเดอร์: ${entry ? entry.label : _lovDirHandle.name} · พบ ${_lovFiles.length} query${skipNote} · ${mode}`);
   lovShowVersion(_lovFormat);
 }
@@ -227,7 +227,7 @@ async function lovPickFolder() {
     await lovOpenFolder(handle, label, found ? `${picked.name}/${found.path}` : undefined);
   } catch (err) {
     if (err && err.name === 'AbortError') return;
-    showToast('✗ ไม่สามารถเปิดโฟลเดอร์ได้');
+    showToast('ไม่สามารถเปิดโฟลเดอร์ได้','err');
     console.error(err);
   }
 }
@@ -253,7 +253,7 @@ async function lovOpenRecent(i) {
   const entry = _lovRecent[i];
   if (!entry || !lovCloseEditor()) return;
   if (!await lovVerifyPermission(entry.handle, 'read', true)) {
-    showToast('✗ ไม่ได้รับสิทธิ์เข้าถึงโฟลเดอร์');
+    showToast('ไม่ได้รับสิทธิ์เข้าถึงโฟลเดอร์','err');
     return;
   }
   await lovOpenFolder(entry.handle);
@@ -290,8 +290,8 @@ function lovRenderRecent() {
     const title = [r.label, where,
       `เปิดล่าสุด ${new Date(r.lastOpened).toLocaleString('th-TH')}`].filter(Boolean).join(' · ');
     return `<span class="lov-recent-chip${active ? ' lov-recent-active' : ''}">
-      <button class="lov-recent-open" title="${lovAttr(title)}"${active ? ' aria-current="true"' : ''} onclick="lovOpenRecent(${i})">📁 ${lovHtml(r.label)}</button>
-      <button class="lov-recent-x" title="เอาออกจากรายการ (ไม่ลบไฟล์)" aria-label="เอา ${lovAttr(r.label)} ออกจากรายการ (ไม่ลบไฟล์)" onclick="lovRemoveRecent(${i})">✕</button>
+      <button class="lov-recent-open" title="${lovAttr(title)}"${active ? ' aria-current="true"' : ''} onclick="lovOpenRecent(${i})">${ic('folder')} ${lovHtml(r.label)}</button>
+      <button class="lov-recent-x" title="เอาออกจากรายการ (ไม่ลบไฟล์)" aria-label="เอา ${lovAttr(r.label)} ออกจากรายการ (ไม่ลบไฟล์)" onclick="lovRemoveRecent(${i})">${ic('x')}</button>
     </span>`;
   }).join('');
 }
@@ -335,7 +335,7 @@ function lovFolderUnreadable(dir) {
   lovClearView('');
   const msg = `เปิดโฟลเดอร์ ${entry ? entry.label : dir.name} ไม่ได้ — อาจถูกย้ายหรือลบไปแล้ว`;
   if (!entry) { lovSetStatus(msg); return; }
-  lovSetStatusAction(`${msg} — `, '✕ เอาออกจากรายการ', async () => {
+  lovSetStatusAction(`${msg} — `, 'เอาออกจากรายการ', async () => {
     await lovRemoveRecent(_lovRecent.indexOf(entry));
     lovSetStatus('ยังไม่ได้เลือกโฟลเดอร์');
   });
@@ -349,7 +349,7 @@ async function lovRestoreFolder() {
   if (await lovVerifyPermission(last.handle, 'read', false)) {
     await lovOpenFolder(last.handle);
   } else {
-    lovSetStatusAction(`โฟลเดอร์ล่าสุด: ${last.label} — `, '🔓 ขอสิทธิ์เข้าถึงโฟลเดอร์อีกครั้ง',
+    lovSetStatusAction(`โฟลเดอร์ล่าสุด: ${last.label} — `, 'ขอสิทธิ์เข้าถึงโฟลเดอร์อีกครั้ง',
       () => lovOpenRecent(_lovRecent.indexOf(last)));
   }
 }
@@ -642,7 +642,7 @@ function lovSqlBlockHtml(label, sql, params, note, lang = 'sql') {
       ${paramsNote}${extraNote}
     </div>
     <div class="rxjs-code-block">
-      <button class="rxjs-copy-btn" onclick="lovCopyBlock(this)">⎘ copy</button>
+      <button class="rxjs-copy-btn" onclick="lovCopyBlock(this)">${ic('copy')} copy</button>
       <pre class="rxjs-code"><code class="language-${lang}">${escHtml(sql)}</code></pre>
     </div>`;
 }
@@ -683,9 +683,9 @@ function lovRenderList(files) {
     </button>
     <div class="rxjs-acc-bd" style="display:none;">
       <div class="toolbar lov-acc-actions">
-        <button class="btn btn-ghost" data-file="${file}" onclick="lovEditFile(this.dataset.file)">✏️ แก้ไข</button>
-        <button class="btn btn-ghost" data-file="${file}" onclick="lovCopyJson(this.dataset.file)">⎘ copy JSON</button>
-        <button class="btn btn-danger" data-file="${file}" onclick="lovDeleteFile(this.dataset.file)">🗑 ลบ</button>
+        <button class="btn btn-ghost" data-file="${file}" onclick="lovEditFile(this.dataset.file)">${ic('pencil')} แก้ไข</button>
+        <button class="btn btn-ghost" data-file="${file}" onclick="lovCopyJson(this.dataset.file)">${ic('copy')} copy JSON</button>
+        <button class="btn btn-danger" data-file="${file}" onclick="lovDeleteFile(this.dataset.file)">${ic('trash')} ลบ</button>
         ${entry.designerFormat ? '' : '<span class="lov-note">ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer — บันทึกครั้งแรกจะจัดรูปแบบใหม่ทั้งไฟล์</span>'}
       </div>
       ${lovPreviewHtml(entry.id, entry.built)}
@@ -715,15 +715,15 @@ function lovCopyJson(fileName) {
 async function lovDeleteFile(fileName) {
   const entry = lovFindEntry(fileName);
   if (!entry) return;
-  if (!await lovEnsureWrite()) { showToast('✗ ไม่ได้รับสิทธิ์แก้ไขไฟล์ในโฟลเดอร์นี้'); return; }
+  if (!await lovEnsureWrite()) { showToast('ไม่ได้รับสิทธิ์แก้ไขไฟล์ในโฟลเดอร์นี้','err'); return; }
   if (!confirm(`ลบไฟล์ ${fileName} (id: ${entry.id}) ?\nกู้คืนได้จาก git เท่านั้น`)) return;
   try {
     await _lovDirHandle.removeEntry(fileName);
     if (_lovEdit && _lovEdit.entry && _lovEdit.entry.fileName === fileName) lovCloseEditor(true);
     await lovLoadFiles();
-    showToast(`✓ ลบ ${fileName} แล้ว`);
+    showToast(`ลบ ${fileName} แล้ว`);
   } catch (err) {
-    showToast('✗ ลบไฟล์ไม่สำเร็จ');
+    showToast('ลบไฟล์ไม่สำเร็จ','err');
     console.error(err);
   }
 }
@@ -974,7 +974,7 @@ function lovColRowHtml(c, i) {
       <select data-f="order.use" aria-label="คอลัมน์ ${i + 1} order use"${off}>${lovOptions(lovOrderUses(f), o ? o.use : f.optional)}</select>
       <input type="number" data-f="order.prio" value="${lovAttr(o ? o.prio : 100)}" aria-label="คอลัมน์ ${i + 1} ${f.prio}"${off}>
     </div>
-    <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('select', ${i})" aria-label="ลบคอลัมน์ ${i + 1}">✕</button>
+    <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('select', ${i})" aria-label="ลบคอลัมน์ ${i + 1}">${ic('x')}</button>
   </div>`;
 }
 
@@ -986,7 +986,7 @@ function lovParamChipsHtml(list, sec, i, sqls) {
     return `<span class="lov-ed-param${unused ? ' lov-ed-param-unused' : ''}" data-sec="${sec}" data-i="${i}" data-j="${j}">
       <label>:${lovHtml(p.name)} <input type="text" data-f="type" list="lov-dl-ptype" value="${lovAttr(p.type)}" aria-label="type ของ :${lovAttr(p.name)}"></label>
       ${unused ? `<span class="lov-ed-param-note">ไม่พบใน SQL</span>
-        <button class="lov-ed-param-del" onclick="lovEdRemoveParam('${sec}', ${i}, ${j})" aria-label="ลบ parameter :${lovAttr(p.name)}">✕</button>` : ''}
+        <button class="lov-ed-param-del" onclick="lovEdRemoveParam('${sec}', ${i}, ${j})" aria-label="ลบ parameter :${lovAttr(p.name)}">${ic('x')}</button>` : ''}
     </span>`;
   }).join('');
 }
@@ -1003,7 +1003,7 @@ function lovAltRowHtml(a, i) {
   return `<div class="lov-ed-row lov-ed-alt" data-sec="alt" data-i="${i}">
     <input type="text" data-f="id" value="${lovAttr(a.id)}" placeholder="ชื่อ (alternates=…)" aria-label="alternate ${i + 1} ชื่อ">
     <textarea data-f="sql" rows="${lovRows(a.sql)}" placeholder="เช่น U.ID_CODE LIKE :idCode" aria-label="alternate ${i + 1} sql">${lovHtml(a.sql)}</textarea>
-    <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('alt', ${i})" aria-label="ลบ alternate ${i + 1}">✕</button>
+    <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('alt', ${i})" aria-label="ลบ alternate ${i + 1}">${ic('x')}</button>
     <div class="lov-ed-params" id="lov-ed-altp-${i}">${lovParamChipsHtml(a.parameter, 'altp', i, [a.sql])}</div>
   </div>`;
 }
@@ -1016,7 +1016,7 @@ function lovOrderRowHtml(r, i) {
     <select data-f="type" aria-label="order ${i + 1} type">${lovOptions(LOV_ORDER_TYPES, r.type)}</select>
     <select data-f="use" aria-label="order ${i + 1} use">${lovOptions(lovOrderUses(f), r.use)}</select>
     <input type="number" data-f="prio" value="${lovAttr(r.prio)}" aria-label="order ${i + 1} ${f.prio}">
-    <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('order', ${i})" aria-label="ลบ order ${i + 1}">✕</button>
+    <button class="btn btn-ghost lov-ed-del" onclick="lovEdRemove('order', ${i})" aria-label="ลบ order ${i + 1}">${ic('x')}</button>
   </div>`;
 }
 
@@ -1071,13 +1071,13 @@ function lovRenderEditor() {
         </div>
         <div class="toolbar">
           <button class="btn btn-ghost" onclick="lovCloseEditor()">← กลับรายการ</button>
-          <button class="btn btn-ghost" onclick="lovTogglePaste()">📋 วาง SQL</button>
-          ${ed.entry ? `<button class="btn btn-danger" data-file="${lovAttr(ed.entry.fileName)}" onclick="lovDeleteFile(this.dataset.file)">🗑 ลบ</button>` : ''}
-          <button class="btn btn-primary" onclick="lovSaveEditor()">💾 บันทึก <span class="lov-ed-kbd">Ctrl+S</span></button>
+          <button class="btn btn-ghost" onclick="lovTogglePaste()">${ic('clipboard')} วาง SQL</button>
+          ${ed.entry ? `<button class="btn btn-danger" data-file="${lovAttr(ed.entry.fileName)}" onclick="lovDeleteFile(this.dataset.file)">${ic('trash')} ลบ</button>` : ''}
+          <button class="btn btn-primary" onclick="lovSaveEditor()">${ic('save')} บันทึก <span class="lov-ed-kbd">Ctrl+S</span></button>
         </div>
       </div>
-      ${ed.entry && !ed.entry.designerFormat ? '<div class="lov-ed-warn">⚠️ ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer — บันทึกแล้วจะจัดรูปแบบใหม่ทั้งไฟล์ (ค่าเดิมไม่เปลี่ยน แต่ git diff จะใหญ่)</div>' : ''}
-      ${m.fmt !== _lovFormat ? `<div class="lov-ed-warn">⚠️ ไฟล์นี้เป็น LOV ${lovHtml(f.short)} แต่โฟลเดอร์นี้เป็น LOV ${lovHtml(LOV_FORMATS[_lovFormat].short)} — แก้และบันทึกตามรูปแบบของไฟล์ (${lovHtml(f.prio)}, ${lovHtml(f.optional)}/${lovHtml(f.auto)})</div>` : ''}
+      ${ed.entry && !ed.entry.designerFormat ? '<div class="lov-ed-warn">'+ic('triangle-alert')+' ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer — บันทึกแล้วจะจัดรูปแบบใหม่ทั้งไฟล์ (ค่าเดิมไม่เปลี่ยน แต่ git diff จะใหญ่)</div>' : ''}
+      ${m.fmt !== _lovFormat ? `<div class="lov-ed-warn">${ic('triangle-alert')} ไฟล์นี้เป็น LOV ${lovHtml(f.short)} แต่โฟลเดอร์นี้เป็น LOV ${lovHtml(LOV_FORMATS[_lovFormat].short)} — แก้และบันทึกตามรูปแบบของไฟล์ (${lovHtml(f.prio)}, ${lovHtml(f.optional)}/${lovHtml(f.auto)})</div>` : ''}
       <div id="lov-ed-errors" class="lov-ed-errors" role="alert"></div>
     </div>
 
@@ -1335,10 +1335,10 @@ function lovTogglePaste() {
 function lovApplyPaste() {
   const ed = _lovEdit;
   const sql = document.getElementById('lov-ed-paste-sql').value;
-  if (!sql.trim()) { showToast('✗ ยังไม่ได้วาง SQL'); return; }
+  if (!sql.trim()) { showToast('ยังไม่ได้วาง SQL','err'); return; }
   const t = lovTransformLov(sql, ed.model.fmt);
   const cols = Object.entries(t.select);
-  if (!cols.length || !t.from) { showToast('✗ อ่าน SELECT / FROM ไม่ได้'); return; }
+  if (!cols.length || !t.from) { showToast('อ่าน SELECT / FROM ไม่ได้','err'); return; }
   const m = ed.model;
   const auto = LOV_FORMATS[m.fmt].auto; // `auto` or `AUTO`, as this file's version spells it
   const hasOrderBy = Object.keys(t.order).length > 0 || cols.some(([, c]) => c.order);
@@ -1363,7 +1363,7 @@ function lovApplyPaste() {
   ed.showPaste = false;
   ed.dirty = true;
   lovRenderEditor();
-  showToast('✓ แปลง SQL แล้ว — ตรวจ type / filter ก่อนบันทึก');
+  showToast('แปลง SQL แล้ว — ตรวจ type / filter ก่อนบันทึก');
 }
 
 function lovShowErrors(errs) {
@@ -1377,8 +1377,8 @@ async function lovSaveEditor() {
   const { model: m, entry } = ed;
   const errs = lovValidate(m, entry);
   lovShowErrors(errs);
-  if (errs.length) { showToast('✗ ยังบันทึกไม่ได้ — ดูรายการด้านบน'); scrollToTop(); return; }
-  if (!await lovEnsureWrite()) { showToast('✗ ไม่ได้รับสิทธิ์แก้ไขไฟล์ในโฟลเดอร์นี้'); return; }
+  if (errs.length) { showToast('ยังบันทึกไม่ได้ — ดูรายการด้านบน','err'); scrollToTop(); return; }
+  if (!await lovEnsureWrite()) { showToast('ไม่ได้รับสิทธิ์แก้ไขไฟล์ในโฟลเดอร์นี้','err'); return; }
   ed.saving = true;
   try {
     if (entry) {
@@ -1403,9 +1403,9 @@ async function lovSaveEditor() {
     await lovLoadFiles();
     const saved = _lovFiles.find(f => f.fileName.toLowerCase() === target.toLowerCase());
     if (saved) lovOpenEditor(saved); else lovCloseEditor(true);
-    showToast(`✓ บันทึก ${target} แล้ว`);
+    showToast(`บันทึก ${target} แล้ว`);
   } catch (err) {
-    showToast('✗ บันทึกไม่สำเร็จ');
+    showToast('บันทึกไม่สำเร็จ','err');
     console.error(err);
   } finally {
     ed.saving = false;

@@ -48,7 +48,7 @@ function renderHttpList(codes,query){
         <div style="flex:1;min-width:0;">
           <div class="http-name">${nameHl}</div>
           <div class="http-desc">${descHl}</div>
-          <div class="http-example">💡 ${exHl}</div>
+          <div class="http-example">${ic('lightbulb')} ${exHl}</div>
         </div>
         <button class="btn btn-ghost" style="flex-shrink:0;" onclick="copyText('${item.code}')">Copy</button>
       </div>`;

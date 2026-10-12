@@ -26,23 +26,157 @@ const TAB_META = {
   'esan-agent-tab': { title: 'ESAN AI AGENT', sub: 'Claude Code plugin · ติดตั้ง · อัปเดต · เปิดใช้งานที่ localhost:4567 บนเครื่องตัวเอง' },
 };
 
+// inline SVG from the sprite in index.html
+function ic(name,cls){return `<svg class="i${cls?' '+cls:''}" aria-hidden="true"><use href="#i-${name}"/></svg>`;}
+
 // ── THEME ──
-const STORAGE_KEY='esan-devtools-theme';
+// data-theme on <body>: '' = macOS Dark, 'light' = macOS Light, or a preset palette id.
+// Appearance and accent belong to the macOS theme; presets carry their own palette.
+const STORAGE_KEY='esan-devtools-theme';             // 'mac' | preset id
+const STORAGE_APPEARANCE='esan-devtools-appearance'; // 'light' | 'dark' | 'auto'
+const STORAGE_ACCENT='esan-devtools-accent';         // accent id | '#rrggbb'
 const STORAGE_TAB='esan-devtools-tab';
-function setTheme(t,btn){
-  document.body.setAttribute('data-theme',t==='default'?'':t);
-  document.querySelectorAll('.theme-dot').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
-  try{localStorage.setItem(STORAGE_KEY,t);}catch(e){}
+const ACCENTS=[ // [id, name, light, dark] — macOS system accent colours
+  ['blue','ฟ้า','#007aff','#0a84ff'],
+  ['purple','ม่วง','#af52de','#bf5af2'],
+  ['pink','ชมพู','#ff2d55','#ff375f'],
+  ['red','แดง','#ff3b30','#ff453a'],
+  ['orange','ส้ม','#ff9500','#ff9f0a'],
+  ['yellow','เหลือง','#ffcc00','#ffd60a'],
+  ['green','เขียว','#28cd41','#32d74b'],
+  ['graphite','กราไฟต์','#8e8e93','#98989d'],
+];
+const PRESETS=[ // [id, name, swatch]
+  ['matrix','Matrix','linear-gradient(135deg,#001200 55%,#00ff41 55%)'],
+  ['nord','Nord','linear-gradient(135deg,#2e3440 55%,#88c0d0 55%)'],
+  ['dracula','Dracula','linear-gradient(135deg,#282a36 55%,#bd93f9 55%)'],
+  ['kitty','Kitty','linear-gradient(135deg,#fff5f9 55%,#e8549a 55%)'],
+];
+const ACCENT_VARS=['--accent','--accent-fg','--on-accent','--accent-glow','--btn-primary-bg','--btn-primary-text'];
+const theme={id:'mac',appearance:'auto',accent:'blue'};
+const darkMQ=window.matchMedia('(prefers-color-scheme: dark)');
+const reduceMotionMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function loadTheme(){
+  let t=null,ap=null,ac=null;
+  try{t=localStorage.getItem(STORAGE_KEY);ap=localStorage.getItem(STORAGE_APPEARANCE);ac=localStorage.getItem(STORAGE_ACCENT);}catch(e){}
+  // before v2 the key held 'default' (dark) / 'light' / esan / cdg / south — the retired ones become macOS Dark
+  if(t==='light'){t='mac';ap=ap||'light';}
+  else if(t&&t!=='mac'&&!PRESETS.some(p=>p[0]===t)){t='mac';ap=ap||'dark';}
+  theme.id=t||'mac';
+  theme.appearance=['light','dark','auto'].includes(ap)?ap:'auto';
+  theme.accent=ac&&(ACCENTS.some(a=>a[0]===ac)||/^#[0-9a-f]{6}$/i.test(ac))?ac:'blue';
 }
+function saveTheme(){
+  try{
+    localStorage.setItem(STORAGE_KEY,theme.id);
+    localStorage.setItem(STORAGE_APPEARANCE,theme.appearance);
+    localStorage.setItem(STORAGE_ACCENT,theme.accent);
+  }catch(e){}
+}
+function isDark(){return theme.appearance==='auto'?darkMQ.matches:theme.appearance==='dark';}
+function accentHex(){const a=ACCENTS.find(x=>x[0]===theme.accent);return a?(isDark()?a[3]:a[2]):theme.accent;}
+function applyTheme(){
+  const preset=theme.id!=='mac';
+  document.body.setAttribute('data-theme',preset?theme.id:(isDark()?'':'light'));
+  applyAccent(preset?null:accentHex());
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.content=getComputedStyle(document.body).getPropertyValue('--bg').trim();
+  syncSettingsUI();
+}
+// cross-fade the whole window where the View Transitions API exists
+function changeTheme(mutate){
+  const run=()=>{mutate();saveTheme();applyTheme();};
+  if(document.startViewTransition&&!reduceMotionMQ.matches)document.startViewTransition(run);else run();
+}
+function setAppearance(ap){changeTheme(()=>{theme.id='mac';theme.appearance=ap;});}
+function setAccent(ac){changeTheme(()=>{theme.id='mac';theme.accent=ac;});}
+function setPreset(id){changeTheme(()=>{theme.id=id;});}
 function restoreTheme(){
-  let saved='default';
-  try{saved=localStorage.getItem(STORAGE_KEY)||'default';}catch(e){}
-  document.body.setAttribute('data-theme',saved==='default'?'':saved);
-  document.querySelectorAll('.theme-dot').forEach(b=>{
-    b.classList.toggle('active',b.getAttribute('data-theme-id')===saved);
-  });
+  loadTheme();
+  renderThemePickers();
+  applyTheme();
+  darkMQ.addEventListener('change',()=>{if(theme.id==='mac'&&theme.appearance==='auto')applyTheme();});
 }
+
+// ── ACCENT CONTRAST ── WCAG 2 relative luminance; shade the accent until each text pair reaches 4.5:1
+function hexRgb(h){const n=parseInt(h.replace('#',''),16);return[n>>16&255,n>>8&255,n&255];}
+function rgbHex(c){return'#'+c.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');}
+function lum(hex){return hexRgb(hex).map(v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4;}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);}
+function contrast(a,b){const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+function shade(hex,t){const k=t<0?0:255,f=Math.abs(t);return rgbHex(hexRgb(hex).map(v=>v+(k-v)*f));} // t<0 toward black, t>0 toward white
+function accentVars(hex,surface){
+  const dark=lum(surface)<.2,INK='#1d1d1f';
+  // accent used as text on surfaces: lighten on dark, darken on light
+  let fg=hex;for(let t=.04;contrast(fg,surface)<4.5&&t<=1;t+=.04)fg=shade(hex,dark?t:-t);
+  // filled controls keep white text when a light darken gets there (the macOS look), else ink text
+  let bg=hex,t=0;
+  while(contrast(bg,'#ffffff')<4.5&&t<.25){t+=.02;bg=shade(hex,-t);}
+  let text='#ffffff';
+  if(contrast(bg,'#ffffff')<4.5){
+    if(contrast(hex,INK)>=4.5){bg=hex;text=INK;}
+    else while(contrast(bg,'#ffffff')<4.5&&t<1){t+=.02;bg=shade(hex,-t);}
+  }
+  const[r,g,b]=hexRgb(hex);
+  return{'--accent':hex,'--accent-fg':fg,'--on-accent':contrast(hex,'#ffffff')>=contrast(hex,INK)?'#ffffff':INK,
+    '--accent-glow':`rgba(${r},${g},${b},${dark?.3:.2})`,'--btn-primary-bg':bg,'--btn-primary-text':text};
+}
+function applyAccent(hex){
+  const s=document.body.style;
+  ACCENT_VARS.forEach(v=>s.removeProperty(v));
+  if(!hex)return;
+  const surface=getComputedStyle(document.body).getPropertyValue('--surface2').trim();
+  const vars=accentVars(hex,surface);
+  console.assert(contrast(vars['--accent-fg'],surface)>=4.5&&contrast(vars['--btn-primary-bg'],vars['--btn-primary-text'])>=4.5,'accent contrast below 4.5:1',hex);
+  Object.entries(vars).forEach(([k,v])=>s.setProperty(k,v));
+}
+
+// ── SETTINGS POPOVER ──
+function renderThemePickers(){
+  const ar=document.getElementById('accent-row');
+  if(ar){
+    ar.innerHTML=ACCENTS.map(([id,name,light])=>
+      `<button type="button" class="accent-dot" role="radio" aria-checked="false" data-accent="${id}" style="--dot:${light}" title="${name}" aria-label="${name}" onclick="setAccent('${id}')"></button>`).join('')
+      +'<span class="accent-dot accent-custom" data-accent="custom" title="กำหนดเอง"><input type="color" id="accent-custom-input" aria-label="สีเน้นกำหนดเอง"></span>';
+    const ci=document.getElementById('accent-custom-input');
+    // live while dragging in the native picker; no view transition per tick
+    ci.addEventListener('input',()=>{theme.id='mac';theme.accent=ci.value.toLowerCase();saveTheme();applyTheme();});
+  }
+  const pr=document.getElementById('preset-row');
+  if(pr)pr.innerHTML=PRESETS.map(([id,name,sw])=>
+    `<button type="button" class="preset-opt" role="radio" aria-checked="false" data-preset="${id}" onclick="setPreset('${id}')"><span class="preset-swatch" style="background:${sw}"></span>${name}</button>`).join('');
+}
+function syncSettingsUI(){
+  const mac=theme.id==='mac',named=ACCENTS.find(a=>a[0]===theme.accent);
+  document.querySelectorAll('.appearance-opt').forEach(b=>b.setAttribute('aria-checked',String(mac&&b.dataset.appearance===theme.appearance)));
+  document.querySelectorAll('.accent-dot').forEach(b=>{
+    const on=mac&&(named?b.dataset.accent===theme.accent:b.dataset.accent==='custom');
+    b.classList.toggle('on',on);
+    if(b.getAttribute('role')==='radio')b.setAttribute('aria-checked',String(on));
+  });
+  const ci=document.getElementById('accent-custom-input');
+  if(ci&&!named)ci.value=theme.accent;
+  const hint=document.getElementById('accent-hint');
+  if(hint)hint.textContent=!mac?'ใช้กับธีม macOS เท่านั้น ตอนนี้ใช้ธีมพิเศษอยู่':named?named[1]:'กำหนดเอง '+theme.accent.toUpperCase();
+  document.querySelectorAll('.preset-opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.preset===theme.id)));
+  document.getElementById('fx-switch')?.setAttribute('aria-checked',String(clickFx));
+}
+
+// ── POPOVERS ──
+function setPopover(pop,open){
+  pop.classList.toggle('open',open);
+  document.querySelector(`[aria-controls="${pop.id}"]`)?.setAttribute('aria-expanded',String(open));
+}
+function togglePopover(id){
+  const pop=document.getElementById(id);
+  if(!pop)return;
+  const open=!pop.classList.contains('open');
+  document.querySelectorAll('.popover.open').forEach(p=>setPopover(p,false));
+  setPopover(pop,open);
+}
+document.addEventListener('click',e=>{
+  document.querySelectorAll('.popover.open').forEach(p=>{if(!p.parentElement.contains(e.target))setPopover(p,false);});
+});
 
 // ── SIDEBAR MOBILE ──
 function toggleSidebar(){
@@ -100,7 +234,7 @@ function makeFavStar(id){
   const star=document.createElement('span');
   star.className='nav-fav-star'+(isFavorite(id)?' on':'');
   star.dataset.favFor=id;
-  star.textContent=isFavorite(id)?'★':'☆';
+  star.innerHTML=ic('star');
   star.title=isFavorite(id)?'เอาออกจากรายการโปรด':'เพิ่มเข้ารายการโปรด';
   star.onclick=e=>toggleFavorite(e,id);
   return star;
@@ -114,7 +248,7 @@ function toggleFavorite(evt,id){
   syncFavStars();
   const q=document.getElementById('nav-search');
   if(q&&q.value.trim())filterNav(q.value);
-  showToast(i>=0?'เอาออกจากรายการโปรดแล้ว':'⭐ เพิ่มเข้ารายการโปรดแล้ว');
+  showToast(i>=0?'เอาออกจากรายการโปรดแล้ว':'เพิ่มเข้ารายการโปรดแล้ว');
 }
 function clearFavorites(){
   if(!favorites.length)return;
@@ -127,7 +261,6 @@ function clearFavorites(){
 function syncFavStars(){
   document.querySelectorAll('.nav-fav-star').forEach(s=>{
     const fav=isFavorite(s.dataset.favFor);
-    s.textContent=fav?'★':'☆';
     s.classList.toggle('on',fav);
     s.title=fav?'เอาออกจากรายการโปรด':'เพิ่มเข้ารายการโปรด';
   });
@@ -149,7 +282,7 @@ function renderFavorites(){
     item.dataset.tab=id;
     item.onclick=e=>openTab(e,id);
     // clone the icon node so SVG icons survive too (textContent would drop them)
-    item.appendChild(icon?icon.cloneNode(true):Object.assign(document.createElement('span'),{className:'nav-icon',textContent:'🔧'}));
+    item.appendChild(icon?icon.cloneNode(true):Object.assign(document.createElement('span'),{className:'nav-icon',innerHTML:ic('wrench')}));
     const lbl=document.createElement('span');lbl.className='nav-label';lbl.textContent=navLabelOf(src);item.appendChild(lbl);
     item.appendChild(makeFavStar(id));
     makeNavItemFocusable(item);
@@ -205,17 +338,13 @@ function initFavorites(){
 const STORAGE_NAVSEARCH='esan-devtools-navsearch';
 function filterNav(q){
   const query=q.toLowerCase().trim();
+  document.getElementById('sidebar-nav')?.classList.toggle('searching',!!query);
   document.querySelectorAll('#sidebar-nav .nav-item').forEach(item=>{
     item.style.display=!query||navLabelOf(item).toLowerCase().includes(query)?'':'none';
   });
-  // hide section headings whose items are all filtered out
-  document.querySelectorAll('#sidebar-nav .nav-section-label').forEach(label=>{
-    if(label.classList.contains('nav-fav-label'))return;
-    let visible=false;
-    for(let el=label.nextElementSibling;el&&!el.classList.contains('nav-section-label');el=el.nextElementSibling){
-      if(el.classList.contains('nav-item')&&el.style.display!=='none'){visible=true;break;}
-    }
-    label.style.display=visible?'':'none';
+  // hide groups whose items are all filtered out
+  document.querySelectorAll('#sidebar-nav .nav-group').forEach(g=>{
+    g.style.display=Array.from(g.querySelectorAll('.nav-item')).some(i=>i.style.display!=='none')?'':'none';
   });
   const favSec=document.getElementById('nav-fav-section');
   if(favSec){
@@ -232,6 +361,24 @@ function restoreNavSearch(){
       if(el){el.value=q;filterNav(q);}
     }
   }catch(e){}
+}
+
+// ── NAV GROUPS (collapsible) ──
+const STORAGE_NAVCOLLAPSED='esan-devtools-nav-collapsed';
+function setNavGroup(g,collapsed){
+  g.classList.toggle('collapsed',collapsed);
+  g.querySelector('.nav-section-label')?.setAttribute('aria-expanded',String(!collapsed));
+}
+function toggleNavGroup(btn){
+  const g=btn.closest('.nav-group');
+  setNavGroup(g,!g.classList.contains('collapsed'));
+  try{localStorage.setItem(STORAGE_NAVCOLLAPSED,JSON.stringify(Array.from(document.querySelectorAll('.nav-group.collapsed')).map(x=>x.dataset.group)));}catch(e){}
+}
+function restoreNavGroups(){
+  let ids=[];
+  try{ids=JSON.parse(localStorage.getItem(STORAGE_NAVCOLLAPSED)||'[]');}catch(e){}
+  if(!Array.isArray(ids))return;
+  document.querySelectorAll('.nav-group').forEach(g=>setNavGroup(g,ids.includes(g.dataset.group)));
 }
 
 // ── NAV ──
@@ -251,6 +398,9 @@ function openTab(evt,id){
   // mark ทุก nav item ที่ชี้ tab นี้ (ตัวใน section ปกติ + ตัวใน รายการโปรด)
   document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>{b.classList.add('active');b.setAttribute('aria-selected','true');});
   activeTabId=id;
+  // opening a tool (palette, favorites) inside a collapsed group expands that group
+  const grp=srcNavItem(id)?.closest('.nav-group.collapsed');
+  if(grp)toggleNavGroup(grp.querySelector('.nav-section-label'));
   const init=TAB_INIT[id];
   if(init){delete TAB_INIT[id];init();}
   const meta=TAB_META[id]||{title:'',sub:''};
@@ -292,21 +442,115 @@ document.addEventListener('keydown',e=>{
     e.preventDefault();
     lovSaveEditor();
   }
-  if((e.ctrlKey||e.metaKey)&&e.key==='k'){
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
     e.preventDefault();
-    document.getElementById('nav-search').focus();
-    const searchMap={'kubectl-tab':'kubectl-search','linux-tab':'linux-search','git-tab':'git-search'};
-    const el=document.getElementById(searchMap[activeTabId]);
-    if(el){el.focus();el.select();}
+    if(document.getElementById('cmdk').hidden)openPalette();else closePalette();
+  }
+  if(e.key==='Escape'){
+    if(!document.getElementById('cmdk').hidden){closePalette();return;}
+    const open=document.querySelectorAll('.popover.open');
+    if(open.length){open.forEach(p=>{setPopover(p,false);document.querySelector(`[aria-controls="${p.id}"]`)?.focus();});return;}
+    closeSidebar();
   }
 });
 
+// ── COMMAND PALETTE (Ctrl/⌘+K) ──
+const PALETTE_CMDS=[ // [label, sub, icon, run]
+  ['ลักษณะ: สว่าง','ธีม macOS','sun',()=>setAppearance('light')],
+  ['ลักษณะ: มืด','ธีม macOS','moon',()=>setAppearance('dark')],
+  ['ลักษณะ: อัตโนมัติ','ตามการตั้งค่าเครื่อง','monitor',()=>setAppearance('auto')],
+  ['เปิด/ปิดเอฟเฟกต์ตอนคลิก','การตั้งค่า','sparkles',()=>toggleClickFx()],
+];
+const _cmdk={items:[],sel:0,ret:null};
+function paletteItems(q){
+  const words=q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const tools=Array.from(document.querySelectorAll('#sidebar-nav .nav-group .nav-item')).map(el=>{
+    const id=el.dataset.tab,meta=TAB_META[id]||{},label=navLabelOf(el);
+    return{group:'เครื่องมือ',label,sub:el.closest('.nav-group').querySelector('.nav-section-label').textContent.trim(),
+      icon:el.querySelector('.nav-icon')?.innerHTML||'',hay:`${label} ${meta.title||''} ${meta.sub||''}`.toLowerCase(),run:()=>openTab(null,id)};
+  });
+  const cmds=PALETTE_CMDS.map(([label,sub,icon,run])=>({group:'คำสั่ง',label,sub,icon:ic(icon),hay:`${label} ${sub}`.toLowerCase(),run}));
+  // label hits rank above subtitle-only hits; sort is stable, so nav order holds within a rank
+  const rank=x=>{const l=x.label.toLowerCase();return words.every(w=>l.includes(w))?(l.startsWith(words[0]||'')?0:1):2;};
+  const match=list=>list.filter(x=>words.every(w=>x.hay.includes(w))).sort((a,b)=>rank(a)-rank(b));
+  return match(tools).concat(match(cmds));
+}
+function renderPalette(){
+  const list=document.getElementById('cmdk-list'),input=document.getElementById('cmdk-input');
+  _cmdk.items=paletteItems(input.value);
+  _cmdk.sel=Math.min(_cmdk.sel,Math.max(0,_cmdk.items.length-1));
+  if(!_cmdk.items.length){
+    list.innerHTML=`<div class="cmdk-empty">ไม่พบ "${escHtml(input.value)}" ลองคำอื่น เช่น json, jwt, cron</div>`;
+    input.removeAttribute('aria-activedescendant');
+    return;
+  }
+  let html='',grp='';
+  _cmdk.items.forEach((x,i)=>{
+    if(x.group!==grp){grp=x.group;html+=`<div class="cmdk-group" role="presentation">${grp}</div>`;}
+    html+=`<div class="cmdk-item" role="option" id="cmdk-opt-${i}" aria-selected="${i===_cmdk.sel}" data-i="${i}"><span class="cmdk-ic">${x.icon}</span><span class="cmdk-label">${escHtml(x.label)}</span><span class="cmdk-sub">${escHtml(x.sub)}</span></div>`;
+  });
+  list.innerHTML=html;
+  input.setAttribute('aria-activedescendant','cmdk-opt-'+_cmdk.sel);
+}
+function movePaletteSel(d){
+  if(!_cmdk.items.length)return;
+  _cmdk.sel=(_cmdk.sel+d+_cmdk.items.length)%_cmdk.items.length;
+  document.querySelectorAll('.cmdk-item').forEach(el=>el.setAttribute('aria-selected',String(+el.dataset.i===_cmdk.sel)));
+  document.getElementById('cmdk-opt-'+_cmdk.sel)?.scrollIntoView({block:'nearest'});
+  document.getElementById('cmdk-input').setAttribute('aria-activedescendant','cmdk-opt-'+_cmdk.sel);
+}
+function openPalette(){
+  const p=document.getElementById('cmdk');
+  if(!p.hidden)return;
+  _cmdk.ret=document.activeElement;_cmdk.sel=0;
+  document.querySelectorAll('.popover.open').forEach(x=>setPopover(x,false));
+  const input=document.getElementById('cmdk-input');
+  input.value='';
+  p.hidden=false;
+  renderPalette();
+  input.focus();
+}
+function closePalette(){
+  const p=document.getElementById('cmdk');
+  if(p.hidden)return;
+  p.hidden=true;
+  if(_cmdk.ret&&document.contains(_cmdk.ret))_cmdk.ret.focus();
+}
+function runPalette(i){const x=_cmdk.items[i];if(!x)return;closePalette();x.run();}
+(function(){
+  const input=document.getElementById('cmdk-input'),list=document.getElementById('cmdk-list');
+  if(!input||!list)return;
+  input.addEventListener('input',()=>{_cmdk.sel=0;renderPalette();});
+  input.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'){e.preventDefault();movePaletteSel(1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();movePaletteSel(-1);}
+    else if(e.key==='Enter'){e.preventDefault();runPalette(_cmdk.sel);}
+    else if(e.key==='Tab')e.preventDefault(); // the input is the dialog's only stop
+  });
+  list.addEventListener('click',e=>{const it=e.target.closest('.cmdk-item');if(it)runPalette(+it.dataset.i);});
+  list.addEventListener('mousemove',e=>{const it=e.target.closest('.cmdk-item');if(it&&+it.dataset.i!==_cmdk.sel){_cmdk.sel=+it.dataset.i;movePaletteSel(0);}});
+  // show ⌘ instead of Ctrl on Apple keyboards
+  if(/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent)){
+    document.querySelectorAll('.cmdk-key').forEach(k=>k.textContent='⌘K');
+    document.querySelectorAll('.cmdk-mod').forEach(k=>k.textContent='⌘');
+  }
+})();
+
 // ── UTILS ──
-function toggleKbPop(){const pop=document.getElementById('kb-pop');pop.classList.toggle('open');}
 function scrollToTop(){document.querySelector('.content-area')?.scrollTo({top:0,behavior:'smooth'});}
-document.addEventListener('click',e=>{const wrap=document.querySelector('.kb-pop-wrap');if(wrap&&!wrap.contains(e.target))document.getElementById('kb-pop')?.classList.remove('open');});
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg||'✓ Copied';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
-function copyText(txt){navigator.clipboard.writeText(txt).then(()=>showToast('✓ Copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('✓ Copied');});}
+const TOAST_IC={ok:'circle-check',warn:'triangle-alert',err:'circle-x',info:'info'};
+let _toastTimer=0;
+// kind: 'ok' (default) | 'warn' | 'err' | 'info' — picks the icon and its colour
+function showToast(msg,kind){
+  const t=document.getElementById('toast');
+  kind=TOAST_IC[kind]?kind:'ok';
+  t.className='toast show'+(kind==='ok'?'':' '+kind);
+  t.querySelector('use').setAttribute('href','#i-'+TOAST_IC[kind]);
+  t.querySelector('.toast-msg').textContent=msg||'Copied';
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
+}
+function copyText(txt){navigator.clipboard.writeText(txt).then(()=>showToast('Copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Copied');});}
 function copyVal(id){const el=document.getElementById(id);if(el&&el.textContent&&el.textContent!=='—')copyText(el.textContent);}
 // คลิก/Enter/Space บนตัวค่าเอง (ไม่ใช่แค่ปุ่ม Copy) ก็ copy ได้
 document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
@@ -316,7 +560,7 @@ document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
 });
 // tooltip "คลิกเพื่อ copy" แบบ custom (title ของ browser เล็กและปรับขนาดไม่ได้)
 const copyTip=document.createElement('div');
-copyTip.className='copy-tip';copyTip.textContent='📋 คลิกเพื่อ copy';copyTip.setAttribute('aria-hidden','true');
+copyTip.className='copy-tip';copyTip.innerHTML=ic('copy')+' คลิกเพื่อ copy';copyTip.setAttribute('aria-hidden','true');
 document.body.appendChild(copyTip);
 function showCopyTip(el){
   const r=el.getBoundingClientRect();
@@ -353,43 +597,40 @@ window.addEventListener('beforeinstallprompt',e=>{
   setTimeout(()=>{if(_pwaPrompt)document.getElementById('pwa-banner').classList.add('show');},5000);
 });
 window.addEventListener('appinstalled',()=>{
-  document.getElementById('pwa-banner').classList.remove('show');showToast('ติดตั้ง App สำเร็จ ✓');_pwaPrompt=null;
+  document.getElementById('pwa-banner').classList.remove('show');showToast('ติดตั้ง App สำเร็จ');_pwaPrompt=null;
 });
 function pwsInstall(){
   if(!_pwaPrompt){showToast('เปิดใน Chrome/Edge แล้วลองใหม่');return;}
   _pwaPrompt.prompt();_pwaPrompt.userChoice.then(()=>{_pwaPrompt=null;document.getElementById('pwa-banner').classList.remove('show');});
 }
 
-// ── SPARKLE CLICK EFFECT ──
+// ── CLICK EFFECT ── on by default; a switch in Settings turns it off, and it never runs under reduced motion
+const STORAGE_CLICKFX='esan-devtools-clickfx';
+let clickFx=true;
+try{clickFx=localStorage.getItem(STORAGE_CLICKFX)!=='0';}catch(e){}
+function toggleClickFx(){
+  clickFx=!clickFx;
+  try{localStorage.setItem(STORAGE_CLICKFX,clickFx?'1':'0');}catch(e){}
+  syncSettingsUI();
+  showToast(clickFx?'เปิดเอฟเฟกต์ตอนคลิกแล้ว':'ปิดเอฟเฟกต์ตอนคลิกแล้ว','info');
+}
 (function(){
-  const COLORS=['#6366f1','#22d3ee','#f472b6','#fbbf24','#34d399','#a78bfa','#fb7185','#38bdf8'];
-  const EMOJIS=['✨','⚡','💫','🌟','🔥','💎','🎯','⭐','🎪','🚀'];
-  const SHAPES=['circle','star','square'];
-
-  function createParticle(x,y){
+  const fxOn=()=>clickFx&&!reduceMotionMQ.matches;
+  function palette(){
+    const cs=getComputedStyle(document.body);
+    return['--accent','--accent2','--accent3','--c-yellow','--c-green'].map(v=>cs.getPropertyValue(v).trim());
+  }
+  function createParticle(x,y,colors){
     const el=document.createElement('div');
-    el.className='sparkle-particle';
-    const color=COLORS[Math.floor(Math.random()*COLORS.length)];
+    el.className='sparkle-particle'+(Math.random()<0.35?' star':'');
+    const color=colors[Math.floor(Math.random()*colors.length)];
     const size=Math.random()*10+5;
     const angle=Math.random()*Math.PI*2;
     const dist=Math.random()*100+40;
-    const tx=Math.cos(angle)*dist;
-    const ty=Math.sin(angle)*dist;
-    el.style.cssText=`left:${x}px;top:${y}px;width:${size}px;height:${size}px;background:${color};box-shadow:0 0 ${size}px ${color};--tx:${tx}px;--ty:${ty}px;animation-duration:${0.5+Math.random()*0.5}s;border-radius:${Math.random()>0.5?'50%':'3px'};`;
+    el.style.cssText=`left:${x}px;top:${y}px;width:${size}px;height:${size}px;background:${color};box-shadow:0 0 ${size}px ${color};--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;animation-duration:${0.5+Math.random()*0.5}s;`;
     document.body.appendChild(el);
     el.addEventListener('animationend',()=>el.remove());
   }
-
-  function createEmojiPop(x,y){
-    const el=document.createElement('div');
-    el.className='sparkle-emoji';
-    el.textContent=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
-    const offsetX=(Math.random()-0.5)*80;
-    el.style.cssText=`left:${x+offsetX}px;top:${y}px;animation-duration:${0.7+Math.random()*0.4}s;`;
-    document.body.appendChild(el);
-    el.addEventListener('animationend',()=>el.remove());
-  }
-
   function createRipple(x,y){
     const el=document.createElement('div');
     el.className='click-ripple';
@@ -397,31 +638,20 @@ function pwsInstall(){
     document.body.appendChild(el);
     el.addEventListener('animationend',()=>el.remove());
   }
-
   document.addEventListener('click',function(e){
-    const x=e.clientX, y=e.clientY;
-    // create ripple
-    createRipple(x,y);
-    // create 10-15 particles
+    // detail 0 = keyboard / programmatic click: no pointer position to burst from
+    if(!fxOn()||e.detail===0)return;
+    const colors=palette();
+    createRipple(e.clientX,e.clientY);
     const count=10+Math.floor(Math.random()*6);
-    for(let i=0;i<count;i++) createParticle(x,y);
-    // 1-2 emoji pops
-    const emojiCount=1+Math.floor(Math.random()*2);
-    for(let i=0;i<emojiCount;i++) createEmojiPop(x,y);
+    for(let i=0;i<count;i++)createParticle(e.clientX,e.clientY,colors);
   });
-
-  // logo click mega burst
-  document.addEventListener('DOMContentLoaded',()=>{
-    const logo=document.getElementById('logo-icon');
-    if(logo){
-      logo.addEventListener('click',function(e){
-        e.stopPropagation();
-        const rect=logo.getBoundingClientRect();
-        const cx=rect.left+rect.width/2;
-        const cy=rect.top+rect.height/2;
-        for(let i=0;i<30;i++) createParticle(cx,cy);
-        for(let i=0;i<5;i++) createEmojiPop(cx+((Math.random()-0.5)*60),cy);
-      });
-    }
+  // logo click: bigger burst
+  const logo=document.getElementById('logo-icon');
+  if(logo)logo.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(!fxOn())return;
+    const r=logo.getBoundingClientRect(),colors=palette();
+    for(let i=0;i<34;i++)createParticle(r.left+r.width/2,r.top+r.height/2,colors);
   });
 })();

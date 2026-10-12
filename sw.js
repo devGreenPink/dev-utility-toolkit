@@ -1,4 +1,4 @@
-const CACHE = 'esan-devtools-v26';
+const CACHE = 'esan-devtools-v2.0';
 const STATIC_ASSETS = [
   './',
   './index.html',

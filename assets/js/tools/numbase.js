@@ -20,7 +20,7 @@ function numBaseConvert(fromBase, rawVal) {
     if (isNaN(dec) || dec < 0) throw new Error('ค่าไม่ถูกต้อง');
     if (dec > Number.MAX_SAFE_INTEGER) throw new Error('ตัวเลขใหญ่เกิน MAX_SAFE_INTEGER');
   } catch (e) {
-    errEl.textContent = '⚠ ' + e.message;
+    errEl.textContent = e.message;
     errEl.style.display = 'block';
     return;
   }

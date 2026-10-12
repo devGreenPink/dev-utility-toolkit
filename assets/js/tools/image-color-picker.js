@@ -262,7 +262,7 @@
       _icpUpdateActiveValue();
       _icpAddHistory(hex);
       icpShowPanel(true);
-      showToast('ดูดสี ' + hex + ' จากหน้าจอ ✓');
+      showToast('ดูดสี ' + hex + ' จากหน้าจอ');
     } catch (_) { /* user cancelled — no-op */ }
   }
 
@@ -276,7 +276,7 @@
   function copyPickedHex(text) {
     try {
       navigator.clipboard.writeText(text)
-        .then(() => showToast('คัดลอก ' + text + ' แล้ว ✓'))
+        .then(() => showToast('คัดลอก ' + text + ' แล้ว'))
         .catch(() => fallbackCopy(text));
     } catch (_) { fallbackCopy(text); }
   }
@@ -287,8 +287,8 @@
     ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); showToast('คัดลอก ' + text + ' แล้ว ✓'); }
-    catch (_) { showToast('⚠️ คัดลอกไม่ได้'); }
+    try { document.execCommand('copy'); showToast('คัดลอก ' + text + ' แล้ว'); }
+    catch (_) { showToast('คัดลอกไม่ได้','warn'); }
     ta.remove();
   }
 
@@ -297,13 +297,13 @@
     if (!_icpPicked) return;
     if (typeof updateColorUI === 'function') {
       updateColorUI({ r: _icpPicked.r, g: _icpPicked.g, b: _icpPicked.b });
-      showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker ✓');
+      showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker');
     } else {
       const hexInput = $id('color-hex');
       if (hexInput) {
         hexInput.value = _icpPicked.hex;
         hexInput.dispatchEvent(new Event('input', { bubbles: true }));
-        showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker ✓');
+        showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker');
       }
     }
   }
@@ -330,7 +330,7 @@
     if (!file) return;
     const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
     if (!allowed.includes(file.type)) {
-      showToast('⚠️ รองรับเฉพาะ PNG, JPG, WEBP, GIF');
+      showToast('รองรับเฉพาะ PNG, JPG, WEBP, GIF','warn');
       return;
     }
     const url = URL.createObjectURL(file);
@@ -344,7 +344,7 @@
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      showToast('⚠️ โหลดภาพไม่ได้ กรุณาลองใหม่');
+      showToast('โหลดภาพไม่ได้ กรุณาลองใหม่','err');
     };
     img.src = url;
   }
@@ -357,7 +357,7 @@
     $id('image-drop-zone').classList.remove('dragover');
     const file = e.dataTransfer.files[0];
     if (file) handleImageFile(file);
-    else showToast('⚠️ ไม่พบไฟล์ในที่วาง');
+    else showToast('ไม่พบไฟล์ในที่วาง','warn');
   }
 
   function icpFileInputChange(e) {

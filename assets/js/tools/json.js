@@ -61,7 +61,7 @@ function formatJSON(sp){
     refreshJsonTree();runJsonPath();
   }catch(e){
     renderJsonError(e, txt.value, 'json-error');
-    showToast('Invalid JSON ❌');
+    showToast('Invalid JSON','err');
   }
 }
 function formatJSONSplit(sp){
@@ -73,7 +73,7 @@ function formatJSONSplit(sp){
     onJsonSplitInput();
   }catch(e){
     renderJsonError(e, txt.value, 'json-split-error');
-    showToast('Invalid JSON ❌');
+    showToast('Invalid JSON','err');
   }
 }
 function clearJSON(){
@@ -173,14 +173,14 @@ function renderJsonError(error, jsonText, elementId) {
     }
     html = `
       <div class="json-error-card">
-        <div class="json-error-title">⚠️ JSON รูปแบบไม่ถูกต้อง (บรรทัดที่ ${lineNum}, คอลัมน์ที่ ${colNum})</div>
+        <div class="json-error-title">${ic('triangle-alert')} JSON รูปแบบไม่ถูกต้อง (บรรทัดที่ ${lineNum}, คอลัมน์ที่ ${colNum})</div>
         <div class="json-error-context">${contextHtml}</div>
       </div>
     `;
   } else {
     html = `
       <div class="json-error-card">
-        <div class="json-error-title">⚠️ JSON รูปแบบไม่ถูกต้อง</div>
+        <div class="json-error-title">${ic('triangle-alert')} JSON รูปแบบไม่ถูกต้อง</div>
         <div style="font-family:var(--mono); font-size:.76rem; color:var(--text); margin-top: 4px;">${escHtml(error.message)}</div>
       </div>
     `;
@@ -200,7 +200,7 @@ function refreshJsonTree(){
     outEl.appendChild(tree);
     const keys=countKeys(obj);
     statsEl.textContent=`${keys.total} nodes · depth ${keys.depth}`;
-  }catch(e){outEl.innerHTML=`<span style="color:var(--danger);">⚠ ${escHtml(e.message)}</span>`;statsEl.textContent='';}
+  }catch(e){outEl.innerHTML=`<span style="color:var(--danger);">${ic('triangle-alert')} ${escHtml(e.message)}</span>`;statsEl.textContent='';}
 }
 function countKeys(obj,d=0){
   if(obj===null||typeof obj!=='object')return{total:1,depth:d};
@@ -259,7 +259,7 @@ function runJsonPath(){
     const obj=JSON.parse(document.getElementById('json-input').value);
     const results=jsonPathQuery(obj,path);
     el.textContent=results.length===1?JSON.stringify(results[0],null,2):JSON.stringify(results,null,2);
-  }catch(e){el.textContent='⚠ '+e.message;}
+  }catch(e){el.textContent=e.message;}
 }
 function jsonPathQuery(root,path){
   if(!path||path==='$')return[root];

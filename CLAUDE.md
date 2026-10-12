@@ -47,7 +47,12 @@ Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`
 ### State persistence
 
 `localStorage` keys used:
-- `esan-devtools-theme` — active theme name
+- `esan-devtools-theme` — `mac` or a preset id (`matrix`/`nord`/`dracula`/`kitty`); pre-v2 values
+  (`default`, `light`, `esan`, `cdg`, `south`) are migrated in `loadTheme()`
+- `esan-devtools-appearance` — `light` / `dark` / `auto` (macOS theme only)
+- `esan-devtools-accent` — accent id from `ACCENTS` or a custom `#rrggbb`
+- `esan-devtools-clickfx` — `0` turns the click sparkle off (default on)
+- `esan-devtools-nav-collapsed` — ids of folded sidebar groups (`data-group`)
 - `esan-devtools-tab` — last active tab id
 - `esan-devtools-navsearch` — last sidebar search query
 - `esan-devtools-favorites` — favorited tool ids (see Favorites below)
@@ -83,19 +88,30 @@ these in sync manually:
 ### Keyboard shortcuts
 
 - `Ctrl+Enter` — triggers the primary action of the active tool
-- `Ctrl+K` — focuses the search input (sidebar nav search, or kubectl/Linux command search on those tabs)
+- `Ctrl+K` / `⌘K` — opens the command palette (tools from the sidebar + `PALETTE_CMDS` in `core.js`)
+- `Esc` — closes the palette, then any open popover, then the mobile sidebar
 
 ### Themes
 
-9 themes set via `data-theme` attribute on `<body>`. Default (Indigo) uses no attribute value. Stored in `localStorage`.
-`esan` / `cdg` / `south` reuse the colour palettes of the esan-office page (colours only, no pixel styling).
-Each theme block also sets the contrast tokens described at the top of `style.css` (`--line`, `--accent-fg`,
-`--on-accent`, border alphas) — a new theme must define them too, or it inherits the Indigo values.
+macOS-style shell (translucent sidebar, unified toolbar, popovers) shared by every theme.
+`data-theme` on `<body>`: `''` = macOS Dark, `light` = macOS Light, or a preset (`matrix`, `nord`,
+`dracula`, `kitty`). Settings live in the toolbar gear popover (`#settings-pop`): appearance, accent,
+presets, click-effect switch. The macOS themes get their accent written inline on `<body>` by
+`applyAccent()`, which shades it until `--accent-fg` and the `--btn-primary-*` pair reach 4.5:1
+(`console.assert` fires if not). Tokens are declared on `body`, not `:root`, because `data-theme` is on
+`<body>` and derived tokens (`--material-*`, `--focus-ring`, `--wallpaper`) must resolve against it.
+Each theme block sets the contrast tokens described at the top of `style.css` (`--line`, `--accent-fg`,
+`--on-accent`, border alphas) and, for a light theme, the `--c-*` tints, hover/press, shadows and
+`color-scheme` — a new theme must define them too, or it inherits the macOS Dark values.
+Per-tool CSS uses the semantic tints `--c-green/-yellow/-red/-blue/-purple/-pink/-orange/-cyan`
+instead of hex; the dark code panes (`.mq-code`, `.stor-code`, CodeMirror) keep their own palette.
 
 ## Key patterns in assets/js
 
 - All tool logic is in plain functions (no classes). Within a file, functions are grouped with `// ── SECTION ──` comments.
-- `showToast(msg)` — displays a 2-second toast notification.
+- `showToast(msg, kind)` — 2-second HUD toast; `kind` is `ok` (default) / `warn` / `err` / `info` and picks the icon.
+- `ic(name, cls)` — returns `<svg class="i"><use href="#i-name"/></svg>` from the lucide sprite at the top of
+  `<body>`; add a `<symbol id="i-…">` there before using a new name. No emoji anywhere in the UI.
 - `copyText(txt)` — copies to clipboard (Clipboard API + execCommand fallback).
 - `escHtml(s)` — escapes HTML for safe insertion into `innerHTML`.
 - Mock data generator uses `crypto.getRandomValues` for UUID and standard `Math.random` for other fields.

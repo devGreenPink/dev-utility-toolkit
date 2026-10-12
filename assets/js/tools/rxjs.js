@@ -117,8 +117,8 @@ function renderRxjsOps(){
     <button class="rxjs-try-btn" onclick="rxjsTryOp('${op.n}')">▶ Try</button>
   </div>
   <div class="rxjs-op-summary">${escHtml(op.s)}</div>
-  <div class="rxjs-op-when"><span class="rxjs-when-ok">✓ ใช้เมื่อ</span>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<span class="rxjs-when-no">✗ หลีกเลี่ยง</span>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join('')}`:''}</div>
-  <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code data-highlighted="yes">${hlTS(op.code)}</code></pre></div></details>
+  <div class="rxjs-op-when"><span class="rxjs-when-ok">${ic('check')} ใช้เมื่อ</span>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<span class="rxjs-when-no">${ic('x')} หลีกเลี่ยง</span>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join('')}`:''}</div>
+  <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">${ic('copy')} copy</button><pre class="rxjs-code"><code data-highlighted="yes">${hlTS(op.code)}</code></pre></div></details>
   ${op.rel.length?`<div class="rxjs-op-rel">เทียบกับ: ${op.rel.map(r=>`<button class="rxjs-rel-btn" onclick="rxjsJumpTo('${r}')">${r}</button>`).join('')}</div>`:''}
 </div>`).join('');
 }
@@ -158,7 +158,7 @@ interval(300).pipe(
 
 'timer':
 `// emit ครั้งเดียวหลัง 500ms
-timer(500).subscribe(() => console.log('⏰ timer fired!'));
+timer(500).subscribe(() => console.log('timer fired!'));
 
 // emit ทุก 300ms หลังรอ 600ms
 timer(600, 300).pipe(
@@ -234,11 +234,11 @@ const files = ['photo.jpg', 'doc.pdf', 'data.csv'];
 from(files).pipe(
   mergeMap(file => {
     const ms = Math.round(Math.random() * 150 + 100);
-    return of(\`✅ uploaded: \${file}\`).pipe(delay(ms));
+    return of(\`uploaded: \${file}\`).pipe(delay(ms));
   })
 ).subscribe({
   next: r => console.log(r),
-  complete: () => console.log('🎉 ทุกไฟล์ upload สำเร็จ')
+  complete: () => console.log('ทุกไฟล์ upload สำเร็จ')
 });`,
 
 'concatMap':
@@ -247,11 +247,11 @@ const steps = ['validate', 'save to DB', 'send email'];
 
 from(steps).pipe(
   concatMap((step, i) =>
-    of(\`✅ step \${i+1}: \${step}\`).pipe(delay(200))
+    of(\`step \${i+1}: \${step}\`).pipe(delay(200))
   )
 ).subscribe({
   next: s => console.log(s),
-  complete: () => console.log('🏁 ทุก step เสร็จ')
+  complete: () => console.log('ทุก step เสร็จ')
 });`,
 
 'exhaustMap':
@@ -260,10 +260,10 @@ const loginClick$ = new Subject();
 
 loginClick$.pipe(
   exhaustMap(() => {
-    console.log('🔐 login started...');
+    console.log('login started...');
     return of({ user: 'สมชาย', token: 'abc123' }).pipe(delay(300));
   })
-).subscribe(u => console.log('✅ logged in:', u.user));
+).subscribe(u => console.log('logged in:', u.user));
 
 loginClick$.next(); // fires
 loginClick$.next(); // ignored (login ยังรันอยู่)
@@ -330,7 +330,7 @@ interval(200).pipe(
 setTimeout(() => {
   destroy$.next();
   destroy$.complete();
-  console.log('✅ unsubscribed!');
+  console.log('unsubscribed!');
 }, 700);`,
 
 'takeWhile':
@@ -341,7 +341,7 @@ from(statuses).pipe(
   takeWhile(s => s !== 'done', true)
 ).subscribe({
   next: s => console.log('status:', s),
-  complete: () => console.log('🏁 job complete!')
+  complete: () => console.log('job complete!')
 });`,
 
 'skip':
@@ -363,7 +363,7 @@ interval(100).pipe(
 ).subscribe(n => console.log('after ready:', n));
 
 setTimeout(() => {
-  console.log('🟢 ready!');
+  console.log('ready!');
   ready$.next();
 }, 350);`,
 
@@ -371,10 +371,10 @@ setTimeout(() => {
 `const input$ = new Subject();
 
 input$.pipe(
-  tap(v => console.log('⌨️', v)),
+  tap(v => console.log(v)),
   debounceTime(200),
   distinctUntilChanged()
-).subscribe(v => console.log('🔍 search API:', v));
+).subscribe(v => console.log('search API:', v));
 
 ['a','an','ang','angu','angul','angular'].forEach((v, i) =>
   setTimeout(() => input$.next(v), i * 80)
@@ -442,12 +442,12 @@ merge(a$, b$, c$).subscribe(e => console.log('event:', e));`,
 
 'concat':
 `concat(
-  of('⏳ loading...'),
+  of('loading...'),
   of({ data: 'init', version: 2 }).pipe(
     delay(200),
     map(d => JSON.stringify(d))
   ),
-  of('✅ ready!')
+  of('ready!')
 ).subscribe(state => console.log(state));`,
 
 'forkJoin':
@@ -456,10 +456,10 @@ merge(a$, b$, c$).subscribe(e => console.log('event:', e));`,
   posts: of([{ title: 'RxJS 101' }, { title: 'Angular Tips' }]).pipe(delay(150)),
   tags:  of(['rxjs', 'angular']).pipe(delay(80))
 }).subscribe(({ user, posts, tags }) => {
-  console.log('👤', user.name);
-  console.log('📝', posts.length, 'posts');
-  console.log('🏷️', tags.join(', '));
-  console.log('✅ โหลดพร้อมกันทั้ง 3 APIs!');
+  console.log(user.name);
+  console.log(posts.length, 'posts');
+  console.log(tags.join(', '));
+  console.log('โหลดพร้อมกันทั้ง 3 APIs!');
 });`,
 
 'withLatestFrom':
@@ -486,7 +486,7 @@ const api2$ = of('api2 response').pipe(delay(200)); // เร็วกว่า
 const api3$ = of('api3 response').pipe(delay(400));
 
 race(api1$, api2$, api3$).subscribe(
-  winner => console.log('🏆 winner:', winner)
+  winner => console.log('winner:', winner)
 );`,
 
 'startWith':
@@ -499,10 +499,10 @@ race(api1$, api2$, api3$).subscribe(
 'catchError':
 `throwError(() => new Error('500 Internal Server Error')).pipe(
   catchError(err => {
-    console.log('❌ Error:', err.message);
+    console.log('Error:', err.message);
     return of({ data: [], fromCache: true }); // fallback
   })
-).subscribe(r => console.log('✅', JSON.stringify(r)));`,
+).subscribe(r => console.log(JSON.stringify(r)));`,
 
 'retry':
 `let attempt = 0;
@@ -512,12 +512,12 @@ defer(() => {
   console.log(\`attempt \${attempt}...\`);
   return attempt < 3
     ? throwError(() => new Error('fail'))
-    : of('✅ success!');
+    : of('success!');
 }).pipe(
   retry(3)
 ).subscribe({
   next: v => console.log(v),
-  error: e => console.log('❌', e.message)
+  error: e => console.log(e.message)
 });`,
 
 'retryWhen':
@@ -531,14 +531,14 @@ defer(() => {
 }).pipe(
   retry({ count: 3, delay: 200 })
 ).subscribe({
-  next: v => console.log('✅', v),
-  error: e => console.log('❌', e.message)
+  next: v => console.log(v),
+  error: e => console.log(e.message)
 });`,
 
 'finalize':
 `of('data').pipe(
   delay(200),
-  finalize(() => console.log('🏁 finalize — always runs'))
+  finalize(() => console.log('finalize — always runs'))
 ).subscribe({
   next: v => console.log('next:', v),
   complete: () => console.log('complete')
@@ -546,16 +546,16 @@ defer(() => {
 
 throwError(() => new Error('oops')).pipe(
   catchError(e => { console.log('caught:', e.message); return EMPTY; }),
-  finalize(() => console.log('🏁 finalize on error too'))
+  finalize(() => console.log('finalize on error too'))
 ).subscribe();`,
 
 'tap':
 `from([1, 2, 3, 4, 5]).pipe(
-  tap(v => console.log('📥 before filter:', v)),
+  tap(v => console.log('before filter:', v)),
   filter(v => v % 2 === 0),
-  tap(v => console.log('✅ passed filter:', v)),
+  tap(v => console.log('passed filter:', v)),
   map(v => v * 10)
-).subscribe(v => console.log('📤 result:', v));`,
+).subscribe(v => console.log('result:', v));`,
 
 'timeout':
 `// เร็วพอ
@@ -563,8 +563,8 @@ of('fast response').pipe(
   delay(100),
   timeout(500)
 ).subscribe({
-  next: v => console.log('✅', v),
-  error: e => console.log('❌', e.message)
+  next: v => console.log(v),
+  error: e => console.log(e.message)
 });
 
 // timeout
@@ -573,7 +573,7 @@ of('slow response').pipe(
   timeout(300),
   catchError(err =>
     err.name === 'TimeoutError'
-      ? of('⏱️ fallback data')
+      ? of('fallback data')
       : throwError(() => err)
   )
 ).subscribe(v => console.log(v));`,
@@ -672,7 +672,7 @@ function rxjsTryOp(name){
 function rxjsCopyCode(btn){
   const code=btn.nextElementSibling.textContent;
   copyText(code);
-  const old=btn.textContent;btn.textContent='✓ copied';setTimeout(()=>btn.textContent=old,1500);
+  const old=btn.innerHTML;btn.innerHTML=ic('check')+' copied';setTimeout(()=>btn.innerHTML=old,1500);
 }
 
 function rxjsJumpTo(name){
@@ -712,7 +712,7 @@ function rxjsSwitchView(v){
   pg.style.display=v==='pg'?'block':'none';
   tabRef.classList.toggle('rxjs-view-tab-active',v==='ref');
   tabPg.classList.toggle('rxjs-view-tab-active',v==='pg');
-  if(clearBtn)clearBtn.textContent=v==='pg'?'✖ ล้าง output':'✖ ล้าง';
+  if(clearBtn)clearBtn.innerHTML=ic('x')+(v==='pg'?' ล้าง output':' ล้าง');
   if(v==='pg'&&rxjsPgEditor)setTimeout(()=>{rxjsPgEditor.refresh();rxjsPgEditor.focus();},0);
 }
 
@@ -759,7 +759,7 @@ interval(300).pipe(
   })
 ).subscribe({
   next: v => console.log(v),
-  complete: () => console.log('✅ complete!')
+  complete: () => console.log('complete!')
 });`,
 
 'scan':`// scan — running total (เหมือน reduce แต่ emit ทุกรอบ)
@@ -775,13 +775,13 @@ of('a', 'an', 'ang', 'angu', 'angul').pipe(
     // เพิ่ม delay เพื่อให้เห็นว่า switchMap จะ cancel ของเก่า
     timer(i * 80).pipe(
       switchMap(() => {
-        console.log('🔍 search:', term);
+        console.log('search:', term);
         return of(\`results for "\${term}": [\${term}1, \${term}2]\`);
       })
     )
   ),
   take(3) // รับแค่ 3 ตัวแรกที่ผ่าน
-).subscribe(r => console.log('📦', r));`,
+).subscribe(r => console.log(r));`,
 
 'combineLatest':`// combineLatest — emit ทุกครั้งที่ stream ใดเปลี่ยน
 const price$ = of(100, 200, 350);
@@ -801,10 +801,10 @@ forkJoin({
   posts: of([{ title: 'RxJS เบื้องต้น' }, { title: 'Angular Tips' }]).pipe(delay(150)),
   tags: of(['rxjs', 'angular', 'typescript']).pipe(delay(80))
 }).subscribe(({ user, posts, tags }) => {
-  console.log('👤 user:', user.name);
-  console.log('📝 posts:', posts.length + ' รายการ');
-  console.log('🏷️ tags:', tags.join(', '));
-  console.log('✅ โหลดพร้อมกันทั้ง 3 APIs!');
+  console.log('user:', user.name);
+  console.log('posts:', posts.length + ' รายการ');
+  console.log('tags:', tags.join(', '));
+  console.log('โหลดพร้อมกันทั้ง 3 APIs!');
 });`,
 
 'BehaviorSubject':`// BehaviorSubject — state management
@@ -829,20 +829,20 @@ console.log('ค่าปัจจุบัน:', count$.getValue());`,
 throwError(() => new Error('Network timeout')).pipe(
   tap(() => console.log('ถ้าสำเร็จจะเข้าบรรทัดนี้')),
   catchError(err => {
-    console.log('❌ Error:', err.message);
+    console.log('Error:', err.message);
     return of({ data: 'cached fallback', fromCache: true });
   }),
-  finalize(() => console.log('🏁 finalize — ทำงานเสมอ ทั้ง success และ error'))
-).subscribe(v => console.log('✅ result:', JSON.stringify(v)));`,
+  finalize(() => console.log('finalize — ทำงานเสมอ ทั้ง success และ error'))
+).subscribe(v => console.log('result:', JSON.stringify(v)));`,
 
 'tap':`// tap — side effects โดยไม่เปลี่ยนค่าใน stream (debug-friendly)
 from([1, 2, 3, 4, 5]).pipe(
-  tap(v => console.log('📥 before filter:', v)),
+  tap(v => console.log('before filter:', v)),
   filter(v => v % 2 === 0),
-  tap(v => console.log('✅ passed filter:', v)),
+  tap(v => console.log('passed filter:', v)),
   map(v => v * 10),
-  tap(v => console.log('🔄 after map:', v))
-).subscribe(v => console.log('📤 subscribe got:', v));`,
+  tap(v => console.log('after map:', v))
+).subscribe(v => console.log('subscribe got:', v));`,
 
 'debounceTime':`// debounceTime — จำลอง search input (รอหยุด emit 200ms ก่อน)
 // emit ถี่ๆ แต่ debounce จะปล่อยแค่ค่าสุดท้ายหลังหยุด
@@ -851,9 +851,9 @@ const keystrokes$ = from(['a','ab','abc','abcd','abcde']).pipe(
 );
 
 keystrokes$.pipe(
-  tap(v => console.log('⌨️ keystroke:', v)),
+  tap(v => console.log('keystroke:', v)),
   debounceTime(150),
-).subscribe(v => console.log('🔍 search API called with:', v));`,
+).subscribe(v => console.log('search API called with:', v));`,
 
 'withLatestFrom':`// withLatestFrom — ดึงค่าล่าสุดจาก stream อื่นตอน source emit
 const user$ = new BehaviorSubject({ name: 'สมชาย', role: 'admin' });
@@ -994,7 +994,7 @@ function rxjsRunCode(){
 
   // auto-stop safety after 15 seconds
   rxjsPgStopHandle=setTimeout(()=>{
-    rxjsPgAppendLog(['⏱️ หยุดอัตโนมัติหลัง 15 วินาที'],'warn');
+    rxjsPgAppendLog(['หยุดอัตโนมัติหลัง 15 วินาที'],'warn');
     rxjsStopCode();
   },15000);
 
@@ -1032,7 +1032,7 @@ function rxjsRunCode(){
     // if synchronous ops, mark done after a tick
     setTimeout(()=>{
       if(rxjsPgActive&&rxjsPgLogCount>0){
-        rxjsPgSetStatus('✅ สำเร็จ ('+rxjsPgLogCount+' logs)',false);
+        rxjsPgSetStatus('สำเร็จ ('+rxjsPgLogCount+' logs)',false);
         rxjsPgActive=false;
         clearTimeout(rxjsPgStopHandle);
       }else if(rxjsPgActive){
@@ -1043,15 +1043,15 @@ function rxjsRunCode(){
   }catch(e){
     rxjsPgActive=false;
     clearTimeout(rxjsPgStopHandle);
-    rxjsPgAppendLog(['❌ '+e.message],'error');
-    rxjsPgSetStatus('❌ Error',false);
+    rxjsPgAppendLog([e.message],'error');
+    rxjsPgSetStatus('Error',false);
   }
 }
 
 function rxjsStopCode(){
   rxjsPgActive=false;
   clearTimeout(rxjsPgStopHandle);
-  rxjsPgSetStatus('⏹ หยุดแล้ว',false);
+  rxjsPgSetStatus('หยุดแล้ว',false);
 }
 
 function rxjsClearOutput(){
@@ -1059,7 +1059,7 @@ function rxjsClearOutput(){
   const out=document.getElementById('rxjs-pg-output');
   if(out){out.innerHTML='<div class="rxjs-pg-empty">กด ▶ Run เพื่อรันโค้ด</div>';}
   rxjsPgLogCount=0;
-  rxjsPgSetStatus('⏸ พร้อม',false);
+  rxjsPgSetStatus('พร้อม',false);
   document.querySelectorAll('.rxjs-pg-preset-btn').forEach(b=>b.classList.remove('rxjs-pg-preset-active'));
 }
 
