@@ -334,6 +334,7 @@ async function applyShareLink(){
   const root=document.getElementById(s.tab);
   if(!root||!root.classList.contains('tab-content'))return;
   openTab(null,s.tab); // TAB_INIT builds the tab's toggles, search boxes and explorers first
+  await whenTab(s.tab);
   const q=sel=>root.querySelector(sel);
   Object.entries(s.st.t).forEach(([id,i])=>{const b=root.querySelectorAll(`#${CSS.escape(id)} button`)[i];if(b&&!b.classList.contains('active'))b.click();});
   Object.entries(s.st.c).forEach(([id,v])=>{const el=q('#'+CSS.escape(id));if(el&&el.type==='checkbox'&&el.checked!==v){el.checked=v;el.dispatchEvent(new Event('change',{bubbles:true}));}});

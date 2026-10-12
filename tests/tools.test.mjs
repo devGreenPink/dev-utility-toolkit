@@ -6,8 +6,8 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, debounced: f => f });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'translate']) {
+const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams });
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -256,23 +256,6 @@ t('PromptPay QR: fields, phone number, amount and CRC', () => {
   assert.equal(run(`emvInfo(${JSON.stringify(tampered)}).crcOk`), false);
   assert.equal(run(`emvInfo('https://shop.example.com')`), null);
   assert.equal(run(`emvParse('0002ABC')`), null);
-});
-// ── TRANSLATE ──
-t('translate: script detection', () => {
-  const d = s => run(`trDetect(${JSON.stringify(s)})`);
-  assert.equal(d('สวัสดีครับ'), 'th');
-  assert.equal(d('Hello world'), 'en');
-  assert.equal(d('こんにちは世界'), 'ja');
-  assert.equal(d('你好世界'), 'zh');
-  assert.equal(d('안녕하세요'), 'ko');
-  assert.equal(d('Xin chào thế giới'), 'vi');
-});
-t('translate: chunks stay under the byte limit and join back to the text', () => {
-  const text = 'ประโยคแรกยาวพอสมควร. ' + 'ภาษาไทยไม่มีช่องว่างระหว่างคำเลย'.repeat(30) + '\n\nSecond paragraph. Short one! ' + 'word '.repeat(200);
-  const chunks = run(`trChunks(${JSON.stringify(text)}, 120)`);
-  assert.equal(chunks.join(''), text);
-  assert.ok(chunks.every(c => new TextEncoder().encode(c).length <= 120), 'a chunk is too long');
-  assert.ok(chunks.length > 5);
 });
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

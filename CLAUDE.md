@@ -10,17 +10,26 @@ Live: https://devgreenpink.github.io/dev-utility-toolkit/
 
 ## Running Locally
 
-Open `index.html` directly in a browser, or serve it with VS Code Live Server. No build or install step needed.
+Serve the folder over HTTP (VS Code Live Server, `python -m http.server`, or the `static-server` entry in
+`.claude/launch.json`). No build or install step needed. Opening `index.html` straight from disk works for most
+tools, but the five tabs fetched from `assets/tabs/` cannot load over `file://` and say so.
 The `static-server` entry in `.claude/launch.json` is `http.server` plus `Cache-Control: no-cache`: plain
 `python -m http.server` sends no cache header, so Chrome guesses a lifetime and keeps serving the old JS after
 an edit whenever the page is not going through the service worker.
 
 `node tests/tools.test.mjs` self-checks the pure converters and parsers (BAHTTEXT / Thai ID in
 `thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`, smart paste / share link / file drop in
-`home.js`, curl / HAR / XML parsing, EMVCo QR parsing in `qr.js`, chunking in `translate.js`, and the
+`home.js`, curl / HAR / XML parsing, EMVCo QR parsing in `qr.js`, and the
 explorer data in `k8s-ref.js` / `jenkins.js`) by loading the tool files into one
 `vm` context, the same way the page loads them. Keep new parsing logic in pure functions so it can be
 covered there.
+
+`tests/e2e/run.mjs` is the browser suite (Playwright + axe-core, the only npm dependencies, scoped to `tests/e2e/`):
+every tab without errors, axe WCAG 2.2 AA on every tab in light and dark, no sideways scroll at 375 px, and the
+features that only exist in a page (smart paste, remembered inputs, share link, file drop, send to / history,
+Ctrl+K paste, QR, offline). It serves the repo itself on a free port.
+`cd tests/e2e && npm ci && npx playwright install chromium && node run.mjs`. `.github/workflows/test.yml` runs
+both suites on every push and pull request (deploy in `static.yml` is separate and does not wait for it).
 
 ## Deployment
 
@@ -61,8 +70,6 @@ The app is a single HTML page with a few companion files:
     a HAR file (summary of failed and slow requests) and XML (converted to JSON).
   - `tools/qr.js` — QR reader (BarcodeDetector, else jsQR from jsDelivr via `loadLib('jsqr')`); `emvInfo`
     splits PromptPay / Thai QR payment payloads and checks their CRC (`crc16`).
-  - `tools/translate.js` — Chrome's on-device Translator API first; MyMemory's free API only when the user
-    presses แปล, with a notice that the text leaves the browser (the one place the app sends user data out).
   - `init.js` — the `DOMContentLoaded` init; loads last.
   - A file's top-level code may only *call* functions from files loaded before it (calls inside functions/handlers are fine — they run after every file has loaded). A new file goes in both `index.html` and `sw.js` `STATIC_ASSETS`.
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
@@ -96,9 +103,12 @@ Tool layout (every converter follows it):
 
 Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`, not in the
 `DOMContentLoaded` init — it runs once on the tab's first open. The heaviest tabs (MQ, Storage, RxJS,
-ESAN AI AGENT, Cron, Angular) also ship their markup inside `<template class="tab-lazy">`: `openTab` turns
-it into DOM on first open, then runs `TAB_INIT`, `initRememberedInputs(tab)` and `initHistory(tab)`. Code for
-such a tab must not touch its elements before that (no load-time `getElementById` on them). All `<script>` tags are `defer`
+ESAN AI AGENT, Angular) are not in `index.html` at all: `<div id="x-tab" class="tab-content" data-src="assets/tabs/x-tab.html">`
+is fetched on first open (`loadTabHtml`), and `whenTab(id)` resolves once it is in the page. Cron ships inside
+`<template class="tab-lazy">` instead, because smart paste fills its input synchronously. Either way `tabReady`
+then runs `TAB_INIT`, `initRememberedInputs(tab)` and `initHistory(tab)`. Code for such a tab must not touch its
+elements before that (no load-time `getElementById` on them), and a fragment in `assets/tabs/` goes in `sw.js`
+`STATIC_ASSETS` too. All `<script>` tags are `defer`
 (order preserved), so app code can rely on the CDN globals being loaded.
 
 ### State persistence
@@ -120,7 +130,7 @@ such a tab must not touch its elements before that (no load-time `getElementById
   `label[for]`), saved on `change` and by smart paste / drop; shown by the "ประวัติ" field action
 - `esan-devtools-remember` — `0` when the Settings switch "จำข้อมูลที่กรอกไว้" is off (unset = on)
 - `esan-devtools-in:<key>` — a tool option remembered with the inputs via `rememberOpt` / `recallOpt`
-  (`py-dir`, `b64-mode`, `url-dir`, `tr-from`, `tr-to`, `tr-engine`), so a restored input is converted the same way
+  (`py-dir`, `b64-mode`, `url-dir`), so a restored input is converted the same way
 - `esan-devtools-in:<element id>` — last value of every `textarea`/text/number `input` with an id inside a
   `.tab-content`, restored on load by `initRememberedInputs()` (core.js), which replays the field's `input`
   event so outputs come back too. Values are saved on input and again on `pagehide`, which catches clear
@@ -152,14 +162,15 @@ these in sync manually:
 The cdnjs libraries are not in `<head>`: `loadLib(name)` in `core.js` (`LIBS` lists the files) fetches
 them on a tool's first use, so a first visit downloads only the app. `highlightCode(sel)` loads
 highlight.js by itself; anything else waits on `loadLib(...)` (in `TAB_INIT` or before first use) and
-falls back to plain text if the CDN fails.
+falls back to plain text if the CDN fails. Libraries are loaded with `crossorigin`, and the service worker keeps
+every CDN response in `esan-devtools-cdn` (cache first, `ignoreVary` — the URLs pin versions); once the page is
+idle `precacheLibs()` asks it to fetch all of `LIBS`, so every tool works offline after one online visit.
 
 - **highlight.js 11.9.0** (+ typescript/java/properties/sql/nginx/dockerfile/groovy) — code blocks
 - **CodeMirror 5.65.16** — RxJS Playground editor (loaded when the RxJS tab opens)
 - **RxJS 7.8.1** — RxJS Playground runtime
 - **jsdiff 5.1.0** (`diff.min.js` from cdnjs) — Text/JSON diff
 - **jsQR 1.4.0** (jsDelivr; not on cdnjs — `LIBS` takes a full URL) — QR reader when the browser has no BarcodeDetector
-- **MyMemory API** (`api.mymemory.translated.net`, free, no key) — translate fallback, on button press only
 - **Google Fonts** — IBM Plex Sans Thai, JetBrains Mono
 - **Web Crypto API** — Hash generation (`crypto.subtle`), UUID v4 (`crypto.randomUUID`)
 - **Canvas API** — Color Picker SV square, hue/alpha sliders, image color picker loupe
@@ -170,7 +181,8 @@ falls back to plain text if the CDN fails.
 
 - `Ctrl+Enter` — triggers the primary action of the active tool
 - `Ctrl+K` / `⌘K` — opens the command palette (tools from the sidebar + `PALETTE_CMDS` in `core.js`); the strip
-  under the list (`renderPalettePreview`) describes the selected tool before it is opened
+  under the list (`renderPalettePreview`) describes the selected tool before it is opened. A multi-line paste
+  into it is kept whole in `_cmdk.full` (an `<input>` would drop the newlines) and offered to smart paste
 - `Esc` — closes the palette, then any open popover, then the mobile sidebar
 
 ### Themes

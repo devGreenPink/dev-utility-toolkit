@@ -1,10 +1,9 @@
 // ── BROWSER STORAGE ──
 function storSwitchView(btn, viewId) {
   document.querySelectorAll('#storage-tab .stor-view').forEach(v => v.classList.add('stor-hidden'));
-  document.querySelectorAll('#storage-tab .stor-nav-btn').forEach(b => b.classList.remove('stor-nav-active'));
   const view = document.getElementById(viewId);
   if (view) view.classList.remove('stor-hidden');
-  if (btn) btn.classList.add('stor-nav-active');
+  setSegmented('stor-view', viewId);
   storInitHljs();
 }
 

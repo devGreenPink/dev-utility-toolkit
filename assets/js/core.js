@@ -35,7 +35,6 @@ const TAB_META = {
   'k8sref-tab': { title: 'Docker & K8s', sub: 'ไฟล์ตัวอย่างอ่านทีละบรรทัด · mount ไฟล์ · Helm · ArgoCD · แก้ปัญหา Pod' },
   'gateway-tab': { title: 'Request Path', sub: 'Browser → Load Balancer → Kong → Service → Pod · nginx' },
   'qr-tab': { title: 'QR Code Reader', sub: 'อ่าน QR จากรูป คลิปบอร์ด หรือกล้อง · แยกฟิลด์ PromptPay / Thai QR พร้อมตรวจ CRC' },
-  'translate-tab': { title: 'แปลภาษา', sub: 'แปลในเครื่องด้วย Chrome หรือ MyMemory (ฟรี) · ไทย อังกฤษ ญี่ปุ่น จีน เกาหลี' },
   'jenkins-tab': { title: 'Jenkins CI/CD', sub: 'Jenkinsfile ทีละบรรทัด · shared library · CD แบบ GitOps · แก้ปัญหา pipeline' },
   'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
   'home-tab': { title: 'หน้าแรก', sub: 'วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด' },
@@ -458,7 +457,6 @@ const TAB_INIT={
   'linux-tab':()=>renderCmdList(LINUX_CMDS,'linux-list',''),
   'git-tab':()=>renderCmdList(GIT_CMDS,'git-list',''),
   'lov-tab':()=>lovInit(),
-  'translate-tab':()=>trInit(),
   'sqlref-tab':()=>refInit('sqlref'),
   'db2err-tab':()=>refInit('db2err'),
   'javaex-tab':()=>refInit('javaex'),
@@ -482,15 +480,16 @@ function openTab(evt,id){
   // heavy tabs ship as <template>: they become DOM on first open, which keeps the start-up DOM small
   const lazy=tabEl.querySelector(':scope > template.tab-lazy');
   if(lazy)tabEl.replaceChildren(lazy.content.cloneNode(true));
+  // the biggest ones are not even in index.html: assets/tabs/<id>.html is fetched on first open
+  const remote=tabEl.dataset.src&&!_tabLoads[id];
+  if(remote)_tabLoads[id]=loadTabHtml(tabEl,id);
   // mark ทุก nav item ที่ชี้ tab นี้ (ตัวใน section ปกติ + ตัวใน รายการโปรด)
   document.querySelectorAll(`.nav-item[data-tab="${id}"]`).forEach(b=>{b.classList.add('active');b.setAttribute('aria-current','page');});
   activeTabId=id;
   // opening a tool (palette, favorites) inside a collapsed group expands that group
   const grp=srcNavItem(id)?.closest('.nav-group.collapsed');
   if(grp)toggleNavGroup(grp.querySelector('.nav-section-label'));
-  const init=TAB_INIT[id];
-  if(init){delete TAB_INIT[id];init();}
-  if(lazy){initRememberedInputs(tabEl);initHistory(tabEl);} // its fields did not exist when the page set up the others
+  if(!remote&&!_tabLoads[id])tabReady(tabEl,id,lazy); // a fetched tab does this once its markup has arrived
   const meta=TAB_META[id]||{title:'',sub:''};
   document.getElementById('topbar-title').textContent=meta.title;
   document.getElementById('topbar-sub').textContent=meta.sub;
@@ -498,6 +497,29 @@ function openTab(evt,id){
   if(id==='home-tab')homeRender();else pushRecent(id);
   closeSidebar();
 }
+const _tabLoads={};
+// per-tab setup, once its markup is in the page: TAB_INIT, then the remembered inputs and history of its fields
+function tabReady(tabEl,id,fresh){
+  const init=TAB_INIT[id];
+  if(init){delete TAB_INIT[id];init();}
+  if(fresh){initRememberedInputs(tabEl);initHistory(tabEl);} // its fields did not exist when the page set up the others
+}
+async function loadTabHtml(tabEl,id){
+  tabEl.innerHTML=`<div class="tab-loading" role="status">${ic('hourglass')} กำลังโหลด</div>`;
+  try{
+    const res=await fetch(tabEl.dataset.src);
+    if(!res.ok)throw new Error(res.status);
+    tabEl.innerHTML=await res.text(); // our own same-origin markup
+    tabReady(tabEl,id,true);
+  }catch(e){
+    delete _tabLoads[id]; // the next open tries again
+    tabEl.innerHTML=`<div class="card tab-fail" role="alert"><div class="card-title">${ic('triangle-alert')} โหลดหน้านี้ไม่ได้</div>`
+      +`<p>ถ้าเปิด index.html ตรงจากไฟล์ในเครื่อง ให้เปิดผ่าน web server แทน เช่น <code>python -m http.server</code> หรือ VS Code Live Server · ถ้าเปิดผ่านเว็บอยู่แล้ว ตรวจอินเทอร์เน็ตแล้วลองอีกครั้ง</p>`
+      +`<button type="button" class="btn btn-ghost" onclick="openTab(null,'${id}')">${ic('refresh-cw')} ลองอีกครั้ง</button></div>`;
+  }
+}
+// resolves once a tab's markup is in the page (right away for tabs that ship inside index.html)
+function whenTab(id){return _tabLoads[id]||Promise.resolve();}
 function restoreTab(){
   let saved='home-tab';
   try{saved=localStorage.getItem(STORAGE_TAB)||'home-tab';}catch(e){}
@@ -529,7 +551,6 @@ document.addEventListener('keydown',e=>{
       case'json2type-tab':j2tConvert();break;
       case'props-tab':pyConvert();break;
       case'home-tab':spOpenFirst();break;
-      case'translate-tab':trTranslate(true);break;
     }
   }
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'&&activeTabId==='lov-tab'&&_lovEdit){
@@ -558,7 +579,7 @@ const PALETTE_CMDS=[ // [label, sub, icon, run]
   ['ล้างข้อมูลที่จำไว้','ข้อความที่กรอกไว้และเครื่องมือล่าสุด','trash',()=>clearRemembered()],
   ['แชร์ลิงก์ของเครื่องมือนี้','คัดลอกลิงก์พร้อมข้อมูลที่กรอก (ไม่รวม token / secret)','link',()=>shareLink()],
 ];
-const _cmdk={items:[],sel:0,ret:null};
+const _cmdk={items:[],sel:0,ret:null,full:null}; // full: a multi-line paste (the input shows one line of it)
 function paletteItems(q){
   const words=q.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const tools=Array.from(document.querySelectorAll('#sidebar-nav .nav-group .nav-item')).map(el=>{
@@ -568,11 +589,17 @@ function paletteItems(q){
   });
   const cmds=PALETTE_CMDS.map(([label,sub,icon,run])=>({group:'คำสั่ง',label,sub,desc:sub,icon:ic(icon),hay:`${label} ${sub}`.toLowerCase(),run}));
   // a pasted value (JWT, timestamp, SQLCODE...) offers the tools that understand it
-  const text=q.trim();
+  const text=(_cmdk.full||q).trim();
   const smart=spDetect(text).map(d=>({group:'เปิดข้อความนี้ใน',label:d.tool,sub:d.label,desc:`ข้อความที่พิมพ์ดูเหมือน${d.label} จะเปิดใน ${d.tool} พร้อมกรอกให้`,icon:ic('sparkles'),run:()=>spOpen(d.kind,text)}));
   // label hits rank above subtitle-only hits; sort is stable, so nav order holds within a rank
   const rank=x=>{const l=x.label.toLowerCase();return words.every(w=>l.includes(w))?(l.startsWith(words[0]||'')?0:1):2;};
   const match=list=>list.filter(x=>words.every(w=>x.hay.includes(w))).sort((a,b)=>rank(a)-rank(b));
+  if(_cmdk.full){
+    // a pasted block is content, not a search: offer what understands it, or the home page for every option
+    const full=_cmdk.full;
+    return smart.concat({group:'คำสั่ง',label:'วางในหน้าแรก',sub:'ดูตัวเลือกทั้งหมดของข้อความนี้',desc:'เปิดหน้าแรกพร้อมข้อความที่วาง',icon:ic('house'),
+      run:()=>{openTab(null,'home-tab');const el=document.getElementById('sp-input');el.value=full;spRender();el.focus();}});
+  }
   return match(tools).concat(smart,match(cmds));
 }
 function renderPalette(){
@@ -619,7 +646,7 @@ function openPalette(){
   _cmdk.ret=document.activeElement;_cmdk.sel=0;
   document.querySelectorAll('.popover.open').forEach(x=>setPopover(x,false));
   const input=document.getElementById('cmdk-input');
-  input.value='';
+  input.value='';_cmdk.full=null;
   p.hidden=false;
   renderPalette();
   input.focus();
@@ -634,7 +661,16 @@ function runPalette(i){const x=_cmdk.items[i];if(!x)return;closePalette();x.run(
 (function(){
   const input=document.getElementById('cmdk-input'),list=document.getElementById('cmdk-list');
   if(!input||!list)return;
-  input.addEventListener('input',()=>{_cmdk.sel=0;renderPalette();});
+  input.addEventListener('input',()=>{_cmdk.full=null;_cmdk.sel=0;renderPalette();});
+  // an <input> drops newlines: keep a multi-line (or long) paste whole and show one line of it
+  input.addEventListener('paste',e=>{
+    const t=(e.clipboardData||window.clipboardData).getData('text');
+    if(!/\n/.test(t.trim())&&t.length<=200)return;
+    e.preventDefault();
+    _cmdk.full=t;
+    input.value=t.replace(/\s+/g,' ').trim().slice(0,120);
+    _cmdk.sel=0;renderPalette();
+  });
   input.addEventListener('keydown',e=>{
     if(e.key==='ArrowDown'){e.preventDefault();movePaletteSel(1);}
     else if(e.key==='ArrowUp'){e.preventDefault();movePaletteSel(-1);}
@@ -751,12 +787,18 @@ function loadAsset(path){
   return new Promise(done=>{
     const css=path.endsWith('.css'),el=document.createElement(css?'link':'script');
     el.onload=el.onerror=()=>done(); // a failed load leaves the tool on its plain-text fallback
-    const url=/^https:/.test(path)?path:CDN+path;
+    const url=libUrl(path);
+    el.crossOrigin='anonymous'; // a CORS response is what the service worker keeps for offline use
     if(!css){el.src=url;document.head.appendChild(el);return;}
     el.rel='stylesheet';el.href=url;
     // before style.css, so the app's own overrides still win
     document.head.insertBefore(el,document.querySelector('link[href$="style.css"]'));
   });
+}
+const libUrl=path=>/^https:/.test(path)?path:CDN+path;
+// once the page is idle, the service worker fetches every library so all tools work offline
+function precacheLibs(){
+  navigator.serviceWorker?.ready.then(reg=>reg.active&&reg.active.postMessage({type:'precache-cdn',urls:Object.values(LIBS).flat().map(libUrl)})).catch(()=>{});
 }
 function loadLib(name){
   const files=LIBS[name];

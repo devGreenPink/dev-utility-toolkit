@@ -1,0 +1,594 @@
+<!-- storage-tab: loaded into #storage-tab on first open (openTab in core.js) -->
+
+          <div class="section-header">
+            <div class="json-view-toggle stor-views" id="stor-view" role="group" aria-label="ชนิดของ storage">
+              <button type="button" class="json-view-btn active" data-v="stor-overview" aria-pressed="true" onclick="storSwitchView(this,'stor-overview')"><svg class="i" aria-hidden="true"><use href="#i-house"/></svg> Overview</button>
+              <button type="button" class="json-view-btn" data-v="stor-local" aria-pressed="false" onclick="storSwitchView(this,'stor-local')">localStorage</button>
+              <button type="button" class="json-view-btn" data-v="stor-session" aria-pressed="false" onclick="storSwitchView(this,'stor-session')">sessionStorage</button>
+              <button type="button" class="json-view-btn" data-v="stor-idb" aria-pressed="false" onclick="storSwitchView(this,'stor-idb')">IndexedDB</button>
+              <button type="button" class="json-view-btn" data-v="stor-cookie" aria-pressed="false" onclick="storSwitchView(this,'stor-cookie')">Cookies</button>
+              <button type="button" class="json-view-btn" data-v="stor-cache" aria-pressed="false" onclick="storSwitchView(this,'stor-cache')">Cache API</button>
+              <button type="button" class="json-view-btn" data-v="stor-security" aria-pressed="false" onclick="storSwitchView(this,'stor-security')"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Security</button>
+            </div>
+          </div>
+          <!-- ─── OVERVIEW ─── -->
+          <div id="stor-overview" class="stor-view">
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> Storage Lifetime: ข้อมูลอยู่ได้นานแค่ไหน?</div>
+              <div class="stor-section-sub">กด "ปิด Tab" หรือ "ล้างข้อมูล" ดูว่า storage แต่ละชนิดตอบสนองอย่างไร</div>
+              <div class="stor-lifetime">
+                <div class="stor-lifetime-title"><span class="dot dot-green" aria-hidden="true"></span> สถานะข้อมูล</div>
+
+                <div class="stor-bar-row" id="stor-bar-local">
+                  <div class="stor-bar-name">localStorage</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-blue)"></div></div>
+                  <div class="stor-bar-label">ถาวร</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-session">
+                  <div class="stor-bar-name">sessionStorage</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-orange)"></div></div>
+                  <div class="stor-bar-label">อยู่ใน tab นี้</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-idb">
+                  <div class="stor-bar-name">IndexedDB</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-purple)"></div></div>
+                  <div class="stor-bar-label">ถาวร</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-cookie">
+                  <div class="stor-bar-name">Cookie (TTL)</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-green)"></div></div>
+                  <div class="stor-bar-label">จนหมด TTL</div>
+                </div>
+                <div class="stor-bar-row" id="stor-bar-cache">
+                  <div class="stor-bar-name">Cache API</div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-pink)"></div></div>
+                  <div class="stor-bar-label">ถาวร</div>
+                </div>
+
+                <div class="stor-lifetime-btns">
+                  <button class="stor-lt-btn" onclick="storLifetimeAnim('close-tab')"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> ปิด Tab</button>
+                  <button class="stor-lt-btn" onclick="storLifetimeAnim('clear')"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg> ล้างข้อมูล Browser</button>
+                  <button class="stor-lt-btn" onclick="storLifetimeAnim('reset')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> เปรียบเทียบทุกชนิด</div>
+              <div class="stor-section-sub">คลิกแถวเพื่อไปดูรายละเอียด</div>
+              <div style="overflow-x:auto">
+                <table class="stor-cmp-table">
+                  <thead><tr>
+                    <th>Storage</th><th>ขนาด</th><th>ประเภทข้อมูล</th><th>Lifetime</th><th>Async</th><th>ค้นหาได้</th><th>เหมาะกับ</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr onclick="document.querySelector('[onclick*=stor-local]').click()">
+                      <td><span class="stor-cmp-name" style="color:var(--c-blue)">localStorage</span></td>
+                      <td>5-10 MB</td><td>string</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
+                      <td>settings, theme, preferences</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-session]').click()">
+                      <td><span class="stor-cmp-name" style="color:var(--c-orange)">sessionStorage</span></td>
+                      <td>5 MB</td><td>string</td><td>ปิด tab = หาย</td>
+                      <td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
+                      <td>wizard, multi-step form</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-idb]').click()">
+                      <td><span class="stor-cmp-name" style="color:var(--c-purple)">IndexedDB</span></td>
+                      <td>GB+</td><td>Object, Blob, File…</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td>
+                      <td>offline data, draft, profile cache</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-cookie]').click()">
+                      <td><span class="stor-cmp-name" style="color:var(--c-green)">Cookie</span></td>
+                      <td>4 KB</td><td>string</td><td>มี expires</td>
+                      <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
+                      <td>auth token (httpOnly)</td>
+                    </tr>
+                    <tr onclick="document.querySelector('[onclick*=stor-cache]').click()">
+                      <td><span class="stor-cmp-name" style="color:var(--c-pink)">Cache API</span></td>
+                      <td>GB+</td><td>HTTP Request/Response</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
+                      <td>PWA offline, static assets</td>
+                    </tr>
+                    <tr>
+                      <td><span class="stor-cmp-name" style="color:var(--c-yellow)">OPFS</span></td>
+                      <td>GB+</td><td>File (binary)</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
+                      <td>ไฟล์ใหญ่, SQLite-in-browser</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div><!-- /stor-overview -->
+
+          <!-- ─── localStorage ─── -->
+          <div id="stor-local" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> localStorage คืออะไร?</div>
+              <div class="stor-section-sub">เก็บ key-value แบบ string: ง่าย synchronous ไม่หายแม้ปิด browser</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">5-10 MB</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string เท่านั้น</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ถาวร</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Blocking</div><div class="stor-info-val">ใช่ (sync)</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg> ลองใช้จริงได้เลย</div>
+              <div class="stor-section-sub">ข้อมูลที่บันทึกจะอยู่ใน localStorage จริงๆ (ใช้ prefix <code>_sp_</code>)</div>
+              <div class="stor-playground">
+                <div class="stor-play-inputs">
+                  <input id="stor-play-key" placeholder="key เช่น username" />
+                  <input id="stor-play-val" placeholder="value เช่น สมชาย" />
+                </div>
+                <div class="stor-play-btns">
+                  <button class="stor-play-btn stor-play-primary" onclick="storLocalStore()"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg> setItem</button>
+                  <button class="stor-play-btn" onclick="storLocalGet()"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> getItem</button>
+                  <button class="stor-play-btn" onclick="storLocalDelete()"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg> removeItem</button>
+                  <button class="stor-play-btn stor-play-danger" onclick="storLocalClearAll()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> clear</button>
+                </div>
+                <div id="stor-play-out" class="stor-play-out">กด getItem เพื่อดูค่า…</div>
+                <div id="stor-play-list" class="stor-play-list"></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Example</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                <pre class="stor-code">// ── เก็บข้อมูล ──
+localStorage.setItem('theme', 'dark');
+localStorage.setItem('lang', 'th');
+
+// ── อ่านข้อมูล ──
+const theme = localStorage.getItem('theme'); // "dark"
+const missing = localStorage.getItem('xxx'); // null
+
+// ── เก็บ Object (ต้อง JSON.stringify) ──
+const user = { id: 1, name: 'สมชาย' };
+localStorage.setItem('user', JSON.stringify(user));
+const loaded = JSON.parse(localStorage.getItem('user'));
+
+// ── ลบ ──
+localStorage.removeItem('theme');
+localStorage.clear(); // ล้างทั้งหมด
+
+// ── วนดูทุก key ──
+for (let i = 0; i &lt; localStorage.length; i++) {
+  const key = localStorage.key(i);
+  console.log(key, localStorage.getItem(key));
+}</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">เก็บ theme, language, UI preferences: ข้อมูลเล็กที่ user ตั้งค่าไว้</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Last active tab, sidebar state, form draft เล็กๆ</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">เก็บ auth token หรือ JWT: XSS ขโมยได้ทันที ใช้ httpOnly cookie แทน</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลใหญ่กว่า 5 MB: จะ throw QuotaExceededError</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">ข้อมูลที่ต้องการค้นหา/filter: ใช้ IndexedDB แทน</span></div>
+              </div>
+              <div class="stor-use-list">
+                <span class="stor-use-pill">Theme switcher</span>
+                <span class="stor-use-pill">Language preference</span>
+                <span class="stor-use-pill">Last active tab</span>
+                <span class="stor-use-pill">Sidebar collapse state</span>
+                <span class="stor-use-pill">Dev-tools นี้ใช้อยู่! <svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg></span>
+              </div>
+            </div>
+
+          </div><!-- /stor-local -->
+
+          <!-- ─── sessionStorage ─── -->
+          <div id="stor-session" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-window"/></svg> sessionStorage คืออะไร?</div>
+              <div class="stor-section-sub">เหมือน localStorage แต่ข้อมูลหายเมื่อปิด tab: แต่ละ tab มี storage แยกกัน</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">5 MB</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string เท่านั้น</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ปิด tab = หาย</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Tab isolation</div><div class="stor-info-val">ใช่: แยกต่อ tab</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-window"/></svg> Tab Isolation: แต่ละ tab มีข้อมูลต่างกัน</div>
+              <div class="stor-section-sub">เปิด tab ใหม่ → sessionStorage ใหม่ (ว่างเปล่า) แม้เปิด URL เดียวกัน</div>
+              <div class="stor-tabs-vis">
+                <div class="stor-tab-box">
+                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab A: Checkout Step 2</div>
+                  <div class="stor-tab-body">
+                    <div class="stor-tab-kv"><span class="stor-tab-k">checkoutStep</span><span>:</span><span class="stor-tab-v">"2"</span></div>
+                    <div class="stor-tab-kv"><span class="stor-tab-k">cartItems</span><span>:</span><span class="stor-tab-v">"[{...}]"</span></div>
+                    <div class="stor-tab-kv"><span class="stor-tab-k">shippingAddr</span><span>:</span><span class="stor-tab-v">"{...}"</span></div>
+                  </div>
+                </div>
+                <div class="stor-tab-box">
+                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab B: เพิ่งเปิดใหม่</div>
+                  <div class="stor-tab-body">
+                    <div class="stor-tab-empty">sessionStorage ว่างเปล่า</div>
+                    <div class="stor-tab-empty">(ไม่เห็นข้อมูลของ Tab A)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Example</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                <pre class="stor-code">// ── Multi-step checkout wizard ──
+
+// Step 1: บันทึก cart
+sessionStorage.setItem('checkoutStep', '1');
+sessionStorage.setItem('cartItems', JSON.stringify(items));
+
+// Step 2: บันทึก shipping address
+sessionStorage.setItem('checkoutStep', '2');
+sessionStorage.setItem('shippingAddr', JSON.stringify(addr));
+
+// Step 3: อ่านข้อมูลรวมเพื่อ submit
+const step  = sessionStorage.getItem('checkoutStep');
+const cart  = JSON.parse(sessionStorage.getItem('cartItems'));
+const addr  = JSON.parse(sessionStorage.getItem('shippingAddr'));
+
+// หลัง submit สำเร็จ ล้างข้อมูล
+sessionStorage.clear();
+
+// ── API เหมือน localStorage ทุกอย่าง ──
+sessionStorage.setItem(key, value);
+sessionStorage.getItem(key);
+sessionStorage.removeItem(key);
+sessionStorage.length;</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Multi-step form / wizard: เก็บ state ระหว่างขั้นตอน ล้างหลัง submit</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">OTP flow, checkout: ข้อมูลชั่วคราวที่ควรหายเมื่อปิด tab</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลที่ต้องอยู่ข้าม tab หรือหลังปิด browser: ใช้ localStorage แทน</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">Ctrl+D duplicate tab → sessionStorage ถูก clone ไปด้วย (ระวัง duplicate state)</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-session -->
+
+          <!-- ─── IndexedDB ─── -->
+          <div id="stor-idb" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg> IndexedDB คืออะไร?</div>
+              <div class="stor-section-sub">Database จริงๆ ใน browser: เก็บ Object ได้โดยตรง, มี index ค้นหาได้, async ทั้งหมด</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">GB+</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">ทุกอย่าง (Object, Blob, File)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ถาวร</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Async</div><div class="stor-info-val"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ไม่ block UI</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-gamepad"/></svg> Object Store: ลอง CRUD ได้เลย</div>
+              <div class="stor-section-sub">นี่คือ visual demo: เหมือนกับ IndexedDB Object Store ใน browser จริง</div>
+              <div class="stor-idb-controls">
+                <input class="stor-idb-search" placeholder="ค้นหา name หรือ role…" oninput="storIdbSearch(this.value)" />
+                <button class="stor-play-btn stor-play-primary" onclick="storIdbAdd()">+ Add Record</button>
+              </div>
+              <div class="stor-idb-wrap">
+                <table class="stor-idb-tbl">
+                  <thead><tr><th>id</th><th>name</th><th>role</th><th>cachedAt</th><th></th></tr></thead>
+                  <tbody id="stor-idb-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Dexie.js (แนะนำ)</div>
+              <div class="stor-section-sub">Dexie.js คือ wrapper บาง Promise-based ที่ทำให้ IndexedDB ง่ายมาก</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                <pre class="stor-code">import Dexie from 'dexie'; // npm install dexie
+
+// ── 1. สร้าง database + schema ──
+const db = new Dexie('myApp');
+db.version(1).stores({
+  users:    '++id, name, role, email',  // ++ = auto-increment PK
+  products: '++id, name, price, *tags', // * = multi-value index
+});
+
+// ── 2. Add ──
+await db.users.add({ name: 'สมชาย', role: 'admin', email: 'a@b.com' });
+await db.users.bulkAdd([
+  { name: 'มาลี', role: 'user', email: 'c@d.com' },
+  { name: 'วิชัย', role: 'user', email: 'e@f.com' },
+]);
+
+// ── 3. Query ──
+const all   = await db.users.toArray();
+const admins= await db.users.where('role').equals('admin').toArray();
+const found = await db.users.where('name').startsWith('ส').toArray();
+const one   = await db.users.get(1); // by primary key
+
+// ── 4. Update ──
+await db.users.update(1, { role: 'superadmin' });
+await db.users.where('role').equals('user').modify({ active: true });
+
+// ── 5. Delete ──
+await db.users.delete(1);
+await db.users.where('role').equals('guest').delete();</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Raw IndexedDB API (ไม่แนะนำ แต่รู้ไว้)</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                <pre class="stor-code">// Raw API verbose มาก - ใช้ Dexie แทนดีกว่า
+const request = indexedDB.open('myApp', 1);
+
+request.onupgradeneeded = (e) => {
+  const db = e.target.result;
+  const store = db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+  store.createIndex('role', 'role', { unique: false });
+};
+
+request.onsuccess = (e) => {
+  const db = e.target.result;
+  const tx = db.transaction('users', 'readwrite');
+  const store = tx.objectStore('users');
+  store.add({ name: 'สมชาย', role: 'admin' });
+  tx.oncomplete = () => console.log('done');
+};</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Cache API response: เก็บ product list, article, user profile ไว้ใช้ offline</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Draft / unsent form: เก็บข้อมูลที่ยังไม่ submit ค้างไว้ระหว่าง session</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">รูปภาพ / ไฟล์: เก็บ Blob ได้โดยตรง ไม่ต้อง base64 encode</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">Auth token: XSS อ่านได้ ใช้ httpOnly cookie เสมอ</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">ข้อมูลเล็กๆ เช่น theme, setting: localStorage ง่ายกว่า เหมาะกว่า</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-idb -->
+
+          <!-- ─── Cookies ─── -->
+          <div id="stor-cookie" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-cookie"/></svg> Cookies คืออะไร?</div>
+              <div class="stor-section-sub">ส่งไปกับทุก HTTP request อัตโนมัติ: เหมาะกับ auth token ที่ server ต้องอ่าน</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">4 KB ต่อ cookie</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string (key=value)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">กำหนดได้ (expires)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ส่งไป server</div><div class="stor-info-val"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> อัตโนมัติ</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> Cookie ส่งไปกับ Request อัตโนมัติ</div>
+              <div class="stor-ck-vis">
+                <!-- Node diagram -->
+                <div class="stor-ck-diagram">
+                  <div class="stor-ck-endpoint">
+                    <div class="stor-ck-ep-icon"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg></div>
+                    <div class="stor-ck-ep-label">Browser</div>
+                  </div>
+                  <div class="stor-ck-mid">
+                    <div class="stor-ck-pkt" id="stor-ck-pkt-req"><svg class="i" aria-hidden="true"><use href="#i-cookie"/></svg> Cookie: session=abc123</div>
+                    <div class="stor-ck-lane stor-ck-lane-req">
+                      <div class="stor-ck-progress" id="stor-ck-prog-req"></div>
+                    </div>
+                    <div class="stor-ck-lane-label" id="stor-ck-lbl-req">GET /api/profile</div>
+                    <div class="stor-ck-lane stor-ck-lane-res">
+                      <div class="stor-ck-progress stor-ck-progress-rev" id="stor-ck-prog-res"></div>
+                    </div>
+                    <div class="stor-ck-pkt stor-ck-pkt-res" id="stor-ck-pkt-res">Set-Cookie: session=xyz; HttpOnly; Secure</div>
+                    <div class="stor-ck-lane-label stor-ck-lane-label-res" id="stor-ck-lbl-res">200 OK</div>
+                  </div>
+                  <div class="stor-ck-endpoint">
+                    <div class="stor-ck-ep-icon"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></div>
+                    <div class="stor-ck-ep-label">Server</div>
+                  </div>
+                </div>
+                <div class="stor-ck-status" id="stor-ck-status">กด Animate เพื่อดู cookie flow</div>
+                <button class="stor-lt-btn" id="stor-ck-btn" onclick="storCookieAnimate()">▶ Animate</button>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Cookie Attributes ที่สำคัญ</div>
+              <div style="overflow-x:auto">
+                <table class="stor-cmp-table">
+                  <thead><tr><th>Attribute</th><th>ความหมาย</th><th>แนะนำ</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>HttpOnly</code></td><td>JS อ่านไม่ได้ ป้องกัน XSS</td><td><span class="stor-cmp-ok">ใช้เสมอสำหรับ auth</span></td></tr>
+                    <tr><td><code>Secure</code></td><td>ส่งผ่าน HTTPS เท่านั้น</td><td><span class="stor-cmp-ok">ใช้เสมอใน production</span></td></tr>
+                    <tr><td><code>SameSite=Strict</code></td><td>ป้องกัน CSRF attack</td><td><span class="stor-cmp-ok">แนะนำ Strict หรือ Lax</span></td></tr>
+                    <tr><td><code>expires / Max-Age</code></td><td>กำหนดอายุ cookie</td><td>ตามความต้องการ</td></tr>
+                    <tr><td><code>Path</code></td><td>จำกัด path ที่ส่ง cookie</td><td>ระบุให้ specific</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Example</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                <pre class="stor-code">// ── Server-side (Node.js / Express) - แนะนำ ──
+res.cookie('session', token, {
+  httpOnly: true,   // ← JS อ่านไม่ได้ (สำคัญมาก!)
+  secure:   true,   // ← HTTPS เท่านั้น
+  sameSite: 'Strict', // ← ป้องกัน CSRF
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 วัน
+});
+
+// ── Client-side JS (regular cookie เท่านั้น) ──
+// อ่าน
+document.cookie; // "name=Alice; lang=th"
+
+// เขียน
+document.cookie = "lang=th; max-age=86400; path=/";
+
+// ลบ (ตั้ง expire เป็นอดีต)
+document.cookie = "lang=; max-age=0; path=/";
+
+// หมายเหตุ: httpOnly cookie จาก server → JS อ่านไม่เห็นเลย (ถูกต้อง!)</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Auth token / session ID: httpOnly + Secure + SameSite=Strict เท่านั้น</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลใหญ่: 4 KB limit และส่งไปกับทุก request (ทำให้ request ใหญ่ขึ้น)</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">Sensitive data ใน non-httpOnly cookie: JS อ่านได้ = XSS อ่านได้</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-cookie -->
+
+          <!-- ─── Cache API ─── -->
+          <div id="stor-cache" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Cache API คืออะไร?</div>
+              <div class="stor-section-sub">เก็บ HTTP Request/Response: ใช้กับ Service Worker เพื่อทำ PWA offline</div>
+              <div class="stor-info-grid">
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">GB+</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">HTTP Request/Response</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ถาวร (จนกว่าล้าง)</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">dev-tools นี้</div><div class="stor-info-val"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้อยู่ใน sw.js</div></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Service Worker Intercept: Cache Hit vs Miss</div>
+              <div class="stor-cache-vis">
+                <div class="stor-cache-btns">
+                  <button class="stor-lt-btn" onclick="storCacheAnim('first')"><svg class="i" aria-hidden="true"><use href="#i-radio"/></svg> Request ครั้งแรก (Cache Miss)</button>
+                  <button class="stor-lt-btn" onclick="storCacheAnim('hit')"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Request ครั้งที่ 2 (Cache Hit)</button>
+                  <button class="stor-lt-btn" onclick="storCacheAnim('offline')"><svg class="i" aria-hidden="true"><use href="#i-wifi-off"/></svg> Offline Mode</button>
+                </div>
+                <div id="stor-cache-log" class="stor-cache-log">
+                  <div class="stor-cl-line" style="opacity:1;color:var(--text-muted)">กดปุ่มด้านบนเพื่อ simulate request…</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Service Worker (sw.js ของ dev-tools นี้)</div>
+              <div class="stor-code-block">
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                <pre class="stor-code">const CACHE = 'myapp-v1';
+const ASSETS = ['/', '/index.html', '/app.css', '/app.js'];
+
+// ── Install: pre-cache static assets ──
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(ASSETS))
+  );
+  self.skipWaiting();
+});
+
+// ── Activate: ลบ cache เก่า ──
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+// ── Fetch: Cache-first strategy ──
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if (cached) return cached; // ← Cache HIT
+      return fetch(e.request).then(res => {
+        // Cache ก่อนส่งกลับ
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      });
+    })
+  );
+});</pre>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">PWA offline support: HTML, CSS, JS, รูปภาพ, fonts</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Performance: ลด network round-trip สำหรับ static assets</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">เก็บ JSON data ทั่วไป: ใช้ IndexedDB แทน Cache API เก็บได้แค่ HTTP Response</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">Cache invalidation: ต้อง bump cache version เมื่อ deploy ใหม่ ไม่งั้น user ได้ของเก่า</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-cache -->
+
+          <!-- ─── SECURITY ─── -->
+          <div id="stor-security" class="stor-view stor-hidden">
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-skull"/></svg> XSS Attack: ขโมยข้อมูลจาก Storage ได้ไหม?</div>
+              <div class="stor-section-sub">เลือก storage type ดูว่า attacker อ่านได้ไหม</div>
+              <div class="stor-xss-tabs">
+                <button class="stor-xss-tab stor-xss-tab-active" data-id="ls"  onclick="storXssSelect('ls')">localStorage</button>
+                <button class="stor-xss-tab" data-id="ss"  onclick="storXssSelect('ss')">sessionStorage</button>
+                <button class="stor-xss-tab" data-id="hc"  onclick="storXssSelect('hc')">httpOnly Cookie</button>
+                <button class="stor-xss-tab" data-id="idb" onclick="storXssSelect('idb')">IndexedDB</button>
+              </div>
+              <div id="stor-xss-box" class="stor-xss-box"></div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Best Practices: กฎที่ต้องจำ</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text"><strong>Auth token → httpOnly Cookie เท่านั้น</strong> ไม่ใช่ localStorage, sessionStorage, หรือ IndexedDB</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ <code>Secure</code> + <code>SameSite=Strict</code> กับทุก auth cookie</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Sanitize ทุก user input ก่อนแสดงผล: ป้องกัน XSS ตั้งแต่ต้นทาง</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ Content Security Policy (CSP) header: จำกัด script ที่รันได้</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">อย่าเก็บ password, เลขบัตรเครดิต, เลขบัตรประชาชน ใน storage ใดๆ ทั้งสิ้น</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">IndexedDB ไม่ encrypt: ใครเข้าถึงเครื่องได้อ่านข้อมูลได้ อย่าเก็บ sensitive data</span></div>
+              </div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> Decision Tree: ใช้ storage ไหนดี?</div>
+              <div class="stor-section-sub">ตอบคำถามเพื่อรับคำแนะนำ</div>
+              <div id="stor-dt-box" class="stor-dt-box"></div>
+            </div>
+
+            <div class="stor-section">
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> ดูใน Chrome DevTools</div>
+              <div class="stor-rules">
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">F12</span><span class="stor-rule-text">เปิด DevTools → แท็บ <strong>Application</strong> (หรือ Storage)</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></span><span class="stor-rule-text">ซ้ายมือ: Local Storage, Session Storage, IndexedDB, Cookies, Cache Storage</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></span><span class="stor-rule-text">คลิกที่แต่ละ origin เพื่อดู/แก้ไข/ลบข้อมูลได้ทันที</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">httpOnly cookie จะแสดงใน DevTools แต่ JS อ่านไม่ได้: นี่คือพฤติกรรมที่ถูกต้อง</span></div>
+              </div>
+            </div>
+
+          </div><!-- /stor-security -->

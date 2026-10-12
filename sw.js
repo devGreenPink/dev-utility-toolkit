@@ -1,4 +1,7 @@
 const CACHE = 'esan-devtools-v2.0';
+// CDN files: every URL pins an exact version, so this cache can outlive app releases (fonts' CSS is re-checked)
+const CDN_CACHE = 'esan-devtools-cdn';
+const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -39,10 +42,14 @@ const STATIC_ASSETS = [
   './assets/js/tools/gateway.js',
   './assets/js/tools/jenkins.js',
   './assets/js/tools/qr.js',
-  './assets/js/tools/translate.js',
   './assets/js/tools/ngrx.js',
   './assets/js/tools/home.js',
   './assets/js/init.js',
+  './assets/tabs/mq-tab.html',
+  './assets/tabs/storage-tab.html',
+  './assets/tabs/rxjs-tab.html',
+  './assets/tabs/esan-agent-tab.html',
+  './assets/tabs/angular-tab.html',
   './assets/images/favicon.svg',
   './manifest.json',
 ];
@@ -59,18 +66,31 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k !== CACHE && k !== CDN_CACHE).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
 });
 
 self.addEventListener('fetch', e => {
-  // Let CDN/external requests (fonts, jsdiff) fall through to network
   if (!e.request.url.startsWith(self.location.origin)) {
-    e.respondWith(
-      fetch(e.request).catch(() => caches.match(e.request))
-    );
+    const url = new URL(e.request.url);
+    if (e.request.method !== 'GET' || !CDN_HOSTS.includes(url.hostname)) return; // anything else: straight to the network
+    // pinned library versions: cache first; the Google Fonts stylesheet: network first. Only CORS responses are kept
+    // (an opaque one counts as megabytes against the storage quota).
+    e.respondWith(caches.open(CDN_CACHE).then(async c => {
+      // ignoreVary: the CDNs send "Vary: Accept-Encoding", and a precached entry (stored with a bare URL) would never
+      // match a <script> request's headers; the URL alone identifies the file
+      const hit = await c.match(e.request, { ignoreVary: true });
+      if (hit && url.hostname !== 'fonts.googleapis.com') return hit;
+      try {
+        const res = await fetch(e.request);
+        if (res.ok && res.type === 'cors') c.put(e.request, res.clone());
+        return res;
+      } catch (err) {
+        return hit || Response.error();
+      }
+    }));
     return;
   }
   // Network-first for the page itself, so a new deploy shows on the first reload; cached copy when offline.
@@ -101,4 +121,15 @@ self.addEventListener('fetch', e => {
       return res;
     }).catch(() => caches.match(e.request))
   );
+});
+
+// The page sends its lazily loaded library URLs (LIBS in core.js) once it is idle, so tools whose library
+// was never opened online still work offline later.
+self.addEventListener('message', e => {
+  if (!e.data || e.data.type !== 'precache-cdn' || !Array.isArray(e.data.urls)) return;
+  const urls = e.data.urls.filter(u => { try { return CDN_HOSTS.includes(new URL(u).hostname); } catch (err) { return false; } });
+  e.waitUntil(caches.open(CDN_CACHE).then(c => Promise.all(urls.map(async u => {
+    if (await c.match(u, { ignoreVary: true })) return;
+    try { const r = await fetch(u, { mode: 'cors' }); if (r.ok) await c.put(u, r); } catch (err) {}
+  }))));
 });

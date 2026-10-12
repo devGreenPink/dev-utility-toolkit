@@ -2,13 +2,8 @@
 
 // ── View switcher ──
 function mqSwitchView(view) {
-  ['rabbit','redis','quarkus'].forEach(v => {
-    const el = document.getElementById('mq-' + v + '-view');
-    const btn = document.getElementById('mq-vtab-' + v);
-    if (!el || !btn) return;
-    el.classList.toggle('mq-hidden', v !== view);
-    btn.classList.toggle('mq-view-tab-active', v === view);
-  });
+  ['rabbit','redis','quarkus'].forEach(v => document.getElementById('mq-' + v + '-view')?.classList.toggle('mq-hidden', v !== view));
+  setSegmented('mq-view', view);
 }
 
 // ── Exchange type tabs ──

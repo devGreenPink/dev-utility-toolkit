@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Register Service Worker for PWA offline support (HTTPS only)
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
+    (window.requestIdleCallback || (f => setTimeout(f, 3000)))(precacheLibs, { timeout: 10000 });
   }
 
   // Scroll-to-top button
