@@ -51,7 +51,8 @@ Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`
   (`default`, `light`, `esan`, `cdg`, `south`) are migrated in `loadTheme()`
 - `esan-devtools-appearance` — `light` / `dark` / `auto` (macOS theme only)
 - `esan-devtools-accent` — accent id from `ACCENTS` or a custom `#rrggbb`
-- `esan-devtools-clickfx` — `0` turns the click sparkle off (default on)
+- `esan-devtools-clickfx` — `1`/`0` from the Settings effects switch (click sparkle, logo animation,
+  transitions via `body.fx-off`); unset = follow the OS `prefers-reduced-motion`
 - `esan-devtools-nav-collapsed` — ids of folded sidebar groups (`data-group`)
 - `esan-devtools-tab` — last active tab id
 - `esan-devtools-navsearch` — last sidebar search query

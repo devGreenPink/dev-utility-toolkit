@@ -338,39 +338,102 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      margin-bottom: 4px;
     }
 
-    .app-logo-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      display: grid;
-      place-items: center;
+    .app-logo-icon-wrap {
       flex-shrink: 0;
-      font-size: 18px;
-      color: var(--btn-primary-text);
-      background:
-        linear-gradient(160deg, rgba(255,255,255,0.32), rgba(255,255,255,0) 55%),
-        var(--btn-primary-bg);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.25), 0 4px 14px var(--accent-glow), inset 0 0.5px 0 rgba(255,255,255,0.45);
-      cursor: pointer;
-      transition: transform var(--dur) var(--ease-spring), box-shadow var(--dur);
+      position: relative;
+      will-change: transform;
+      animation: logoFloat 3.5s ease-in-out infinite;
     }
-    .app-logo-icon:hover { transform: rotate(-8deg) scale(1.06); }
-    .app-logo-icon:active { transform: scale(0.94); }
+    .logo-star {
+      position: absolute;
+      color: #fff;
+      pointer-events: none;
+      animation: logoStarTwinkle 2.4s ease-in-out infinite;
+      opacity: 0;
+      line-height: 1;
+    }
+    .logo-star-1 { font-size: 11px; top: -7px; right:  0px; animation-delay: 0s; }
+    .logo-star-2 { font-size:  8px; top:  2px; right: -9px; animation-delay: 0.8s; }
+    .logo-star-3 { font-size:  9px; bottom: -6px; left: 4px; animation-delay: 1.5s; }
+    .logo-star-4 { font-size:  7px; bottom:  2px; right: -8px; animation-delay: 2.1s; }
+    @keyframes logoStarTwinkle {
+      0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+      40%, 60% { opacity: 1; transform: scale(1) rotate(180deg); }
+    }
+    .app-logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+      background-size: 200% 200%;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.15);
+      animation: logoGradientShift 4s ease-in-out infinite, logoPulse 3s ease-in-out infinite;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+      will-change: transform;
+    }
+    .app-logo-icon:hover {
+      transform: scale(1.18) rotate(12deg);
+      box-shadow: 0 0 28px var(--accent-glow), 0 0 56px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    .app-logo-icon::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3), var(--accent));
+      background-size: 300% 300%;
+      z-index: -1;
+      animation: logoGradientShift 3s ease-in-out infinite;
+      opacity: 0.6;
+      filter: blur(5px);
+    }
+    @keyframes logoGradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: 0 0 20px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.15); }
+      50% { box-shadow: 0 0 32px var(--accent-glow), 0 0 56px color-mix(in srgb, var(--accent2) 20%, transparent), inset 0 1px 0 rgba(255,255,255,0.15); }
+    }
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* white sparkles vanish on light sidebars */
+    [data-theme="light"] .logo-star, [data-theme="kitty"] .logo-star { color: var(--accent-fg); }
 
     .app-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.25;
-      letter-spacing: -0.01em;
+      font-size: .95rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: logoGradientShift 3s ease infinite;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
     }
 
     .app-version {
-      font-size: 11px;
-      color: var(--text-dim);
+      font-size: .68rem;
+      color: var(--accent2);
       font-family: var(--mono);
+      opacity: 0.8;
+      animation: versionBlink 3s ease-in-out infinite;
+    }
+    @keyframes versionBlink {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.4; }
     }
 
     .sidebar-search {
@@ -1745,7 +1808,7 @@
     .scroll-top-btn:hover { transform: translateY(-2px); }
     .scroll-top-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
-    /* ── CLICK EFFECT (toggle in Settings; off under prefers-reduced-motion) ── */
+    /* ── CLICK EFFECT (Settings switch; see EFFECTS in core.js) ── */
     .sparkle-particle {
       position: fixed;
       pointer-events: none;
@@ -3485,12 +3548,10 @@
     /* tool icon containers (mq-concept-icon, rxjs-fn-icon, ...) tint their glyph with the accent */
     [class$="-icon"] > .i:not([class*="t-"]), [class*="-icon "] > .i:not([class*="t-"]) { color: var(--accent-fg); }
 
-    /* Reduced motion: keep the feedback, drop the travel */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
-      }
+    /* Effects off (Settings switch, defaults to the OS reduce-motion preference): keep the feedback, drop the travel */
+    .fx-off, .fx-off *, .fx-off *::before, .fx-off *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+      scroll-behavior: auto !important;
     }

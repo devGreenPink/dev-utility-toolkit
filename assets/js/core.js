@@ -87,7 +87,7 @@ function applyTheme(){
 // cross-fade the whole window where the View Transitions API exists
 function changeTheme(mutate){
   const run=()=>{mutate();saveTheme();applyTheme();};
-  if(document.startViewTransition&&!reduceMotionMQ.matches)document.startViewTransition(run);else run();
+  if(document.startViewTransition&&clickFx)document.startViewTransition(run);else run();
 }
 function setAppearance(ap){changeTheme(()=>{theme.id='mac';theme.appearance=ap;});}
 function setAccent(ac){changeTheme(()=>{theme.id='mac';theme.accent=ac;});}
@@ -167,7 +167,7 @@ function setPopover(pop,open){
   pop.classList.toggle('open',open);
   document.querySelector(`[aria-controls="${pop.id}"]`)?.setAttribute('aria-expanded',String(open));
 }
-function togglePopover(id){
+function togglePop(id){
   const pop=document.getElementById(id);
   if(!pop)return;
   const open=!pop.classList.contains('open');
@@ -459,7 +459,7 @@ const PALETTE_CMDS=[ // [label, sub, icon, run]
   ['ลักษณะ: สว่าง','ธีม macOS','sun',()=>setAppearance('light')],
   ['ลักษณะ: มืด','ธีม macOS','moon',()=>setAppearance('dark')],
   ['ลักษณะ: อัตโนมัติ','ตามการตั้งค่าเครื่อง','monitor',()=>setAppearance('auto')],
-  ['เปิด/ปิดเอฟเฟกต์ตอนคลิก','การตั้งค่า','sparkles',()=>toggleClickFx()],
+  ['เปิด/ปิดเอฟเฟกต์และแอนิเมชัน','การตั้งค่า','sparkles',()=>toggleClickFx()],
 ];
 const _cmdk={items:[],sel:0,ret:null};
 function paletteItems(q){
@@ -604,18 +604,26 @@ function pwsInstall(){
   _pwaPrompt.prompt();_pwaPrompt.userChoice.then(()=>{_pwaPrompt=null;document.getElementById('pwa-banner').classList.remove('show');});
 }
 
-// ── CLICK EFFECT ── on by default; a switch in Settings turns it off, and it never runs under reduced motion
-const STORAGE_CLICKFX='esan-devtools-clickfx';
-let clickFx=true;
-try{clickFx=localStorage.getItem(STORAGE_CLICKFX)!=='0';}catch(e){}
+// ── EFFECTS ── one Settings switch for the click sparkle, the logo animation and UI transitions.
+// Unset = follow the OS reduce-motion preference; once the user flips the switch, their choice wins.
+const STORAGE_CLICKFX='esan-devtools-clickfx'; // '1' | '0' | unset
+let clickFx=!reduceMotionMQ.matches;
+try{const v=localStorage.getItem(STORAGE_CLICKFX);if(v!==null)clickFx=v!=='0';}catch(e){}
+function applyFx(){document.body.classList.toggle('fx-off',!clickFx);}
+applyFx();
+reduceMotionMQ.addEventListener('change',()=>{
+  let v=null;try{v=localStorage.getItem(STORAGE_CLICKFX);}catch(e){}
+  if(v===null){clickFx=!reduceMotionMQ.matches;applyFx();syncSettingsUI();}
+});
 function toggleClickFx(){
   clickFx=!clickFx;
   try{localStorage.setItem(STORAGE_CLICKFX,clickFx?'1':'0');}catch(e){}
+  applyFx();
   syncSettingsUI();
-  showToast(clickFx?'เปิดเอฟเฟกต์ตอนคลิกแล้ว':'ปิดเอฟเฟกต์ตอนคลิกแล้ว','info');
+  showToast(clickFx?'เปิดเอฟเฟกต์และแอนิเมชันแล้ว':'ปิดเอฟเฟกต์และแอนิเมชันแล้ว','info');
 }
 (function(){
-  const fxOn=()=>clickFx&&!reduceMotionMQ.matches;
+  const fxOn=()=>clickFx;
   function palette(){
     const cs=getComputedStyle(document.body);
     return['--accent','--accent2','--accent3','--c-yellow','--c-green'].map(v=>cs.getPropertyValue(v).trim());

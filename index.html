@@ -205,7 +205,13 @@
       <div class="sidebar-header">
         <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="app-logo">
-          <div class="app-logo-icon" id="logo-icon"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg></div>
+          <div class="app-logo-icon-wrap">
+            <div class="app-logo-icon" id="logo-icon">🛠️</div>
+            <span class="logo-star logo-star-1">✦</span>
+            <span class="logo-star logo-star-2">✧</span>
+            <span class="logo-star logo-star-3">✦</span>
+            <span class="logo-star logo-star-4">✧</span>
+          </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
             <div class="app-version">v2.0</div>
@@ -362,7 +368,7 @@
         <div class="top-bar-actions">
           <button class="tb-btn tb-search" onclick="openPalette()" aria-label="ค้นหาเครื่องมือและคำสั่ง"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span>ค้นหา</span><kbd class="cmdk-key">Ctrl K</kbd></button>
           <div class="pop-wrap">
-            <button class="tb-btn" id="kb-pop-btn" onclick="togglePopover('kb-pop')" aria-label="คีย์ลัด" aria-expanded="false" aria-controls="kb-pop" title="คีย์ลัด"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg></button>
+            <button class="tb-btn" id="kb-pop-btn" onclick="togglePop('kb-pop')" aria-label="คีย์ลัด" aria-expanded="false" aria-controls="kb-pop" title="คีย์ลัด"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg></button>
             <div class="popover kb-pop" id="kb-pop">
               <div class="kb-pop-title">คีย์ลัด</div>
               <div class="kb-pop-row"><kbd class="cmdk-mod">Ctrl</kbd><kbd>Enter</kbd><span>รันเครื่องมือที่เปิดอยู่</span></div>
@@ -371,7 +377,7 @@
             </div>
           </div>
           <div class="pop-wrap">
-            <button class="tb-btn" id="settings-btn" onclick="togglePopover('settings-pop')" aria-label="ตั้งค่า" aria-expanded="false" aria-controls="settings-pop" title="ตั้งค่า"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></button>
+            <button class="tb-btn" id="settings-btn" onclick="togglePop('settings-pop')" aria-label="ตั้งค่า" aria-expanded="false" aria-controls="settings-pop" title="ตั้งค่า"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></button>
             <div class="popover settings-pop" id="settings-pop" role="dialog" aria-label="ตั้งค่า">
               <div class="pop-section">
                 <div class="pop-label" id="ap-label">ลักษณะ</div>
@@ -392,8 +398,8 @@
               </div>
               <div class="pop-section pop-row">
                 <div>
-                  <div class="pop-row-title" id="fx-label">เอฟเฟกต์ตอนคลิก</div>
-                  <div class="pop-hint" id="fx-hint">ประกายเล็กๆ ทุกครั้งที่คลิก ปิดเองถ้าเครื่องตั้งลดการเคลื่อนไหว</div>
+                  <div class="pop-row-title" id="fx-label">เอฟเฟกต์และแอนิเมชัน</div>
+                  <div class="pop-hint" id="fx-hint">ประกายตอนคลิก, logo เคลื่อนไหว และ transition ค่าเริ่มต้นตามการตั้งค่าลดการเคลื่อนไหวของเครื่อง</div>
                 </div>
                 <button type="button" class="switch" id="fx-switch" role="switch" aria-checked="true" aria-labelledby="fx-label" aria-describedby="fx-hint" onclick="toggleClickFx()"></button>
               </div>
