@@ -13,7 +13,8 @@ Live: https://devgreenpink.github.io/dev-utility-toolkit/
 Open `index.html` directly in a browser, or serve it with VS Code Live Server. No build or install step needed.
 
 `node tests/tools.test.mjs` self-checks the pure converters and parsers (BAHTTEXT / Thai ID in
-`thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`, smart paste `spDetect` in `home.js`) by loading the tool files into one
+`thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`, smart paste / share link / file drop in
+`home.js`, and the explorer data in `k8s-ref.js` / `jenkins.js`) by loading the tool files into one
 `vm` context, the same way the page loads them. Keep new parsing logic in pure functions so it can be
 covered there.
 
@@ -46,6 +47,12 @@ The app is a single HTML page with a few companion files:
     `SP_RULES` = `[kind, label, test]` (order = priority), `SP_OPEN[kind]` = `[tool label, open(text)]`;
     the pure `spDetect(text)` also feeds the Ctrl+K palette. Recent / favorites / all-tools lists are
     built from the sidebar nav, so a new tool shows up there with no extra wiring.
+    Also here: the share link (toolbar link button / palette) — `#t=<tab>&s=<base64url JSON>` with the tab's
+    text fields, checkboxes, radios, `.json-view-toggle[id]` choices and explorer file; `INPUT_NEVER`
+    fields (JWT, secrets) are never put in it, `shareParse` drops anything malformed, and `applyShareLink`
+    (init.js, `hashchange`) fills the tab then clears the hash. And file drop: a text file dropped onto a
+    field fills it, anywhere else `spDetectFile(name, text)` picks the tool (file name first, then
+    `spDetect`); the image color picker's own drop zone wins because it calls `preventDefault`.
   - `init.js` — the `DOMContentLoaded` init; loads last.
   - A file's top-level code may only *call* functions from files loaded before it (calls inside functions/handlers are fine — they run after every file has loaded). A new file goes in both `index.html` and `sw.js` `STATIC_ASSETS`.
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
@@ -168,7 +175,8 @@ instead of hex; the dark code panes (`.mq-code`, `.stor-code`, CodeMirror) keep 
   `<body>`; add a `<symbol id="i-…">` there before using a new name. No emoji anywhere in the UI.
 - `copyText(txt)` — copies to clipboard (Clipboard API + execCommand fallback). Every copy goes through it:
   the clicked control gets `.is-copied` and a short button's label becomes "คัดลอกแล้ว" for 1.6s
-  (`flashCopied`), and the toast shows the start of what was copied. Don't add per-tool "copied" swaps.
+  (`flashCopied`), and the toast shows the start of what was copied (or `copyText(txt, msg)`'s message).
+  Don't add per-tool "copied" swaps.
 - `escHtml(s)` — escapes HTML for safe insertion into `innerHTML`.
 - Mock data generator uses `crypto.getRandomValues` for UUID and standard `Math.random` for other fields.
 - Thai ID checksum: sum of `digit[i] * (13 - i)` for i 0–11, check digit = `(11 - sum % 11) % 10`.

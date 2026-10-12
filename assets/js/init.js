@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Restore every tool's last input (Settings → จำข้อมูลที่กรอกไว้)
   initRememberedInputs();
+  applyShareLink(); // a shared link wins over what this browser remembered
 
   // Register Service Worker for PWA offline support (HTTPS only)
   if ('serviceWorker' in navigator) {

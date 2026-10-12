@@ -6,7 +6,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ctx = vm.createContext({ console, Intl, BigInt, atob, TextDecoder });
+const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams });
 for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
@@ -181,6 +181,32 @@ t('explorer files: unique ids, a group, [code, note] lines, at least one note', 
 t('flow nodes and reference cards have what the renderers read', () => {
   for (const name of ['JK_FLOW', 'GW_NODES']) for (const n of run(name)) assert.ok(n.id && n.icon && n.t && n.d && n.err.length, name + ' ' + n.id);
   for (const id of ['k8s', 'jenkins', 'gateway']) for (const it of run(`REF_DOCS.${id}.items`)) assert.ok(it.g && it.t, id + ' ' + it.t);
+});
+
+// ── SHARE LINK / FILE DROP (home) ──
+t('share link: base64url round-trips Thai and symbols', () => {
+  const text = 'สวัสดี {"a":1} +/= ' + 'ก'.repeat(50);
+  assert.equal(run(`b64uDecode(b64uEncode(${JSON.stringify(text)}))`), text);
+  assert.ok(!/[+/=]/.test(run(`b64uEncode(${JSON.stringify(text)})`)));
+});
+t('share link: parse keeps only well-formed parts', () => {
+  const st = { f: { 'b64-input': 'x', 'bad key!': 'y', n: 5 }, c: { 'b64-urlsafe': true, x: 'no' }, t: { 'b64-mode': 1, y: -1 }, x: { 'k8s-explorer': 'deploy' } };
+  const hash = '#t=base64-tab&s=' + run(`b64uEncode(${JSON.stringify(JSON.stringify(st))})`);
+  assert.deepEqual(run(`shareParse(${JSON.stringify(hash)})`), {
+    tab: 'base64-tab', st: { f: { 'b64-input': 'x' }, c: { 'b64-urlsafe': true }, r: {}, t: { 'b64-mode': 1 }, x: { 'k8s-explorer': 'deploy' } } });
+  assert.equal(run(`shareParse('#t=<img onerror=x>-tab')`), null);
+  assert.equal(run(`shareParse('')`), null);
+  assert.deepEqual(run(`shareParse('#t=jwt-tab&s=%%%').st.f`), {});
+});
+t('file drop: the file name decides before the content', () => {
+  const kinds = (name, text) => run(`spDetectFile(${JSON.stringify(name)}, ${JSON.stringify(text)}).map(d => d.kind)`);
+  assert.equal(kinds('Dockerfile', 'FROM nginx:1.27\nCOPY . /app')[0], 'dockerfile');
+  assert.equal(kinds('Jenkinsfile', "@Library('lib') _\nbuild()")[0], 'jenkinsfile');
+  assert.equal(kinds('application.properties', 'quarkus.http.port=8080')[0], 'props');
+  assert.equal(kinds('report.sql', 'select 1 from sysibm.sysdummy1')[0], 'sql');
+  assert.equal(kinds('data.json', '{"a":1}')[0], 'json');
+  assert.equal(kinds('server.log', 'Exception in thread "main" java.lang.IllegalStateException: x\n\tat a.B.c(B.java:1)')[0], 'stacktrace');
+  assert.deepEqual(kinds('notes.txt', 'hello world'), []);
 });
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

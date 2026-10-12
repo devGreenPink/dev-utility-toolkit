@@ -102,7 +102,7 @@ async function jwtEncode() {
     const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
     outEl.textContent = `${data}.${b64urlEncodeBytes(new Uint8Array(sig))}`;
   } catch (e) {
-    errEl.textContent = 'Error: ' + e.message;
+    errEl.textContent = 'สร้าง token ไม่ได้: ' + e.message;
     errEl.style.display = 'block';
   }
 }

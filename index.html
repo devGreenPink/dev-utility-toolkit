@@ -412,10 +412,11 @@
       <div class="top-bar">
         <button class="tb-btn menu-toggle" onclick="toggleSidebar()" aria-label="เมนู"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
         <div class="top-bar-heading">
-          <div class="page-title" id="topbar-title">หน้าแรก</div>
+          <h1 class="page-title" id="topbar-title">หน้าแรก</h1>
           <div class="page-sub" id="topbar-sub">วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด</div>
         </div>
         <div class="top-bar-actions">
+          <button class="tb-btn" id="share-btn" onclick="shareLink()" aria-label="คัดลอกลิงก์ของเครื่องมือนี้" title="คัดลอกลิงก์ของเครื่องมือนี้พร้อมข้อมูลที่กรอก (ไม่รวม token / secret)"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></button>
           <button class="tb-btn tb-search" onclick="openPalette()" title="ค้นหาเครื่องมือและคำสั่ง"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span>ค้นหา</span><kbd class="cmdk-key">Ctrl K</kbd></button>
           <div class="pop-wrap">
             <button class="tb-btn" id="kb-pop-btn" onclick="togglePop('kb-pop')" aria-label="คีย์ลัด" aria-expanded="false" aria-controls="kb-pop" title="คีย์ลัด"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg></button>
@@ -473,12 +474,16 @@
         <div id="home-tab" class="tab-content active">
           <section class="home-hero" aria-labelledby="sp-title">
             <h2 class="home-title" id="sp-title">ค้นหาเครื่องมือ <span>หรือวางอะไรก็ได้</span></h2>
-            <p class="home-lead">วาง JWT, stack trace, JSON, SQL ใน Java, Secret YAML, timestamp, เลขบัตร หรือ SQLCODE แล้วจะเปิดเครื่องมือที่ใช่พร้อมกรอกให้ ทุกอย่างทำงานในเบราว์เซอร์ ไม่ส่งข้อมูลออกไปไหน</p>
+            <p class="home-lead">วาง JWT, stack trace, JSON, SQL ใน Java, Secret YAML, timestamp, เลขบัตร หรือ SQLCODE แล้วจะเปิดเครื่องมือที่ใช่พร้อมกรอกให้ หรือลากไฟล์มาวางที่ไหนก็ได้ ทุกอย่างทำงานในเบราว์เซอร์ ไม่ส่งข้อมูลออกไปไหน</p>
             <div class="sp-box">
               <textarea id="sp-input" rows="4" spellcheck="false" aria-label="ค้นหาเครื่องมือ หรือวางข้อความ" placeholder="พิมพ์ชื่อเครื่องมือ เช่น jwt, cron หรือวางข้อความที่นี่" oninput="spLive()"></textarea>
               <div class="sp-bar">
                 <div id="sp-result" class="sp-result" aria-live="polite"></div>
-                <button type="button" class="btn btn-ghost sp-paste" onclick="spPasteClipboard()"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg>วางจากคลิปบอร์ด</button>
+                <span class="sp-paste">
+                  <button type="button" class="btn btn-ghost" onclick="spPasteClipboard()"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg>วางจากคลิปบอร์ด</button>
+                  <button type="button" class="btn btn-ghost" onclick="document.getElementById('sp-file').click()"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg>เปิดไฟล์</button>
+                  <input type="file" id="sp-file" hidden onchange="spPickFile(this)" />
+                </span>
               </div>
             </div>
             <div class="sp-try">
@@ -2642,7 +2647,7 @@ store.count$.subscribe(n => countEl.textContent = n);</code></pre></div>
                   <div class="rxjs-pg-run-btns">
                     <button class="rxjs-pg-run-btn rxjs-pg-run-primary" onclick="rxjsRunCode()">▶ Run</button>
                     <button class="rxjs-pg-run-btn" id="rxjs-pg-stop-btn" onclick="rxjsStopCode()" disabled><svg class="i" aria-hidden="true"><use href="#i-square"/></svg> Stop</button>
-                    <button class="rxjs-pg-run-btn" onclick="rxjsClearOutput()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> Clear</button>
+                    <button class="rxjs-pg-run-btn" onclick="rxjsClearOutput()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
                   </div>
                 </div>
                 <div id="rxjs-pg-cm-wrap" class="rxjs-pg-cm-wrap"></div>
@@ -2696,7 +2701,7 @@ catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
               <button class="ng-sim-btn" data-scenario="update" onclick="ngSimulate('update')"><span class="dot dot-yellow" aria-hidden="true"></span> เปลี่ยน @Input</button>
               <button class="ng-sim-btn" data-scenario="cd" onclick="ngSimulate('cd')"><span class="dot dot-blue" aria-hidden="true"></span> CD Cycle</button>
               <button class="ng-sim-btn" data-scenario="destroy" onclick="ngSimulate('destroy')"><span class="dot dot-red" aria-hidden="true"></span> Destroy</button>
-              <button class="ng-sim-btn ng-sim-reset-btn" onclick="ngReset()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> Reset</button>
+              <button class="ng-sim-btn ng-sim-reset-btn" onclick="ngReset()"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
             </div>
             <div class="ng-sim-body">
               <div class="ng-timeline-wrap" tabindex="0" role="region" aria-label="ไทม์ไลน์ lifecycle hooks">
@@ -4172,7 +4177,7 @@ public class RateLimiter {
                 <div class="stor-lifetime-btns">
                   <button class="stor-lt-btn" onclick="storLifetimeAnim('close-tab')"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> ปิด Tab</button>
                   <button class="stor-lt-btn" onclick="storLifetimeAnim('clear')"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg> ล้างข้อมูล Browser</button>
-                  <button class="stor-lt-btn" onclick="storLifetimeAnim('reset')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> Reset</button>
+                  <button class="stor-lt-btn" onclick="storLifetimeAnim('reset')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
                 </div>
               </div>
             </div>
@@ -4255,7 +4260,7 @@ public class RateLimiter {
                   <button class="stor-play-btn stor-play-primary" onclick="storLocalStore()"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg> setItem</button>
                   <button class="stor-play-btn" onclick="storLocalGet()"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> getItem</button>
                   <button class="stor-play-btn" onclick="storLocalDelete()"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg> removeItem</button>
-                  <button class="stor-play-btn stor-play-danger" onclick="storLocalClearAll()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> Clear All</button>
+                  <button class="stor-play-btn stor-play-danger" onclick="storLocalClearAll()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> clear</button>
                 </div>
                 <div id="stor-play-out" class="stor-play-out">กด getItem เพื่อดูค่า…</div>
                 <div id="stor-play-list" class="stor-play-list"></div>

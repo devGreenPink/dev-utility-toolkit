@@ -174,3 +174,115 @@ function spTry(text){
   spRender();
   el.focus();
 }
+
+// ── SHARE LINK ── #t=<tab>&s=<base64url JSON>: the open tool and what is typed in it. The hash never reaches a
+// server, but the link carries the data wherever it is pasted, so secret fields (INPUT_NEVER) are left out.
+const SHARE_MAX=8000; // ponytail: plain base64; a bigger state gets a tool-only link — CompressionStream would stretch it
+function b64uEncode(s){
+  let bin='';for(const b of new TextEncoder().encode(s))bin+=String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function b64uDecode(s){return new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0)));}
+// Pure: location.hash → {tab, st} or null; anything malformed is dropped, so a crafted link can only fill fields
+function shareParse(hash){
+  const p=new URLSearchParams(String(hash||'').replace(/^#/,''));
+  const tab=p.get('t');
+  if(!tab||!/^[a-z0-9-]+-tab$/.test(tab))return null;
+  let raw={};
+  try{if(p.get('s'))raw=JSON.parse(b64uDecode(p.get('s')));}catch(e){raw={};}
+  const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+  const pick=(o,ok)=>Object.fromEntries(Object.entries(obj(o)).filter(([k,v])=>/^[\w-]+$/.test(k)&&ok(v)));
+  return{tab,st:{f:pick(raw.f,v=>typeof v==='string'),c:pick(raw.c,v=>typeof v==='boolean'),r:pick(raw.r,v=>typeof v==='string'),
+    t:pick(raw.t,v=>Number.isInteger(v)&&v>=0),x:pick(raw.x,v=>typeof v==='string')}};
+}
+function shareFields(root){
+  return Array.from(root.querySelectorAll('textarea[id], input[id]'))
+    .filter(el=>!INPUT_NEVER.includes(el.id)&&!el.readOnly&&(el.tagName==='TEXTAREA'||['text','number','url','search'].includes(el.type)));
+}
+function shareLink(){
+  const tab=activeTabId,root=document.getElementById(tab);
+  const st={f:{},c:{},r:{},t:{},x:{}};
+  shareFields(root).forEach(el=>{if(el.value)st.f[el.id]=el.value;});
+  root.querySelectorAll('input[type=checkbox][id]').forEach(el=>{if(el.checked!==el.defaultChecked)st.c[el.id]=el.checked;});
+  root.querySelectorAll('input[type=radio][name]:checked').forEach(el=>{if(!el.defaultChecked)st.r[el.name]=el.value;});
+  root.querySelectorAll('.json-view-toggle[id]').forEach(g=>{const i=[...g.querySelectorAll('button')].findIndex(b=>b.classList.contains('active'));if(i>=0)st.t[g.id]=i;});
+  Object.entries(_yx).forEach(([id,x])=>{if(root.contains(document.getElementById(id)))st.x[id]=x.cur;});
+  const base=location.origin+location.pathname+'#t='+tab;
+  const any=Object.values(st).some(o=>Object.keys(o).length);
+  const full=any?base+'&s='+b64uEncode(JSON.stringify(st)):base;
+  const skipped=Array.from(root.querySelectorAll('textarea[id], input[id]')).some(el=>INPUT_NEVER.includes(el.id)&&el.id!=='sp-input'&&el.value);
+  if(full.length>SHARE_MAX){copyText(base,'ข้อมูลยาวเกินใส่ในลิงก์ได้ คัดลอกเฉพาะลิงก์ของเครื่องมือ');return;}
+  copyText(full,Object.keys(st.f).length?'คัดลอกลิงก์แล้ว ข้อมูลที่กรอกอยู่ในลิงก์ด้วย ส่งให้เฉพาะคนที่ควรเห็น'+(skipped?' (ไม่รวม token / secret)':''):'คัดลอกลิงก์ของเครื่องมือนี้แล้ว');
+}
+function applyShareLink(){
+  const s=shareParse(location.hash);
+  if(!s)return;
+  const root=document.getElementById(s.tab);
+  if(!root||!root.classList.contains('tab-content'))return;
+  openTab(null,s.tab); // TAB_INIT builds the tab's toggles, search boxes and explorers first
+  const q=sel=>root.querySelector(sel);
+  Object.entries(s.st.t).forEach(([id,i])=>{const b=root.querySelectorAll(`#${CSS.escape(id)} button`)[i];if(b&&!b.classList.contains('active'))b.click();});
+  Object.entries(s.st.c).forEach(([id,v])=>{const el=q('#'+CSS.escape(id));if(el&&el.type==='checkbox'&&el.checked!==v){el.checked=v;el.dispatchEvent(new Event('change',{bubbles:true}));}});
+  Object.entries(s.st.r).forEach(([name,v])=>{const el=[...root.querySelectorAll('input[type=radio]')].find(r=>r.name===name&&r.value===v);if(el&&!el.checked){el.checked=true;el.dispatchEvent(new Event('change',{bubbles:true}));}});
+  const fields=shareFields(root);
+  Object.entries(s.st.f).forEach(([id,v])=>{const el=fields.find(f=>f.id===id);if(el){el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));}});
+  Object.entries(s.st.x).forEach(([id,f])=>{if(_yx[id]&&root.contains(document.getElementById(id)))yxShow(id,f);});
+  history.replaceState(null,'',location.pathname+location.search); // a reload goes back to the remembered state
+  showToast('เปิดจากลิงก์ที่แชร์มา','info');
+}
+if(typeof window!=='undefined')addEventListener('hashchange',applyShareLink); // no window in the node tests
+
+// ── FILE DROP ── a text file dropped onto a field fills it; dropped anywhere else it opens in the tool that
+// understands it. "เปิดไฟล์" on the home page does the same for keyboard users.
+const DROP_MAX=2*1024*1024;
+// Pure: file name + content → detections, the name's hint first (Dockerfile, Jenkinsfile, .json, .properties, .sql)
+function spDetectFile(name,text){
+  const n=String(name).toLowerCase(),ext=n.includes('.')?n.split('.').pop():'';
+  const hint=/^dockerfile/.test(n)?'dockerfile':/^jenkinsfile/.test(n)||ext==='groovy'?'jenkinsfile':{json:'json',properties:'props',sql:'sql'}[ext];
+  const found=spDetect(text);
+  if(!hint)return found;
+  const rule=SP_RULES.find(r=>r[0]===hint);
+  return[{kind:hint,label:rule?rule[1]:hint,tool:SP_OPEN[hint][0]}].concat(found.filter(d=>d.kind!==hint));
+}
+async function spReadFile(file){
+  if(file.size>DROP_MAX){showToast('ไฟล์ใหญ่เกิน 2 MB เปิดได้เฉพาะไฟล์ข้อความขนาดไม่ใหญ่','warn');return null;}
+  const text=await file.text();
+  if(/\u0000/.test(text.slice(0,4096))){showToast('เปิดได้เฉพาะไฟล์ข้อความ ไฟล์นี้เป็นไฟล์ binary','warn');return null;}
+  return text;
+}
+function spOpenFile(name,text){
+  const hits=spDetectFile(name,text);
+  if(hits.length){spOpen(hits[0].kind,text.trim());showToast(`เปิด ${name} ใน ${hits[0].tool}`,'info');return;}
+  openTab(null,'home-tab');
+  const el=document.getElementById('sp-input');
+  el.value=text;spRender();el.focus();
+  showToast('ไม่แน่ใจว่าเป็นไฟล์อะไร เลือกเครื่องมือจากหน้าแรก','info');
+}
+async function spPickFile(input){
+  const f=input.files[0];input.value='';
+  if(!f)return;
+  const text=await spReadFile(f);
+  if(text!=null)spOpenFile(f.name,text);
+}
+(function(){
+  if(typeof document==='undefined')return;
+  let depth=0;
+  const hasFiles=e=>Array.from(e.dataTransfer?.types||[]).includes('Files');
+  const off=()=>{depth=0;document.body.classList.remove('file-drag');};
+  document.addEventListener('dragenter',e=>{if(hasFiles(e)){depth++;document.body.classList.add('file-drag');}});
+  document.addEventListener('dragleave',e=>{if(hasFiles(e)&&--depth<=0)off();});
+  document.addEventListener('dragover',e=>{if(hasFiles(e))e.preventDefault();}); // allow the drop instead of navigating to the file
+  document.addEventListener('drop',async e=>{
+    off();
+    if(e.defaultPrevented||!hasFiles(e))return; // a tool's own drop zone (image color picker) already took it
+    e.preventDefault();
+    const files=e.dataTransfer.files;
+    if(!files.length)return;
+    if(files.length>1)showToast('เปิดได้ทีละไฟล์ ใช้ไฟล์แรก','info');
+    const field=e.target.closest&&e.target.closest('.tab-content textarea, .tab-content input[type="text"]');
+    const text=await spReadFile(files[0]);
+    if(text==null)return;
+    if(field){field.value=text;field.dispatchEvent(new Event('input',{bubbles:true}));field.focus();showToast(`ใส่ ${files[0].name} แล้ว`);return;}
+    spOpenFile(files[0].name,text);
+  });
+})();

@@ -541,6 +541,7 @@ const PALETTE_CMDS=[ // [label, sub, icon, run]
   ['เปิด/ปิดเอฟเฟกต์และแอนิเมชัน','การตั้งค่า','sparkles',()=>toggleClickFx()],
   ['หน้าแรก','วางข้อความแล้วเปิดเครื่องมือที่ใช่','house',()=>openTab(null,'home-tab')],
   ['ล้างข้อมูลที่จำไว้','ข้อความที่กรอกไว้และเครื่องมือล่าสุด','trash',()=>clearRemembered()],
+  ['แชร์ลิงก์ของเครื่องมือนี้','คัดลอกลิงก์พร้อมข้อมูลที่กรอก (ไม่รวม token / secret)','link',()=>shareLink()],
 ];
 const _cmdk={items:[],sel:0,ret:null};
 function paletteItems(q){
@@ -641,13 +642,13 @@ document.addEventListener('click',e=>{
   _copySrc=e.target.closest?e.target.closest('button,[role="button"],.mock-field-value,.cmd-card'):null;
   setTimeout(()=>{_copySrc=null;}); // only this click's own handler may use it
 },true);
-function copyText(txt){
+function copyText(txt,msg){
   const src=_copySrc;
   const done=ok=>{
     if(!ok){showToast('คัดลอกไม่ได้ ลองเลือกข้อความแล้วกด Ctrl+C','err');return;}
     flashCopied(src);
     const one=String(txt).replace(/\s+/g,' ').trim();
-    showToast(one?'คัดลอกแล้ว: '+(one.length>40?one.slice(0,40)+'…':one):'คัดลอกแล้ว');
+    showToast(msg||(one?'คัดลอกแล้ว: '+(one.length>40?one.slice(0,40)+'…':one):'คัดลอกแล้ว'));
   };
   const fallback=()=>{
     const ta=document.createElement('textarea');
