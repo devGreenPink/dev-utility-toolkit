@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
     <!-- ── SEO ── -->
-    <title>อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย</title>
+    <title>อีสาน DevTools: Developer Toolkit สำหรับนักพัฒนาไทย</title>
     <meta
       name="description"
-      content="เครื่องมือ 15 อย่างสำหรับนักพัฒนาในหน้าเดียว: Mock Data Generator, SQL Parser, JSON Tools, JWT Decoder, Hash, Base64, URL Encode, Regex Tester, Cron Builder, Color Picker, HTTP Status Reference, kubectl และ Linux Cheatsheet — ทำงานใน browser ล้วน ไม่มี backend ไม่มี tracking"
+      content="เครื่องมือ 15 อย่างสำหรับนักพัฒนาในหน้าเดียว: Mock Data Generator, SQL Parser, JSON Tools, JWT Decoder, Hash, Base64, URL Encode, Regex Tester, Cron Builder, Color Picker, HTTP Status Reference, kubectl และ Linux Cheatsheet · ทำงานใน browser ล้วน ไม่มี backend ไม่มี tracking"
     />
     <meta
       name="keywords"
@@ -25,11 +25,11 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย"
+      content="อีสาน DevTools: Developer Toolkit สำหรับนักพัฒนาไทย"
     />
     <meta
       property="og:description"
-      content="15 เครื่องมือสำหรับนักพัฒนา: Mock Data, SQL, JSON, JWT, Hash, Base64, Regex, Cron, Color Picker และอื่นๆ — ทำงานใน browser ล้วน ไม่มี backend"
+      content="15 เครื่องมือสำหรับนักพัฒนา: Mock Data, SQL, JSON, JWT, Hash, Base64, Regex, Cron, Color Picker และอื่นๆ · ทำงานใน browser ล้วน ไม่มี backend"
     />
     <meta
       property="og:url"
@@ -41,7 +41,7 @@
     <meta name="twitter:card" content="summary" />
     <meta
       name="twitter:title"
-      content="อีสาน DevTools — Developer Toolkit สำหรับนักพัฒนาไทย"
+      content="อีสาน DevTools: Developer Toolkit สำหรับนักพัฒนาไทย"
     />
     <meta
       name="twitter:description"
@@ -86,6 +86,8 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/properties.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/nginx.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dockerfile.min.js"></script>
 
     <!-- ── App Styles ── -->
     <link rel="stylesheet" href="assets/css/style.css" />
@@ -95,31 +97,41 @@
     <!-- ICON SPRITE (lucide, ISC). Use: <svg class="i"><use href="#i-name"/></svg> -->
     <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
       <symbol id="i-alarm-clock" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/></symbol>
+      <symbol id="i-arrow-left-right" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></symbol>
       <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
       <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>
+      <symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
       <symbol id="i-bar-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
       <symbol id="i-binary" viewBox="0 0 24 24"><rect x="14" y="14" width="4" height="6" rx="2"/><rect x="6" y="4" width="4" height="6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></symbol>
       <symbol id="i-book-open" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
       <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></symbol>
       <symbol id="i-braces" viewBox="0 0 24 24"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></symbol>
       <symbol id="i-briefcase" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
+      <symbol id="i-bug" viewBox="0 0 24 24"><path d="m8 2 1.88 1.88"/><path d="M14.12 3.88 16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol>
       <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
       <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
       <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+      <symbol id="i-chevrons-right" viewBox="0 0 24 24"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></symbol>
+      <symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
       <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
       <symbol id="i-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
       <symbol id="i-clipboard" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+      <symbol id="i-code" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
       <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></symbol>
       <symbol id="i-columns" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></symbol>
+      <symbol id="i-container" viewBox="0 0 24 24"><path d="M22 7.7c0-.6-.4-1.2-.8-1.5l-6.3-3.9a1.72 1.72 0 0 0-1.7 0l-10.3 6c-.5.2-.9.8-.9 1.4v6.6c0 .5.4 1.2.8 1.5l6.3 3.9a1.72 1.72 0 0 0 1.7 0l10.3-6c.5-.3.9-1 .9-1.5Z"/><path d="M10 21.9V14L2.1 9.1"/><path d="m10 14 11.9-6.9"/><path d="M14 19.8v-8.1"/><path d="M18 17.5V9.4"/></symbol>
       <symbol id="i-cookie" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></symbol>
       <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+      <symbol id="i-cpu" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></symbol>
       <symbol id="i-credit-card" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></symbol>
       <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
       <symbol id="i-dices" viewBox="0 0 24 24"><rect width="12" height="12" x="2" y="10" rx="2" ry="2"/><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/><path d="M6 18h.01"/><path d="M10 14h.01"/><path d="M15 6h.01"/><path d="M18 9h.01"/></symbol>
       <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol>
       <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+      <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></symbol>
       <symbol id="i-file-code" viewBox="0 0 24 24"><path d="M10 12.5 8 15l2 2.5"/><path d="m14 12.5 2 2.5-2 2.5"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/></symbol>
       <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
       <symbol id="i-fingerprint" viewBox="0 0 24 24"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></symbol>
@@ -132,6 +144,7 @@
       <symbol id="i-git-compare" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></symbol>
       <symbol id="i-glass" viewBox="0 0 24 24"><path d="M5.116 4.104A1 1 0 0 1 6.11 3h11.78a1 1 0 0 1 .994 1.105L17.19 20.21A2 2 0 0 1 15.2 22H8.8a2 2 0 0 1-2-1.79z"/><path d="M6 12a5 5 0 0 1 6 0 5 5 0 0 0 6 0"/></symbol>
       <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+      <symbol id="i-hard-drive" viewBox="0 0 24 24"><line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/></symbol>
       <symbol id="i-hash" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></symbol>
       <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></symbol>
       <symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
@@ -153,6 +166,7 @@
       <symbol id="i-menu" viewBox="0 0 24 24"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></symbol>
       <symbol id="i-monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
       <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+      <symbol id="i-network" viewBox="0 0 24 24"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></symbol>
       <symbol id="i-newspaper" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></symbol>
       <symbol id="i-package" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol>
       <symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
@@ -170,6 +184,7 @@
       <symbol id="i-scale" viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></symbol>
       <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
       <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
+      <symbol id="i-server" viewBox="0 0 24 24"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></symbol>
       <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
       <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
       <symbol id="i-ship-wheel" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 2v7.5"/><path d="m19 5-5.23 5.23"/><path d="M22 12h-7.5"/><path d="m19 19-5.23-5.23"/><path d="M12 14.5V22"/><path d="M10.23 13.77 5 19"/><path d="M9.5 12H2"/><path d="M10.23 10.23 5 5"/><circle cx="12" cy="12" r="2.5"/></symbol>
@@ -180,6 +195,7 @@
       <symbol id="i-smartphone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></symbol>
       <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></symbol>
       <symbol id="i-square" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/></symbol>
+      <symbol id="i-square-terminal" viewBox="0 0 24 24"><path d="m7 11 2-2-2-2"/><path d="M11 13h4"/><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/></symbol>
       <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
       <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
       <symbol id="i-table" viewBox="0 0 24 24"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></symbol>
@@ -191,11 +207,13 @@
       <symbol id="i-tree" viewBox="0 0 24 24"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></symbol>
       <symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
       <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+      <symbol id="i-type" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></symbol>
       <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></symbol>
       <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
       <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
       <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></symbol>
       <symbol id="i-window" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/></symbol>
+      <symbol id="i-workflow" viewBox="0 0 24 24"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></symbol>
       <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
       <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
       <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
@@ -206,11 +224,11 @@
         <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="app-logo">
           <div class="app-logo-icon-wrap">
-            <div class="app-logo-icon" id="logo-icon">🛠️</div>
-            <span class="logo-star logo-star-1">✦</span>
-            <span class="logo-star logo-star-2">✧</span>
-            <span class="logo-star logo-star-3">✦</span>
-            <span class="logo-star logo-star-4">✧</span>
+            <div class="app-logo-icon" id="logo-icon"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg></div>
+            <span class="logo-star logo-star-1" aria-hidden="true"></span>
+            <span class="logo-star logo-star-2" aria-hidden="true"></span>
+            <span class="logo-star logo-star-3" aria-hidden="true"></span>
+            <span class="logo-star logo-star-4" aria-hidden="true"></span>
           </div>
           <div>
             <div class="app-name">อีสาน DevTools</div>
@@ -239,33 +257,33 @@
           <div id="nav-fav-list"></div>
         </div>
 
-        <div class="nav-group" data-group="main">
-          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">เครื่องมือหลัก<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        <div class="nav-group" data-group="data">
+          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">ข้อมูล &amp; JSON<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
           <div class="nav-group-items"><div class="nav-group-inner">
             <div class="nav-item active" data-tab="random-tab" onclick="openTab(event, 'random-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-dices"/></svg></span> Mock Data Generator
             </div>
-            <div class="nav-item" data-tab="k8s-secret-tab" onclick="openTab(event, 'k8s-secret-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg></span> K8s Secret Decoder
-            </div>
-            <div class="nav-item" data-tab="sql-tab" onclick="openTab(event, 'sql-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-file-code"/></svg></span> SQL Parser
+            <div class="nav-item" data-tab="json-tab" onclick="openTab(event, 'json-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-braces"/></svg></span> JSON Tools
             </div>
             <div class="nav-item" data-tab="compare-tab" onclick="openTab(event, 'compare-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-git-compare"/></svg></span> Text / JSON Diff
             </div>
-            <div class="nav-item" data-tab="json-tab" onclick="openTab(event, 'json-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-braces"/></svg></span> JSON Tools
+            <div class="nav-item" data-tab="json2type-tab" onclick="openTab(event, 'json2type-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-type"/></svg></span> JSON → Type
+            </div>
+            <div class="nav-item" data-tab="props-tab" onclick="openTab(event, 'props-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-arrow-left-right"/></svg></span> Properties ↔ YAML
+            </div>
+            <div class="nav-item" data-tab="regex-tab" onclick="openTab(event, 'regex-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-regex"/></svg></span> Regex Tester
             </div>
           </div></div>
         </div>
 
         <div class="nav-group" data-group="convert">
-          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">แปลง &amp; Encode<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">Encode &amp; แปลงค่า<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
           <div class="nav-group-items"><div class="nav-group-inner">
-            <div class="nav-item" data-tab="unix-tab" onclick="openTab(event, 'unix-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span> Unix Timestamp
-            </div>
             <div class="nav-item" data-tab="base64-tab" onclick="openTab(event, 'base64-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-binary"/></svg></span> Base64
             </div>
@@ -274,6 +292,12 @@
             </div>
             <div class="nav-item" data-tab="numbase-tab" onclick="openTab(event, 'numbase-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-hash"/></svg></span> Number Base
+            </div>
+            <div class="nav-item" data-tab="unix-tab" onclick="openTab(event, 'unix-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span> Unix Timestamp
+            </div>
+            <div class="nav-item" data-tab="thai-tab" onclick="openTab(event, 'thai-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg></span> พ.ศ. · เลขบัตร · บาท
             </div>
             <div class="nav-item" data-tab="hash-tab" onclick="openTab(event, 'hash-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-fingerprint"/></svg></span> Hash Generator
@@ -284,29 +308,80 @@
           </div></div>
         </div>
 
-        <div class="nav-group" data-group="helpers">
-          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">ตัวช่วยนักพัฒนา<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        <div class="nav-group" data-group="database">
+          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">ฐานข้อมูล<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
           <div class="nav-group-items"><div class="nav-group-inner">
-            <div class="nav-item" data-tab="cron-tab" onclick="openTab(event, 'cron-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-alarm-clock"/></svg></span> Cron Builder
+            <div class="nav-item" data-tab="sql-tab" onclick="openTab(event, 'sql-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-file-code"/></svg></span> SQL Parser
             </div>
-            <div class="nav-item" data-tab="regex-tab" onclick="openTab(event, 'regex-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-regex"/></svg></span> Regex Tester
+            <div class="nav-item" data-tab="sqlref-tab" onclick="openTab(event, 'sqlref-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></span> SQL &amp; System Catalog
             </div>
-            <div class="nav-item" data-tab="color-tab" onclick="openTab(event, 'color-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-palette"/></svg></span> Color Picker
+            <div class="nav-item" data-tab="db2err-tab" onclick="openTab(event, 'db2err-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg></span> DB2 Error Codes
             </div>
-            <div class="nav-item" data-tab="http-tab" onclick="openTab(event, 'http-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg></span> HTTP Status
+            <div class="nav-item" data-tab="lov-tab" onclick="openTab(event, 'lov-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-table"/></svg></span> LOV Query Browser
             </div>
           </div></div>
         </div>
 
-        <div class="nav-group" data-group="reference">
-          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">อ้างอิง<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        <div class="nav-group" data-group="java">
+          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">Java &amp; Backend<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
           <div class="nav-group-items"><div class="nav-group-inner">
+            <div class="nav-item" data-tab="stacktrace-tab" onclick="openTab(event, 'stacktrace-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-bug"/></svg></span> Stack Trace Analyzer
+            </div>
+            <div class="nav-item" data-tab="javaex-tab" onclick="openTab(event, 'javaex-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span> Java Exceptions
+            </div>
+            <div class="nav-item" data-tab="javaint-tab" onclick="openTab(event, 'javaint-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg></span> Java Internals
+            </div>
+            <div class="nav-item" data-tab="mq-tab" onclick="openTab(event, 'mq-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></span> RabbitMQ · Redis · Quarkus
+            </div>
+          </div></div>
+        </div>
+
+        <div class="nav-group" data-group="frontend">
+          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">Frontend<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+          <div class="nav-group-items"><div class="nav-group-inner">
+            <div class="nav-item" data-tab="angular-tab" onclick="openTab(event, 'angular-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></span> Angular Lifecycle
+            </div>
+            <div class="nav-item" data-tab="rxjs-tab" onclick="openTab(event, 'rxjs-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span> RxJS Reference
+            </div>
+            <div class="nav-item" data-tab="ngrx-tab" onclick="openTab(event, 'ngrx-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-workflow"/></svg></span> NgRx / Redux
+            </div>
+            <div class="nav-item" data-tab="storage-tab" onclick="openTab(event, 'storage-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-hard-drive"/></svg></span> Browser Storage APIs
+            </div>
+            <div class="nav-item" data-tab="color-tab" onclick="openTab(event, 'color-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-palette"/></svg></span> Color Picker
+            </div>
+          </div></div>
+        </div>
+
+        <div class="nav-group" data-group="infra">
+          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">DevOps &amp; Infra<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+          <div class="nav-group-items"><div class="nav-group-inner">
+            <div class="nav-item" data-tab="k8sref-tab" onclick="openTab(event, 'k8sref-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-container"/></svg></span> Docker &amp; K8s
+            </div>
+            <div class="nav-item" data-tab="gateway-tab" onclick="openTab(event, 'gateway-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-network"/></svg></span> Request Path
+            </div>
             <div class="nav-item" data-tab="kubectl-tab" onclick="openTab(event, 'kubectl-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-ship-wheel"/></svg></span> kubectl Cheatsheet
+            </div>
+            <div class="nav-item" data-tab="k8s-secret-tab" onclick="openTab(event, 'k8s-secret-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg></span> K8s Secret Decoder
+            </div>
+            <div class="nav-item" data-tab="clicheat-tab" onclick="openTab(event, 'clicheat-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-square-terminal"/></svg></span> CLI Cheatsheets
             </div>
             <div class="nav-item" data-tab="linux-tab" onclick="openTab(event, 'linux-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-terminal"/></svg></span> Linux Commands
@@ -314,26 +389,11 @@
             <div class="nav-item" data-tab="git-tab" onclick="openTab(event, 'git-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-git-branch"/></svg></span> Git CLI
             </div>
-            <div class="nav-item" data-tab="rxjs-tab" onclick="openTab(event, 'rxjs-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span> RxJS Reference
+            <div class="nav-item" data-tab="cron-tab" onclick="openTab(event, 'cron-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-alarm-clock"/></svg></span> Cron Builder
             </div>
-            <div class="nav-item" data-tab="angular-tab" onclick="openTab(event, 'angular-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></span> Angular Lifecycle
-            </div>
-            <div class="nav-item" data-tab="mq-tab" onclick="openTab(event, 'mq-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></span> RabbitMQ · Redis · Quarkus
-            </div>
-            <div class="nav-item" data-tab="storage-tab" onclick="openTab(event, 'storage-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></span> Browser Storage APIs
-            </div>
-          </div></div>
-        </div>
-
-        <div class="nav-group" data-group="database">
-          <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">ฐานข้อมูล<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
-          <div class="nav-group-items"><div class="nav-group-inner">
-            <div class="nav-item" data-tab="lov-tab" onclick="openTab(event, 'lov-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-table"/></svg></span> LOV Query Browser
+            <div class="nav-item" data-tab="http-tab" onclick="openTab(event, 'http-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg></span> HTTP Status
             </div>
           </div></div>
         </div>
@@ -462,7 +522,7 @@
               >
               <input
                 type="number"
-                id="bulk-count"
+                id="bulk-count" aria-label="จำนวน records"
                 value="10"
                 min="1"
                 max="500"
@@ -492,7 +552,7 @@
                     <span class="mock-field-label">บัตรประชาชน</span>
                     <span class="mock-field-hint">13 หลัก + checksum</span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-id">—</span>
+                  <span class="mock-field-value mono-sm" id="out-id"></span>
                   <button
                     class="mock-copy-btn"
                     onclick="copyVal('out-id')"
@@ -503,10 +563,10 @@
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
-                    <span class="mock-field-label">ชื่อ–นามสกุล</span>
+                    <span class="mock-field-label">ชื่อ-นามสกุล</span>
                     <span class="mock-field-hint">ภาษาไทย</span>
                   </div>
-                  <span class="mock-field-value" id="out-name">—</span>
+                  <span class="mock-field-value" id="out-name"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-name')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
@@ -514,7 +574,7 @@
                     <span class="mock-field-label">ฉายา</span>
                     <span class="mock-field-hint">สไตล์สายเทค</span>
                   </div>
-                  <span class="mock-field-value" id="out-nickname">—</span>
+                  <span class="mock-field-value" id="out-nickname"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-nickname')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
@@ -522,7 +582,7 @@
                     <span class="mock-field-label">เพศ</span>
                     <span class="mock-field-hint">ชาย / หญิง / ไม่ระบุ</span>
                   </div>
-                  <span class="mock-field-value" id="out-gender">—</span>
+                  <span class="mock-field-value" id="out-gender"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-gender')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
@@ -530,7 +590,7 @@
                     <span class="mock-field-label">วันเกิด</span>
                     <span class="mock-field-hint">พ.ศ. + อายุ</span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-dob">—</span>
+                  <span class="mock-field-value mono-sm" id="out-dob"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-dob')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
@@ -545,7 +605,7 @@
                     <span class="mock-field-label">เบอร์โทรศัพท์</span>
                     <span class="mock-field-hint">มือถือไทย</span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-phone">—</span>
+                  <span class="mock-field-value mono-sm" id="out-phone"></span>
                   <button
                     class="mock-copy-btn"
                     onclick="copyVal('out-phone')"
@@ -563,7 +623,7 @@
                     class="mock-field-value mono-sm"
                     id="out-email"
                     style="font-size: 0.78rem"
-                    >—</span
+                    ></span
                   >
                   <button
                     class="mock-copy-btn"
@@ -586,7 +646,7 @@
                     <span class="mock-field-label">จังหวัด</span>
                     <span class="mock-field-hint">30 จังหวัด</span>
                   </div>
-                  <span class="mock-field-value" id="out-province">—</span>
+                  <span class="mock-field-value" id="out-province"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-province')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
@@ -594,7 +654,7 @@
                     <span class="mock-field-label">รหัสไปรษณีย์</span>
                     <span class="mock-field-hint">5 หลัก</span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-zip">—</span>
+                  <span class="mock-field-value mono-sm" id="out-zip"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-zip')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
@@ -610,7 +670,7 @@
                     <span class="mock-field-label">บริษัท</span>
                     <span class="mock-field-hint">ชื่อบริษัทไทย</span>
                   </div>
-                  <span class="mock-field-value" id="out-company" style="font-size:0.78rem">—</span>
+                  <span class="mock-field-value" id="out-company" style="font-size:0.78rem"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-company')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
@@ -618,7 +678,7 @@
                     <span class="mock-field-label">เลขนิติบุคคล</span>
                     <span class="mock-field-hint">13 หลัก</span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-juristic" style="font-size:0.72rem">—</span>
+                  <span class="mock-field-value mono-sm" id="out-juristic" style="font-size:0.72rem"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-juristic')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
@@ -626,15 +686,15 @@
                     <span class="mock-field-label">ตำแหน่ง</span>
                     <span class="mock-field-hint">IT / Dev roles</span>
                   </div>
-                  <span class="mock-field-value" id="out-job">—</span>
+                  <span class="mock-field-value" id="out-job"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-job')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
                     <span class="mock-field-label">เงินเดือน</span>
-                    <span class="mock-field-hint">15k–180k บาท</span>
+                    <span class="mock-field-hint">15k-180k บาท</span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-salary">—</span>
+                  <span class="mock-field-value mono-sm" id="out-salary"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-salary')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
@@ -650,7 +710,7 @@
                     <span class="mock-field-label">บัตรเครดิต</span>
                     <span class="mock-field-hint">Luhn-valid (test only)</span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-credit" style="font-size:0.74rem">—</span>
+                  <span class="mock-field-value mono-sm" id="out-credit" style="font-size:0.74rem"></span>
                   <span id="out-card-type" style="font-size:0.62rem;color:var(--accent2);font-family:var(--mono);margin-left:4px;flex-shrink:0"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-credit')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
@@ -670,7 +730,7 @@
                     class="mock-field-value mono-sm"
                     id="out-uuid"
                     style="font-size: 0.68rem; letter-spacing: 0.02em"
-                    >—</span
+                    ></span
                   >
                   <button
                     class="mock-copy-btn"
@@ -760,12 +820,18 @@
                 color: var(--text-dim);
                 background: var(--surface2);
               "
-              >—</span
+              ></span
             >
             <label class="mode-label" style="margin-left: auto"
               ><input type="checkbox" id="sql-format-check" checked /> จัดรูปแบบ SQL
               ผลลัพธ์</label
             >
+          </div>
+          <div class="sql-samples">
+            <span class="field-label">ลองตัวอย่าง:</span>
+            <button class="btn btn-ghost" onclick="sqlSample('builder')">StringBuilder</button>
+            <button class="btn btn-ghost" onclick="sqlSample('textblock')">Text Block</button>
+            <button class="btn btn-ghost" onclick="sqlSample('mybatis')">MyBatis XML</button>
           </div>
           <textarea
             id="sql-input"
@@ -1049,6 +1115,7 @@
               />
               <button
                 class="btn btn-ghost"
+                aria-label="ล้าง JSONPath"
                 onclick="
                   document.getElementById('jsonpath-input').value = '';
                   runJsonPath();
@@ -1084,9 +1151,13 @@
             <button class="btn btn-ghost" onclick="nowUnix()">ตอนนี้</button>
           </div>
           <div class="cron-result" style="margin-top: 14px; padding: 22px">
-            <div class="cron-expr" id="unix-result">—</div>
+            <div class="cron-expr" id="unix-result"></div>
             <div class="cron-next" id="unix-ms"></div>
           </div>
+          <section class="card unix-quick">
+            <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg> ค่าที่ใช้บ่อย (คลิกเพื่อแปลง)</div>
+            <div class="unix-quick-list" id="unix-quick"></div>
+          </section>
         </div>
 
         <!-- BASE64 -->
@@ -1155,9 +1226,7 @@
                   Copy
                 </button>
               </div>
-              <div id="b64-output" class="output-mono" style="min-height: 80px">
-                —
-              </div>
+              <div id="b64-output" class="output-mono" style="min-height: 80px"></div>
             </div>
             <div
               id="b64-error"
@@ -1768,9 +1837,9 @@
                   <span class="field-label">OUTPUT TOKEN</span>
                   <button class="btn btn-ghost" onclick="copyElText('jwt-enc-output')">Copy</button>
                 </div>
-                <div id="jwt-enc-output" class="output-mono" style="min-height:80px;word-break:break-all;color:var(--accent2);">—</div>
+                <div id="jwt-enc-output" class="output-mono" style="min-height:80px;word-break:break-all;color:var(--accent2);"></div>
               </div>
-              <div style="font-size:.71rem;color:var(--text-dim);"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ใช้สำหรับทดสอบเท่านั้น — ประมวลผลใน browser ทั้งหมด ไม่ส่งข้อมูลออกไปไหน</div>
+              <div style="font-size:.71rem;color:var(--text-dim);"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ใช้สำหรับทดสอบเท่านั้น: ประมวลผลใน browser ทั้งหมด ไม่ส่งข้อมูลออกไปไหน</div>
             </div>
           </div>
         </div>
@@ -1839,9 +1908,7 @@
                   Copy
                 </button>
               </div>
-              <div id="url-output" class="output-mono" style="min-height: 80px">
-                —
-              </div>
+              <div id="url-output" class="output-mono" style="min-height: 80px"></div>
             </div>
             <div
               id="url-error"
@@ -1907,7 +1974,7 @@
                 <div class="cp-hex-group">
                   <input
                     type="text"
-                    id="color-hex"
+                    id="color-hex" aria-label="ค่าสี HEX"
                     class="cp-hex-input"
                     value="#6366F1"
                     oninput="onHexInput(this.value)"
@@ -1915,7 +1982,7 @@
                   />
                   <input
                     type="color"
-                    id="color-picker"
+                    id="color-picker" aria-label="เลือกสี"
                     class="cp-native"
                     value="#6366f1"
                     oninput="onPickerInput(this.value)"
@@ -1929,16 +1996,16 @@
                 </div>
                 <div id="cp-rgb-inputs" class="cp-channels">
                   <div class="cp-channel">
-                    <div class="cp-channel-label" style="color:#f87171">R</div>
-                    <input type="number" id="rgb-r-n" min="0" max="255" value="99" oninput="onRgbNumInput()" />
+                    <div class="cp-channel-label" style="color:var(--c-red)">R</div>
+                    <input type="number" id="rgb-r-n" aria-label="Red" min="0" max="255" value="99" oninput="onRgbNumInput()" />
                   </div>
                   <div class="cp-channel">
-                    <div class="cp-channel-label" style="color:#86efac">G</div>
-                    <input type="number" id="rgb-g-n" min="0" max="255" value="102" oninput="onRgbNumInput()" />
+                    <div class="cp-channel-label" style="color:var(--c-green)">G</div>
+                    <input type="number" id="rgb-g-n" aria-label="Green" min="0" max="255" value="102" oninput="onRgbNumInput()" />
                   </div>
                   <div class="cp-channel">
-                    <div class="cp-channel-label" style="color:#93c5fd">B</div>
-                    <input type="number" id="rgb-b-n" min="0" max="255" value="241" oninput="onRgbNumInput()" />
+                    <div class="cp-channel-label" style="color:var(--c-blue)">B</div>
+                    <input type="number" id="rgb-b-n" aria-label="Blue" min="0" max="255" value="241" oninput="onRgbNumInput()" />
                   </div>
                 </div>
                 <div id="cp-hsl-inputs" class="cp-channels" style="display:none">
@@ -1983,7 +2050,7 @@
           <!-- ━━━ IMAGE COLOR PICKER ━━━ -->
           <div class="icp-section">
             <div class="icp-section-title">
-              <svg class="i" aria-hidden="true"><use href="#i-image"/></svg> Image Color Picker — คลิกบนภาพเพื่อดูดสี
+              <svg class="i" aria-hidden="true"><use href="#i-image"/></svg> Image Color Picker: คลิกบนภาพเพื่อดูดสี
             </div>
             <div class="icp-layout">
               <!-- Left: Drop Zone + Preview -->
@@ -2152,7 +2219,7 @@
                     title="คัดลอกค่าสี"
                   >
                     <span class="icp-val-label" id="icp-active-label">HEX</span>
-                    <span class="icp-val-text" id="icp-active-value">—</span>
+                    <span class="icp-val-text" id="icp-active-value"></span>
                     <span class="icp-val-copy">copy</span>
                   </div>
                   <div
@@ -2161,7 +2228,7 @@
                     title="คัดลอก HEX"
                   >
                     <span class="icp-val-label">HEX</span>
-                    <span class="icp-val-text" id="image-color-hex">—</span>
+                    <span class="icp-val-text" id="image-color-hex"></span>
                     <span class="icp-val-copy">copy</span>
                   </div>
                   <div
@@ -2170,7 +2237,7 @@
                     title="คัดลอก RGB"
                   >
                     <span class="icp-val-label">RGB</span>
-                    <span class="icp-val-text" id="image-color-rgb">—</span>
+                    <span class="icp-val-text" id="image-color-rgb"></span>
                     <span class="icp-val-copy">copy</span>
                   </div>
                   <div
@@ -2179,7 +2246,7 @@
                     title="คัดลอก HSL"
                   >
                     <span class="icp-val-label">HSL</span>
-                    <span class="icp-val-text" id="image-color-hsl">—</span>
+                    <span class="icp-val-text" id="image-color-hsl"></span>
                     <span class="icp-val-copy">copy</span>
                   </div>
                 </div>
@@ -2294,6 +2361,10 @@
         <!-- LINUX -->
         <div id="linux-tab" class="tab-content">
           <div class="section-header">
+            <div class="json-view-toggle" id="linux-view" role="group" aria-label="มุมมอง">
+              <button type="button" class="json-view-btn active" data-v="cmd" aria-pressed="true" onclick="linuxView('cmd')">คำสั่ง</button>
+              <button type="button" class="json-view-btn" data-v="fhs" aria-pressed="false" onclick="linuxView('fhs')">โฟลเดอร์ระบบ</button>
+            </div>
             <button class="btn btn-danger" onclick="clearLinux()">
               <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างการค้นหา
             </button>
@@ -2431,32 +2502,32 @@
                 <span class="rxjs-acc-chevron">›</span>
               </button>
               <div class="rxjs-acc-bd" style="display:none">
-                <p class="rxjs-intro-p">Library สำหรับจัดการ <strong>async data</strong> ด้วยแนวคิด <strong>stream</strong> (Observable) — ข้อมูลไหลมาเรื่อยๆ แทนที่จะมีแค่ครั้งเดียว เหมาะสำหรับ HTTP, DOM events, state management, และ real-time data</p>
+                <p class="rxjs-intro-p">Library สำหรับจัดการ <strong>async data</strong> ด้วยแนวคิด <strong>stream</strong> (Observable): ข้อมูลไหลมาเรื่อยๆ แทนที่จะมีแค่ครั้งเดียว เหมาะสำหรับ HTTP, DOM events, state management, และ real-time data</p>
                 <div class="rxjs-analogy"><svg class="i" aria-hidden="true"><use href="#i-droplet"/></svg> <strong>Array</strong> = น้ำในขวด (มีอยู่แล้ว) &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Observable</strong> = ก๊อกน้ำ (ไหลมาเรื่อยๆ)</div>
                 <div class="rxjs-concepts-grid">
-                  <div class="rxjs-concept" style="border-left-color:#a78bfa">
-                    <div class="rxjs-concept-name" style="color:#a78bfa">Observable</div>
-                    <div class="rxjs-concept-desc">แหล่งข้อมูลที่ emit ค่าได้ — cold (ใหม่ทุก subscribe) หรือ hot (share กัน)</div>
+                  <div class="rxjs-concept" style="border-left-color:var(--c-purple)">
+                    <div class="rxjs-concept-name" style="color:var(--c-purple)">Observable</div>
+                    <div class="rxjs-concept-desc">แหล่งข้อมูลที่ emit ค่าได้: cold (ใหม่ทุก subscribe) หรือ hot (share กัน)</div>
                     <div class="rxjs-concept-eg"><svg class="i" aria-hidden="true"><use href="#i-droplet"/></svg> ก๊อกน้ำ</div>
                   </div>
-                  <div class="rxjs-concept" style="border-left-color:#34d399">
-                    <div class="rxjs-concept-name" style="color:#34d399">Observer</div>
-                    <div class="rxjs-concept-desc">ผู้รับค่า — มี 3 callback: <code>next</code>, <code>error</code>, <code>complete</code></div>
+                  <div class="rxjs-concept" style="border-left-color:var(--c-green)">
+                    <div class="rxjs-concept-name" style="color:var(--c-green)">Observer</div>
+                    <div class="rxjs-concept-desc">ผู้รับค่า: มี 3 callback: <code>next</code>, <code>error</code>, <code>complete</code></div>
                     <div class="rxjs-concept-eg"><svg class="i" aria-hidden="true"><use href="#i-glass"/></svg> แก้วน้ำ</div>
                   </div>
-                  <div class="rxjs-concept" style="border-left-color:#60a5fa">
-                    <div class="rxjs-concept-name" style="color:#60a5fa">Subscription</div>
-                    <div class="rxjs-concept-desc">การเชื่อมต่อ Observable กับ Observer — เก็บไว้เพื่อ unsubscribe</div>
+                  <div class="rxjs-concept" style="border-left-color:var(--c-blue)">
+                    <div class="rxjs-concept-name" style="color:var(--c-blue)">Subscription</div>
+                    <div class="rxjs-concept-desc">การเชื่อมต่อ Observable กับ Observer: เก็บไว้เพื่อ unsubscribe</div>
                     <div class="rxjs-concept-eg"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg> เปิดก๊อก</div>
                   </div>
-                  <div class="rxjs-concept" style="border-left-color:#fbbf24">
-                    <div class="rxjs-concept-name" style="color:#fbbf24">Operator</div>
+                  <div class="rxjs-concept" style="border-left-color:var(--c-yellow)">
+                    <div class="rxjs-concept-name" style="color:var(--c-yellow)">Operator</div>
                     <div class="rxjs-concept-desc">ฟังก์ชันใน <code>pipe()</code> สำหรับแปลง, กรอง, รวม stream</div>
                     <div class="rxjs-concept-eg"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> ตัวกรองน้ำ</div>
                   </div>
-                  <div class="rxjs-concept" style="border-left-color:#f472b6">
-                    <div class="rxjs-concept-name" style="color:#f472b6">Subject</div>
-                    <div class="rxjs-concept-desc">Observable + Observer ในตัวเดียว — ส่งค่าเข้า stream จากภายนอกได้</div>
+                  <div class="rxjs-concept" style="border-left-color:var(--c-pink)">
+                    <div class="rxjs-concept-name" style="color:var(--c-pink)">Subject</div>
+                    <div class="rxjs-concept-desc">Observable + Observer ในตัวเดียว: ส่งค่าเข้า stream จากภายนอกได้</div>
                     <div class="rxjs-concept-eg"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg> ก๊อกที่บังคับได้</div>
                   </div>
                 </div>
@@ -2464,7 +2535,7 @@
                   <div class="rxjs-fn-node rxjs-fn-obs">
                     <div class="rxjs-fn-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></div>
                     <div class="rxjs-fn-name">Observable</div>
-                    <div class="rxjs-fn-desc">แหล่งข้อมูล — emit ค่าได้เรื่อยๆ</div>
+                    <div class="rxjs-fn-desc">แหล่งข้อมูล: emit ค่าได้เรื่อยๆ</div>
                     <div class="rxjs-fn-codes">
                       <code>interval(1000)</code>
                       <code>fromEvent(btn, 'click')</code>
@@ -2514,7 +2585,7 @@
             <!-- 2. Marble Diagrams -->
             <div class="rxjs-acc">
               <button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
-                <span><span class="dot dot-blue" aria-hidden="true"></span> Marble Diagrams — มองภาพการไหล</span>
+                <span><span class="dot dot-blue" aria-hidden="true"></span> Marble Diagrams: มองภาพการไหล</span>
                 <span class="rxjs-acc-chevron">›</span>
               </button>
               <div class="rxjs-acc-bd" style="display:none">
@@ -2605,7 +2676,7 @@
                   </div>
 
                   <div class="rxjs-marble">
-                    <div class="rxjs-marble-title">switchMap — cancel เมื่อมีใหม่</div>
+                    <div class="rxjs-marble-title">switchMap: cancel เมื่อมีใหม่</div>
                     <div class="rxjs-marble-label">Source (click)</div>
                     <div class="rxjs-marble-timeline">
                       <div class="rxjs-marble-track"></div>
@@ -2917,24 +2988,24 @@ catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
             <!-- Key Concepts -->
             <div class="rxjs-acc">
               <button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
-                <span><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Key Concepts — Change Detection, Content vs View, @Input</span>
+                <span><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Key Concepts: Change Detection, Content vs View, @Input</span>
                 <span class="rxjs-acc-chevron">›</span>
               </button>
               <div class="rxjs-acc-bd" style="display:none">
                 <div class="ng-concepts-grid">
                   <div class="ng-concept-card">
-                    <div class="ng-concept-title" style="color:#22d3ee"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Change Detection (CD)</div>
+                    <div class="ng-concept-title" style="color:var(--c-cyan)"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Change Detection (CD)</div>
                     <div class="ng-concept-desc">Angular ตรวจ state ของ app ว่ามีอะไรเปลี่ยนไหม แล้ว update DOM ให้ตรงกัน CD run ทุกครั้งที่มี event (click, HTTP response, setTimeout, Observable emit)</div>
-                    <div class="ng-concept-tip">hooks ที่มี "ทุก CD cycle" = run บ่อยมาก — ระวัง performance</div>
+                    <div class="ng-concept-tip">hooks ที่มี "ทุก CD cycle" = run บ่อยมาก: ระวัง performance</div>
                   </div>
                   <div class="ng-concept-card">
-                    <div class="ng-concept-title" style="color:#f472b6"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> Content vs View</div>
+                    <div class="ng-concept-title" style="color:var(--c-pink)"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> Content vs View</div>
                     <div class="ng-concept-desc"><strong>Content</strong> = HTML ที่ parent ส่งมาผ่าน <code>&lt;ng-content&gt;</code>&nbsp; <strong>View</strong> = template ของ component เอง และ child components</div>
                     <div class="ng-concept-tip">ngAfterContent* → Content พร้อม &nbsp;|&nbsp; ngAfterView* → View + children พร้อม</div>
                   </div>
                   <div class="ng-concept-card">
-                    <div class="ng-concept-title" style="color:#fbbf24"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg> @Input binding</div>
-                    <div class="ng-concept-desc">ค่าที่ parent ส่งเข้า component ผ่าน <code>[prop]="value"</code> — Angular ตรวจ <em>reference change</em> เท่านั้น object/array เดิมที่ mutate ภายในจะไม่ trigger ngOnChanges</div>
+                    <div class="ng-concept-title" style="color:var(--c-yellow)"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg> @Input binding</div>
+                    <div class="ng-concept-desc">ค่าที่ parent ส่งเข้า component ผ่าน <code>[prop]="value"</code>: Angular ตรวจ <em>reference change</em> เท่านั้น object/array เดิมที่ mutate ภายในจะไม่ trigger ngOnChanges</div>
                     <div class="ng-concept-tip">ใช้ immutable update (spread) เพื่อให้ ngOnChanges fire: <code>[...arr, item]</code></div>
                   </div>
                 </div>
@@ -2944,14 +3015,14 @@ catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
             <!-- Common Patterns -->
             <div class="rxjs-acc">
               <button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
-                <span><svg class="i" aria-hidden="true"><use href="#i-file-code"/></svg> Common Patterns — ngOnInit, ngOnDestroy, ViewChild, ngOnChanges</span>
+                <span><svg class="i" aria-hidden="true"><use href="#i-file-code"/></svg> Common Patterns: ngOnInit, ngOnDestroy, ViewChild, ngOnChanges</span>
                 <span class="rxjs-acc-chevron">›</span>
               </button>
               <div class="rxjs-acc-bd" style="display:none">
                 <div class="rxjs-recipes-grid">
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Fetch Data ใน ngOnInit</div>
-                    <div class="rxjs-recipe-desc">ไม่ใช่ constructor — @Input พร้อมแล้ว, testable กว่า</div>
+                    <div class="rxjs-recipe-desc">ไม่ใช่ constructor: @Input พร้อมแล้ว, testable กว่า</div>
                     <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>ngOnInit(): void {
   this.userId = this.route.snapshot.params['id'];
   this.user$ = this.userService.getUser(this.userId);
@@ -2959,7 +3030,7 @@ catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
                   </div>
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Cleanup ด้วย takeUntil (ngOnDestroy)</div>
-                    <div class="rxjs-recipe-desc">Pattern มาตรฐาน — unsubscribe ทุก Observable ใน ngOnDestroy</div>
+                    <div class="rxjs-recipe-desc">Pattern มาตรฐาน: unsubscribe ทุก Observable ใน ngOnDestroy</div>
                     <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>private destroy$ = new Subject&lt;void&gt;();
 
 ngOnInit(): void {
@@ -2975,7 +3046,7 @@ ngOnDestroy(): void {
                   </div>
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">ViewChild ใน ngAfterViewInit</div>
-                    <div class="rxjs-recipe-desc">เข้าถึง DOM / child component ได้ที่นี่เท่านั้น — ไม่ใช่ ngOnInit</div>
+                    <div class="rxjs-recipe-desc">เข้าถึง DOM / child component ได้ที่นี่เท่านั้น: ไม่ใช่ ngOnInit</div>
                     <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>@ViewChild('canvas') canvasRef!: ElementRef;
 
 ngAfterViewInit(): void {
@@ -2986,7 +3057,7 @@ ngAfterViewInit(): void {
                   </div>
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">React ต่อ @Input Change</div>
-                    <div class="rxjs-recipe-desc">ใช้ ngOnChanges — แยก firstChange กับ update ออกจากกัน</div>
+                    <div class="rxjs-recipe-desc">ใช้ ngOnChanges: แยก firstChange กับ update ออกจากกัน</div>
                     <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>ngOnChanges(changes: SimpleChanges): void {
   if (changes['config'] &amp;&amp; !changes['config'].firstChange) {
     this.applyConfig(changes['config'].currentValue);
@@ -3000,26 +3071,26 @@ ngAfterViewInit(): void {
             <!-- Common Mistakes -->
             <div class="rxjs-acc">
               <button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
-                <span><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> Common Mistakes — สิ่งที่ผิดพลาดบ่อย</span>
+                <span><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> Common Mistakes: สิ่งที่ผิดพลาดบ่อย</span>
                 <span class="rxjs-acc-chevron">›</span>
               </button>
               <div class="rxjs-acc-bd" style="display:none">
                 <div class="ng-mistakes-grid">
                   <div class="ng-mistake">
                     <div class="ng-mistake-wrong"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> เข้าถึง @ViewChild ใน ngOnInit</div>
-                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ย้ายไป ngAfterViewInit — DOM ยังไม่พร้อมใน ngOnInit</div>
+                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ย้ายไป ngAfterViewInit: DOM ยังไม่พร้อมใน ngOnInit</div>
                   </div>
                   <div class="ng-mistake">
                     <div class="ng-mistake-wrong"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> HTTP call ใน constructor</div>
-                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ย้ายไป ngOnInit — @Input พร้อม + testable กว่า</div>
+                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ย้ายไป ngOnInit: @Input พร้อม + testable กว่า</div>
                   </div>
                   <div class="ng-mistake">
                     <div class="ng-mistake-wrong"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> Heavy logic ใน ngDoCheck / ngAfterViewChecked</div>
-                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> hooks เหล่านี้ run ทุก CD cycle — ใส่แค่ O(1) operation</div>
+                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> hooks เหล่านี้ run ทุก CD cycle: ใส่แค่ O(1) operation</div>
                   </div>
                   <div class="ng-mistake">
                     <div class="ng-mistake-wrong"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> ลืม unsubscribe ใน ngOnDestroy</div>
-                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ใช้ takeUntil(destroy$) หรือ AsyncPipe — ป้องกัน memory leak</div>
+                    <div class="ng-mistake-right"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ใช้ takeUntil(destroy$) หรือ AsyncPipe: ป้องกัน memory leak</div>
                   </div>
                   <div class="ng-mistake">
                     <div class="ng-mistake-wrong"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> detectChanges() ใน ngAfterViewChecked</div>
@@ -3062,54 +3133,54 @@ ngAfterViewInit(): void {
 
             <!-- Core Concepts Grid -->
             <div class="mq-section">
-              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> Core Entities — ส่วนประกอบหลักของ RabbitMQ</div>
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> Core Entities: ส่วนประกอบหลักของ RabbitMQ</div>
               <div class="mq-concepts-grid">
-                <div class="mq-concept-card" style="border-top-color:#f472b6">
+                <div class="mq-concept-card" style="border-top-color:var(--c-pink)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></div>
                   <div class="mq-concept-name">Producer</div>
-                  <div class="mq-concept-desc">แอปที่ส่ง message เข้าระบบ — เหมือน<strong>ผู้ส่งจดหมาย</strong></div>
+                  <div class="mq-concept-desc">แอปที่ส่ง message เข้าระบบ: เหมือน<strong>ผู้ส่งจดหมาย</strong></div>
                 </div>
-                <div class="mq-concept-card" style="border-top-color:#60a5fa">
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg></div>
                   <div class="mq-concept-name">Consumer</div>
-                  <div class="mq-concept-desc">แอปที่รับและประมวลผล message — เหมือน<strong>ผู้รับจดหมาย</strong></div>
+                  <div class="mq-concept-desc">แอปที่รับและประมวลผล message: เหมือน<strong>ผู้รับจดหมาย</strong></div>
                 </div>
-                <div class="mq-concept-card" style="border-top-color:#34d399">
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg></div>
                   <div class="mq-concept-name">Queue</div>
-                  <div class="mq-concept-desc">คิวเก็บ message รอส่ง — เหมือน<strong>ตู้ไปรษณีย์</strong> message อยู่จนกว่า consumer จะดึงไป</div>
+                  <div class="mq-concept-desc">คิวเก็บ message รอส่ง: เหมือน<strong>ตู้ไปรษณีย์</strong> message อยู่จนกว่า consumer จะดึงไป</div>
                 </div>
-                <div class="mq-concept-card" style="border-top-color:#fbbf24">
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg></div>
                   <div class="mq-concept-name">Exchange</div>
-                  <div class="mq-concept-desc">ตัวรับ message จาก producer แล้วกระจายไปยัง queue ตาม routing rules — เหมือน<strong>ไปรษณีย์กลาง</strong></div>
+                  <div class="mq-concept-desc">ตัวรับ message จาก producer แล้วกระจายไปยัง queue ตาม routing rules · เหมือน<strong>ไปรษณีย์กลาง</strong></div>
                 </div>
-                <div class="mq-concept-card" style="border-top-color:#a78bfa">
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></div>
                   <div class="mq-concept-name">Binding</div>
-                  <div class="mq-concept-desc">การเชื่อม Exchange กับ Queue ด้วย routing key — เหมือน<strong>ที่อยู่บนซอง</strong></div>
+                  <div class="mq-concept-desc">การเชื่อม Exchange กับ Queue ด้วย routing key: เหมือน<strong>ที่อยู่บนซอง</strong></div>
                 </div>
-                <div class="mq-concept-card" style="border-top-color:#fb7185">
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-radio"/></svg></div>
                   <div class="mq-concept-name">Channel</div>
-                  <div class="mq-concept-desc">ช่องทางสื่อสารเสมือนใน Connection หนึ่ง — ประหยัด resource กว่าการเปิด Connection ใหม่ทุกครั้ง</div>
+                  <div class="mq-concept-desc">ช่องทางสื่อสารเสมือนใน Connection หนึ่ง: ประหยัด resource กว่าการเปิด Connection ใหม่ทุกครั้ง</div>
                 </div>
-                <div class="mq-concept-card" style="border-top-color:#38bdf8">
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></div>
                   <div class="mq-concept-name">Connection</div>
-                  <div class="mq-concept-desc">TCP connection จริงระหว่าง app กับ RabbitMQ broker — หนึ่ง Connection มีได้หลาย Channel</div>
+                  <div class="mq-concept-desc">TCP connection จริงระหว่าง app กับ RabbitMQ broker: หนึ่ง Connection มีได้หลาย Channel</div>
                 </div>
-                <div class="mq-concept-card" style="border-top-color:#f97316">
+                <div class="mq-concept-card" style="border-top-color:var(--c-orange)">
                   <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-house"/></svg></div>
                   <div class="mq-concept-name">VHost</div>
-                  <div class="mq-concept-desc">Virtual Host — แยก namespace ของ exchange/queue ออกจากกัน เหมือน<strong>ห้องแยกในอาคาร</strong> เดียวกัน</div>
+                  <div class="mq-concept-desc">Virtual Host: แยก namespace ของ exchange/queue ออกจากกัน เหมือน<strong>ห้องแยกในอาคาร</strong> เดียวกัน</div>
                 </div>
               </div>
             </div>
 
             <!-- Exchange Types -->
             <div class="mq-section">
-              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg> Exchange Types — 4 ประเภทการกระจาย message</div>
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg> Exchange Types: 4 ประเภทการกระจาย message</div>
               <div class="mq-exchange-tabs">
                 <button class="mq-ex-tab mq-ex-active" data-type="direct"  onclick="mqExTab(this,'direct')"><span class="dot dot-blue" aria-hidden="true"></span> Direct</button>
                 <button class="mq-ex-tab" data-type="fanout"  onclick="mqExTab(this,'fanout')"><span class="dot dot-green" aria-hidden="true"></span> Fanout</button>
@@ -3123,10 +3194,10 @@ ngAfterViewInit(): void {
                   <div class="mq-ex-body">
                     <div class="mq-ex-info">
                       <div class="mq-ex-head">
-                        <span class="mq-ex-title" style="color:#60a5fa">Direct Exchange</span>
-                        <span class="mq-ex-use-badge" style="color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.1)">point-to-point</span>
+                        <span class="mq-ex-title" style="color:var(--c-blue)">Direct Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-blue);border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.1)">point-to-point</span>
                       </div>
-                      <div class="mq-ex-analogy" style="border-left-color:#60a5fa"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg> เหมือนส่งพัสดุ EMS — routing key ต้องตรงกัน 100% ถึงส่งถึง queue ปลายทาง</div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-blue)"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg> เหมือนส่งพัสดุ EMS: routing key ต้องตรงกัน 100% ถึงส่งถึง queue ปลายทาง</div>
                       <div class="mq-ex-desc">Producer ระบุ <code>routingKey="order.created"</code> → Exchange ส่งเฉพาะ Queue ที่ binding key ตรงกัน queue อื่นไม่ได้รับ</div>
                       <div class="mq-ex-tags">
                         <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Task queue</span>
@@ -3145,7 +3216,7 @@ ngAfterViewInit(): void {
                           <div class="mq-exv-arrkey">order.created</div>
                         </div>
                         <div class="mq-exv-side">
-                          <div class="mq-exv-exnode" style="border-color:#60a5fa;color:#60a5fa;background:rgba(96,165,250,.08)">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-blue);color:var(--c-blue);background:rgba(96,165,250,.08)">
                             <div class="mq-exv-exname">Exchange</div>
                             <div class="mq-exv-extype">direct</div>
                           </div>
@@ -3178,10 +3249,10 @@ ngAfterViewInit(): void {
                   <div class="mq-ex-body">
                     <div class="mq-ex-info">
                       <div class="mq-ex-head">
-                        <span class="mq-ex-title" style="color:#34d399">Fanout Exchange</span>
-                        <span class="mq-ex-use-badge" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.1)">broadcast</span>
+                        <span class="mq-ex-title" style="color:var(--c-green)">Fanout Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.1)">broadcast</span>
                       </div>
-                      <div class="mq-ex-analogy" style="border-left-color:#34d399"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg> เหมือนประกาศเสียงตามสาย — ส่งไปทุก Queue ที่ bind ไว้ ไม่สนใจ routing key เลย</div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-green)"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg> เหมือนประกาศเสียงตามสาย: ส่งไปทุก Queue ที่ bind ไว้ ไม่สนใจ routing key เลย</div>
                       <div class="mq-ex-desc">Producer ส่ง 1 message → Exchange กระจายไปยังทุก Queue ที่ bind ไว้พร้อมกัน ไม่มีเงื่อนไข</div>
                       <div class="mq-ex-tags">
                         <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Broadcast event</span>
@@ -3200,7 +3271,7 @@ ngAfterViewInit(): void {
                           <div class="mq-exv-arrkey">(any key)</div>
                         </div>
                         <div class="mq-exv-side">
-                          <div class="mq-exv-exnode" style="border-color:#34d399;color:#34d399;background:rgba(52,211,153,.08)">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-green);color:var(--c-green);background:rgba(52,211,153,.08)">
                             <div class="mq-exv-exname">Exchange</div>
                             <div class="mq-exv-extype">fanout</div>
                           </div>
@@ -3241,10 +3312,10 @@ ngAfterViewInit(): void {
                   <div class="mq-ex-body">
                     <div class="mq-ex-info">
                       <div class="mq-ex-head">
-                        <span class="mq-ex-title" style="color:#fbbf24">Topic Exchange</span>
-                        <span class="mq-ex-use-badge" style="color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.1)">pattern routing</span>
+                        <span class="mq-ex-title" style="color:var(--c-yellow)">Topic Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-yellow);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.1)">pattern routing</span>
                       </div>
-                      <div class="mq-ex-analogy" style="border-left-color:#fbbf24"><svg class="i" aria-hidden="true"><use href="#i-newspaper"/></svg> เหมือนสมัครรับข่าวตามหัวข้อ — <code>*</code> แทน 1 word, <code>#</code> แทน 0 คำขึ้นไป</div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-yellow)"><svg class="i" aria-hidden="true"><use href="#i-newspaper"/></svg> เหมือนสมัครรับข่าวตามหัวข้อ: <code>*</code> แทน 1 word, <code>#</code> แทน 0 คำขึ้นไป</div>
                       <div class="mq-ex-desc">Routing key รูปแบบ <code>word.word.word</code> เช่น <code>order.th.created</code><br>Queue subscribe ด้วย pattern เช่น <code>order.#</code> หรือ <code>*.th.*</code></div>
                       <div class="mq-ex-tags">
                         <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Multi-tenant routing</span>
@@ -3263,7 +3334,7 @@ ngAfterViewInit(): void {
                           <div class="mq-exv-arrkey">order.th.created</div>
                         </div>
                         <div class="mq-exv-side">
-                          <div class="mq-exv-exnode" style="border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.08)">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-yellow);color:var(--c-yellow);background:rgba(251,191,36,.08)">
                             <div class="mq-exv-exname">Exchange</div>
                             <div class="mq-exv-extype">topic</div>
                           </div>
@@ -3304,10 +3375,10 @@ ngAfterViewInit(): void {
                   <div class="mq-ex-body">
                     <div class="mq-ex-info">
                       <div class="mq-ex-head">
-                        <span class="mq-ex-title" style="color:#a78bfa">Headers Exchange</span>
-                        <span class="mq-ex-use-badge" style="color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)">content-based</span>
+                        <span class="mq-ex-title" style="color:var(--c-purple)">Headers Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-purple);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)">content-based</span>
                       </div>
-                      <div class="mq-ex-analogy" style="border-left-color:#a78bfa"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> เหมือนกรองอีเมลด้วย label — match ตาม message headers แทน routing key</div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-purple)"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> เหมือนกรองอีเมลด้วย label: match ตาม message headers แทน routing key</div>
                       <div class="mq-ex-desc">Route ตาม headers เช่น <code>{"format":"pdf"}</code> ใช้ <code>x-match: all</code> (AND) หรือ <code>x-match: any</code> (OR) เหมาะกับ routing ซับซ้อน</div>
                       <div class="mq-ex-tags">
                         <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Content-based routing</span>
@@ -3326,7 +3397,7 @@ ngAfterViewInit(): void {
                           <div class="mq-exv-arrkey">format: pdf</div>
                         </div>
                         <div class="mq-exv-side">
-                          <div class="mq-exv-exnode" style="border-color:#a78bfa;color:#a78bfa;background:rgba(167,139,250,.08)">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-purple);color:var(--c-purple);background:rgba(167,139,250,.08)">
                             <div class="mq-exv-exname">Exchange</div>
                             <div class="mq-exv-extype">headers</div>
                           </div>
@@ -3359,7 +3430,7 @@ ngAfterViewInit(): void {
 
             <!-- Message Lifecycle Animation -->
             <div class="mq-section">
-              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Message Lifecycle Animation — lifecycle ของ message</div>
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Message Lifecycle Animation: lifecycle ของ message</div>
               <div class="mq-anim-controls">
                 <button class="mq-anim-btn" onclick="mqRunAnim('lifecycle')">▶ เล่น Animation</button>
                 <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('lifecycle')">↺ Reset</button>
@@ -3411,7 +3482,7 @@ ngAfterViewInit(): void {
 
             <!-- Queue Fill/Drain Animation -->
             <div class="mq-section">
-              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Queue Backpressure — เมื่อ Consumer ช้ากว่า Producer</div>
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Queue Backpressure: เมื่อ Consumer ช้ากว่า Producer</div>
               <div class="mq-anim-controls">
                 <button class="mq-anim-btn" id="mq-qfill-btn" onclick="mqToggleQFill()">▶ เริ่ม Producer เร็ว</button>
                 <button class="mq-anim-btn mq-anim-reset" onclick="mqResetQFill()">↺ Reset</button>
@@ -3464,7 +3535,7 @@ mp.messaging.incoming.orders.x-dead-letter-routing-key=dead</pre></div>
                 <div class="mq-adv-card">
                   <div class="mq-adv-header">
                     <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg></span>
-                    <span class="mq-adv-title">Durability — ความทนทานของข้อมูล</span>
+                    <span class="mq-adv-title">Durability: ความทนทานของข้อมูล</span>
                     <span class="mq-badge mq-badge-warning">ต้องรู้</span>
                   </div>
                   <div class="mq-adv-body">
@@ -3500,11 +3571,11 @@ mp.messaging.incoming.orders.x-dead-letter-routing-key=dead</pre></div>
                 <div class="mq-adv-card">
                   <div class="mq-adv-header">
                     <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
-                    <span class="mq-adv-title">Prefetch / QoS — คุม throughput</span>
+                    <span class="mq-adv-title">Prefetch / QoS: คุม throughput</span>
                     <span class="mq-badge mq-badge-info">Performance</span>
                   </div>
                   <div class="mq-adv-body">
-                    <p>จำกัดจำนวน message ที่ RabbitMQ ส่งให้ Consumer ก่อนจะรอ ack กลับ — ป้องกัน Consumer ถูก flood</p>
+                    <p>จำกัดจำนวน message ที่ RabbitMQ ส่งให้ Consumer ก่อนจะรอ ack กลับ · ป้องกัน Consumer ถูก flood</p>
                     <div class="mq-code-snippet"><pre>// prefetch = 10 → consumer ได้รับสูงสุด 10 msg
 // ก่อน ack ใด ก็ไม่ได้รับ msg ที่ 11
 mp.messaging.incoming.orders.prefetch=10</pre></div>
@@ -3522,19 +3593,19 @@ mp.messaging.incoming.orders.prefetch=10</pre></div>
                     <div class="mq-usecase-list">
                       <div class="mq-usecase-item">
                         <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></span>
-                        <div><strong>Async Task Queue</strong> — ส่งงานหนัก (resize image, send email) ไปทำ background โดยไม่บล็อก HTTP response</div>
+                        <div><strong>Async Task Queue</strong>: ส่งงานหนัก (resize image, send email) ไปทำ background โดยไม่บล็อก HTTP response</div>
                       </div>
                       <div class="mq-usecase-item">
                         <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></span>
-                        <div><strong>Event-driven Microservices</strong> — service A publish event, service B/C/D consume แยกกัน ไม่ต้อง couple กัน</div>
+                        <div><strong>Event-driven Microservices</strong>: service A publish event, service B/C/D consume แยกกัน ไม่ต้อง couple กัน</div>
                       </div>
                       <div class="mq-usecase-item">
                         <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg></span>
-                        <div><strong>Work Queue / Load Balancing</strong> — consumer หลาย instance แย่ง task จาก queue เดียว — scale out ได้ง่าย</div>
+                        <div><strong>Work Queue / Load Balancing</strong>: consumer หลาย instance แย่ง task จาก queue เดียว · scale out ได้ง่าย</div>
                       </div>
                       <div class="mq-usecase-item">
                         <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span>
-                        <div><strong>Circuit Breaker Buffer</strong> — เมื่อ downstream ล่ม message ค้างใน queue รอจนกว่าระบบกลับมา</div>
+                        <div><strong>Circuit Breaker Buffer</strong>: เมื่อ downstream ล่ม message ค้างใน queue รอจนกว่าระบบกลับมา</div>
                       </div>
                     </div>
                   </div>
@@ -3550,7 +3621,7 @@ mp.messaging.incoming.orders.prefetch=10</pre></div>
 
             <!-- Data Structures -->
             <div class="mq-section">
-              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-folder"/></svg> Data Structures — โครงสร้างข้อมูลใน Redis</div>
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-folder"/></svg> Data Structures: โครงสร้างข้อมูลใน Redis</div>
               <div class="mq-redis-ds-tabs">
                 <button class="mq-ds-tab mq-ds-active" onclick="mqDsTab(this,'string')">String</button>
                 <button class="mq-ds-tab" onclick="mqDsTab(this,'hash')">Hash</button>
@@ -3563,16 +3634,16 @@ mp.messaging.incoming.orders.prefetch=10</pre></div>
                 <div class="mq-ds-panel" id="mq-ds-string">
                   <div class="mq-ds-header">
                     <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg></span>
-                    <span class="mq-ds-name" style="color:#60a5fa">String</span>
+                    <span class="mq-ds-name" style="color:var(--c-blue)">String</span>
                     <span class="mq-badge mq-badge-info">พื้นฐาน</span>
                   </div>
-                  <div class="mq-ds-desc">ค่าเดียวที่เป็น text, number, หรือ binary (สูงสุด 512MB) — รองรับ INCR/DECR แบบ atomic</div>
+                  <div class="mq-ds-desc">ค่าเดียวที่เป็น text, number, หรือ binary (สูงสุด 512MB): รองรับ INCR/DECR แบบ atomic</div>
                   <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> เหมือนกล่องเก็บของชิ้นเดียว</div>
                   <div class="mq-ds-usecases">
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg> <strong>Cache ผลลัพธ์ SQL/API</strong> — SET product:123 "{json}" EX 300</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hash"/></svg> <strong>Counter</strong> — INCR page:views → atomic, thread-safe</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> <strong>Rate limiting</strong> — INCR + EXPIRE ใน pipeline</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> <strong>Distributed Lock</strong> — SET lock:resource uuid NX EX 30</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg> <strong>Cache ผลลัพธ์ SQL/API</strong>: SET product:123 "{json}" EX 300</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hash"/></svg> <strong>Counter</strong>: INCR page:views → atomic, thread-safe</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> <strong>Rate limiting</strong>: INCR + EXPIRE ใน pipeline</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> <strong>Distributed Lock</strong>: SET lock:resource uuid NX EX 30</div>
                   </div>
                   <div class="mq-code-snippet"><pre>SET user:token:abc123 "eyJhbG..." EX 3600
 GET user:token:abc123
@@ -3583,15 +3654,15 @@ SETNX lock:order:789 "worker-1"  # NX = only if Not eXists</pre></div>
                 <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-hash">
                   <div class="mq-ds-header">
                     <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></span>
-                    <span class="mq-ds-name" style="color:#34d399">Hash</span>
+                    <span class="mq-ds-name" style="color:var(--c-green)">Hash</span>
                     <span class="mq-badge mq-badge-success">Session/Object</span>
                   </div>
-                  <div class="mq-ds-desc">Map ของ field → value — เหมาะสำหรับเก็บ object ที่มีหลาย field โดยไม่ต้อง serialize ทั้งก้อน</div>
-                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> เหมือนแบบฟอร์มที่มีหลายช่อง — แก้ไขทีละช่องได้โดยไม่ต้องอ่านทั้งใบ</div>
+                  <div class="mq-ds-desc">Map ของ field → value: เหมาะสำหรับเก็บ object ที่มีหลาย field โดยไม่ต้อง serialize ทั้งก้อน</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> เหมือนแบบฟอร์มที่มีหลายช่อง: แก้ไขทีละช่องได้โดยไม่ต้องอ่านทั้งใบ</div>
                   <div class="mq-ds-usecases">
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg> <strong>User Session</strong> — HSET session:abc userId "123" role "admin" exp "1234567890"</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-shopping-cart"/></svg> <strong>Shopping Cart</strong> — HSET cart:user:1 product:456 "2" product:789 "1"</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> <strong>Config Cache</strong> — เก็บ config หลาย key ใน hash เดียว</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg> <strong>User Session</strong>: HSET session:abc userId "123" role "admin" exp "1234567890"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-shopping-cart"/></svg> <strong>Shopping Cart</strong>: HSET cart:user:1 product:456 "2" product:789 "1"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> <strong>Config Cache</strong>: เก็บ config หลาย key ใน hash เดียว</div>
                   </div>
                   <div class="mq-code-snippet"><pre>HSET session:abc userId "123" name "สมชาย" role "admin"
 HGET session:abc role          # "admin"
@@ -3602,16 +3673,16 @@ HINCRBY cart:user:1 product:456 1   # เพิ่ม quantity</pre></div>
                 <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-list">
                   <div class="mq-ds-header">
                     <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg></span>
-                    <span class="mq-ds-name" style="color:#fbbf24">List</span>
+                    <span class="mq-ds-name" style="color:var(--c-yellow)">List</span>
                     <span class="mq-badge mq-badge-warning">Queue/Stack</span>
                   </div>
-                  <div class="mq-ds-desc">Linked list ของ string — push/pop จากหัว (L) หรือท้าย (R) ได้ O(1)</div>
-                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg> เหมือนรถไฟ — ต่อตู้หัว/ท้ายได้ตลอดเวลา</div>
+                  <div class="mq-ds-desc">Linked list ของ string: push/pop จากหัว (L) หรือท้าย (R) ได้ O(1)</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg> เหมือนรถไฟ: ต่อตู้หัว/ท้ายได้ตลอดเวลา</div>
                   <div class="mq-ds-usecases">
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg> <strong>Simple Queue</strong> — LPUSH + RPOP (FIFO)</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> <strong>Stack</strong> — LPUSH + LPOP (LIFO)</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-newspaper"/></svg> <strong>Activity Feed</strong> — LPUSH + LTRIM เก็บแค่ 100 รายการล่าสุด</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> <strong>Blocking Queue</strong> — BLPOP รอ message โดยไม่ poll</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg> <strong>Simple Queue</strong>: LPUSH + RPOP (FIFO)</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> <strong>Stack</strong>: LPUSH + LPOP (LIFO)</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-newspaper"/></svg> <strong>Activity Feed</strong>: LPUSH + LTRIM เก็บแค่ 100 รายการล่าสุด</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> <strong>Blocking Queue</strong>: BLPOP รอ message โดยไม่ poll</div>
                   </div>
                   <div class="mq-code-snippet"><pre>LPUSH jobs "email-123"        # push หัว
 RPOP jobs                     # pop ท้าย = FIFO queue
@@ -3622,16 +3693,16 @@ LRANGE feed:user:1 0 99       # ดู 100 รายการแรก</pre></di
                 <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-set">
                   <div class="mq-ds-header">
                     <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span>
-                    <span class="mq-ds-name" style="color:#a78bfa">Set</span>
+                    <span class="mq-ds-name" style="color:var(--c-purple)">Set</span>
                     <span class="mq-badge mq-badge-purple">Unique Members</span>
                   </div>
-                  <div class="mq-ds-desc">Collection ของ string ที่ไม่ซ้ำกัน (unordered) — รองรับ union/intersection/difference</div>
-                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> เหมือนกล่อง tag — ใส่ซ้ำไม่ได้ สลับที่ได้</div>
+                  <div class="mq-ds-desc">Collection ของ string ที่ไม่ซ้ำกัน (unordered): รองรับ union/intersection/difference</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> เหมือนกล่อง tag: ใส่ซ้ำไม่ได้ สลับที่ได้</div>
                   <div class="mq-ds-usecases">
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> <strong>Online Users</strong> — SADD online:users "user:123" → รู้ว่าใคร online</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> <strong>Tags</strong> — SADD article:1:tags "java" "quarkus" "backend"</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> <strong>Unique Visitors</strong> — SADD visitors:2024-06-29 "ip:1.2.3.4"</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> <strong>Common Friends</strong> — SINTER friends:user1 friends:user2</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> <strong>Online Users</strong>: SADD online:users "user:123" → รู้ว่าใคร online</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> <strong>Tags</strong>: SADD article:1:tags "java" "quarkus" "backend"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> <strong>Unique Visitors</strong>: SADD visitors:2024-06-29 "ip:1.2.3.4"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> <strong>Common Friends</strong>: SINTER friends:user1 friends:user2</div>
                   </div>
                   <div class="mq-code-snippet"><pre>SADD online:users "user:123" "user:456"
 SISMEMBER online:users "user:123"   # 1 (ใช่)
@@ -3642,15 +3713,15 @@ SINTER tags:java tags:backend       # intersection</pre></div>
                 <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-zset">
                   <div class="mq-ds-header">
                     <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg></span>
-                    <span class="mq-ds-name" style="color:#fb7185">Sorted Set</span>
+                    <span class="mq-ds-name" style="color:var(--c-red)">Sorted Set</span>
                     <span class="mq-badge mq-badge-danger">Leaderboard</span>
                   </div>
-                  <div class="mq-ds-desc">Set ที่แต่ละ member มี score (float) — เรียงลำดับตาม score อัตโนมัติ O(log N)</div>
-                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> เหมือนตารางคะแนน — ใส่คะแนนแล้วได้ rank ทันที</div>
+                  <div class="mq-ds-desc">Set ที่แต่ละ member มี score (float): เรียงลำดับตาม score อัตโนมัติ O(log N)</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> เหมือนตารางคะแนน: ใส่คะแนนแล้วได้ rank ทันที</div>
                   <div class="mq-ds-usecases">
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> <strong>Leaderboard</strong> — ZADD scores 9500 "player:1" → ได้ rank ทันที</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-alarm-clock"/></svg> <strong>Delayed Queue</strong> — score = timestamp → ดึง job ที่ถึงเวลา</div>
-                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> <strong>Rate Window</strong> — score = timestamp ของ request → นับ requests ใน window</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> <strong>Leaderboard</strong>: ZADD scores 9500 "player:1" → ได้ rank ทันที</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-alarm-clock"/></svg> <strong>Delayed Queue</strong>: score = timestamp → ดึง job ที่ถึงเวลา</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> <strong>Rate Window</strong>: score = timestamp ของ request → นับ requests ใน window</div>
                   </div>
                   <div class="mq-code-snippet"><pre>ZADD leaderboard 9500 "player:1" 8200 "player:2"
 ZREVRANK leaderboard "player:1"    # rank (0-based)
@@ -3673,7 +3744,7 @@ ZINCRBY leaderboard 100 "player:2"    # เพิ่ม score</pre></div>
                     <span class="mq-badge mq-badge-info">สำคัญ</span>
                   </div>
                   <div class="mq-adv-body">
-                    <p>ตั้งเวลาหมดอายุของ key — Redis ลบ key อัตโนมัติหลังหมดเวลา ไม่ต้องเขียน cleanup code</p>
+                    <p>ตั้งเวลาหมดอายุของ key: Redis ลบ key อัตโนมัติหลังหมดเวลา ไม่ต้องเขียน cleanup code</p>
                     <div class="mq-code-snippet"><pre>SET session:abc "data" EX 3600      # หมดใน 1 ชั่วโมง
 EXPIRE key 300                       # ตั้ง TTL ทีหลัง
 TTL key                              # เหลืออีกกี่วินาที
@@ -3708,7 +3779,7 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
                 <div class="mq-adv-card">
                   <div class="mq-adv-header">
                     <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-radio"/></svg></span>
-                    <span class="mq-adv-title">Pub/Sub — vs RabbitMQ</span>
+                    <span class="mq-adv-title">Pub/Sub: vs RabbitMQ</span>
                     <span class="mq-badge mq-badge-purple">Realtime</span>
                   </div>
                   <div class="mq-adv-body">
@@ -3750,17 +3821,17 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
                     <div class="mq-cache-pattern">
                       <div class="mq-cp-name">Cache-Aside (Lazy)</div>
                       <div class="mq-cp-flow">App → Redis (miss?) → DB → store in Redis → return</div>
-                      <div class="mq-cp-when">ใช้บ่อยที่สุด — App control cache เอง</div>
+                      <div class="mq-cp-when">ใช้บ่อยที่สุด: App control cache เอง</div>
                     </div>
                     <div class="mq-cache-pattern">
                       <div class="mq-cp-name">Write-Through</div>
                       <div class="mq-cp-flow">App → เขียน DB + Redis พร้อมกัน</div>
-                      <div class="mq-cp-when">Cache ตรงกับ DB เสมอ — write ช้ากว่า</div>
+                      <div class="mq-cp-when">Cache ตรงกับ DB เสมอ: write ช้ากว่า</div>
                     </div>
                     <div class="mq-cache-pattern">
                       <div class="mq-cp-name">Write-Behind (Write-Back)</div>
                       <div class="mq-cp-flow">App → เขียน Redis → async flush → DB</div>
-                      <div class="mq-cp-when">Write เร็วมาก — risk data loss หาก crash</div>
+                      <div class="mq-cp-when">Write เร็วมาก: risk data loss หาก crash</div>
                     </div>
                   </div>
                 </div>
@@ -3855,42 +3926,42 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
               <div class="mq-q-overview">
 
                 <!-- RabbitMQ card -->
-                <div class="mq-q-ext-card" style="border-top-color:#f472b6">
+                <div class="mq-q-ext-card" style="border-top-color:var(--c-pink)">
                   <div class="mq-q-ext-head">
                     <span class="mq-q-ext-icon"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></span>
-                    <span class="mq-q-ext-badge" style="background:#f472b6">RabbitMQ</span>
+                    <span class="mq-q-ext-badge" style="background:var(--c-pink)">RabbitMQ</span>
                   </div>
                   <div class="mq-q-ext-name">quarkus-smallrye-reactive-messaging-rabbitmq</div>
                   <div class="mq-q-ext-cmd-wrap">
                     <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
                     <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="smallrye-reactive-messaging-rabbitmq"</code></div>
                   </div>
-                  <div class="mq-q-ext-desc">SmallRye Reactive Messaging — annotation-driven, non-blocking, reactive โดย default</div>
+                  <div class="mq-q-ext-desc">SmallRye Reactive Messaging: annotation-driven, non-blocking, reactive โดย default</div>
                   <div class="mq-q-ext-features">
-                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">@Incoming / @Outgoing</span>
-                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">Emitter&lt;T&gt;</span>
-                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">ack / nack</span>
-                    <span class="mq-q-ext-feat" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">DLQ support</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">@Incoming / @Outgoing</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">Emitter&lt;T&gt;</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">ack / nack</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">DLQ support</span>
                   </div>
                 </div>
 
                 <!-- Redis card -->
-                <div class="mq-q-ext-card" style="border-top-color:#34d399">
+                <div class="mq-q-ext-card" style="border-top-color:var(--c-green)">
                   <div class="mq-q-ext-head">
                     <span class="mq-q-ext-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
-                    <span class="mq-q-ext-badge" style="background:#34d399">Redis</span>
+                    <span class="mq-q-ext-badge" style="background:var(--c-green)">Redis</span>
                   </div>
                   <div class="mq-q-ext-name">quarkus-redis-client</div>
                   <div class="mq-q-ext-cmd-wrap">
                     <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
                     <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="redis-client"</code></div>
                   </div>
-                  <div class="mq-q-ext-desc">Vert.x Redis client — รองรับทั้ง reactive และ blocking API พร้อม type-safe commands</div>
+                  <div class="mq-q-ext-desc">Vert.x Redis client: รองรับทั้ง reactive และ blocking API พร้อม type-safe commands</div>
                   <div class="mq-q-ext-features">
-                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">StringCommands</span>
-                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">HashCommands</span>
-                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">KeyCommands</span>
-                    <span class="mq-q-ext-feat" style="color:#34d399;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">TTL / Pub-Sub</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">StringCommands</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">HashCommands</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">KeyCommands</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">TTL / Pub-Sub</span>
                   </div>
                 </div>
 
@@ -3899,7 +3970,7 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
 
             <!-- application.properties -->
             <div class="mq-section">
-              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> application.properties — Config Keys ที่ต้องรู้</div>
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> application.properties: Config Keys ที่ต้องรู้</div>
               <div class="mq-props-tabs">
                 <button class="mq-props-tab mq-props-active" onclick="mqPropsTab(this,'rabbit-props')">RabbitMQ</button>
                 <button class="mq-props-tab" onclick="mqPropsTab(this,'redis-props')">Redis</button>
@@ -3966,13 +4037,13 @@ quarkus.redis.tls.enabled=true</code></pre>
 
             <!-- Code Examples -->
             <div class="mq-section">
-              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Examples — ตัวอย่างโค้ด Java / Quarkus</div>
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Examples: ตัวอย่างโค้ด Java / Quarkus</div>
 
               <!-- Example 1: Producer -->
               <div class="mq-code-example">
                 <div class="mq-ce-header">
                   <span class="mq-ce-num">1</span>
-                  <span class="mq-ce-title">RabbitMQ Producer — REST Endpoint → Publish to Queue</span>
+                  <span class="mq-ce-title">RabbitMQ Producer: REST Endpoint → Publish to Queue</span>
                   <span class="mq-badge mq-badge-info">Emitter&lt;T&gt;</span>
                 </div>
                 <div class="mq-ce-desc">ใช้ <code>@Channel</code> + <code>Emitter&lt;String&gt;</code> ใน REST endpoint เพื่อส่ง message เข้า RabbitMQ แบบ non-blocking</div>
@@ -4003,7 +4074,7 @@ public class OrderResource {
         // สร้าง JSON payload (หรือ serialize ด้วย Jackson)
         String payload = "{\"orderId\":\"" + req.id + "\",\"amount\":" + req.amount + "}";
 
-        // ส่ง message — non-blocking, fire-and-forget
+        // ส่ง message - non-blocking, fire-and-forget
         orderEmitter.send(payload);
 
         return Response.accepted()
@@ -4023,10 +4094,10 @@ public class OrderResource {
               <div class="mq-code-example">
                 <div class="mq-ce-header">
                   <span class="mq-ce-num">2</span>
-                  <span class="mq-ce-title">RabbitMQ Consumer — @Incoming + Message&lt;T&gt; wrapper</span>
+                  <span class="mq-ce-title">RabbitMQ Consumer: @Incoming + Message&lt;T&gt; wrapper</span>
                   <span class="mq-badge mq-badge-success">@Incoming</span>
                 </div>
-                <div class="mq-ce-desc">ใช้ <code>@Incoming</code> เพื่อรับ message — ใช้ <code>Message&lt;T&gt;</code> wrapper เพื่อควบคุม ack/nack เองได้</div>
+                <div class="mq-ce-desc">ใช้ <code>@Incoming</code> เพื่อรับ message: ใช้ <code>Message&lt;T&gt;</code> wrapper เพื่อควบคุม ack/nack เองได้</div>
                 <div class="mq-code-block">
                   <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
                   <pre class="mq-code"><code class="language-java">import org.eclipse.microprofile.reactive.messaging.Incoming;
@@ -4075,10 +4146,10 @@ public class OrderConsumer {
               <div class="mq-code-example">
                 <div class="mq-ce-header">
                   <span class="mq-ce-num">3</span>
-                  <span class="mq-ce-title">Redis Cache-Aside Pattern — ตรวจ Cache ก่อน ถ้า Miss ดึงจาก DB</span>
+                  <span class="mq-ce-title">Redis Cache-Aside Pattern: ตรวจ Cache ก่อน ถ้า Miss ดึงจาก DB</span>
                   <span class="mq-badge mq-badge-warning">StringCommands</span>
                 </div>
-                <div class="mq-ce-desc">Pattern ที่ใช้บ่อยที่สุด — ลด load จาก DB สูงสุด 90% สำหรับข้อมูลที่อ่านบ่อย</div>
+                <div class="mq-ce-desc">Pattern ที่ใช้บ่อยที่สุด: ลด load จาก DB สูงสุด 90% สำหรับข้อมูลที่อ่านบ่อย</div>
                 <div class="mq-code-block">
                   <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
@@ -4111,7 +4182,7 @@ public class ProductService {
         }
 
         // Step 2: Cache MISS → ดึงจาก DB
-        System.out.println("Cache MISS — querying DB for " + cacheKey);
+        System.out.println("Cache MISS - querying DB for " + cacheKey);
         Product product = productRepo.findById(productId);
         if (product == null) return null;
 
@@ -4140,10 +4211,10 @@ public class ProductService {
               <div class="mq-code-example">
                 <div class="mq-ce-header">
                   <span class="mq-ce-num">4</span>
-                  <span class="mq-ce-title">Redis Session Storage — Hash HSET/HGET</span>
+                  <span class="mq-ce-title">Redis Session Storage: Hash HSET/HGET</span>
                   <span class="mq-badge mq-badge-purple">HashCommands</span>
                 </div>
-                <div class="mq-ce-desc">เก็บ user session ใน Redis Hash — แก้ไขแต่ละ field ได้โดยไม่ต้อง serialize ทั้งก้อน</div>
+                <div class="mq-ce-desc">เก็บ user session ใน Redis Hash: แก้ไขแต่ละ field ได้โดยไม่ต้อง serialize ทั้งก้อน</div>
                 <div class="mq-code-block">
                   <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
@@ -4170,7 +4241,7 @@ public class SessionService {
         String key = "session:" + sessionId;
 
         // HSET session:&lt;id&gt; userId "123" role "admin" createdAt "..."
-        // hset รับ Map — ไม่มี varargs version ใน Quarkus Redis API
+        // hset รับ Map - ไม่มี varargs version ใน Quarkus Redis API
         hashCmds.hset(key, Map.of(
             "userId",    userId,
             "role",      role,
@@ -4208,7 +4279,7 @@ public class SessionService {
                   <span class="mq-ce-title">Rate Limiting ด้วย Redis INCR + EXPIRE</span>
                   <span class="mq-badge mq-badge-danger">INCR + TTL</span>
                 </div>
-                <div class="mq-ce-desc">จำกัด API calls ต่อ IP หรือ user — ใช้ INCR + EXPIRE แบบ atomic — ตัวอย่าง: 100 requests/minute</div>
+                <div class="mq-ce-desc">จำกัด API calls ต่อ IP หรือ user: ใช้ INCR + EXPIRE แบบ atomic · ตัวอย่าง: 100 requests/minute</div>
                 <div class="mq-code-block">
                   <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
@@ -4240,7 +4311,7 @@ public class RateLimiter {
     public void checkRateLimit(String identifier) {
         String key = "rate:" + identifier + ":" + getCurrentMinuteBucket();
 
-        // INCR เป็น atomic — ได้ค่า count ใหม่ทันที ไม่มี race condition
+        // INCR เป็น atomic - ได้ค่า count ใหม่ทันที ไม่มี race condition
         long count = stringCmds.incr(key);
 
         if (count == 1) {
@@ -4260,7 +4331,7 @@ public class RateLimiter {
         }
     }
 
-    /** Bucket ต่อนาที — key เปลี่ยนทุก 60 วินาทีอัตโนมัติ */
+    /** Bucket ต่อนาที - key เปลี่ยนทุก 60 วินาทีอัตโนมัติ */
     private String getCurrentMinuteBucket() {
         return String.valueOf(System.currentTimeMillis() / (WINDOW_SECONDS * 1000L));
     }
@@ -4286,12 +4357,12 @@ public class RateLimiter {
               <div class="mq-ann-grid">
                 <div class="mq-ann-card">
                   <div class="mq-ann-name">@Incoming("channel")</div>
-                  <div class="mq-ann-desc">รับ message จาก channel ที่กำหนด — ใส่บน method ใน @ApplicationScoped bean</div>
+                  <div class="mq-ann-desc">รับ message จาก channel ที่กำหนด: ใส่บน method ใน @ApplicationScoped bean</div>
                   <div class="mq-ann-note">method parameter = payload type หรือ Message&lt;T&gt;</div>
                 </div>
                 <div class="mq-ann-card">
                   <div class="mq-ann-name">@Outgoing("channel")</div>
-                  <div class="mq-ann-desc">ส่ง message ออกไปยัง channel — ใส่บน method ที่ return ค่า</div>
+                  <div class="mq-ann-desc">ส่ง message ออกไปยัง channel: ใส่บน method ที่ return ค่า</div>
                   <div class="mq-ann-note">return type = T, Message&lt;T&gt;, Publisher&lt;T&gt;</div>
                 </div>
                 <div class="mq-ann-card">
@@ -4331,34 +4402,34 @@ public class RateLimiter {
           <div id="stor-overview" class="stor-view">
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> Storage Lifetime — ข้อมูลอยู่ได้นานแค่ไหน?</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> Storage Lifetime: ข้อมูลอยู่ได้นานแค่ไหน?</div>
               <div class="stor-section-sub">กด "ปิด Tab" หรือ "ล้างข้อมูล" ดูว่า storage แต่ละชนิดตอบสนองอย่างไร</div>
               <div class="stor-lifetime">
                 <div class="stor-lifetime-title"><span class="dot dot-green" aria-hidden="true"></span> สถานะข้อมูล</div>
 
                 <div class="stor-bar-row" id="stor-bar-local">
                   <div class="stor-bar-name">localStorage</div>
-                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#60a5fa"></div></div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-blue)"></div></div>
                   <div class="stor-bar-label">ถาวร</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-session">
                   <div class="stor-bar-name">sessionStorage</div>
-                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#fb923c"></div></div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-orange)"></div></div>
                   <div class="stor-bar-label">อยู่ใน tab นี้</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-idb">
                   <div class="stor-bar-name">IndexedDB</div>
-                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#a78bfa"></div></div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-purple)"></div></div>
                   <div class="stor-bar-label">ถาวร</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-cookie">
                   <div class="stor-bar-name">Cookie (TTL)</div>
-                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#34d399"></div></div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-green)"></div></div>
                   <div class="stor-bar-label">จนหมด TTL</div>
                 </div>
                 <div class="stor-bar-row" id="stor-bar-cache">
                   <div class="stor-bar-name">Cache API</div>
-                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:#f472b6"></div></div>
+                  <div class="stor-bar-track"><div class="stor-bar-fill" style="width:100%;background:var(--c-pink)"></div></div>
                   <div class="stor-bar-label">ถาวร</div>
                 </div>
 
@@ -4380,37 +4451,37 @@ public class RateLimiter {
                   </tr></thead>
                   <tbody>
                     <tr onclick="document.querySelector('[onclick*=stor-local]').click()">
-                      <td><span class="stor-cmp-name" style="color:#60a5fa">localStorage</span></td>
-                      <td>5–10 MB</td><td>string</td><td>ถาวร</td>
+                      <td><span class="stor-cmp-name" style="color:var(--c-blue)">localStorage</span></td>
+                      <td>5-10 MB</td><td>string</td><td>ถาวร</td>
                       <td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
                       <td>settings, theme, preferences</td>
                     </tr>
                     <tr onclick="document.querySelector('[onclick*=stor-session]').click()">
-                      <td><span class="stor-cmp-name" style="color:#fb923c">sessionStorage</span></td>
+                      <td><span class="stor-cmp-name" style="color:var(--c-orange)">sessionStorage</span></td>
                       <td>5 MB</td><td>string</td><td>ปิด tab = หาย</td>
                       <td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
                       <td>wizard, multi-step form</td>
                     </tr>
                     <tr onclick="document.querySelector('[onclick*=stor-idb]').click()">
-                      <td><span class="stor-cmp-name" style="color:#a78bfa">IndexedDB</span></td>
+                      <td><span class="stor-cmp-name" style="color:var(--c-purple)">IndexedDB</span></td>
                       <td>GB+</td><td>Object, Blob, File…</td><td>ถาวร</td>
                       <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td>
                       <td>offline data, draft, profile cache</td>
                     </tr>
                     <tr onclick="document.querySelector('[onclick*=stor-cookie]').click()">
-                      <td><span class="stor-cmp-name" style="color:#34d399">Cookie</span></td>
+                      <td><span class="stor-cmp-name" style="color:var(--c-green)">Cookie</span></td>
                       <td>4 KB</td><td>string</td><td>มี expires</td>
                       <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
                       <td>auth token (httpOnly)</td>
                     </tr>
                     <tr onclick="document.querySelector('[onclick*=stor-cache]').click()">
-                      <td><span class="stor-cmp-name" style="color:#f472b6">Cache API</span></td>
+                      <td><span class="stor-cmp-name" style="color:var(--c-pink)">Cache API</span></td>
                       <td>GB+</td><td>HTTP Request/Response</td><td>ถาวร</td>
                       <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
                       <td>PWA offline, static assets</td>
                     </tr>
                     <tr>
-                      <td><span class="stor-cmp-name" style="color:#fbbf24">OPFS</span></td>
+                      <td><span class="stor-cmp-name" style="color:var(--c-yellow)">OPFS</span></td>
                       <td>GB+</td><td>File (binary)</td><td>ถาวร</td>
                       <td><span class="stor-cmp-ok"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span></td><td><span class="stor-cmp-no"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span></td>
                       <td>ไฟล์ใหญ่, SQLite-in-browser</td>
@@ -4427,9 +4498,9 @@ public class RateLimiter {
 
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> localStorage คืออะไร?</div>
-              <div class="stor-section-sub">เก็บ key-value แบบ string — ง่าย synchronous ไม่หายแม้ปิด browser</div>
+              <div class="stor-section-sub">เก็บ key-value แบบ string: ง่าย synchronous ไม่หายแม้ปิด browser</div>
               <div class="stor-info-grid">
-                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">5–10 MB</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">5-10 MB</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string เท่านั้น</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ถาวร</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">Blocking</div><div class="stor-info-val">ใช่ (sync)</div></div>
@@ -4487,11 +4558,11 @@ for (let i = 0; i &lt; localStorage.length; i++) {
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
               <div class="stor-rules">
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">เก็บ theme, language, UI preferences — ข้อมูลเล็กที่ user ตั้งค่าไว้</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">เก็บ theme, language, UI preferences: ข้อมูลเล็กที่ user ตั้งค่าไว้</span></div>
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Last active tab, sidebar state, form draft เล็กๆ</span></div>
-                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">เก็บ auth token หรือ JWT — XSS ขโมยได้ทันที ใช้ httpOnly cookie แทน</span></div>
-                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลใหญ่กว่า 5 MB — จะ throw QuotaExceededError</span></div>
-                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">ข้อมูลที่ต้องการค้นหา/filter — ใช้ IndexedDB แทน</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">เก็บ auth token หรือ JWT: XSS ขโมยได้ทันที ใช้ httpOnly cookie แทน</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลใหญ่กว่า 5 MB: จะ throw QuotaExceededError</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">ข้อมูลที่ต้องการค้นหา/filter: ใช้ IndexedDB แทน</span></div>
               </div>
               <div class="stor-use-list">
                 <span class="stor-use-pill">Theme switcher</span>
@@ -4509,21 +4580,21 @@ for (let i = 0; i &lt; localStorage.length; i++) {
 
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-window"/></svg> sessionStorage คืออะไร?</div>
-              <div class="stor-section-sub">เหมือน localStorage แต่ข้อมูลหายเมื่อปิด tab — แต่ละ tab มี storage แยกกัน</div>
+              <div class="stor-section-sub">เหมือน localStorage แต่ข้อมูลหายเมื่อปิด tab: แต่ละ tab มี storage แยกกัน</div>
               <div class="stor-info-grid">
                 <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">5 MB</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string เท่านั้น</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">Lifetime</div><div class="stor-info-val">ปิด tab = หาย</div></div>
-                <div class="stor-info-card"><div class="stor-info-label">Tab isolation</div><div class="stor-info-val">ใช่ — แยกต่อ tab</div></div>
+                <div class="stor-info-card"><div class="stor-info-label">Tab isolation</div><div class="stor-info-val">ใช่: แยกต่อ tab</div></div>
               </div>
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-window"/></svg> Tab Isolation — แต่ละ tab มีข้อมูลต่างกัน</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-window"/></svg> Tab Isolation: แต่ละ tab มีข้อมูลต่างกัน</div>
               <div class="stor-section-sub">เปิด tab ใหม่ → sessionStorage ใหม่ (ว่างเปล่า) แม้เปิด URL เดียวกัน</div>
               <div class="stor-tabs-vis">
                 <div class="stor-tab-box">
-                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab A — Checkout Step 2</div>
+                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab A: Checkout Step 2</div>
                   <div class="stor-tab-body">
                     <div class="stor-tab-kv"><span class="stor-tab-k">checkoutStep</span><span>:</span><span class="stor-tab-v">"2"</span></div>
                     <div class="stor-tab-kv"><span class="stor-tab-k">cartItems</span><span>:</span><span class="stor-tab-v">"[{...}]"</span></div>
@@ -4531,7 +4602,7 @@ for (let i = 0; i &lt; localStorage.length; i++) {
                   </div>
                 </div>
                 <div class="stor-tab-box">
-                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab B — เพิ่งเปิดใหม่</div>
+                  <div class="stor-tab-bar"><span class="stor-tab-dot"></span> Tab B: เพิ่งเปิดใหม่</div>
                   <div class="stor-tab-body">
                     <div class="stor-tab-empty">sessionStorage ว่างเปล่า</div>
                     <div class="stor-tab-empty">(ไม่เห็นข้อมูลของ Tab A)</div>
@@ -4573,9 +4644,9 @@ sessionStorage.length;</pre>
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
               <div class="stor-rules">
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Multi-step form / wizard — เก็บ state ระหว่างขั้นตอน ล้างหลัง submit</span></div>
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">OTP flow, checkout — ข้อมูลชั่วคราวที่ควรหายเมื่อปิด tab</span></div>
-                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลที่ต้องอยู่ข้าม tab หรือหลังปิด browser — ใช้ localStorage แทน</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Multi-step form / wizard: เก็บ state ระหว่างขั้นตอน ล้างหลัง submit</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">OTP flow, checkout: ข้อมูลชั่วคราวที่ควรหายเมื่อปิด tab</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลที่ต้องอยู่ข้าม tab หรือหลังปิด browser: ใช้ localStorage แทน</span></div>
                 <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">Ctrl+D duplicate tab → sessionStorage ถูก clone ไปด้วย (ระวัง duplicate state)</span></div>
               </div>
             </div>
@@ -4587,7 +4658,7 @@ sessionStorage.length;</pre>
 
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg> IndexedDB คืออะไร?</div>
-              <div class="stor-section-sub">Database จริงๆ ใน browser — เก็บ Object ได้โดยตรง, มี index ค้นหาได้, async ทั้งหมด</div>
+              <div class="stor-section-sub">Database จริงๆ ใน browser: เก็บ Object ได้โดยตรง, มี index ค้นหาได้, async ทั้งหมด</div>
               <div class="stor-info-grid">
                 <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">GB+</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">ทุกอย่าง (Object, Blob, File)</div></div>
@@ -4597,8 +4668,8 @@ sessionStorage.length;</pre>
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-gamepad"/></svg> Object Store — ลอง CRUD ได้เลย</div>
-              <div class="stor-section-sub">นี่คือ visual demo — เหมือนกับ IndexedDB Object Store ใน browser จริง</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-gamepad"/></svg> Object Store: ลอง CRUD ได้เลย</div>
+              <div class="stor-section-sub">นี่คือ visual demo: เหมือนกับ IndexedDB Object Store ใน browser จริง</div>
               <div class="stor-idb-controls">
                 <input class="stor-idb-search" placeholder="ค้นหา name หรือ role…" oninput="storIdbSearch(this.value)" />
                 <button class="stor-play-btn stor-play-primary" onclick="storIdbAdd()">+ Add Record</button>
@@ -4612,7 +4683,7 @@ sessionStorage.length;</pre>
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code — Dexie.js (แนะนำ)</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Dexie.js (แนะนำ)</div>
               <div class="stor-section-sub">Dexie.js คือ wrapper บาง Promise-based ที่ทำให้ IndexedDB ง่ายมาก</div>
               <div class="stor-code-block">
                 <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
@@ -4649,10 +4720,10 @@ await db.users.where('role').equals('guest').delete();</pre>
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code — Raw IndexedDB API (ไม่แนะนำ แต่รู้ไว้)</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Raw IndexedDB API (ไม่แนะนำ แต่รู้ไว้)</div>
               <div class="stor-code-block">
                 <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
-                <pre class="stor-code">// Raw API verbose มาก — ใช้ Dexie แทนดีกว่า
+                <pre class="stor-code">// Raw API verbose มาก - ใช้ Dexie แทนดีกว่า
 const request = indexedDB.open('myApp', 1);
 
 request.onupgradeneeded = (e) => {
@@ -4674,11 +4745,11 @@ request.onsuccess = (e) => {
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
               <div class="stor-rules">
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Cache API response — เก็บ product list, article, user profile ไว้ใช้ offline</span></div>
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Draft / unsent form — เก็บข้อมูลที่ยังไม่ submit ค้างไว้ระหว่าง session</span></div>
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">รูปภาพ / ไฟล์ — เก็บ Blob ได้โดยตรง ไม่ต้อง base64 encode</span></div>
-                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">Auth token — XSS อ่านได้ ใช้ httpOnly cookie เสมอ</span></div>
-                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">ข้อมูลเล็กๆ เช่น theme, setting — localStorage ง่ายกว่า เหมาะกว่า</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Cache API response: เก็บ product list, article, user profile ไว้ใช้ offline</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Draft / unsent form: เก็บข้อมูลที่ยังไม่ submit ค้างไว้ระหว่าง session</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">รูปภาพ / ไฟล์: เก็บ Blob ได้โดยตรง ไม่ต้อง base64 encode</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">Auth token: XSS อ่านได้ ใช้ httpOnly cookie เสมอ</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">ข้อมูลเล็กๆ เช่น theme, setting: localStorage ง่ายกว่า เหมาะกว่า</span></div>
               </div>
             </div>
 
@@ -4689,7 +4760,7 @@ request.onsuccess = (e) => {
 
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-cookie"/></svg> Cookies คืออะไร?</div>
-              <div class="stor-section-sub">ส่งไปกับทุก HTTP request อัตโนมัติ — เหมาะกับ auth token ที่ server ต้องอ่าน</div>
+              <div class="stor-section-sub">ส่งไปกับทุก HTTP request อัตโนมัติ: เหมาะกับ auth token ที่ server ต้องอ่าน</div>
               <div class="stor-info-grid">
                 <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">4 KB ต่อ cookie</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">string (key=value)</div></div>
@@ -4749,7 +4820,7 @@ request.onsuccess = (e) => {
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Example</div>
               <div class="stor-code-block">
                 <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
-                <pre class="stor-code">// ── Server-side (Node.js / Express) — แนะนำ ──
+                <pre class="stor-code">// ── Server-side (Node.js / Express) - แนะนำ ──
 res.cookie('session', token, {
   httpOnly: true,   // ← JS อ่านไม่ได้ (สำคัญมาก!)
   secure:   true,   // ← HTTPS เท่านั้น
@@ -4774,9 +4845,9 @@ document.cookie = "lang=; max-age=0; path=/";
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
               <div class="stor-rules">
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Auth token / session ID — httpOnly + Secure + SameSite=Strict เท่านั้น</span></div>
-                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลใหญ่ — 4 KB limit และส่งไปกับทุก request (ทำให้ request ใหญ่ขึ้น)</span></div>
-                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">Sensitive data ใน non-httpOnly cookie — JS อ่านได้ = XSS อ่านได้</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Auth token / session ID: httpOnly + Secure + SameSite=Strict เท่านั้น</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลใหญ่: 4 KB limit และส่งไปกับทุก request (ทำให้ request ใหญ่ขึ้น)</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">Sensitive data ใน non-httpOnly cookie: JS อ่านได้ = XSS อ่านได้</span></div>
               </div>
             </div>
 
@@ -4787,7 +4858,7 @@ document.cookie = "lang=; max-age=0; path=/";
 
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Cache API คืออะไร?</div>
-              <div class="stor-section-sub">เก็บ HTTP Request/Response — ใช้กับ Service Worker เพื่อทำ PWA offline</div>
+              <div class="stor-section-sub">เก็บ HTTP Request/Response: ใช้กับ Service Worker เพื่อทำ PWA offline</div>
               <div class="stor-info-grid">
                 <div class="stor-info-card"><div class="stor-info-label">ขนาด</div><div class="stor-info-val">GB+</div></div>
                 <div class="stor-info-card"><div class="stor-info-label">ประเภท</div><div class="stor-info-val">HTTP Request/Response</div></div>
@@ -4797,7 +4868,7 @@ document.cookie = "lang=; max-age=0; path=/";
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Service Worker Intercept — Cache Hit vs Miss</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Service Worker Intercept: Cache Hit vs Miss</div>
               <div class="stor-cache-vis">
                 <div class="stor-cache-btns">
                   <button class="stor-lt-btn" onclick="storCacheAnim('first')"><svg class="i" aria-hidden="true"><use href="#i-radio"/></svg> Request ครั้งแรก (Cache Miss)</button>
@@ -4811,7 +4882,7 @@ document.cookie = "lang=; max-age=0; path=/";
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code — Service Worker (sw.js ของ dev-tools นี้)</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Service Worker (sw.js ของ dev-tools นี้)</div>
               <div class="stor-code-block">
                 <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
                 <pre class="stor-code">const CACHE = 'myapp-v1';
@@ -4855,10 +4926,10 @@ self.addEventListener('fetch', e => {
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
               <div class="stor-rules">
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">PWA offline support — HTML, CSS, JS, รูปภาพ, fonts</span></div>
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Performance — ลด network round-trip สำหรับ static assets</span></div>
-                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">เก็บ JSON data ทั่วไป — ใช้ IndexedDB แทน Cache API เก็บได้แค่ HTTP Response</span></div>
-                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">Cache invalidation — ต้อง bump cache version เมื่อ deploy ใหม่ ไม่งั้น user ได้ของเก่า</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">PWA offline support: HTML, CSS, JS, รูปภาพ, fonts</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Performance: ลด network round-trip สำหรับ static assets</span></div>
+                <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">เก็บ JSON data ทั่วไป: ใช้ IndexedDB แทน Cache API เก็บได้แค่ HTTP Response</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">Cache invalidation: ต้อง bump cache version เมื่อ deploy ใหม่ ไม่งั้น user ได้ของเก่า</span></div>
               </div>
             </div>
 
@@ -4868,7 +4939,7 @@ self.addEventListener('fetch', e => {
           <div id="stor-security" class="stor-view stor-hidden">
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-skull"/></svg> XSS Attack — ขโมยข้อมูลจาก Storage ได้ไหม?</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-skull"/></svg> XSS Attack: ขโมยข้อมูลจาก Storage ได้ไหม?</div>
               <div class="stor-section-sub">เลือก storage type ดูว่า attacker อ่านได้ไหม</div>
               <div class="stor-xss-tabs">
                 <button class="stor-xss-tab stor-xss-tab-active" data-id="ls"  onclick="storXssSelect('ls')">localStorage</button>
@@ -4880,19 +4951,19 @@ self.addEventListener('fetch', e => {
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Best Practices — กฎที่ต้องจำ</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Best Practices: กฎที่ต้องจำ</div>
               <div class="stor-rules">
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text"><strong>Auth token → httpOnly Cookie เท่านั้น</strong> ไม่ใช่ localStorage, sessionStorage, หรือ IndexedDB</span></div>
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ <code>Secure</code> + <code>SameSite=Strict</code> กับทุก auth cookie</span></div>
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Sanitize ทุก user input ก่อนแสดงผล — ป้องกัน XSS ตั้งแต่ต้นทาง</span></div>
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ Content Security Policy (CSP) header — จำกัด script ที่รันได้</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Sanitize ทุก user input ก่อนแสดงผล: ป้องกัน XSS ตั้งแต่ต้นทาง</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ Content Security Policy (CSP) header: จำกัด script ที่รันได้</span></div>
                 <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">อย่าเก็บ password, เลขบัตรเครดิต, เลขบัตรประชาชน ใน storage ใดๆ ทั้งสิ้น</span></div>
-                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">IndexedDB ไม่ encrypt — ใครเข้าถึงเครื่องได้อ่านข้อมูลได้ อย่าเก็บ sensitive data</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">IndexedDB ไม่ encrypt: ใครเข้าถึงเครื่องได้อ่านข้อมูลได้ อย่าเก็บ sensitive data</span></div>
               </div>
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> Decision Tree — ใช้ storage ไหนดี?</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> Decision Tree: ใช้ storage ไหนดี?</div>
               <div class="stor-section-sub">ตอบคำถามเพื่อรับคำแนะนำ</div>
               <div id="stor-dt-box" class="stor-dt-box"></div>
             </div>
@@ -4903,7 +4974,7 @@ self.addEventListener('fetch', e => {
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon">F12</span><span class="stor-rule-text">เปิด DevTools → แท็บ <strong>Application</strong> (หรือ Storage)</span></div>
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></span><span class="stor-rule-text">ซ้ายมือ: Local Storage, Session Storage, IndexedDB, Cookies, Cache Storage</span></div>
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></span><span class="stor-rule-text">คลิกที่แต่ละ origin เพื่อดู/แก้ไข/ลบข้อมูลได้ทันที</span></div>
-                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">httpOnly cookie จะแสดงใน DevTools แต่ JS อ่านไม่ได้ — นี่คือพฤติกรรมที่ถูกต้อง</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">httpOnly cookie จะแสดงใน DevTools แต่ JS อ่านไม่ได้: นี่คือพฤติกรรมที่ถูกต้อง</span></div>
               </div>
             </div>
 
@@ -4936,8 +5007,16 @@ self.addEventListener('fetch', e => {
             </div>
             <div class="lov-status-row">
               <span id="lov-version" style="display:none;"></span>
-              <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);">ยังไม่ได้เลือกโฟลเดอร์ — เลือกโฟลเดอร์รีโป (เช่น <code>dlpw-ctl-quarkus</code>) แล้วจะหา <code>src/main/resources/template/query</code> หรือ <code>src/main/resources/queries</code> ให้เอง · เลือกโฟลเดอร์ query ตรง ๆ ก็ได้</div>
+              <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);">ยังไม่ได้เลือกโฟลเดอร์: เลือกโฟลเดอร์รีโป (เช่น <code>dlpw-ctl-quarkus</code>) แล้วจะหา <code>src/main/resources/template/query</code> หรือ <code>src/main/resources/queries</code> ให้เอง · เลือกโฟลเดอร์ query ตรง ๆ ก็ได้</div>
             </div>
+            <section class="card lov-intro" id="lov-intro">
+              <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-folder-open"/></svg> เริ่มใช้งาน</div>
+              <ol>
+                <li>กด <b>เลือกโฟลเดอร์</b> แล้วเลือกโฟลเดอร์ที่เก็บไฟล์ <code>.lov.json</code> ของ service เช่น <code>src/main/resources/queries</code></li>
+                <li>ค้นหา query ด้วย id, ชื่อไฟล์ หรือ description แล้วกดเพื่อดู SQL ที่ประกอบแล้ว พร้อม copy</li>
+                <li>กด <b>แก้ไข</b> เพื่อแก้ในฟอร์ม แล้วบันทึกด้วย <b>Ctrl+S</b> ไฟล์ถูกเขียนลงเครื่องโดยตรง (Chrome / Edge)</li>
+              </ol>
+            </section>
             <div id="lov-browse">
               <div style="margin-bottom:16px;">
                 <input type="text" id="lov-search" placeholder="ค้นหาด้วย id, ชื่อไฟล์ หรือ description... เช่น lovCpsComp" oninput="lovFilter(this.value)" disabled />
@@ -4948,6 +5027,182 @@ self.addEventListener('fetch', e => {
             <div id="lov-editor" class="lov-ed" style="display:none;"></div>
           </div>
         </div><!-- /lov-tab -->
+
+        <!-- JSON2TYPE -->
+        <div id="json2type-tab" class="tab-content">
+          <p class="tool-lead">วาง JSON จริงจาก API แล้วได้ TypeScript interface หรือ Java record ทันที · array ของ object ถูกรวมกัน key ที่บางตัวไม่มีจะเป็น optional และค่า null ทำให้ field เป็น nullable</p>
+          <div class="section-header">
+            <div class="toolbar">
+              <div class="json-view-toggle" id="j2t-lang" role="group" aria-label="ภาษาปลายทาง">
+                <button type="button" class="json-view-btn active" data-l="ts" aria-pressed="true" onclick="j2tSetLang('ts')">TypeScript</button>
+                <button type="button" class="json-view-btn" data-l="java" aria-pressed="false" onclick="j2tSetLang('java')">Java record</button>
+              </div>
+              <label class="mode-label" id="j2t-bd-wrap" hidden><input type="checkbox" id="j2t-bd" checked onchange="j2tConvert()" /> ทศนิยมเป็น BigDecimal</label>
+            </div>
+            <div class="toolbar">
+              <button class="btn btn-ghost" onclick="j2tSample()"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg> ลองตัวอย่าง</button>
+              <button class="btn btn-danger" onclick="document.getElementById('j2t-input').value='';j2tConvert()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label class="field-label" for="j2t-input">JSON</label>
+              <textarea id="j2t-input" rows="18" spellcheck="false" placeholder='{"id": 1, "name": "สมชาย", "tags": ["a"]}' oninput="j2tLive()"></textarea>
+              <div class="flex-row tool-opt">
+                <label class="field-label" for="j2t-root">ชื่อ type หลัก</label>
+                <input type="text" id="j2t-root" value="Root" oninput="j2tLive()" />
+              </div>
+            </div>
+            <div>
+              <div class="field-label">ผลลัพธ์</div>
+              <div class="rxjs-code-block tool-out"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code id="j2t-output" class="language-typescript" data-empty="ผลลัพธ์จะขึ้นที่นี่ทันทีที่วาง JSON"></code></pre></div>
+              <div class="tool-error" id="j2t-error" role="alert" hidden></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROPS -->
+        <div id="props-tab" class="tab-content">
+          <p class="tool-lead">แปลง <code>application.properties</code> ของ Quarkus เป็น <code>application.yaml</code> และกลับกัน · รองรับ profile <code>%dev.</code>, key ที่อยู่ใน quote และ key ที่เป็นทั้งค่าและกลุ่ม (ใช้ <code>~</code> ใน YAML)</p>
+          <div class="section-header">
+            <div class="toolbar">
+              <div class="json-view-toggle" id="py-dir" role="group" aria-label="ทิศทางการแปลง">
+                <button type="button" class="json-view-btn active" data-d="p2y" aria-pressed="true" onclick="pySetDir('p2y')">properties → YAML</button>
+                <button type="button" class="json-view-btn" data-d="y2p" aria-pressed="false" onclick="pySetDir('y2p')">YAML → properties</button>
+              </div>
+              <button class="btn btn-ghost" onclick="pySwap()"><svg class="i" aria-hidden="true"><use href="#i-arrow-left-right"/></svg> สลับฝั่ง</button>
+            </div>
+            <div class="toolbar">
+              <button class="btn btn-ghost" onclick="pySample()"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg> ลองตัวอย่าง</button>
+              <button class="btn btn-danger" onclick="document.getElementById('py-input').value='';pyConvert()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label class="field-label" for="py-input" id="py-in-label">application.properties</label>
+              <textarea id="py-input" rows="20" spellcheck="false" placeholder="quarkus.http.port=8080" oninput="pyLive()"></textarea>
+            </div>
+            <div>
+              <div class="field-label" id="py-out-label">application.yaml</div>
+              <div class="rxjs-code-block tool-out"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code id="py-output" class="language-yaml" data-empty="ผลลัพธ์จะขึ้นที่นี่"></code></pre></div>
+              <div class="tool-error" id="py-error" role="alert" hidden></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- THAI -->
+        <div id="thai-tab" class="tab-content">
+          <div class="grid-2">
+            <section class="card">
+              <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg> วันที่ พ.ศ. ↔ ค.ศ.</div>
+              <div class="th-inputs">
+                <div>
+                  <label class="field-label" for="th-date">เลือกวันที่ (ค.ศ.)</label>
+                  <input type="date" id="th-date" oninput="thaiDateFromIso()" />
+                </div>
+                <div>
+                  <label class="field-label" for="th-be">หรือพิมพ์แบบ พ.ศ.</label>
+                  <input type="text" id="th-be" placeholder="12/10/2569" inputmode="numeric" oninput="thaiDateFromBe()" />
+                </div>
+              </div>
+              <div class="tool-error" id="th-be-err" role="alert" hidden></div>
+              <div id="th-date-out" class="th-out"></div>
+            </section>
+            <section class="card">
+              <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-id-card"/></svg> เลข 13 หลัก (บัตรประชาชน / นิติบุคคล)</div>
+              <label class="field-label" for="th-id">ตรวจ checksum และประเภท</label>
+              <input type="text" id="th-id" inputmode="numeric" placeholder="1-1037-00012-34-5" oninput="thaiIdCheck()" />
+              <div class="toolbar tool-opt">
+                <button class="btn btn-ghost" onclick="thaiIdGen(false)"><svg class="i" aria-hidden="true"><use href="#i-dices"/></svg> สุ่มเลขบุคคล</button>
+                <button class="btn btn-ghost" onclick="thaiIdGen(true)"><svg class="i" aria-hidden="true"><use href="#i-dices"/></svg> สุ่มเลขนิติบุคคล</button>
+              </div>
+              <div id="th-id-out" class="th-out"></div>
+            </section>
+          </div>
+          <section class="card">
+            <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-banknote"/></svg> จำนวนเงินเป็นตัวอักษร (แบบ BAHTTEXT ของ Excel)</div>
+            <label class="field-label" for="th-amount">จำนวนเงิน</label>
+            <input type="text" id="th-amount" inputmode="decimal" placeholder="1,250.75" oninput="thaiBaht()" />
+            <div class="th-baht" id="th-baht-out" role="button" tabindex="0" title="คลิกเพื่อ copy" aria-live="polite" onclick="if(this.dataset.v)copyText(this.dataset.v)" onkeydown="if(isActivateKey(event)&&this.dataset.v){event.preventDefault();copyText(this.dataset.v);}"></div>
+          </section>
+        </div>
+
+        <!-- SQLREF -->
+        <div id="sqlref-tab" class="tab-content">
+          <p class="tool-lead">query สำหรับดึงข้อมูลระบบของฐานข้อมูล (ตาราง คอลัมน์ sequence procedure index lock) และฟังก์ชันที่ใช้บ่อย · กดสลับ DB2 / MariaDB ได้ ทุกตัวอย่าง copy ไปรันได้เลย</p>
+          <div class="ref-tool" id="ref-sqlref"></div>
+        </div>
+
+        <!-- DB2ERR -->
+        <div id="db2err-tab" class="tab-content">
+          <p class="tool-lead">พิมพ์ SQLCODE หรือ SQLSTATE ที่เจอใน log (เช่น <code>-803</code>, <code>23505</code>, <code>4499</code>) เพื่อดูสาเหตุและวิธีแก้ · ถ้ามีทั้ง stack trace ใช้หน้า Stack Trace Analyzer จะหาให้อัตโนมัติ</p>
+          <div class="ref-tool" id="ref-db2err"></div>
+        </div>
+
+        <!-- STACKTRACE -->
+        <div id="stacktrace-tab" class="tab-content">
+          <p class="tool-lead">วาง stack trace จาก log ทั้งก้อน (รวม Caused by) ระบบจะหาต้นเหตุ บรรทัดที่เป็นโค้ดของเรา และดึงวิธีแก้จากหน้า Java Exceptions / DB2 Error Codes มาให้</p>
+          <div class="section-header">
+            <div class="toolbar">
+              <button class="btn btn-primary" onclick="stAnalyze()"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> วิเคราะห์</button>
+              <button class="btn btn-ghost" onclick="stLoadSample()"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg> ลองตัวอย่าง</button>
+              <label class="mode-label"><input type="checkbox" id="st-hide-fw" checked onchange="stAnalyze()" /> ซ่อน frame ของ framework</label>
+            </div>
+            <div class="toolbar">
+              <input type="text" id="st-app" class="st-app" placeholder="package ของโปรเจค เช่น th.co.cdgs." aria-label="package ของโปรเจค" oninput="stLive()" />
+              <button class="btn btn-danger" onclick="stClear()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+            </div>
+          </div>
+          <textarea id="st-input" rows="10" spellcheck="false" aria-label="stack trace" placeholder="java.lang.NullPointerException: Cannot invoke ... because ... is null&#10;    at th.co.cdgs...(OrderService.java:88)&#10;Caused by: ..." oninput="stLive()"></textarea>
+          <div id="st-output" class="st-output"></div>
+        </div>
+
+        <!-- JAVAEX -->
+        <div id="javaex-tab" class="tab-content">
+          <p class="tool-lead">exception ที่เจอบ่อยใน Java / Quarkus / Hibernate พร้อมสาเหตุและวิธีแก้ · ค้นด้วยชื่อ class หรือข้อความใน error ได้ เช่น <code>no Session</code>, <code>acquisition timeout</code></p>
+          <div class="ref-tool" id="ref-javaex"></div>
+        </div>
+
+        <!-- JAVAINT -->
+        <div id="javaint-tab" class="tab-content">
+          <p class="tool-lead">เข้าใจสิ่งที่เกิดขึ้นเบื้องหลัง: โค้ดถูก compile และรันยังไง หน่วยความจำของ JVM การสร้าง annotation เอง และ transaction ใน Quarkus</p>
+          <div class="ref-tool" id="ref-javaint"></div>
+        </div>
+
+        <!-- NGRX -->
+        <div id="ngrx-tab" class="tab-content">
+          <p class="tool-lead">NgRx คือ Redux สำหรับ Angular · กด dispatch แล้วดู action วิ่งผ่าน Reducer, Effect, Store และ Selector ทีละขั้นพร้อม state จริงในแต่ละจังหวะ</p>
+          <section class="card" id="ngrx-flow"></section>
+          <div class="ref-tool" id="ref-ngrx"></div>
+        </div>
+
+        <!-- K8SREF -->
+        <div id="k8sref-tab" class="tab-content">
+          <section class="card">
+            <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> อ่าน manifest ทีละบรรทัด</div>
+            <div id="k8s-explorer"></div>
+          </section>
+          <div class="ref-tool" id="ref-k8s"></div>
+        </div>
+
+        <!-- GATEWAY -->
+        <div id="gateway-tab" class="tab-content">
+          <p class="tool-lead">request หนึ่งครั้งวิ่งผ่านหลายชั้นก่อนถึงแอป แต่ละชั้นพังได้ด้วยอาการต่างกัน · กดแต่ละกล่องเพื่อดูหน้าที่และอาการที่เจอบ่อย</p>
+          <div id="gw-flow"></div>
+          <div class="ref-tool" id="ref-gateway"></div>
+        </div>
+
+        <!-- CLICHEAT -->
+        <div id="clicheat-tab" class="tab-content">
+          <div class="section-header">
+            <div class="json-view-toggle" id="cli-sets" role="group" aria-label="ชุดคำสั่ง"></div>
+            <button class="btn btn-danger" onclick="clearCli()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างการค้นหา</button>
+          </div>
+          <div class="tool-search">
+            <input type="text" id="cli-search" placeholder="ค้นหาคำสั่ง... เช่น logs, export, dependency, filter" aria-label="ค้นหาคำสั่ง" oninput="filterCli(this.value)" />
+          </div>
+          <div id="cli-list"></div>
+        </div>
 
         <!-- ESAN AI AGENT guide: how to install / update the Claude Code plugin and where to open it -->
         <div id="esan-agent-tab" class="tab-content">
@@ -5184,6 +5439,18 @@ self.addEventListener('fetch', e => {
     <script defer src="assets/js/tools/storage.js"></script>
     <script defer src="assets/js/tools/lov.js"></script>
     <script defer src="assets/js/tools/k8s-secret.js"></script>
+    <script defer src="assets/js/tools/refdocs.js"></script>
+    <script defer src="assets/js/tools/sql-ref.js"></script>
+    <script defer src="assets/js/tools/db2-errors.js"></script>
+    <script defer src="assets/js/tools/java-exceptions.js"></script>
+    <script defer src="assets/js/tools/java-internals.js"></script>
+    <script defer src="assets/js/tools/stacktrace.js"></script>
+    <script defer src="assets/js/tools/json2type.js"></script>
+    <script defer src="assets/js/tools/props-yaml.js"></script>
+    <script defer src="assets/js/tools/thai-tools.js"></script>
+    <script defer src="assets/js/tools/k8s-ref.js"></script>
+    <script defer src="assets/js/tools/gateway.js"></script>
+    <script defer src="assets/js/tools/ngrx.js"></script>
     <script defer src="assets/js/init.js"></script>
   </body>
 </html>

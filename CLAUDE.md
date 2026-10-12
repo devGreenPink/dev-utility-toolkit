@@ -12,6 +12,11 @@ Live: https://devgreenpink.github.io/dev-utility-toolkit/
 
 Open `index.html` directly in a browser, or serve it with VS Code Live Server. No build or install step needed.
 
+`node tests/tools.test.mjs` self-checks the pure converters and parsers (BAHTTEXT / Thai ID in
+`thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`) by loading the tool files into one
+`vm` context, the same way the page loads them. Keep new parsing logic in pure functions so it can be
+covered there.
+
 ## Deployment
 
 Push to `main` → GitHub Actions (`.github/workflows/static.yml`) deploys the whole repo to GitHub Pages automatically. The entire repository root is the deployment artifact.
@@ -23,7 +28,13 @@ The app is a single HTML page with a few companion files:
 - `index.html` — all tool UI markup. Each tool lives in a `<div id="<name>-tab" class="tab-content">` block.
 - `assets/js/` — plain classic scripts sharing one global scope (no modules, no bundler — `index.html`'s inline `onclick="fn()"` handlers need globals), all `defer`-loaded in the order listed in `index.html`:
   - `core.js` — app shell: `TAB_META`, theme, favorites, nav/`openTab`/`TAB_INIT`, keyboard shortcuts, shared utils (`showToast`, `copyText`, `escHtml`, `highlightCode`), PWA install, sparkle effect.
-  - `tools/<tool>.js` — one file per tool (`cheatsheets.js` holds kubectl/Linux/Git, which share `renderCmdList`).
+  - `tools/<tool>.js` — one file per tool (`cheatsheets.js` holds kubectl/Linux/Git/CLI cheatsheets and
+    the Linux folder view, which share `renderCmdList`).
+  - `tools/refdocs.js` — shared renderer for the knowledge tabs (SQL & System Catalog, DB2 Error Codes,
+    Java Exceptions / Internals, Docker & K8s, Request Path, NgRx). Each data file registers
+    `REF_DOCS[id] = {placeholder, dialects?, items:[{g, t, b, bc, s, d, fix, tip, code, lang, k}]}` and the
+    tab holds `<div class="ref-tool" id="ref-<id>">`; `TAB_INIT` calls `refInit(id)`. Backticks in
+    `d`/`fix`/`tip` render as inline code. `refFocus(id, query)` jumps to a tab with a search filled in.
   - `init.js` — the `DOMContentLoaded` init; loads last.
   - A file's top-level code may only *call* functions from files loaded before it (calls inside functions/handlers are fine — they run after every file has loaded). A new file goes in both `index.html` and `sw.js` `STATIC_ASSETS`.
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).

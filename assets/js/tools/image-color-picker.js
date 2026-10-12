@@ -43,7 +43,7 @@
   }
 
   function icpFormatValue(picked, fmt) {
-    if (!picked) return '—';
+    if (!picked) return '';
     switch (fmt) {
       case 'rgb': return picked.rgb;
       case 'hsl': return picked.hsl;
@@ -90,7 +90,7 @@
     $id('icp-placeholder').style.display       = 'none';
     $id('image-drop-zone').classList.add('has-image');
     $id('icp-img-info').textContent =
-      `${_icpImage.naturalWidth} × ${_icpImage.naturalHeight}px — คลิกเพื่อดูดสี`;
+      `${_icpImage.naturalWidth} × ${_icpImage.naturalHeight}px: คลิกเพื่อดูดสี`;
     $id('icp-btn-clear').style.display = '';
 
     if (window.EyeDropper) $id('icp-eyedropper-btn').style.display = '';
@@ -211,7 +211,7 @@
 
   function icpCopyActive() {
     const val = icpFormatValue(_icpPicked, _icpFmt);
-    if (val && val !== '—') copyPickedHex(val);
+    if (val) copyPickedHex(val);
   }
 
   // ── Zoom slider ──
@@ -263,13 +263,13 @@
       _icpAddHistory(hex);
       icpShowPanel(true);
       showToast('ดูดสี ' + hex + ' จากหน้าจอ');
-    } catch (_) { /* user cancelled — no-op */ }
+    } catch (_) { /* user cancelled: no-op */ }
   }
 
   // ── Copy helpers ──
   function icpCopyValue(elemId) {
     const text = $id(elemId).textContent;
-    if (!text || text === '—') return;
+    if (!text) return;
     copyPickedHex(text);
   }
 

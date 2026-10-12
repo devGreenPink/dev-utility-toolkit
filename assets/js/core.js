@@ -7,22 +7,34 @@ const TAB_META = {
   'unix-tab': { title: 'Unix Timestamp Converter', sub: 'แปลง Unix timestamp เป็นวันที่และเวลา' },
   'base64-tab': { title: 'Base64 Encode / Decode', sub: 'รองรับ plain text, Unicode, ภาษาไทย และ URL-safe Base64' },
   'url-tab': { title: 'URL Encode / Decode', sub: 'encodeURIComponent / decodeURIComponent · รองรับ Unicode และภาษาไทย' },
-  'hash-tab': { title: 'Hash Generator', sub: 'SHA-256 / SHA-512 / SHA-1 — คำนวณฝั่ง client ทั้งหมด' },
+  'hash-tab': { title: 'Hash Generator', sub: 'SHA-256 / SHA-512 / SHA-1: คำนวณฝั่ง client ทั้งหมด' },
   'k8s-secret-tab': { title: 'K8s Secret Decoder', sub: 'วาง Secret YAML / JSON แล้ว decode data: ทุก key · รองรับหลาย Secret (---)' },
   'jwt-tab': { title: 'JWT Decoder', sub: 'แกะ JWT token ดู header, payload, signature · client-side ล้วน' },
   'cron-tab': { title: 'Cron Expression Builder', sub: 'สร้าง cron expression สำหรับ Linux, Spring @Scheduled, Quartz' },
   'regex-tab': { title: 'Regex Tester', sub: 'ทดสอบ Regular Expression พร้อม highlight และ capture groups' },
   'color-tab': { title: 'Color Picker', sub: 'Color Wheel · HSL/RGB/Alpha sliders · Hex ↔ RGB ↔ HSL' },
-  'http-tab': { title: 'HTTP Status Code Reference', sub: '1xx · 2xx · 3xx · 4xx · 5xx — คำอธิบายและตัวอย่างการใช้งาน' },
+  'http-tab': { title: 'HTTP Status Code Reference', sub: '1xx · 2xx · 3xx · 4xx · 5xx: คำอธิบายและตัวอย่างการใช้งาน' },
   'kubectl-tab': { title: 'kubectl Cheatsheet', sub: 'คำสั่ง kubectl ที่ใช้บ่อย พร้อมคำอธิบายภาษาไทย' },
-  'linux-tab': { title: 'Linux Command Cheatsheet', sub: 'คำสั่ง Linux ที่ใช้บ่อย — Ubuntu / Debian / RHEL' },
-  'git-tab': { title: 'Git CLI Cheatsheet', sub: 'คำสั่ง Git ที่ใช้บ่อย — commit · branch · rebase · stash · undo' },
+  'linux-tab': { title: 'Linux Command Cheatsheet', sub: 'คำสั่ง Linux ที่ใช้บ่อย: Ubuntu / Debian / RHEL' },
+  'git-tab': { title: 'Git CLI Cheatsheet', sub: 'คำสั่ง Git ที่ใช้บ่อย: commit · branch · rebase · stash · undo' },
   'numbase-tab': { title: 'Number Base Converter', sub: 'แปลงเลขฐาน 10 ↔ 16 ↔ 2 ↔ 8' },
   'rxjs-tab': { title: 'RxJS Reference', sub: 'Operator Explorer · Marble Diagrams · คำอธิบายภาษาไทย' },
   'angular-tab': { title: 'Angular Lifecycle', sub: '9 Lifecycle Hooks · Interactive Simulator · คำอธิบายภาษาไทย' },
   'mq-tab': { title: 'RabbitMQ · Redis · Quarkus', sub: 'Concepts · Animations · Code Examples สำหรับมือใหม่' },
   'storage-tab': { title: 'Browser Storage APIs', sub: 'localStorage · sessionStorage · IndexedDB · Cookies · Cache API · OPFS' },
   'lov-tab': { title: 'LOV Query Template Browser / Editor', sub: 'ดู · แก้ · สร้าง · ลบ .lov.json ในโฟลเดอร์ได้เลย ไม่ต้องเปิด cdgs-template-designer · ประกอบ SQL พร้อม copy' },
+  'json2type-tab': { title: 'JSON → Type', sub: 'สร้าง TypeScript interface / Java record จาก JSON ตัวอย่าง' },
+  'props-tab': { title: 'Properties ↔ YAML', sub: 'แปลง application.properties ของ Quarkus เป็น YAML และกลับกัน' },
+  'thai-tab': { title: 'พ.ศ. · เลขบัตร · บาท', sub: 'แปลงวันที่ พ.ศ./ค.ศ. · ตรวจเลข 13 หลัก · จำนวนเงินเป็นตัวอักษร' },
+  'sqlref-tab': { title: 'SQL & System Catalog', sub: 'ดึงข้อมูลระบบของ DB และฟังก์ชันที่ใช้บ่อย · DB2 / MariaDB' },
+  'db2err-tab': { title: 'DB2 Error Codes', sub: 'ค้นหา SQLCODE / SQLSTATE พร้อมสาเหตุและวิธีแก้' },
+  'stacktrace-tab': { title: 'Stack Trace Analyzer', sub: 'หาต้นเหตุ บรรทัดในโค้ดของเรา และวิธีแก้จาก stack trace' },
+  'javaex-tab': { title: 'Java Exceptions', sub: 'exception ที่เจอบ่อยใน Java / Quarkus / Hibernate และวิธีแก้' },
+  'javaint-tab': { title: 'Java Internals', sub: 'compile vs runtime · JVM memory · annotation · transaction' },
+  'ngrx-tab': { title: 'NgRx / Redux', sub: 'Action · Reducer · Selector · Effect แบบเห็นภาพทีละขั้น' },
+  'k8sref-tab': { title: 'Docker & K8s', sub: 'อ่าน manifest ทีละบรรทัด · แนวคิดหลัก · แก้ปัญหา Pod' },
+  'gateway-tab': { title: 'Request Path', sub: 'Browser → Load Balancer → Kong → Service → Pod · nginx' },
+  'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
   'esan-agent-tab': { title: 'ESAN AI AGENT', sub: 'Claude Code plugin · ติดตั้ง · อัปเดต · เปิดใช้งานที่ localhost:4567 บนเครื่องตัวเอง' },
 };
 
@@ -187,6 +199,20 @@ function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('show');
 }
+// phones: the sidebar is a bottom sheet; dragging its header down past 80px closes it
+(function(){
+  const sb=document.getElementById('sidebar'),hd=sb&&sb.querySelector('.sidebar-header');
+  if(!hd)return;
+  let y0=null;
+  hd.addEventListener('touchstart',e=>{if(sb.classList.contains('open')){y0=e.touches[0].clientY;sb.classList.add('dragging');}},{passive:true});
+  hd.addEventListener('touchmove',e=>{if(y0!==null)sb.style.transform=`translateY(${Math.max(0,e.touches[0].clientY-y0)}px)`;},{passive:true});
+  hd.addEventListener('touchend',e=>{
+    if(y0===null)return;
+    const dy=e.changedTouches[0].clientY-y0;
+    y0=null;sb.classList.remove('dragging');sb.style.transform='';
+    if(dy>80)closeSidebar();
+  });
+})();
 
 // ── FAVORITES STORE (persistence impl — swappable) ──
 // Interface: load() -> Promise<string[]>, save(ids: string[]) -> Promise<void>
@@ -390,6 +416,16 @@ const TAB_INIT={
   'angular-tab':()=>{initAngular();highlightCode('#angular-tab pre.rxjs-code code');},
   'mq-tab':()=>highlightCode('#mq-tab pre.mq-code code'),
   'storage-tab':()=>storInitHljs(),
+  'sqlref-tab':()=>refInit('sqlref'),
+  'db2err-tab':()=>refInit('db2err'),
+  'javaex-tab':()=>refInit('javaex'),
+  'javaint-tab':()=>refInit('javaint'),
+  'k8sref-tab':()=>{k8sInit();refInit('k8s');},
+  'gateway-tab':()=>{gwInit();refInit('gateway');},
+  'ngrx-tab':()=>{ngrxInit();refInit('ngrx');},
+  'clicheat-tab':()=>cliInit(),
+  'thai-tab':()=>thaiInit(),
+  'unix-tab':()=>unixQuickRender(),
 };
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
@@ -436,6 +472,9 @@ document.addEventListener('keydown',e=>{
       case'regex-tab':runRegex();break;
       case'numbase-tab':numBaseConvert('dec',document.getElementById('nb-dec')?.value||'');break;
       case'lov-tab':if(_lovEdit)lovSaveEditor();break;
+      case'stacktrace-tab':stAnalyze();break;
+      case'json2type-tab':j2tConvert();break;
+      case'props-tab':pyConvert();break;
     }
   }
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'&&activeTabId==='lov-tab'&&_lovEdit){
@@ -551,7 +590,7 @@ function showToast(msg,kind){
   _toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
 }
 function copyText(txt){navigator.clipboard.writeText(txt).then(()=>showToast('Copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Copied');});}
-function copyVal(id){const el=document.getElementById(id);if(el&&el.textContent&&el.textContent!=='—')copyText(el.textContent);}
+function copyVal(id){const el=document.getElementById(id);if(el&&el.textContent&&el.textContent)copyText(el.textContent);}
 // คลิก/Enter/Space บนตัวค่าเอง (ไม่ใช่แค่ปุ่ม Copy) ก็ copy ได้
 document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
   el.setAttribute('tabindex','0');

@@ -18,4 +18,4 @@ function b64Decode(){
     document.getElementById('b64-output').textContent=decoded;
   }catch(e){errEl.textContent='Decode error: invalid Base64';errEl.style.display='block';}
 }
-function clearBase64(){document.getElementById('b64-input').value='';document.getElementById('b64-output').textContent='—';document.getElementById('b64-error').style.display='none';}
+function clearBase64(){document.getElementById('b64-input').value='';document.getElementById('b64-output').textContent='';document.getElementById('b64-error').style.display='none';}

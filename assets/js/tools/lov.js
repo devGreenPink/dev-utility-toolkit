@@ -306,6 +306,7 @@ function lovClearView(msg) {
   const search = document.getElementById('lov-search');
   if (search) { search.value = ''; search.disabled = true; }
   ['lov-refresh-btn', 'lov-rename-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = 'none'; });
+  document.getElementById('lov-intro')?.removeAttribute('hidden');
   lovRenderList([]);
   lovRenderRecent();
 }
@@ -333,9 +334,9 @@ function lovFolderUnreadable(dir) {
     lovRecentSave();
   }
   lovClearView('');
-  const msg = `เปิดโฟลเดอร์ ${entry ? entry.label : dir.name} ไม่ได้ — อาจถูกย้ายหรือลบไปแล้ว`;
+  const msg = `เปิดโฟลเดอร์ ${entry ? entry.label : dir.name} ไม่ได้ · อาจถูกย้ายหรือลบไปแล้ว`;
   if (!entry) { lovSetStatus(msg); return; }
-  lovSetStatusAction(`${msg} — `, 'เอาออกจากรายการ', async () => {
+  lovSetStatusAction(`${msg}: `, 'เอาออกจากรายการ', async () => {
     await lovRemoveRecent(_lovRecent.indexOf(entry));
     lovSetStatus('ยังไม่ได้เลือกโฟลเดอร์');
   });
@@ -349,7 +350,7 @@ async function lovRestoreFolder() {
   if (await lovVerifyPermission(last.handle, 'read', false)) {
     await lovOpenFolder(last.handle);
   } else {
-    lovSetStatusAction(`โฟลเดอร์ล่าสุด: ${last.label} — `, 'ขอสิทธิ์เข้าถึงโฟลเดอร์อีกครั้ง',
+    lovSetStatusAction(`โฟลเดอร์ล่าสุด: ${last.label} · `, 'ขอสิทธิ์เข้าถึงโฟลเดอร์อีกครั้ง',
       () => lovOpenRecent(_lovRecent.indexOf(last)));
   }
 }
@@ -400,6 +401,7 @@ async function lovLoadFiles() {
   const search = document.getElementById('lov-search');
   if (search) search.disabled = false;
   ['lov-refresh-btn', 'lov-rename-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = ''; });
+  document.getElementById('lov-intro')?.setAttribute('hidden', '');
   lovFilter(search ? search.value : '');
 }
 
@@ -686,7 +688,7 @@ function lovRenderList(files) {
         <button class="btn btn-ghost" data-file="${file}" onclick="lovEditFile(this.dataset.file)">${ic('pencil')} แก้ไข</button>
         <button class="btn btn-ghost" data-file="${file}" onclick="lovCopyJson(this.dataset.file)">${ic('copy')} copy JSON</button>
         <button class="btn btn-danger" data-file="${file}" onclick="lovDeleteFile(this.dataset.file)">${ic('trash')} ลบ</button>
-        ${entry.designerFormat ? '' : '<span class="lov-note">ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer — บันทึกครั้งแรกจะจัดรูปแบบใหม่ทั้งไฟล์</span>'}
+        ${entry.designerFormat ? '' : '<span class="lov-note">ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer: บันทึกครั้งแรกจะจัดรูปแบบใหม่ทั้งไฟล์</span>'}
       </div>
       ${lovPreviewHtml(entry.id, entry.built)}
     </div>`;
@@ -1076,8 +1078,8 @@ function lovRenderEditor() {
           <button class="btn btn-primary" onclick="lovSaveEditor()">${ic('save')} บันทึก <span class="lov-ed-kbd">Ctrl+S</span></button>
         </div>
       </div>
-      ${ed.entry && !ed.entry.designerFormat ? '<div class="lov-ed-warn">'+ic('triangle-alert')+' ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer — บันทึกแล้วจะจัดรูปแบบใหม่ทั้งไฟล์ (ค่าเดิมไม่เปลี่ยน แต่ git diff จะใหญ่)</div>' : ''}
-      ${m.fmt !== _lovFormat ? `<div class="lov-ed-warn">${ic('triangle-alert')} ไฟล์นี้เป็น LOV ${lovHtml(f.short)} แต่โฟลเดอร์นี้เป็น LOV ${lovHtml(LOV_FORMATS[_lovFormat].short)} — แก้และบันทึกตามรูปแบบของไฟล์ (${lovHtml(f.prio)}, ${lovHtml(f.optional)}/${lovHtml(f.auto)})</div>` : ''}
+      ${ed.entry && !ed.entry.designerFormat ? '<div class="lov-ed-warn">'+ic('triangle-alert')+' ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer: บันทึกแล้วจะจัดรูปแบบใหม่ทั้งไฟล์ (ค่าเดิมไม่เปลี่ยน แต่ git diff จะใหญ่)</div>' : ''}
+      ${m.fmt !== _lovFormat ? `<div class="lov-ed-warn">${ic('triangle-alert')} ไฟล์นี้เป็น LOV ${lovHtml(f.short)} แต่โฟลเดอร์นี้เป็น LOV ${lovHtml(LOV_FORMATS[_lovFormat].short)} · แก้และบันทึกตามรูปแบบของไฟล์ (${lovHtml(f.prio)}, ${lovHtml(f.optional)}/${lovHtml(f.auto)})</div>` : ''}
       <div id="lov-ed-errors" class="lov-ed-errors" role="alert"></div>
     </div>
 
@@ -1155,12 +1157,12 @@ function lovEdRefreshPreview() {
   document.getElementById('lov-ed-json').innerHTML = lovSqlBlockHtml('', lovJacksonStringify(json, '\n'), [], '', 'json');
   let label;
   if (!lovIdOk(m.id)) {
-    label = `ไฟล์: — (${m.id ? 'id ยังไม่ถูกต้อง' : 'ใส่ id ก่อน'})`;
+    label = `ไฟล์: · (${m.id ? 'id ยังไม่ถูกต้อง' : 'ใส่ id ก่อน'})`;
   } else {
     const target = lovTargetFileName(m, entry);
     let note = '';
-    if (entry && target !== entry.fileName) note = ` — เปลี่ยนชื่อจาก ${entry.fileName} (ไฟล์เดิมจะถูกลบ)`;
-    else if (entry && entry.fileName !== lovIdToFileName(entry.json.id || '')) note = ' — ชื่อไฟล์เดิมไม่ตรงกฎของ designer จึงคงชื่อเดิมไว้';
+    if (entry && target !== entry.fileName) note = `: เปลี่ยนชื่อจาก ${entry.fileName} (ไฟล์เดิมจะถูกลบ)`;
+    else if (entry && entry.fileName !== lovIdToFileName(entry.json.id || '')) note = ': ชื่อไฟล์เดิมไม่ตรงกฎของ designer จึงคงชื่อเดิมไว้';
     label = `ไฟล์: ${target}${note}`;
   }
   document.getElementById('lov-ed-file').textContent = label;
@@ -1302,7 +1304,7 @@ function lovOpenEditor(entry) {
 // Returns false when the user keeps unsaved changes; force skips the question
 function lovCloseEditor(force) {
   if (!_lovEdit) return true;
-  if (!force && _lovEdit.dirty && !confirm('มีการแก้ไขที่ยังไม่ได้บันทึก — ทิ้งการแก้ไขนี้?')) return false;
+  if (!force && _lovEdit.dirty && !confirm('มีการแก้ไขที่ยังไม่ได้บันทึก: ทิ้งการแก้ไขนี้?')) return false;
   _lovEdit = null;
   document.getElementById('lov-editor').innerHTML = '';
   lovShowEditor(false);
@@ -1363,7 +1365,7 @@ function lovApplyPaste() {
   ed.showPaste = false;
   ed.dirty = true;
   lovRenderEditor();
-  showToast('แปลง SQL แล้ว — ตรวจ type / filter ก่อนบันทึก');
+  showToast('แปลง SQL แล้ว: ตรวจ type / filter ก่อนบันทึก');
 }
 
 function lovShowErrors(errs) {
@@ -1377,15 +1379,15 @@ async function lovSaveEditor() {
   const { model: m, entry } = ed;
   const errs = lovValidate(m, entry);
   lovShowErrors(errs);
-  if (errs.length) { showToast('ยังบันทึกไม่ได้ — ดูรายการด้านบน','err'); scrollToTop(); return; }
+  if (errs.length) { showToast('ยังบันทึกไม่ได้: ดูรายการด้านบน','err'); scrollToTop(); return; }
   if (!await lovEnsureWrite()) { showToast('ไม่ได้รับสิทธิ์แก้ไขไฟล์ในโฟลเดอร์นี้','err'); return; }
   ed.saving = true;
   try {
     if (entry) {
       const current = await entry.handle.getFile().catch(() => null);
-      if (!current && !confirm(`ไม่พบไฟล์ ${entry.fileName} แล้ว (อาจถูกลบหรือย้าย) — บันทึกเป็นไฟล์ใหม่?`)) return;
+      if (!current && !confirm(`ไม่พบไฟล์ ${entry.fileName} แล้ว (อาจถูกลบหรือย้าย): บันทึกเป็นไฟล์ใหม่?`)) return;
       if (current && current.lastModified !== entry.lastModified
-        && !confirm(`${entry.fileName} ถูกแก้จากที่อื่นหลังจากเปิดมา — บันทึกทับ?`)) return;
+        && !confirm(`${entry.fileName} ถูกแก้จากที่อื่นหลังจากเปิดมา: บันทึกทับ?`)) return;
     }
     const json = lovJsonFromModel(m);
     const eol = entry ? entry.eol : '\r\n'; // the designer runs on Windows: Jackson writes CRLF

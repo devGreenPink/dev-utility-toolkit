@@ -228,10 +228,10 @@ function mqCacheAnim(type) {
       if (time1) time1.textContent = '~1ms';
       setSteps(`
         <div class="mq-lc-step mq-step-active">1. App ส่ง GET product:123 ไปที่ Redis</div>
-        <div class="mq-lc-step mq-step-active">2. Redis ${ic('circle-check','t-green')} HIT — มีข้อมูลใน cache</div>
-        <div class="mq-lc-step mq-step-active">3. คืนข้อมูลทันที ~1ms — ไม่ต้องไป DB</div>
+        <div class="mq-lc-step mq-step-active">2. Redis ${ic('circle-check','t-green')} HIT: มีข้อมูลใน cache</div>
+        <div class="mq-lc-step mq-step-active">3. คืนข้อมูลทันที ~1ms: ไม่ต้องไป DB</div>
       `);
-      if (stepLabel) stepLabel.textContent = 'Cache HIT — คืนข้อมูลจาก Redis ~1ms';
+      if (stepLabel) stepLabel.textContent = 'Cache HIT: คืนข้อมูลจาก Redis ~1ms';
       if (msg2) msg2.textContent = '';
       setTimeout(() => { if (appNode) appNode.classList.remove('mq-node-active'); }, 600);
     } else {
@@ -246,10 +246,10 @@ function mqCacheAnim(type) {
         if (dbNode) dbNode.classList.add('mq-node-active');
         if (msg2) msg2.textContent = 'SELECT * FROM products WHERE id=123';
         if (time2) time2.textContent = '~50-200ms';
-        if (stepLabel) stepLabel.textContent = 'Step 3: Query DB — ช้ากว่า 50-200x';
+        if (stepLabel) stepLabel.textContent = 'Step 3: Query DB · ช้ากว่า 50-200x';
         setSteps(`
           <div class="mq-lc-step mq-step-active">1. Redis ${ic('circle-x','t-red')} MISS</div>
-          <div class="mq-lc-step mq-step-active">2. App query DB (SELECT ...) — ~50-200ms</div>
+          <div class="mq-lc-step mq-step-active">2. App query DB (SELECT ...): ~50-200ms</div>
         `);
         setTimeout(() => {
           if (dbNode) dbNode.classList.remove('mq-node-active');

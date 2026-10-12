@@ -26,7 +26,7 @@ function runRegex(){
     pos=match.index+match.length;
   }
   if(pos<input.length)html+=escHtml(input.slice(pos));
-  hlEl.innerHTML=html||'<span style="color:var(--text-dim)">— ไม่มีข้อความ —</span>';
+  hlEl.innerHTML=html||'<span style="color:var(--text-dim)">: ไม่มีข้อความ · </span>';
   if(!matches.length){grEl.innerHTML='<span style="color:var(--text-dim)">ไม่พบผลลัพธ์</span>';return;}
   let gHtml='';
   matches.slice(0,10).forEach((match,i)=>{

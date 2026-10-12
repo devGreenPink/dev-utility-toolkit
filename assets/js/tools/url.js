@@ -9,4 +9,4 @@ function urlDecode(){
   try{const mode=document.querySelector('input[name="url-mode"]:checked').value;const result=mode==='full'?decodeURI(input):decodeURIComponent(input);document.getElementById('url-output').textContent=result;}
   catch(e){errEl.textContent='Decode error: '+e.message;errEl.style.display='block';}
 }
-function clearURL(){document.getElementById('url-input').value='';document.getElementById('url-output').textContent='—';document.getElementById('url-error').style.display='none';}
+function clearURL(){document.getElementById('url-input').value='';document.getElementById('url-output').textContent='';document.getElementById('url-error').style.display='none';}

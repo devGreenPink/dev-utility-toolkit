@@ -2,14 +2,14 @@
 function unescapeJava(s){return s.replace(/\\\\/g,'\x00BS\x00').replace(/\\n/g,'\n').replace(/\\t/g,'\t').replace(/\\r/g,'\r').replace(/\\"/g,'"').replace(/\\'/g,"'").replace(/\x00BS\x00/g,'\\');}
 function extractStringLiterals(expr){const re=/"((?:[^"\\]|\\.)*)"/g;const parts=[];let m;while((m=re.exec(expr))!==null)parts.push(unescapeJava(m[1]));return parts.join('');}
 const SQL_MODES={
-  TEXTBLOCK:{label:'Text Block (Java 15+)',color:'#a78bfa'},
-  APPEND:{label:'StringBuilder / append()',color:'#34d399'},
-  CONCAT:{label:'String concat (+)',color:'#60a5fa'},
-  MYBATIS:{label:'MyBatis / JPA (#{} / :param)',color:'#fbbf24'},
-  ANNOTATION:{label:'@Query / prepareStatement',color:'#f472b6'},
-  STRFORMAT:{label:'String.format()',color:'#fb923c'},
-  MYBATIS_XML:{label:'MyBatis XML mapper',color:'#4ade80'},
-  PLAIN:{label:'Plain SQL',color:'#94a3b8'},
+  TEXTBLOCK:{label:'Text Block (Java 15+)',color:'var(--c-purple)'},
+  APPEND:{label:'StringBuilder / append()',color:'var(--c-green)'},
+  CONCAT:{label:'String concat (+)',color:'var(--c-blue)'},
+  MYBATIS:{label:'MyBatis / JPA (#{} / :param)',color:'var(--c-yellow)'},
+  ANNOTATION:{label:'@Query / prepareStatement',color:'var(--c-pink)'},
+  STRFORMAT:{label:'String.format()',color:'var(--c-orange)'},
+  MYBATIS_XML:{label:'MyBatis XML mapper',color:'var(--c-green)'},
+  PLAIN:{label:'Plain SQL',color:'var(--text-dim)'},
 };
 function detectMode(input){
   if(/"""[\s\S]*?"""/.test(input)) return 'TEXTBLOCK';
@@ -25,9 +25,9 @@ function detectMode(input){
 }
 function detectSqlMode(val){
   const badge=document.getElementById('sql-detect-badge');
-  if(!val.trim()){badge.textContent='—';badge.style.color='var(--text-dim)';badge.style.borderColor='var(--border)';return;}
+  if(!val.trim()){badge.textContent='';badge.style.color='var(--text-dim)';badge.style.borderColor='var(--border)';return;}
   const mode=detectMode(val);const info=SQL_MODES[mode];
-  badge.textContent=info.label;badge.style.color=info.color;badge.style.borderColor=info.color+'66';
+  badge.textContent=info.label;badge.style.color=info.color;badge.style.borderColor=`color-mix(in srgb, ${info.color} 40%, transparent)`;
 }
 function _skipSqlLine(t){
   if(!t) return true;
@@ -218,7 +218,7 @@ function formatSQLDBeaver(rawSql){
   return out.join('\n');
 }
 // ── SQL Highlighter ──
-const _TBL_COLORS=['#60a5fa','#34d399','#f472b6','#fb923c','#a78bfa','#facc15','#22d3ee','#4ade80'];
+const _TBL_COLORS=['var(--c-blue)','var(--c-green)','var(--c-pink)','var(--c-orange)','var(--c-purple)','var(--c-yellow)','var(--c-cyan)','var(--c-green)'];
 const _SQL_RESERVED=new Set(['where','on','set','having','order','group','limit','offset','inner','left','right','cross','full','join','and','or','not','in','is','as','by','select','from','union','values','update','delete','insert','with','distinct','case','when','then','else','end']);
 function analyzeSQL(sql){
   const aliasMap={};let m;
@@ -254,14 +254,14 @@ function highlightSQLHtml(sql,aliasMap,colorMap){
   for(const tbl of tableNames){
     const color=colorMap[tbl];
     const re=new RegExp('(\\bFROM\\s+|\\bJOIN\\s+)('+tbl+')\\b','gi');
-    html=html.replace(re,(_,prefix,name)=>`${prefix}<span style="color:${color};font-weight:600;opacity:.75">${name}</span>`);
+    html=html.replace(re,(_,prefix,name)=>`${prefix}<span style="color:${color};font-weight:600">${name}</span>`);
   }
   // Highlight alias.column
   const aliases=Object.keys(aliasMap).sort((a,b)=>b.length-a.length);
   for(const alias of aliases){
     const color=colorMap[aliasMap[alias]];
     const re=new RegExp('\\b('+alias+')\\.(\\w+)\\b','gi');
-    html=html.replace(re,(_,a,col)=>`<span style="color:${color};font-weight:500">${a}.<span style="opacity:.8">${col}</span></span>`);
+    html=html.replace(re,(_,a,col)=>`<span style="color:${color};font-weight:500">${a}.<span>${col}</span></span>`);
   }
   return html;
 }
@@ -317,9 +317,39 @@ function convertSQL(){
   });
 }
 function showSqlErr(msg){const el=document.getElementById('sql-error');el.textContent=msg;el.classList.add('visible');}
+const SQL_SAMPLES={
+  builder:`StringBuilder sql = new StringBuilder();
+sql.append("SELECT e.EMP_ID, e.NAME, d.DEPT_NAME ");
+sql.append("FROM EMPLOYEE e ");
+sql.append("JOIN DEPARTMENT d ON d.DEPT_ID = e.DEPT_ID ");
+sql.append("WHERE e.STATUS = :status ");
+if (deptId != null) {
+    sql.append("AND e.DEPT_ID = :deptId ");
+}
+sql.append("ORDER BY e.NAME");`,
+  textblock:`String sql = """
+    SELECT o.ORDER_NO, o.AMOUNT, c.NAME
+    FROM ORDERS o
+    JOIN CUSTOMER c ON c.ID = o.CUSTOMER_ID
+    WHERE o.CREATED >= ?
+    ORDER BY o.CREATED DESC
+    """;`,
+  mybatis:`<select id="findByStatus" resultType="Employee">
+  SELECT EMP_ID, NAME, DEPT_ID
+  FROM EMPLOYEE
+  WHERE STATUS = #{status}
+  <if test="deptId != null">AND DEPT_ID = #{deptId}</if>
+</select>`,
+};
+function sqlSample(k){
+  const el=document.getElementById('sql-input');
+  el.value=SQL_SAMPLES[k];
+  detectSqlMode(el.value);
+  convertSQL();
+}
 function clearSQL(){
   document.getElementById('sql-input').value='';
   document.getElementById('sql-results').innerHTML='';
   document.getElementById('sql-error').classList.remove('visible');
-  document.getElementById('sql-detect-badge').textContent='—';
+  document.getElementById('sql-detect-badge').textContent='';
 }

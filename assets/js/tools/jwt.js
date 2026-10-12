@@ -19,7 +19,7 @@ function decodeJWT_UI(){
   try{
     const parts=token.split('.');
     if(parts.length<3)throw new Error('JWT ต้องมี 3 ส่วน คั่นด้วย "." (header.payload.signature)');
-    if(parts.length>3)throw new Error('พบ "." มากเกินไป — ตรวจสอบว่า token ครบถ้วนและไม่มีช่องว่าง');
+    if(parts.length>3)throw new Error('พบ "." มากเกินไป: ตรวจสอบว่า token ครบถ้วนและไม่มีช่องว่าง');
     if(!parts[0])throw new Error('Header ว่างเปล่า');
     if(!parts[1])throw new Error('Payload ว่างเปล่า');
     const header=b64urlDecode(parts[0]);
@@ -27,7 +27,7 @@ function decodeJWT_UI(){
     const sig=parts[2];
     _jwtHeader=header;_jwtPayload=payload;
     const alg=header.alg||'ไม่ระบุ';
-    const algColor=alg.startsWith('HS')?'#60a5fa':alg.startsWith('RS')?'#a78bfa':alg.startsWith('ES')?'#34d399':'#94a3b8';
+    const algColor=alg.startsWith('HS')?'var(--c-blue)':alg.startsWith('RS')?'var(--c-purple)':alg.startsWith('ES')?'var(--c-green)':'var(--text-dim)';
     let meta='';
     if(payload.iat!=null)meta+=`<span>iat: <b>${new Date(payload.iat*1000).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})}</b></span>`;
     if(payload.nbf!=null)meta+=`<span>nbf: <b>${new Date(payload.nbf*1000).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})}</b></span>`;
@@ -43,7 +43,7 @@ function decodeJWT_UI(){
     container.innerHTML=`
       <div class="jwt-section">
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <span style="font-family:var(--mono);font-size:.72rem;padding:3px 10px;border-radius:20px;border:1px solid ${algColor}44;color:${algColor};background:${algColor}18;">ALG: ${escHtml(alg)}</span>
+          <span style="font-family:var(--mono);font-size:.72rem;padding:3px 10px;border-radius:20px;border:1px solid color-mix(in srgb, ${algColor} 27%, transparent);color:${algColor};background:color-mix(in srgb, ${algColor} 9%, transparent);">ALG: ${escHtml(alg)}</span>
           <span style="font-family:var(--mono);font-size:.72rem;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--text-dim);">TYPE: ${escHtml(header.typ||'JWT')}</span>
           <span style="font-family:var(--mono);font-size:.72rem;color:var(--text-dim);margin-left:auto;">${tokenBytes} bytes</span>
         </div>
@@ -69,7 +69,7 @@ function decodeJWT_UI(){
       </div>`;
   }catch(e){
     let hint='';
-    if(e.message.includes('3 ส่วน'))hint='<div style="margin-top:6px;font-size:.74rem;color:var(--text-dim);">'+ic('lightbulb')+' JWT มีรูปแบบ: eyXXX.eyXXX.XXXXX — วาง token ทั้งก้อน หรือลบ "Bearer " ออก</div>';
+    if(e.message.includes('3 ส่วน'))hint='<div style="margin-top:6px;font-size:.74rem;color:var(--text-dim);">'+ic('lightbulb')+' JWT มีรูปแบบ: eyXXX.eyXXX.XXXXX · วาง token ทั้งก้อน หรือลบ "Bearer " ออก</div>';
     container.innerHTML=`<div class="jwt-error">${ic('triangle-alert')} ${escHtml(e.message)}${hint}</div>`;
   }
 }
@@ -87,7 +87,7 @@ async function jwtEncode() {
   const outEl = document.getElementById('jwt-enc-output');
   const errEl = document.getElementById('jwt-enc-error');
   errEl.style.display = 'none';
-  outEl.textContent = '—';
+  outEl.textContent = '';
   if (!payloadStr) { errEl.textContent = 'กรอก payload JSON'; errEl.style.display = 'block'; return; }
   if (!secret) { errEl.textContent = 'กรอก secret key'; errEl.style.display = 'block'; return; }
   let payload;
@@ -110,6 +110,6 @@ async function jwtEncode() {
 function clearJwtEnc() {
   document.getElementById('jwt-enc-payload').value = '';
   document.getElementById('jwt-enc-secret').value = '';
-  document.getElementById('jwt-enc-output').textContent = '—';
+  document.getElementById('jwt-enc-output').textContent = '';
   document.getElementById('jwt-enc-error').style.display = 'none';
 }
