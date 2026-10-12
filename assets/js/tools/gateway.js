@@ -6,22 +6,22 @@ const GW_NODES=[
  {id:'dns',icon:'globe',t:'DNS',s:'ชื่อ → IP',
   d:'แปลงชื่อโดเมนเป็น IP ของ load balancer (ภายนอก) · ภายในคลัสเตอร์ CoreDNS แปลงชื่อ Service เป็น ClusterIP',
   err:['`UnknownHostException` / `ENOTFOUND` = DNS หาชื่อไม่เจอ','เปลี่ยน IP แล้วบางเครื่องยังไปที่เก่า = cache ของ DNS (TTL)'],
-  code:'nslookup ewfund.example.go.th\n# ในคลัสเตอร์\nkubectl run -it --rm dns --image=busybox --restart=Never -- nslookup ewfund-api.ewfund'},
+  code:'nslookup shop.example.com\n# ในคลัสเตอร์\nkubectl run -it --rm dns --image=busybox --restart=Never -- nslookup order-api.shop'},
  {id:'lb',icon:'shuffle',t:'Load Balancer',s:'L4 / L7',
   d:'กระจาย request ไปยังเครื่องปลายทางหลายตัว และตัดตัวที่ health check ไม่ผ่านออก · L4 ดูแค่ IP / port (TCP) เร็ว · L7 อ่าน HTTP ได้ จึงแยกตาม host / path / header และ terminate TLS ได้',
   err:['ตอบ 502 / 503 = ไม่มี backend ที่ healthy','session หลุดบ่อยเมื่อมีหลาย instance = เก็บ session ไว้ใน memory ของแต่ละเครื่อง (ใช้ token หรือ Redis แทน sticky session)']},
  {id:'kong',icon:'network',t:'Kong (Ingress / API Gateway)',s:'route + plugin',
   d:'จับคู่ host / path จาก Ingress ไปยัง Service แล้วรัน plugin ระหว่างทาง: จำกัด IP, CORS, rate limit, แก้ header, ตรวจ token · ตั้งค่าผ่าน annotation `konghq.com/*` และ KongPlugin',
   err:['404 `no Route matched with those values` = ไม่มี Ingress ที่ host / path ตรง','503 `failure to get a peer from the ring-balancer` = Service ไม่มี Pod ที่ ready','504 = backend ตอบช้ากว่า `konghq.com/read-timeout`','403 = โดน plugin เช่น ip-restriction'],
-  code:'kubectl get ingress -A\nkubectl describe ingress ewfund-api -n ewfund\nkubectl logs -n kong deploy/kong-gateway -c proxy --tail=100'},
+  code:'kubectl get ingress -A\nkubectl describe ingress order-api -n shop\nkubectl logs -n kong deploy/kong-gateway -c proxy --tail=100'},
  {id:'svc',icon:'server',t:'Service (ClusterIP)',s:'IP คงที่',
   d:'ชื่อ DNS + IP คงที่ภายในคลัสเตอร์ กระจาย traffic ไปยัง Pod ที่ label ตรงและ ready (kube-proxy ทำ load balance ระดับ L4)',
   err:['endpoints ว่าง = selector ไม่ตรง label หรือ readinessProbe ไม่ผ่าน','targetPort ไม่ตรงกับ port ที่แอปฟัง = connection refused'],
-  code:'kubectl get endpoints ewfund-api -n ewfund'},
+  code:'kubectl get endpoints order-api -n shop'},
  {id:'pod',icon:'container',t:'Pod (Quarkus / nginx)',s:'แอปจริง',
   d:'แอป Quarkus ฟังที่ 8080 ส่วนเว็บ Angular เสิร์ฟผ่าน nginx ที่ 80 · request มาถึงพร้อม header `X-Forwarded-*` บอก host / protocol เดิมของ client',
   err:['500 = error ในแอป ดู log ของ Pod','redirect ไป http แทน https = แอปไม่ได้อ่าน X-Forwarded-Proto (Quarkus: `quarkus.http.proxy.proxy-address-forwarding=true`)'],
-  code:'kubectl logs -f deploy/ewfund-api -n ewfund\nkubectl exec -it deploy/ewfund-api -n ewfund -- curl -s localhost:8080/q/health'},
+  code:'kubectl logs -f deploy/order-api -n shop\nkubectl exec -it deploy/order-api -n shop -- curl -s localhost:8080/q/health'},
 ];
 let _gwCur='kong';
 function gwInit(){
@@ -85,7 +85,7 @@ metadata:
 plugin: cors
 config:
   origins:
-    - https://ewfund.example.go.th
+    - https://shop.example.com
   methods: [GET, POST, PUT, DELETE, OPTIONS]
   headers: [Authorization, Content-Type]
   credentials: true
@@ -108,14 +108,14 @@ config:
    d:'`http` (ค่าร่วม) → `server` (หนึ่งเว็บ / port / host) → `location` (กฎตาม path) · location ที่ match ยาวสุดชนะ ส่วน `=` (exact) และ regex `~` มีลำดับพิเศษ',
    code:`server {
     listen 80;
-    server_name ewfund.example.go.th;
+    server_name shop.example.com;
 
     location = /health { return 200 'ok'; }     # ตรงทุกตัว
-    location /api/ { proxy_pass http://ewfund-api:80; }
+    location /api/ { proxy_pass http://order-api:80; }
     location / { root /usr/share/nginx/html; try_files $uri $uri/ /index.html; }
 }`},
   {g:'Nginx',t:'เสิร์ฟ Angular (SPA) ให้ refresh แล้วไม่ 404',b:'nginx',bc:'green',k:'try_files spa angular refresh 404 index.html cache',
-   d:'route ของ Angular เช่น `/wfcs/search` ไม่มีไฟล์จริงบน server ต้องให้ nginx คืน `index.html` แล้วให้ Angular router จัดการ · `index.html` ห้าม cache ส่วนไฟล์ที่มี hash ในชื่อ cache ได้นาน',
+   d:'route ของ Angular เช่น `/orders/search` ไม่มีไฟล์จริงบน server ต้องให้ nginx คืน `index.html` แล้วให้ Angular router จัดการ · `index.html` ห้าม cache ส่วนไฟล์ที่มี hash ในชื่อ cache ได้นาน',
    code:`server {
     listen 80;
     root /usr/share/nginx/html;

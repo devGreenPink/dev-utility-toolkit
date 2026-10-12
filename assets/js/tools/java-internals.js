@@ -161,7 +161,7 @@ public void importFile(InputStream in) throws IOException {
   // ── Quarkus build time ──
   {g:'Quarkus build time',t:'Build time vs Runtime ของ Quarkus',b:'quarkus',bc:'cyan',k:'jandex buildstep build time config fixed native deployment processor extension',
    d:'Quarkus ย้ายงานที่ framework อื่นทำตอน start (สแกน annotation, สร้าง proxy, อ่าน config บางตัว) มาทำตอน build ทำให้ start เร็วและใช้ memory น้อย',
-   fix:['extension มี 2 ส่วน: `runtime/` คือ bean ที่เรา inject และ `deployment/` คือ `*Processor` ที่มี `@BuildStep` (แบบเดียวกับ cdgs-quarkus-extensions)','config บางตัวเป็น build time (เช่น `quarkus.datasource.db-kind`) แก้แล้วต้อง build ใหม่ เปลี่ยนด้วย env ตอนรันไม่ได้','bean ที่ไม่มีใครใช้ถูกตัดทิ้งตอน build ถ้า lookup แบบ dynamic ต้อง `@Unremovable`'],
+   fix:['extension มี 2 ส่วน: `runtime/` คือ bean ที่เรา inject และ `deployment/` คือ `*Processor` ที่มี `@BuildStep`','config บางตัวเป็น build time (เช่น `quarkus.datasource.db-kind`) แก้แล้วต้อง build ใหม่ เปลี่ยนด้วย env ตอนรันไม่ได้','bean ที่ไม่มีใครใช้ถูกตัดทิ้งตอน build ถ้า lookup แบบ dynamic ต้อง `@Unremovable`'],
    code:`// deployment module ของ extension
 class MyExtensionProcessor {
     @BuildStep

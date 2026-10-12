@@ -45,10 +45,10 @@ const SP_OPEN={
   cron:['Cron Builder',t=>spFill('cron-tab','cron-manual',t)],
   color:['Color Picker',t=>spFill('color-tab','color-hex',t.startsWith('#')?t:'#'+t)],
   http:['HTTP Status',t=>spFill('http-tab','http-search',t)],
-  'url-enc':['URL Decode',t=>spFill('url-tab','url-input',t,()=>urlDecode())],
-  base64:['Base64 Decode',t=>spFill('base64-tab','b64-input',t,()=>b64Decode())],
+  'url-enc':['URL Decode',t=>{urlSetMode('dec');spFill('url-tab','url-input',t);}],
+  base64:['Base64 Decode',t=>{b64SetMode('dec');spFill('base64-tab','b64-input',t);}],
   hash:['Hash Generator',t=>spFill('hash-tab','hash-input',t)],
-  b64enc:['Base64 Encode',t=>spFill('base64-tab','b64-input',t,()=>b64Encode())],
+  b64enc:['Base64 Encode',t=>{b64SetMode('enc');spFill('base64-tab','b64-input',t);}],
   regex:['Regex Tester',t=>spFill('regex-tab','regex-input',t)],
 };
 function spIsJson(t){try{JSON.parse(t);return true;}catch(e){return false;}}

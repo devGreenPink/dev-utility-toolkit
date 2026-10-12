@@ -108,7 +108,7 @@ t('stacktrace: sample chain and root cause', () => {
   assert.equal(c[0].type, 'jakarta.persistence.PersistenceException');
   assert.equal(c[2].type, 'com.ibm.db2.jcc.am.SqlIntegrityConstraintViolationException');
   assert.equal(c[1].more, 42);
-  assert.equal(run('stGuessApp(stParse(ST_SAMPLE).chain)'), 'th.co.cdgs.');
+  assert.equal(run('stGuessApp(stParse(ST_SAMPLE).chain)'), 'com.example.shop.');
   assert.equal(run('stFindDb2(ST_SAMPLE).b'), '-803');
 });
 t('stacktrace: package-aware reference lookup', () => {

@@ -273,24 +273,7 @@
     copyPickedHex(text);
   }
 
-  function copyPickedHex(text) {
-    try {
-      navigator.clipboard.writeText(text)
-        .then(() => showToast('คัดลอก ' + text + ' แล้ว'))
-        .catch(() => fallbackCopy(text));
-    } catch (_) { fallbackCopy(text); }
-  }
-
-  function fallbackCopy(text) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); showToast('คัดลอก ' + text + ' แล้ว'); }
-    catch (_) { showToast('คัดลอกไม่ได้','warn'); }
-    ta.remove();
-  }
+  function copyPickedHex(text) { copyText(text); }
 
   // ── Apply to main Color Picker ──
   function icpApplyToMainPicker() {

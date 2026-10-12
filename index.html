@@ -72,22 +72,8 @@
     />
 
     <!-- ── External Libraries ── -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.8.1/rxjs.umd.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/properties.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/nginx.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dockerfile.min.js"></script>
+    <!-- highlight.js, CodeMirror, RxJS and jsdiff load on first use: loadLib() in core.js -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
 
     <!-- ── App Styles ── -->
     <link rel="stylesheet" href="assets/css/style.css" />
@@ -609,7 +595,7 @@
                   <button
                     class="mock-copy-btn"
                     onclick="copyVal('out-id')"
-                    title="Copy"
+                    title="คัดลอก"
                   >
                     <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>
                   </button>
@@ -620,7 +606,7 @@
                     <span class="mock-field-hint">ภาษาไทย</span>
                   </div>
                   <span class="mock-field-value" id="out-name"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-name')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-name')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
@@ -628,7 +614,7 @@
                     <span class="mock-field-hint">สไตล์สายเทค</span>
                   </div>
                   <span class="mock-field-value" id="out-nickname"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-nickname')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-nickname')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
@@ -636,7 +622,7 @@
                     <span class="mock-field-hint">ชาย / หญิง / ไม่ระบุ</span>
                   </div>
                   <span class="mock-field-value" id="out-gender"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-gender')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-gender')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
@@ -644,7 +630,7 @@
                     <span class="mock-field-hint">พ.ศ. + อายุ</span>
                   </div>
                   <span class="mock-field-value mono-sm" id="out-dob"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-dob')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-dob')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
               <!-- Contact card -->
@@ -662,7 +648,7 @@
                   <button
                     class="mock-copy-btn"
                     onclick="copyVal('out-phone')"
-                    title="Copy"
+                    title="คัดลอก"
                   >
                     <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>
                   </button>
@@ -681,7 +667,7 @@
                   <button
                     class="mock-copy-btn"
                     onclick="copyVal('out-email')"
-                    title="Copy"
+                    title="คัดลอก"
                   >
                     <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>
                   </button>
@@ -700,7 +686,7 @@
                     <span class="mock-field-hint">30 จังหวัด</span>
                   </div>
                   <span class="mock-field-value" id="out-province"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-province')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-province')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
@@ -708,7 +694,7 @@
                     <span class="mock-field-hint">5 หลัก</span>
                   </div>
                   <span class="mock-field-value mono-sm" id="out-zip"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-zip')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-zip')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
 
@@ -724,7 +710,7 @@
                     <span class="mock-field-hint">ชื่อบริษัทไทย</span>
                   </div>
                   <span class="mock-field-value" id="out-company" style="font-size:0.78rem"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-company')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-company')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
@@ -732,7 +718,7 @@
                     <span class="mock-field-hint">13 หลัก</span>
                   </div>
                   <span class="mock-field-value mono-sm" id="out-juristic" style="font-size:0.72rem"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-juristic')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-juristic')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
@@ -740,7 +726,7 @@
                     <span class="mock-field-hint">IT / Dev roles</span>
                   </div>
                   <span class="mock-field-value" id="out-job"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-job')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-job')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
                 <div class="mock-field-row">
                   <div class="mock-field-meta">
@@ -748,7 +734,7 @@
                     <span class="mock-field-hint">15k-180k บาท</span>
                   </div>
                   <span class="mock-field-value mono-sm" id="out-salary"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-salary')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-salary')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
 
@@ -765,7 +751,7 @@
                   </div>
                   <span class="mock-field-value mono-sm" id="out-credit" style="font-size:0.74rem"></span>
                   <span id="out-card-type" style="font-size:0.62rem;color:var(--accent2);font-family:var(--mono);margin-left:4px;flex-shrink:0"></span>
-                  <button class="mock-copy-btn" onclick="copyVal('out-credit')" title="Copy"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
+                  <button class="mock-copy-btn" onclick="copyVal('out-credit')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
               <!-- System card -->
@@ -788,7 +774,7 @@
                   <button
                     class="mock-copy-btn"
                     onclick="copyVal('out-uuid')"
-                    title="Copy"
+                    title="คัดลอก"
                   >
                     <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>
                   </button>
@@ -801,7 +787,7 @@
               class="btn btn-ghost btn-full"
               onclick="copyAllMock()"
             >
-              <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> Copy ทั้งหมดเป็น JSON
+              <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอกทั้งหมดเป็น JSON
             </button>
 
             <!-- Bulk output -->
@@ -830,7 +816,7 @@
                   class="btn btn-ghost"
                   onclick="copyArea('bulk-json-output')"
                 >
-                  <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> Copy All
+                  <svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอกทั้งหมด
                 </button>
               </div>
               <textarea
@@ -847,136 +833,49 @@
         <div id="sql-tab" class="tab-content">
           <div class="section-header">
             <div class="toolbar">
-              <button class="btn btn-danger" onclick="clearSQL()">
-                <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง
-              </button>
+              <span class="field-label">ลองตัวอย่าง:</span>
+              <button class="btn btn-ghost" onclick="sqlSample('builder')">StringBuilder</button>
+              <button class="btn btn-ghost" onclick="sqlSample('textblock')">Text Block</button>
+              <button class="btn btn-ghost" onclick="sqlSample('mybatis')">MyBatis XML</button>
+            </div>
+            <label class="mode-label"><input type="checkbox" id="sql-format-check" checked onchange="sqlLive()" /> จัดรูปแบบ SQL ผลลัพธ์</label>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="field-head"><span class="field-head-l"><label class="field-label" for="sql-input">Java / SQL</label><span id="sql-detect-badge" class="sql-badge"></span></span><span class="field-acts"><button type="button" class="field-act" onclick="clearSQL()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <textarea id="sql-input" rows="16" placeholder='วาง Java/SQL code ได้เลย รองรับ: Text Block · StringBuilder · String concat · @Query · prepareStatement · String.format · MyBatis XML · Plain SQL' oninput="detectSqlMode(this.value);sqlLive()"></textarea>
+            </div>
+            <div>
+              <div class="field-head"><span class="field-label">SQL ที่แยกได้</span></div>
+              <div id="sql-error"></div>
+              <div id="sql-results" class="sql-results"></div>
             </div>
           </div>
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              gap: 10px;
-              margin-bottom: 10px;
-              flex-wrap: wrap;
-            "
-          >
-            <span class="field-label">โหมดที่ตรวจจับได้:</span>
-            <span
-              id="sql-detect-badge"
-              style="
-                font-size: 0.72rem;
-                font-family: var(--mono);
-                padding: 3px 10px;
-                border-radius: 20px;
-                border: 1px solid var(--border);
-                color: var(--text-dim);
-                background: var(--surface2);
-              "
-              ></span
-            >
-            <label class="mode-label" style="margin-left: auto"
-              ><input type="checkbox" id="sql-format-check" checked /> จัดรูปแบบ SQL
-              ผลลัพธ์</label
-            >
-          </div>
-          <div class="sql-samples">
-            <span class="field-label">ลองตัวอย่าง:</span>
-            <button class="btn btn-ghost" onclick="sqlSample('builder')">StringBuilder</button>
-            <button class="btn btn-ghost" onclick="sqlSample('textblock')">Text Block</button>
-            <button class="btn btn-ghost" onclick="sqlSample('mybatis')">MyBatis XML</button>
-          </div>
-          <textarea
-            id="sql-input"
-            rows="8"
-            placeholder='วาง Java/SQL code ได้เลย รองรับ: Text Block · StringBuilder · String concat · @Query · prepareStatement · String.format · MyBatis XML · Plain SQL'
-            oninput="detectSqlMode(this.value)"
-          ></textarea>
-          <div style="margin-top: 10px">
-            <button class="btn btn-primary btn-full" onclick="convertSQL()">
-              ▶ แยก SQL
-            </button>
-          </div>
-          <div id="sql-error"></div>
-          <div id="sql-results" style="margin-top:12px;display:flex;flex-direction:column;gap:10px;"></div>
         </div>
 
         <!-- DIFF -->
         <div id="compare-tab" class="tab-content">
           <div class="section-header">
             <div class="toolbar">
-              <label class="mode-label"
-                ><input
-                  type="radio"
-                  name="diff-mode"
-                  value="char"
-                  checked
-                  onchange="diffModeChange()"
-                />
-                ระดับตัวอักษร</label
-              >
-              <label class="mode-label"
-                ><input
-                  type="radio"
-                  name="diff-mode"
-                  value="line"
-                  onchange="diffModeChange()"
-                />
-                ระดับบรรทัด</label
-              >
-              <button class="btn btn-danger" onclick="clearDiff()">
-                <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง
-              </button>
+              <label class="mode-label"><input type="radio" name="diff-mode" value="char" checked onchange="diffModeChange()" /> ระดับตัวอักษร</label>
+              <label class="mode-label"><input type="radio" name="diff-mode" value="line" onchange="diffModeChange()" /> ระดับบรรทัด</label>
             </div>
           </div>
           <div class="grid-2">
             <div>
-              <div class="field-label">ต้นฉบับ (Original)</div>
-              <textarea
-                id="diff-left"
-                rows="8"
-                placeholder="ต้นฉบับ"
-              ></textarea>
+              <div class="field-head"><label class="field-label" for="diff-left">ต้นฉบับ (Original)</label><span class="field-acts"><button type="button" class="field-act" onclick="clearDiff()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้างทั้งสองฝั่ง</button></span></div>
+              <textarea id="diff-left" rows="10" placeholder="ต้นฉบับ" oninput="diffLive()"></textarea>
             </div>
             <div>
-              <div class="field-label">ฉบับแก้ไข (Modified)</div>
-              <textarea
-                id="diff-right"
-                rows="8"
-                placeholder="ฉบับแก้ไข"
-              ></textarea>
+              <div class="field-head"><label class="field-label" for="diff-right">ฉบับแก้ไข (Modified)</label></div>
+              <textarea id="diff-right" rows="10" placeholder="ฉบับแก้ไข" oninput="diffLive()"></textarea>
             </div>
           </div>
-          <div style="margin-top: 10px">
-            <button class="btn btn-primary btn-full" onclick="compareText()">
-              <svg class="i" aria-hidden="true"><use href="#i-scale"/></svg> เปรียบเทียบ
-            </button>
+          <div class="field-head diff-head">
+            <span class="field-label">ความแตกต่าง</span>
+            <span id="diff-stats" class="diff-stats" style="display: none"><span class="t-green" id="diff-added-count"></span><span class="t-red" id="diff-removed-count"></span></span>
           </div>
-          <div
-            id="diff-stats"
-            style="
-              margin-top: 8px;
-              font-size: 0.76rem;
-              font-family: var(--mono);
-              display: none;
-            "
-          >
-            <span style="color: var(--success)" id="diff-added-count"></span>
-            <span
-              style="color: var(--danger); margin-left: 12px"
-              id="diff-removed-count"
-            ></span>
-          </div>
-          <div
-            id="diff-result"
-            class="output-mono"
-            style="
-              margin-top: 8px;
-              min-height: 80px;
-              color: var(--text);
-              white-space: pre-wrap;
-            "
-          ></div>
+          <div id="diff-result" class="output-mono diff-result"></div>
         </div>
 
         <!-- JSON -->
@@ -1015,13 +914,11 @@
                 />
                 Live</label
               >
-              <button class="btn btn-danger" onclick="clearJSON()">
-                <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง
-              </button>
             </div>
           </div>
 
           <div id="json-editor-pane">
+            <div class="field-head"><label class="field-label" for="json-input">JSON</label><span class="field-acts"><button type="button" class="field-act" onclick="copyArea('json-input')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button><button type="button" class="field-act" onclick="clearJSON()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
             <div class="textarea-container">
               <div class="textarea-gutter" id="json-gutter"><div>1</div></div>
               <textarea
@@ -1054,9 +951,6 @@
                 onclick="formatJSON(0)"
               >
                 Minify
-              </button>
-              <button class="btn btn-ghost" onclick="copyArea('json-input')">
-                Copy
               </button>
             </div>
             <div id="json-error" style="display: none"></div>
@@ -1187,21 +1081,10 @@
 
         <!-- UNIX -->
         <div id="unix-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearUnix()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
-          </div>
+          <div class="field-head"><label class="field-label" for="unix-input">Unix timestamp (วินาที หรือ มิลลิวินาที)</label><span class="field-acts"><button type="button" class="field-act" onclick="clearUnix()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
           <div class="flex-row">
-            <input
-              type="number"
-              id="unix-input"
-              placeholder="เช่น 1705568400"
-              style="flex: 1"
-              oninput="convertUnix()"
-            />
-            <button class="btn btn-primary" onclick="convertUnix()">
-              แปลง
-            </button>
-            <button class="btn btn-ghost" onclick="nowUnix()">ตอนนี้</button>
+            <input type="number" id="unix-input" placeholder="เช่น 1705568400" style="flex: 1" oninput="convertUnix()" />
+            <button class="btn btn-ghost" onclick="nowUnix()"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg> ตอนนี้</button>
           </div>
           <div class="cron-result" style="margin-top: 14px; padding: 22px">
             <div class="cron-expr" id="unix-result"></div>
@@ -1216,84 +1099,32 @@
         <!-- BASE64 -->
         <div id="base64-tab" class="tab-content">
           <div class="section-header">
-            <button class="btn btn-danger" onclick="clearBase64()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างทั้งหมด
-            </button>
-          </div>
-          <div class="space-y">
-            <div>
-              <div class="field-label">ข้อความ INPUT</div>
-              <textarea
-                id="b64-input"
-                rows="5"
-                placeholder="วางข้อความหรือ Base64 ที่ต้องการแปลง..."
-              ></textarea>
-            </div>
-            <div class="flex-row">
-              <button
-                class="btn btn-primary"
-                style="flex: 1"
-                onclick="b64Encode()"
-              >
-                <svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Encode → Base64
-              </button>
-              <button
-                class="btn btn-green"
-                style="flex: 1"
-                onclick="b64Decode()"
-              >
-                <svg class="i" aria-hidden="true"><use href="#i-lock-open"/></svg> Decode → Text
-              </button>
-            </div>
-            <div
-              style="
-                display: flex;
-                gap: 14px;
-                align-items: center;
-                flex-wrap: wrap;
-              "
-            >
-              <label class="mode-label"
-                ><input type="checkbox" id="b64-urlsafe" /> URL-safe (แทน +→-
-                และ /→_)</label
-              >
-              <label class="mode-label"
-                ><input type="checkbox" id="b64-nopad" /> ไม่มี padding
-                (=)</label
-              >
-            </div>
-            <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  margin-bottom: 6px;
-                "
-              >
-                <span class="field-label">OUTPUT</span>
-                <button
-                  class="btn btn-ghost"
-                  onclick="copyElText('b64-output')"
-                >
-                  Copy
-                </button>
+            <div class="toolbar">
+              <div class="json-view-toggle" id="b64-mode" role="group" aria-label="ทิศทางการแปลง">
+                <button type="button" class="json-view-btn active" data-v="enc" aria-pressed="true" onclick="b64SetMode('enc')"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Encode</button>
+                <button type="button" class="json-view-btn" data-v="dec" aria-pressed="false" onclick="b64SetMode('dec')"><svg class="i" aria-hidden="true"><use href="#i-lock-open"/></svg> Decode</button>
               </div>
-              <div id="b64-output" class="output-mono" style="min-height: 80px"></div>
+              <label class="mode-label"><input type="checkbox" id="b64-urlsafe" onchange="b64Convert()" /> URL-safe (แทน +→- และ /→_)</label>
+              <label class="mode-label"><input type="checkbox" id="b64-nopad" onchange="b64Convert()" /> ไม่มี padding (=)</label>
             </div>
-            <div
-              id="b64-error"
-              style="color: var(--danger); font-size: 0.8rem; display: none"
-            ></div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="field-head"><label class="field-label" for="b64-input">ข้อความ</label><span class="field-acts"><button type="button" class="field-act" onclick="clearBase64()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <textarea id="b64-input" rows="10" placeholder="วางข้อความหรือ Base64 ที่ต้องการแปลง" oninput="b64Convert()"></textarea>
+            </div>
+            <div>
+              <div class="field-head"><span class="field-label">ผลลัพธ์</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('b64-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div id="b64-output" class="output-mono tool-result" data-empty="ผลลัพธ์จะขึ้นที่นี่ทันทีที่พิมพ์"></div>
+              <div id="b64-error" class="tool-error-text" style="display: none"></div>
+            </div>
           </div>
         </div>
 
         <!-- CRON -->
         <div id="cron-tab" class="tab-content">
           <div class="section-header">
-            <button class="btn btn-danger" onclick="clearCron()">
-              ↺ รีเซ็ต
-            </button>
+            <button class="btn btn-ghost" onclick="clearCron()"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
           </div>
 
           <div class="card" style="margin-bottom: 14px">
@@ -1663,14 +1494,9 @@
 
         <!-- REGEX -->
         <div id="regex-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearRegex()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างทั้งหมด
-            </button>
-          </div>
           <div class="space-y">
             <div>
-              <div class="field-label">PATTERN</div>
+              <div class="field-head"><label class="field-label" for="regex-pattern">Pattern</label><span class="field-acts"><button type="button" class="field-act" onclick="clearRegex()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้างทั้งหมด</button></span></div>
               <div class="regex-input-wrap">
                 <span class="regex-slash">/</span>
                 <input
@@ -1790,184 +1616,93 @@
         <!-- HASH -->
         <div id="hash-tab" class="tab-content">
           <div class="section-header">
-            <button class="btn btn-danger" onclick="clearHash()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+            <label class="mode-label"><input type="checkbox" id="hash-uppercase" onchange="computeHash()" /> ตัวพิมพ์ใหญ่</label>
           </div>
-          <textarea
-            id="hash-input"
-            rows="6"
-            placeholder="วางข้อความที่ต้องการสร้าง hash ที่นี่..."
-            oninput="computeHash()"
-          ></textarea>
-          <div
-            style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap"
-          >
-            <button
-              class="btn btn-primary"
-              style="flex: 1"
-              onclick="computeHash()"
-            >
-              <svg class="i" aria-hidden="true"><use href="#i-key"/></svg> สร้าง Hash
-            </button>
-            <label class="mode-label"
-              ><input
-                type="checkbox"
-                id="hash-uppercase"
-                onchange="computeHash()"
-              />
-              ตัวพิมพ์ใหญ่</label
-            >
+          <div class="grid-2">
+            <div>
+              <div class="field-head"><label class="field-label" for="hash-input">ข้อความ</label><span class="field-acts"><button type="button" class="field-act" onclick="clearHash()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <textarea id="hash-input" rows="10" placeholder="วางข้อความที่ต้องการสร้าง hash" oninput="computeHash()"></textarea>
+            </div>
+            <div>
+              <div class="field-head"><span class="field-label">Hash</span></div>
+              <div id="hash-results" class="hash-results"></div>
+            </div>
           </div>
-          <div id="hash-results" style="margin-top: 14px"></div>
         </div>
 
         <!-- K8S SECRET -->
         <div id="k8s-secret-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearK8sSecret()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างทั้งหมด
-            </button>
-          </div>
-          <div class="space-y">
+          <div class="grid-2">
             <div>
-              <div class="field-label">SECRET YAML / JSON</div>
-              <textarea
-                id="k8s-input"
-                rows="10"
-                spellcheck="false"
-                placeholder="วางเนื้อหาไฟล์ secret.yml หรือผลลัพธ์ kubectl get secret &lt;name&gt; -o yaml / -o json ..."
-              ></textarea>
+              <div class="field-head"><label class="field-label" for="k8s-input">Secret YAML / JSON</label><span class="field-acts"><button type="button" class="field-act" onclick="clearK8sSecret()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <textarea id="k8s-input" rows="18" spellcheck="false" placeholder="วางเนื้อหาไฟล์ secret.yml หรือผลลัพธ์ kubectl get secret &lt;name&gt; -o yaml / -o json ..." oninput="k8sLive()"></textarea>
             </div>
-            <div class="flex-row">
-              <button
-                class="btn btn-green"
-                style="flex: 1"
-                onclick="decodeK8sSecret()"
-              >
-                <svg class="i" aria-hidden="true"><use href="#i-lock-open"/></svg> Decode Secret
-              </button>
-              <button class="btn btn-ghost" onclick="copyK8sEnv()">
-                Copy as .env
-              </button>
+            <div>
+              <div class="field-head"><span class="field-label">ค่าที่ decode แล้ว</span><span class="field-acts"><button type="button" class="field-act" onclick="copyK8sEnv()"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอกเป็น .env</button></span></div>
+              <div id="k8s-error" class="tool-error-text" style="display: none"></div>
+              <div id="k8s-output" class="k8s-output"></div>
             </div>
-            <div
-              id="k8s-error"
-              style="color: var(--danger); font-size: 0.8rem; display: none"
-            ></div>
-            <div id="k8s-output"></div>
           </div>
         </div>
 
         <!-- JWT -->
         <div id="jwt-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearJWT()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
-          </div>
-          <textarea
-            id="jwt-input"
-            rows="4"
-            placeholder="วาง JWT token ที่นี่... eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-            oninput="decodeJWT_UI()"
-          ></textarea>
-          <div id="jwt-result" style="margin-top: 12px"></div>
-
-          <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
-            <div class="field-label" style="color:var(--accent-fg);margin-bottom:12px;letter-spacing:.05em;"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> JWT ENCODER (HS256)</div>
-            <div class="space-y">
-              <div>
-                <div class="field-label">PAYLOAD (JSON)</div>
-                <textarea id="jwt-enc-payload" rows="5" placeholder='{"sub":"1234567890","name":"John Doe","iat":1516239022}'></textarea>
-              </div>
-              <div>
-                <div class="field-label">SECRET KEY</div>
-                <input type="password" id="jwt-enc-secret" placeholder="your-256-bit-secret" />
-              </div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn btn-primary" style="flex:1;" onclick="jwtEncode()"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg> Encode JWT (HS256)</button>
-                <button class="btn btn-danger" onclick="clearJwtEnc()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
-              </div>
-              <div id="jwt-enc-error" style="color:var(--danger);font-size:.8rem;display:none;"></div>
-              <div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                  <span class="field-label">OUTPUT TOKEN</span>
-                  <button class="btn btn-ghost" onclick="copyElText('jwt-enc-output')">Copy</button>
-                </div>
-                <div id="jwt-enc-output" class="output-mono" style="min-height:80px;word-break:break-all;color:var(--accent2);"></div>
-              </div>
-              <div style="font-size:.71rem;color:var(--text-dim);"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ใช้สำหรับทดสอบเท่านั้น: ประมวลผลใน browser ทั้งหมด ไม่ส่งข้อมูลออกไปไหน</div>
+          <div class="grid-2">
+            <div>
+              <div class="field-head"><label class="field-label" for="jwt-input">JWT token</label><span class="field-acts"><button type="button" class="field-act" onclick="clearJWT()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <textarea id="jwt-input" rows="10" placeholder="วาง JWT token ที่นี่... eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" oninput="decodeJWT_UI()"></textarea>
+            </div>
+            <div>
+              <div class="field-head"><span class="field-label">Header · Payload</span></div>
+              <div id="jwt-result"></div>
             </div>
           </div>
+
+          <section class="jwt-enc" aria-labelledby="jwt-enc-h">
+            <div class="card-title" id="jwt-enc-h"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> สร้าง JWT (HS256)</div>
+            <div class="grid-2">
+              <div class="space-y">
+                <div>
+                  <div class="field-head"><label class="field-label" for="jwt-enc-payload">Payload (JSON)</label><span class="field-acts"><button type="button" class="field-act" onclick="clearJwtEnc()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+                  <textarea id="jwt-enc-payload" rows="6" placeholder='{"sub":"1234567890","name":"John Doe","iat":1516239022}' oninput="jwtEncLive()"></textarea>
+                </div>
+                <div>
+                  <div class="field-head"><label class="field-label" for="jwt-enc-secret">Secret key</label></div>
+                  <input type="password" id="jwt-enc-secret" placeholder="your-256-bit-secret" autocomplete="off" oninput="jwtEncLive()" />
+                </div>
+              </div>
+              <div>
+                <div class="field-head"><span class="field-label">Token</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('jwt-enc-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+                <div id="jwt-enc-output" class="output-mono tool-result jwt-enc-out" data-empty="กรอก payload และ secret แล้ว token จะขึ้นที่นี่"></div>
+                <div id="jwt-enc-error" class="tool-error-text" style="display: none"></div>
+              </div>
+            </div>
+            <div class="tool-note"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ใช้สำหรับทดสอบเท่านั้น: ประมวลผลใน browser ทั้งหมด ไม่ส่งข้อมูลออกไปไหน</div>
+          </section>
         </div>
 
         <!-- URL ENCODE/DECODE -->
         <div id="url-tab" class="tab-content">
           <div class="section-header">
-            <button class="btn btn-danger" onclick="clearURL()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างทั้งหมด
-            </button>
-          </div>
-          <div class="space-y">
-            <div>
-              <div class="field-label">INPUT</div>
-              <textarea
-                id="url-input"
-                rows="5"
-                placeholder="วางข้อความหรือ URL ที่ต้องการ encode/decode..."
-              ></textarea>
-            </div>
-            <div class="flex-row">
-              <button
-                class="btn btn-primary"
-                style="flex: 1"
-                onclick="urlEncode()"
-              >
-                <svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Encode
-              </button>
-              <button
-                class="btn btn-green"
-                style="flex: 1"
-                onclick="urlDecode()"
-              >
-                <svg class="i" aria-hidden="true"><use href="#i-lock-open"/></svg> Decode
-              </button>
-            </div>
-            <div style="display: flex; gap: 14px; flex-wrap: wrap">
-              <label class="mode-label"
-                ><input
-                  type="radio"
-                  name="url-mode"
-                  value="component"
-                  checked
-                />
-                encodeURIComponent (แนะนำ)</label
-              >
-              <label class="mode-label"
-                ><input type="radio" name="url-mode" value="full" /> encodeURI
-                (เก็บ / ? # &amp;)</label
-              >
-            </div>
-            <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  margin-bottom: 6px;
-                "
-              >
-                <span class="field-label">OUTPUT</span>
-                <button
-                  class="btn btn-ghost"
-                  onclick="copyElText('url-output')"
-                >
-                  Copy
-                </button>
+            <div class="toolbar">
+              <div class="json-view-toggle" id="url-dir" role="group" aria-label="ทิศทางการแปลง">
+                <button type="button" class="json-view-btn active" data-v="enc" aria-pressed="true" onclick="urlSetMode('enc')"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Encode</button>
+                <button type="button" class="json-view-btn" data-v="dec" aria-pressed="false" onclick="urlSetMode('dec')"><svg class="i" aria-hidden="true"><use href="#i-lock-open"/></svg> Decode</button>
               </div>
-              <div id="url-output" class="output-mono" style="min-height: 80px"></div>
+              <label class="mode-label"><input type="radio" name="url-mode" value="component" checked onchange="urlConvert()" /> encodeURIComponent (แนะนำ)</label>
+              <label class="mode-label"><input type="radio" name="url-mode" value="full" onchange="urlConvert()" /> encodeURI (เก็บ / ? # &amp;)</label>
             </div>
-            <div
-              id="url-error"
-              style="color: var(--danger); font-size: 0.8rem; display: none"
-            ></div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="field-head"><label class="field-label" for="url-input">ข้อความ หรือ URL</label><span class="field-acts"><button type="button" class="field-act" onclick="clearURL()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+              <textarea id="url-input" rows="10" placeholder="วางข้อความหรือ URL ที่ต้องการแปลง" oninput="urlConvert()"></textarea>
+            </div>
+            <div>
+              <div class="field-head"><span class="field-label">ผลลัพธ์</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('url-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div id="url-output" class="output-mono tool-result" data-empty="ผลลัพธ์จะขึ้นที่นี่ทันทีที่พิมพ์"></div>
+              <div id="url-error" class="tool-error-text" style="display: none"></div>
+            </div>
           </div>
         </div>
 
@@ -1975,12 +1710,8 @@
         <div id="color-tab" class="tab-content">
           <div class="section-header" style="margin-bottom: 16px">
             <div class="toolbar">
-              <button class="btn btn-ghost" onclick="pickRandom()">
-                <svg class="i" aria-hidden="true"><use href="#i-dices"/></svg> Random
-              </button>
-              <button class="btn btn-danger" onclick="resetColor()">
-                ↺ Reset
-              </button>
+              <button class="btn btn-ghost" onclick="pickRandom()"><svg class="i" aria-hidden="true"><use href="#i-dices"/></svg> สุ่มสี</button>
+              <button class="btn btn-ghost" onclick="resetColor()"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
             </div>
           </div>
           <div class="cp-dual-layout">
@@ -2080,7 +1811,7 @@
             </div>
             <!-- Copy values -->
             <div class="cp-copy-section">
-              <div class="cp-section-label">Click to copy</div>
+              <div class="cp-section-label">คลิกเพื่อคัดลอก</div>
               <div class="cp-vals">
                 <div class="cp-val-btn full" id="cv-hex" onclick="copyColorVal('cv-hex')">#6366F1</div>
                 <div class="cp-val-btn" id="cv-rgb" onclick="copyColorVal('cv-rgb')">rgb(99,102,241)</div>
@@ -2274,7 +2005,7 @@
                   >
                     <span class="icp-val-label" id="icp-active-label">HEX</span>
                     <span class="icp-val-text" id="icp-active-value"></span>
-                    <span class="icp-val-copy">copy</span>
+                    <span class="icp-val-copy">คัดลอก</span>
                   </div>
                   <div
                     class="image-color-value"
@@ -2283,7 +2014,7 @@
                   >
                     <span class="icp-val-label">HEX</span>
                     <span class="icp-val-text" id="image-color-hex"></span>
-                    <span class="icp-val-copy">copy</span>
+                    <span class="icp-val-copy">คัดลอก</span>
                   </div>
                   <div
                     class="image-color-value"
@@ -2292,7 +2023,7 @@
                   >
                     <span class="icp-val-label">RGB</span>
                     <span class="icp-val-text" id="image-color-rgb"></span>
-                    <span class="icp-val-copy">copy</span>
+                    <span class="icp-val-copy">คัดลอก</span>
                   </div>
                   <div
                     class="image-color-value"
@@ -2301,7 +2032,7 @@
                   >
                     <span class="icp-val-label">HSL</span>
                     <span class="icp-val-text" id="image-color-hsl"></span>
-                    <span class="icp-val-copy">copy</span>
+                    <span class="icp-val-copy">คัดลอก</span>
                   </div>
                 </div>
 
@@ -2356,7 +2087,7 @@
                   id="icp-kbd-hint"
                   style="display: none"
                 >
-                  <kbd>C</kbd> copy · <kbd>↑↓←→</kbd> nudge 1px
+                  <kbd>C</kbd> คัดลอก · <kbd>↑↓←→</kbd> nudge 1px
                 </div>
               </div>
               <!-- /image-color-panel -->
@@ -2369,19 +2100,7 @@
 
         <!-- HTTP STATUS -->
         <div id="http-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearHttp()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างการค้นหา
-            </button>
-          </div>
-          <div style="margin-bottom: 14px">
-            <input
-              type="text"
-              id="http-search"
-              placeholder="ค้นหา... เช่น 404, unauthorized, redirect"
-              oninput="filterHttp(this.value)"
-            />
-          </div>
+          <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="http-search" placeholder="ค้นหา เช่น 404, unauthorized, redirect" aria-label="ค้นหา HTTP status" oninput="filterHttp(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearHttp();document.getElementById('http-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
           <div
             style="
               display: flex;
@@ -2396,19 +2115,7 @@
 
         <!-- KUBECTL -->
         <div id="kubectl-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearKubectl()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างการค้นหา
-            </button>
-          </div>
-          <div style="margin-bottom: 16px">
-            <input
-              type="text"
-              id="kubectl-search"
-              placeholder="ค้นหาคำสั่ง... เช่น pod, log, exec, deploy"
-              oninput="filterKubectl(this.value)"
-            />
-          </div>
+          <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="kubectl-search" placeholder="ค้นหาคำสั่ง เช่น pod, log, exec, deploy" aria-label="ค้นหาคำสั่ง kubectl" oninput="filterKubectl(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearKubectl();document.getElementById('kubectl-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
           <div id="kubectl-list"></div>
         </div>
 
@@ -2419,71 +2126,43 @@
               <button type="button" class="json-view-btn active" data-v="cmd" aria-pressed="true" onclick="linuxView('cmd')">คำสั่ง</button>
               <button type="button" class="json-view-btn" data-v="fhs" aria-pressed="false" onclick="linuxView('fhs')">โฟลเดอร์ระบบ</button>
             </div>
-            <button class="btn btn-danger" onclick="clearLinux()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างการค้นหา
-            </button>
           </div>
-          <div style="margin-bottom: 16px">
-            <input
-              type="text"
-              id="linux-search"
-              placeholder="ค้นหาคำสั่ง... เช่น find, grep, service, port, network"
-              oninput="filterLinux(this.value)"
-            />
-          </div>
+          <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="linux-search" placeholder="ค้นหาคำสั่ง เช่น find, grep, service, port, network" aria-label="ค้นหาคำสั่ง Linux" oninput="filterLinux(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearLinux();document.getElementById('linux-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
           <div id="linux-list"></div>
         </div>
 
         <!-- GIT CLI -->
         <div id="git-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearGit()">
-              <svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างการค้นหา
-            </button>
-          </div>
-          <div style="margin-bottom: 16px">
-            <input
-              type="text"
-              id="git-search"
-              placeholder="ค้นหาคำสั่ง... เช่น commit, branch, rebase, stash"
-              oninput="filterGit(this.value)"
-            />
-          </div>
+          <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="git-search" placeholder="ค้นหาคำสั่ง เช่น commit, branch, rebase, stash" aria-label="ค้นหาคำสั่ง Git" oninput="filterGit(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearGit();document.getElementById('git-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
           <div id="git-list"></div>
         </div>
 
         <!-- NUMBER BASE CONVERTER -->
         <div id="numbase-tab" class="tab-content">
-          <div class="section-header">
-            <button class="btn btn-danger" onclick="clearNumBase()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
-          </div>
           <div class="space-y">
             <div>
-              <div class="field-label">DECIMAL (Base 10)</div>
+              <div class="field-head"><label class="field-label" for="nb-dec">Decimal (ฐาน 10)</label><span class="field-acts"><button type="button" class="field-act" onclick="clearNumBase()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
               <input type="text" id="nb-dec" placeholder="255" oninput="numBaseConvert('dec', this.value)" />
             </div>
             <div>
-              <div class="field-label">HEX (Base 16)</div>
+              <div class="field-head"><label class="field-label" for="nb-hex">Hex (ฐาน 16)</label><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('nb-hex')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
               <div style="display:flex;gap:8px;align-items:center;">
                 <span style="font-family:var(--mono);color:var(--text-dim);padding:8px 4px;">0x</span>
                 <input type="text" id="nb-hex" placeholder="FF" oninput="numBaseConvert('hex', this.value)" style="flex:1;" />
-                <button class="btn btn-ghost" onclick="copyElText('nb-hex')">Copy</button>
               </div>
             </div>
             <div>
-              <div class="field-label">BINARY (Base 2)</div>
+              <div class="field-head"><label class="field-label" for="nb-bin">Binary (ฐาน 2)</label><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('nb-bin')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
               <div style="display:flex;gap:8px;align-items:center;">
                 <span style="font-family:var(--mono);color:var(--text-dim);padding:8px 4px;">0b</span>
                 <input type="text" id="nb-bin" placeholder="11111111" oninput="numBaseConvert('bin', this.value)" style="flex:1;" />
-                <button class="btn btn-ghost" onclick="copyElText('nb-bin')">Copy</button>
               </div>
             </div>
             <div>
-              <div class="field-label">OCTAL (Base 8)</div>
+              <div class="field-head"><label class="field-label" for="nb-oct">Octal (ฐาน 8)</label><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('nb-oct')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
               <div style="display:flex;gap:8px;align-items:center;">
                 <span style="font-family:var(--mono);color:var(--text-dim);padding:8px 4px;">0o</span>
                 <input type="text" id="nb-oct" placeholder="377" oninput="numBaseConvert('oct', this.value)" style="flex:1;" />
-                <button class="btn btn-ghost" onclick="copyElText('nb-oct')">Copy</button>
               </div>
             </div>
             <div id="nb-error" style="color:var(--danger);font-size:.8rem;display:none;"></div>
@@ -2518,7 +2197,7 @@
                 <button class="rxjs-view-tab rxjs-view-tab-active" id="rxjs-vtab-ref" onclick="rxjsSwitchView('ref')"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Reference</button>
                 <button class="rxjs-view-tab" id="rxjs-vtab-pg" onclick="rxjsSwitchView('pg')"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Playground</button>
               </div>
-              <button class="btn btn-danger" id="rxjs-clear-btn" onclick="clearRxjs()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+              <button class="btn btn-ghost" id="rxjs-clear-btn" onclick="clearRxjs()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
             </div>
           </div>
 
@@ -2841,7 +2520,7 @@
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Search Autocomplete</div>
                     <div class="rxjs-recipe-desc">รอหยุดพิมพ์ 300ms → cancel request เก่า → search ใหม่</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>fromEvent(searchInput, 'input').pipe(
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>fromEvent(searchInput, 'input').pipe(
   map(e => e.target.value),
   debounceTime(300),
   distinctUntilChanged(),
@@ -2853,7 +2532,7 @@
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Parallel API Calls</div>
                     <div class="rxjs-recipe-desc">โหลดหลาย API พร้อมกัน รอทุกตัวเสร็จ</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>forkJoin({
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>forkJoin({
   user: http.get('/api/user'),
   posts: http.get('/api/posts'),
   settings: http.get('/api/settings')
@@ -2864,7 +2543,7 @@
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">HTTP Retry + Timeout</div>
                     <div class="rxjs-recipe-desc">retry 3 ครั้ง, หมดเวลา 5s, fallback gracefully</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>http.get('/api/data').pipe(
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>http.get('/api/data').pipe(
   timeout(5000),
   retry(3),
   catchError(err => of({ error: err.message })),
@@ -2874,7 +2553,7 @@
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Angular Component Cleanup</div>
                     <div class="rxjs-recipe-desc">หยุด subscription อัตโนมัติตอน component destroy</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>class MyComponent implements OnDestroy {
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>class MyComponent implements OnDestroy {
   private destroy$ = new Subject&lt;void&gt;();
 
   ngOnInit() {
@@ -2892,7 +2571,7 @@
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Cache HTTP Response</div>
                     <div class="rxjs-recipe-desc">โหลดครั้งเดียว subscriber ใหม่ได้ cached value ทันที</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>const config$ = http.get('/api/config').pipe(
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>const config$ = http.get('/api/config').pipe(
   shareReplay({ bufferSize: 1, refCount: true })
 );
 
@@ -2903,7 +2582,7 @@ config$.subscribe(renderSidebar);</code></pre></div>
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Simple State Store</div>
                     <div class="rxjs-recipe-desc">BehaviorSubject เป็น lightweight global state</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>class Store {
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>class Store {
   private state$ = new BehaviorSubject({ count: 0 });
 
   get count$() {
@@ -3077,7 +2756,7 @@ catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Fetch Data ใน ngOnInit</div>
                     <div class="rxjs-recipe-desc">ไม่ใช่ constructor: @Input พร้อมแล้ว, testable กว่า</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>ngOnInit(): void {
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>ngOnInit(): void {
   this.userId = this.route.snapshot.params['id'];
   this.user$ = this.userService.getUser(this.userId);
 }</code></pre></div>
@@ -3085,7 +2764,7 @@ catchError, retry, finalize, tap, delay, timeout, share, shareReplay</code>
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">Cleanup ด้วย takeUntil (ngOnDestroy)</div>
                     <div class="rxjs-recipe-desc">Pattern มาตรฐาน: unsubscribe ทุก Observable ใน ngOnDestroy</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>private destroy$ = new Subject&lt;void&gt;();
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>private destroy$ = new Subject&lt;void&gt;();
 
 ngOnInit(): void {
   this.data$.pipe(
@@ -3101,7 +2780,7 @@ ngOnDestroy(): void {
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">ViewChild ใน ngAfterViewInit</div>
                     <div class="rxjs-recipe-desc">เข้าถึง DOM / child component ได้ที่นี่เท่านั้น: ไม่ใช่ ngOnInit</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>@ViewChild('canvas') canvasRef!: ElementRef;
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>@ViewChild('canvas') canvasRef!: ElementRef;
 
 ngAfterViewInit(): void {
   // DOM ready
@@ -3112,7 +2791,7 @@ ngAfterViewInit(): void {
                   <div class="rxjs-recipe">
                     <div class="rxjs-recipe-title">React ต่อ @Input Change</div>
                     <div class="rxjs-recipe-desc">ใช้ ngOnChanges: แยก firstChange กับ update ออกจากกัน</div>
-                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code>ngOnChanges(changes: SimpleChanges): void {
+                    <div class="rxjs-op-code-wrap"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button><pre class="rxjs-code"><code>ngOnChanges(changes: SimpleChanges): void {
   if (changes['config'] &amp;&amp; !changes['config'].firstChange) {
     this.applyConfig(changes['config'].currentValue);
   }
@@ -3987,7 +3666,7 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
                   </div>
                   <div class="mq-q-ext-name">quarkus-smallrye-reactive-messaging-rabbitmq</div>
                   <div class="mq-q-ext-cmd-wrap">
-                    <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                    <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                     <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="smallrye-reactive-messaging-rabbitmq"</code></div>
                   </div>
                   <div class="mq-q-ext-desc">SmallRye Reactive Messaging: annotation-driven, non-blocking, reactive โดย default</div>
@@ -4007,7 +3686,7 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
                   </div>
                   <div class="mq-q-ext-name">quarkus-redis-client</div>
                   <div class="mq-q-ext-cmd-wrap">
-                    <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                    <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                     <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="redis-client"</code></div>
                   </div>
                   <div class="mq-q-ext-desc">Vert.x Redis client: รองรับทั้ง reactive และ blocking API พร้อม type-safe commands</div>
@@ -4031,7 +3710,7 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
               </div>
               <div id="mq-rabbit-props" class="mq-props-panel">
                 <div class="mq-code-block">
-                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-properties"># ── RabbitMQ Connection ──────────────────────────────────────
 rabbitmq-host=localhost
 rabbitmq-port=5672
@@ -4064,7 +3743,7 @@ mp.messaging.outgoing.events-out.routing-key=order.th.created</code></pre>
               </div>
               <div id="mq-redis-props" class="mq-props-panel mq-hidden">
                 <div class="mq-code-block">
-                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-properties"># ── Redis Connection ─────────────────────────────────────────
 quarkus.redis.hosts=redis://localhost:6379
 
@@ -4102,7 +3781,7 @@ quarkus.redis.tls.enabled=true</code></pre>
                 </div>
                 <div class="mq-ce-desc">ใช้ <code>@Channel</code> + <code>Emitter&lt;String&gt;</code> ใน REST endpoint เพื่อส่ง message เข้า RabbitMQ แบบ non-blocking</div>
                 <div class="mq-code-block">
-                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-java">import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
@@ -4153,7 +3832,7 @@ public class OrderResource {
                 </div>
                 <div class="mq-ce-desc">ใช้ <code>@Incoming</code> เพื่อรับ message: ใช้ <code>Message&lt;T&gt;</code> wrapper เพื่อควบคุม ack/nack เองได้</div>
                 <div class="mq-code-block">
-                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-java">import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -4205,7 +3884,7 @@ public class OrderConsumer {
                 </div>
                 <div class="mq-ce-desc">Pattern ที่ใช้บ่อยที่สุด: ลด load จาก DB สูงสุด 90% สำหรับข้อมูลที่อ่านบ่อย</div>
                 <div class="mq-code-block">
-                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.string.SetArgs;
 import io.quarkus.redis.datasource.string.StringCommands;
@@ -4270,7 +3949,7 @@ public class ProductService {
                 </div>
                 <div class="mq-ce-desc">เก็บ user session ใน Redis Hash: แก้ไขแต่ละ field ได้โดยไม่ต้อง serialize ทั้งก้อน</div>
                 <div class="mq-code-block">
-                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.hash.HashCommands;
 import io.quarkus.redis.datasource.keys.KeyCommands;
@@ -4335,7 +4014,7 @@ public class SessionService {
                 </div>
                 <div class="mq-ce-desc">จำกัด API calls ต่อ IP หรือ user: ใช้ INCR + EXPIRE แบบ atomic · ตัวอย่าง: 100 requests/minute</div>
                 <div class="mq-code-block">
-                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.KeyCommands;
 import io.quarkus.redis.datasource.string.StringCommands;
@@ -4583,7 +4262,7 @@ public class RateLimiter {
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Example</div>
               <div class="stor-code-block">
-                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                 <pre class="stor-code">// ── เก็บข้อมูล ──
 localStorage.setItem('theme', 'dark');
 localStorage.setItem('lang', 'th');
@@ -4668,7 +4347,7 @@ for (let i = 0; i &lt; localStorage.length; i++) {
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Example</div>
               <div class="stor-code-block">
-                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                 <pre class="stor-code">// ── Multi-step checkout wizard ──
 
 // Step 1: บันทึก cart
@@ -4740,7 +4419,7 @@ sessionStorage.length;</pre>
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Dexie.js (แนะนำ)</div>
               <div class="stor-section-sub">Dexie.js คือ wrapper บาง Promise-based ที่ทำให้ IndexedDB ง่ายมาก</div>
               <div class="stor-code-block">
-                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                 <pre class="stor-code">import Dexie from 'dexie'; // npm install dexie
 
 // ── 1. สร้าง database + schema ──
@@ -4776,7 +4455,7 @@ await db.users.where('role').equals('guest').delete();</pre>
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Raw IndexedDB API (ไม่แนะนำ แต่รู้ไว้)</div>
               <div class="stor-code-block">
-                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                 <pre class="stor-code">// Raw API verbose มาก - ใช้ Dexie แทนดีกว่า
 const request = indexedDB.open('myApp', 1);
 
@@ -4873,7 +4552,7 @@ request.onsuccess = (e) => {
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Example</div>
               <div class="stor-code-block">
-                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                 <pre class="stor-code">// ── Server-side (Node.js / Express) - แนะนำ ──
 res.cookie('session', token, {
   httpOnly: true,   // ← JS อ่านไม่ได้ (สำคัญมาก!)
@@ -4938,7 +4617,7 @@ document.cookie = "lang=; max-age=0; path=/";
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Service Worker (sw.js ของ dev-tools นี้)</div>
               <div class="stor-code-block">
-                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button>
+                <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                 <pre class="stor-code">const CACHE = 'myapp-v1';
 const ASSETS = ['/', '/index.html', '/app.css', '/app.js'];
 
@@ -5061,7 +4740,7 @@ self.addEventListener('fetch', e => {
             </div>
             <div class="lov-status-row">
               <span id="lov-version" style="display:none;"></span>
-              <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);">ยังไม่ได้เลือกโฟลเดอร์: เลือกโฟลเดอร์รีโป (เช่น <code>dlpw-ctl-quarkus</code>) แล้วจะหา <code>src/main/resources/template/query</code> หรือ <code>src/main/resources/queries</code> ให้เอง · เลือกโฟลเดอร์ query ตรง ๆ ก็ได้</div>
+              <div id="lov-status" style="font-size:0.8rem;color:var(--text-dim);">ยังไม่ได้เลือกโฟลเดอร์: เลือกโฟลเดอร์รีโป (เช่น <code>order-service</code>) แล้วจะหา <code>src/main/resources/template/query</code> หรือ <code>src/main/resources/queries</code> ให้เอง · เลือกโฟลเดอร์ query ตรง ๆ ก็ได้</div>
             </div>
             <section class="card lov-intro" id="lov-intro">
               <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-folder-open"/></svg> เริ่มใช้งาน</div>
@@ -5095,12 +4774,11 @@ self.addEventListener('fetch', e => {
             </div>
             <div class="toolbar">
               <button class="btn btn-ghost" onclick="j2tSample()"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg> ลองตัวอย่าง</button>
-              <button class="btn btn-danger" onclick="document.getElementById('j2t-input').value='';j2tConvert()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
             </div>
           </div>
           <div class="grid-2">
             <div>
-              <label class="field-label" for="j2t-input">JSON</label>
+              <div class="field-head"><label class="field-label" for="j2t-input">JSON</label><span class="field-acts"><button type="button" class="field-act" onclick="document.getElementById('j2t-input').value='';j2tConvert()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
               <textarea id="j2t-input" rows="18" spellcheck="false" placeholder='{"id": 1, "name": "สมชาย", "tags": ["a"]}' oninput="j2tLive()"></textarea>
               <div class="flex-row tool-opt">
                 <label class="field-label" for="j2t-root">ชื่อ type หลัก</label>
@@ -5108,8 +4786,8 @@ self.addEventListener('fetch', e => {
               </div>
             </div>
             <div>
-              <div class="field-label">ผลลัพธ์</div>
-              <div class="rxjs-code-block tool-out"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code id="j2t-output" class="language-typescript" data-empty="ผลลัพธ์จะขึ้นที่นี่ทันทีที่วาง JSON"></code></pre></div>
+              <div class="field-head"><span class="field-label">ผลลัพธ์</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('j2t-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div class="rxjs-code-block tool-out"><pre class="rxjs-code"><code id="j2t-output" class="language-typescript" data-empty="ผลลัพธ์จะขึ้นที่นี่ทันทีที่วาง JSON"></code></pre></div>
               <div class="tool-error" id="j2t-error" role="alert" hidden></div>
             </div>
           </div>
@@ -5128,17 +4806,16 @@ self.addEventListener('fetch', e => {
             </div>
             <div class="toolbar">
               <button class="btn btn-ghost" onclick="pySample()"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg> ลองตัวอย่าง</button>
-              <button class="btn btn-danger" onclick="document.getElementById('py-input').value='';pyConvert()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
             </div>
           </div>
           <div class="grid-2">
             <div>
-              <label class="field-label" for="py-input" id="py-in-label">application.properties</label>
+              <div class="field-head"><label class="field-label" for="py-input" id="py-in-label">application.properties</label><span class="field-acts"><button type="button" class="field-act" onclick="document.getElementById('py-input').value='';pyConvert()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
               <textarea id="py-input" rows="20" spellcheck="false" placeholder="quarkus.http.port=8080" oninput="pyLive()"></textarea>
             </div>
             <div>
-              <div class="field-label" id="py-out-label">application.yaml</div>
-              <div class="rxjs-code-block tool-out"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> copy</button><pre class="rxjs-code"><code id="py-output" class="language-yaml" data-empty="ผลลัพธ์จะขึ้นที่นี่"></code></pre></div>
+              <div class="field-head"><span class="field-label" id="py-out-label">application.yaml</span><span class="field-acts"><button type="button" class="field-act" onclick="copyElText('py-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div class="rxjs-code-block tool-out"><pre class="rxjs-code"><code id="py-output" class="language-yaml" data-empty="ผลลัพธ์จะขึ้นที่นี่"></code></pre></div>
               <div class="tool-error" id="py-error" role="alert" hidden></div>
             </div>
           </div>
@@ -5198,16 +4875,15 @@ self.addEventListener('fetch', e => {
           <p class="tool-lead">วาง stack trace จาก log ทั้งก้อน (รวม Caused by) ระบบจะหาต้นเหตุ บรรทัดที่เป็นโค้ดของเรา และดึงวิธีแก้จากหน้า Java Exceptions / DB2 Error Codes มาให้</p>
           <div class="section-header">
             <div class="toolbar">
-              <button class="btn btn-primary" onclick="stAnalyze()"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> วิเคราะห์</button>
               <button class="btn btn-ghost" onclick="stLoadSample()"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg> ลองตัวอย่าง</button>
               <label class="mode-label"><input type="checkbox" id="st-hide-fw" checked onchange="stAnalyze()" /> ซ่อน frame ของ framework</label>
             </div>
             <div class="toolbar">
-              <input type="text" id="st-app" class="st-app" placeholder="package ของโปรเจค เช่น th.co.cdgs." aria-label="package ของโปรเจค" oninput="stLive()" />
-              <button class="btn btn-danger" onclick="stClear()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้าง</button>
+              <input type="text" id="st-app" class="st-app" placeholder="package ของโปรเจค เช่น com.example." aria-label="package ของโปรเจค" oninput="stLive()" />
             </div>
           </div>
-          <textarea id="st-input" rows="10" spellcheck="false" aria-label="stack trace" placeholder="java.lang.NullPointerException: Cannot invoke ... because ... is null&#10;    at th.co.cdgs...(OrderService.java:88)&#10;Caused by: ..." oninput="stLive()"></textarea>
+          <div class="field-head"><label class="field-label" for="st-input">Stack trace</label><span class="field-acts"><button type="button" class="field-act" onclick="stClear()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
+          <textarea id="st-input" rows="10" spellcheck="false" placeholder="java.lang.NullPointerException: Cannot invoke ... because ... is null&#10;    at com.example...(OrderService.java:88)&#10;Caused by: ..." oninput="stLive()"></textarea>
           <div id="st-output" class="st-output"></div>
         </div>
 
@@ -5250,11 +4926,8 @@ self.addEventListener('fetch', e => {
         <div id="clicheat-tab" class="tab-content">
           <div class="section-header">
             <div class="json-view-toggle" id="cli-sets" role="group" aria-label="ชุดคำสั่ง"></div>
-            <button class="btn btn-danger" onclick="clearCli()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> ล้างการค้นหา</button>
           </div>
-          <div class="tool-search">
-            <input type="text" id="cli-search" placeholder="ค้นหาคำสั่ง... เช่น logs, export, dependency, filter" aria-label="ค้นหาคำสั่ง" oninput="filterCli(this.value)" />
-          </div>
+          <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="cli-search" placeholder="ค้นหาคำสั่ง เช่น logs, export, dependency, filter" aria-label="ค้นหาคำสั่ง" oninput="filterCli(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearCli();document.getElementById('cli-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
           <div id="cli-list"></div>
         </div>
 
@@ -5440,7 +5113,7 @@ self.addEventListener('fetch', e => {
       </div>
     </div>
 
-    <span id="copy-hint" hidden>คลิกเพื่อ copy</span>
+    <span id="copy-hint" hidden>คลิกเพื่อคัดลอก</span>
     <div class="toast" id="toast" role="status" aria-live="polite"><svg class="i toast-ic" aria-hidden="true"><use href="#i-circle-check"/></svg><span class="toast-msg">Copied</span></div>
     <button class="scroll-top-btn" id="scroll-top-btn" onclick="scrollToTop()" title="กลับขึ้นบน" aria-label="กลับขึ้นบน"><svg class="i" aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
 

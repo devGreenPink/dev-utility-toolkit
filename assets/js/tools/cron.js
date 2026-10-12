@@ -41,8 +41,8 @@ function cronToHuman(expr){
   if(mon!=='*'){if(!mon.includes(',')&&!mon.includes('-'))p.push('เดือน '+(THmons[parseInt(mon)]||mon));else p.push('เดือน '+mon);}
   return p.length?p.join(' · '):'ทุกนาที';
 }
-function copySpring(){copyText(`@Scheduled(cron = "${currentCron}")`);showToast('Copied @Scheduled');}
-function copyQuartz(){copyText(`@Scheduled(cron = "0 ${currentCron}")`);showToast('Copied Quartz');}
+function copySpring(){copyText(`@Scheduled(cron = "${currentCron}")`);}
+function copyQuartz(){copyText(`@Scheduled(cron = "0 ${currentCron}")`);}
 function clearCron(){
   document.getElementById('cron-manual').value='';
   ['c-min','c-hr','c-dom','c-mon','c-dow'].forEach(id=>{document.getElementById(id).selectedIndex=0;});

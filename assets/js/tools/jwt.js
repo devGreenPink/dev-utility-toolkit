@@ -52,14 +52,14 @@ function decodeJWT_UI(){
       <div class="jwt-section">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
           <div class="jwt-section-title">HEADER</div>
-          <button class="btn btn-ghost" onclick="copyJwtPart('header')">Copy</button>
+          <button class="btn btn-ghost" onclick="copyJwtPart('header')">คัดลอก</button>
         </div>
         <div class="jwt-json">${escHtml(JSON.stringify(header,null,2))}</div>
       </div>
       <div class="jwt-section">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
           <div class="jwt-section-title">PAYLOAD</div>
-          <button class="btn btn-ghost" onclick="copyJwtPart('payload')">Copy</button>
+          <button class="btn btn-ghost" onclick="copyJwtPart('payload')">คัดลอก</button>
         </div>
         <div class="jwt-json">${escHtml(JSON.stringify(payload,null,2))}</div>
       </div>
@@ -101,12 +101,16 @@ async function jwtEncode() {
     const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
     const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
     outEl.textContent = `${data}.${b64urlEncodeBytes(new Uint8Array(sig))}`;
-    showToast('JWT สร้างแล้ว');
   } catch (e) {
     errEl.textContent = 'Error: ' + e.message;
     errEl.style.display = 'block';
   }
 }
+// live once both payload and secret are filled
+const jwtEncLive=debounced(()=>{
+  if(document.getElementById('jwt-enc-payload').value.trim()&&document.getElementById('jwt-enc-secret').value)jwtEncode();
+  else{document.getElementById('jwt-enc-output').textContent='';document.getElementById('jwt-enc-error').style.display='none';}
+},300);
 function clearJwtEnc() {
   document.getElementById('jwt-enc-payload').value = '';
   document.getElementById('jwt-enc-secret').value = '';

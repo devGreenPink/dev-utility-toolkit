@@ -59,6 +59,16 @@ Adding a new tool requires four things:
 Its text inputs are remembered automatically (see State persistence). Optionally add a smart paste rule in
 `home.js` if the tool has a recognisable input.
 
+Tool layout (every converter follows it):
+- Options, mode toggles (`.json-view-toggle` of `data-v` buttons, marked with `setSegmented(id, v)`) and
+  "ลองตัวอย่าง" go in the `.section-header` on top. Nothing destructive there.
+- `.grid-2`: input left, output right (stacks under 680px). Each field starts with a `.field-head`: the
+  label left, quiet `.field-act` buttons right, "ล้าง" (x icon) on inputs and "คัดลอก" (copy icon) on outputs.
+- Results update while typing (`debounced(fn)` from core.js for heavier work); no "แปลง" button.
+  `Ctrl+Enter` still runs the tool.
+- Search boxes use `.search-field` with an inline `.search-clear` that only shows when there is text.
+- `.btn-danger` is only for wiping stored data (Settings "ล้างข้อมูลที่จำไว้", LOV "ลืมโฟลเดอร์").
+
 Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`, not in the
 `DOMContentLoaded` init — it runs once on the tab's first open. All `<script>` tags are `defer`
 (order preserved), so app code can rely on the CDN globals being loaded.
@@ -78,9 +88,12 @@ Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`
 - `esan-devtools-favorites` — favorited tool ids (see Favorites below)
 - `esan-devtools-recent` — last 8 opened tool ids, shown on the home tab
 - `esan-devtools-remember` — `0` when the Settings switch "จำข้อมูลที่กรอกไว้" is off (unset = on)
+- `esan-devtools-in:<key>` — a tool option remembered with the inputs via `rememberOpt` / `recallOpt`
+  (`py-dir`, `b64-mode`, `url-dir`), so a restored input is converted the same way
 - `esan-devtools-in:<element id>` — last value of every `textarea`/text/number `input` with an id inside a
   `.tab-content`, restored on load by `initRememberedInputs()` (core.js), which replays the field's `input`
-  event so outputs come back too. Seven older fields keep their pre-v2 keys (`INPUT_LEGACY_KEYS`, e.g.
+  event so outputs come back too. Values are saved on input and again on `pagehide`, which catches clear
+buttons and smart paste that change a field without an input event. Seven older fields keep their pre-v2 keys (`INPUT_LEGACY_KEYS`, e.g.
   `esan-devtools-sql-last`). Never saved: `INPUT_NEVER` (JWT token/secret, K8s Secret, mirror fields) and
   any `*-search` / `ref-q-*` box. "ล้างข้อมูลที่จำไว้" and turning the switch off drop these and the recent list.
 
@@ -105,6 +118,14 @@ these in sync manually:
 
 ### External dependencies (CDN, no local copy)
 
+The cdnjs libraries are not in `<head>`: `loadLib(name)` in `core.js` (`LIBS` lists the files) fetches
+them on a tool's first use, so a first visit downloads only the app. `highlightCode(sel)` loads
+highlight.js by itself; anything else waits on `loadLib(...)` (in `TAB_INIT` or before first use) and
+falls back to plain text if the CDN fails.
+
+- **highlight.js 11.9.0** (+ typescript/java/properties/sql/nginx/dockerfile) — code blocks
+- **CodeMirror 5.65.16** — RxJS Playground editor (loaded when the RxJS tab opens)
+- **RxJS 7.8.1** — RxJS Playground runtime
 - **jsdiff 5.1.0** (`diff.min.js` from cdnjs) — Text/JSON diff
 - **Google Fonts** — IBM Plex Sans Thai, JetBrains Mono
 - **Web Crypto API** — Hash generation (`crypto.subtle`), UUID v4 (`crypto.randomUUID`)
@@ -139,7 +160,9 @@ instead of hex; the dark code panes (`.mq-code`, `.stor-code`, CodeMirror) keep 
 - `showToast(msg, kind)` — 2-second HUD toast; `kind` is `ok` (default) / `warn` / `err` / `info` and picks the icon.
 - `ic(name, cls)` — returns `<svg class="i"><use href="#i-name"/></svg>` from the lucide sprite at the top of
   `<body>`; add a `<symbol id="i-…">` there before using a new name. No emoji anywhere in the UI.
-- `copyText(txt)` — copies to clipboard (Clipboard API + execCommand fallback).
+- `copyText(txt)` — copies to clipboard (Clipboard API + execCommand fallback). Every copy goes through it:
+  the clicked control gets `.is-copied` and a short button's label becomes "คัดลอกแล้ว" for 1.6s
+  (`flashCopied`), and the toast shows the start of what was copied. Don't add per-tool "copied" swaps.
 - `escHtml(s)` — escapes HTML for safe insertion into `innerHTML`.
 - Mock data generator uses `crypto.getRandomValues` for UUID and standard `Math.random` for other fields.
 - Thai ID checksum: sum of `digit[i] * (13 - i)` for i 0–11, check digit = `(11 - sum % 11) % 10`.

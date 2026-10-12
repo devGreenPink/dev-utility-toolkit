@@ -174,8 +174,8 @@ public OrderDto find(Long id) {
    d:'`Unsatisfied dependency for type X` = หา bean ให้ inject ไม่เจอ: class ไม่มี scope annotation, อยู่ใน jar ที่ไม่มี index หรือ Quarkus ลบทิ้งเพราะคิดว่าไม่ได้ใช้',
    fix:['ใส่ scope เช่น `@ApplicationScoped`','bean ใน library jar: เพิ่ม Jandex index หรือ `quarkus.index-dependency.<name>.group-id`','bean ที่ lookup แบบ dynamic: `@Unremovable`'],
    lang:'properties',
-   code:`quarkus.index-dependency.ewfund-shared.group-id=th.co.cdgs.ewfund
-quarkus.index-dependency.ewfund-shared.artifact-id=ewfund-shared`},
+   code:`quarkus.index-dependency.shop-shared.group-id=com.example.shop
+quarkus.index-dependency.shop-shared.artifact-id=shop-shared`},
   {g:'Quarkus / CDI',t:'AmbiguousResolutionException',b:'deploy',bc:'purple',s:'jakarta.enterprise.inject',k:'ambiguous dependencies multiple beans qualifier named',
    d:'มี bean ที่ตรง type มากกว่า 1 ตัว',
    fix:['ใส่ qualifier (`@Named`, qualifier ที่สร้างเอง)','เลือกตัวหลักด้วย `@Default` หรือ `@Alternative @Priority`']},

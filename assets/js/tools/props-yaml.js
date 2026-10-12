@@ -160,26 +160,25 @@ const PY_SAMPLE=`# HTTP
 quarkus.http.port=8080
 quarkus.http.root-path=/api
 quarkus.http.cors=true
-quarkus.http.cors.origins=http://localhost:4200,https://ewfund.example.go.th
+quarkus.http.cors.origins=http://localhost:4200,https://shop.example.com
 
 # DB2
 quarkus.datasource.db-kind=db2
-quarkus.datasource.jdbc.url=jdbc:db2://localhost:50000/EWFUND:currentSchema=EWFUND;
+quarkus.datasource.jdbc.url=jdbc:db2://localhost:50000/SHOPDB:currentSchema=SHOP;
 quarkus.datasource.jdbc.max-size=30
 
 # REST client
-quarkus.rest-client."report-api".url=http://cdgs-framework-report-api/framework-report-api
+quarkus.rest-client."report-api".url=http://report-service/report-api
 quarkus.rest-client."report-api".read-timeout=120000
 
 # profile
 %dev.quarkus.log.level=DEBUG
-%local.quarkus.datasource.jdbc.url=jdbc:db2://127.0.0.1:50001/EWFUND`;
+%local.quarkus.datasource.jdbc.url=jdbc:db2://127.0.0.1:50001/SHOPDB`;
 let _pyDir='p2y',_pyTimer=0;
-// remembered with the inputs, so a restored YAML is not converted as properties
-try{if(localStorage.getItem(STORAGE_INPUT+'py-dir')==='y2p')_pyDir='y2p';}catch(e){}
+try{_pyDir=recallOpt('py-dir','p2y');}catch(e){} // core.js is absent in the node tests
 function pySetDir(d){
   _pyDir=d;
-  try{if(rememberInputs)localStorage.setItem(STORAGE_INPUT+'py-dir',d);}catch(e){}
+  rememberOpt('py-dir',d); // so a restored YAML is not converted as properties
   document.querySelectorAll('#py-dir .json-view-btn').forEach(b=>{const on=b.dataset.d===d;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
   document.getElementById('py-in-label').textContent=d==='p2y'?'application.properties':'application.yaml';
   document.getElementById('py-out-label').textContent=d==='p2y'?'application.yaml':'application.properties';

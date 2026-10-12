@@ -82,7 +82,7 @@ let rxjsCurrentView='ref';
 function initRxjs(){
   renderRxjsCats();
   renderRxjsOps();
-  rxjsInitPlayground();
+  loadLib('codemirror').then(rxjsInitPlayground);
   highlightCode('#rxjs-tab pre.rxjs-code code');
 }
 
@@ -118,7 +118,7 @@ function renderRxjsOps(){
   </div>
   <div class="rxjs-op-summary">${escHtml(op.s)}</div>
   <div class="rxjs-op-when"><span class="rxjs-when-ok">${ic('check')} ใช้เมื่อ</span>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<span class="rxjs-when-no">${ic('x')} หลีกเลี่ยง</span>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join('')}`:''}</div>
-  <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">${ic('copy')} copy</button><pre class="rxjs-code"><code data-highlighted="yes">${hlTS(op.code)}</code></pre></div></details>
+  <details class="rxjs-details"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">sig</span> <code class="rxjs-sig-code">${escHtml(op.sig)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">${ic('copy')} คัดลอก</button><pre class="rxjs-code"><code data-highlighted="yes">${hlTS(op.code)}</code></pre></div></details>
   ${op.rel.length?`<div class="rxjs-op-rel">เทียบกับ: ${op.rel.map(r=>`<button class="rxjs-rel-btn" onclick="rxjsJumpTo('${r}')">${r}</button>`).join('')}</div>`:''}
 </div>`).join('');
 }
@@ -672,7 +672,6 @@ function rxjsTryOp(name){
 function rxjsCopyCode(btn){
   const code=btn.nextElementSibling.textContent;
   copyText(code);
-  const old=btn.innerHTML;btn.innerHTML=ic('check')+' copied';setTimeout(()=>btn.innerHTML=old,1500);
 }
 
 function rxjsJumpTo(name){
@@ -869,7 +868,7 @@ actions$.pipe(
 ).subscribe(r => console.log(JSON.stringify(r)));`
 };
 
-let rxjsPgActive=false,rxjsPgLogCount=0,rxjsPgStopHandle=null,rxjsPgInited=false,rxjsPgEditor=null;
+let rxjsPgActive=false,rxjsPgLogCount=0,rxjsPgStopHandle=null,rxjsPgInited=false,rxjsPgEditor=null,rxjsPgPending=null;
 const _origConsoleLog=console.log,_origConsoleWarn=console.warn,_origConsoleError=console.error;
 
 const RXJS_PG_DEFAULT=`// โหลดตัวอย่างจาก "ตัวอย่าง" ด้านบน หรือกด ▶ Try ที่ operator card
@@ -888,7 +887,7 @@ function rxjsInitPlayground(){
   const wrap=document.getElementById('rxjs-pg-cm-wrap');
   if(wrap&&window.CodeMirror){
     rxjsPgEditor=CodeMirror(wrap,{
-      value:RXJS_PG_DEFAULT,
+      value:rxjsPgPending||RXJS_PG_DEFAULT, // a Try clicked while CodeMirror was still loading
       mode:'javascript',
       theme:'dracula',
       lineNumbers:true,
@@ -928,7 +927,7 @@ function rxjsPgGetCode(){
 }
 function rxjsPgSetCode(code){
   if(rxjsPgEditor){rxjsPgEditor.setValue(code);rxjsPgEditor.focus();}
-  else{const ta=document.getElementById('rxjs-pg-code');if(ta)ta.value=code;}
+  else{const ta=document.getElementById('rxjs-pg-code');if(ta)ta.value=code;else rxjsPgPending=code;}
 }
 
 function rxjsPgAppendLog(args,type){
@@ -980,7 +979,7 @@ function rxjsPgSetStatus(txt,running){
 }
 
 function rxjsRunCode(){
-  if(!window.rxjs){showToast('กำลังโหลด RxJS...');return;}
+  if(!window.rxjs){showToast('กำลังโหลด RxJS อีกสักครู่','info');loadLib('rxjs').then(()=>{if(window.rxjs)rxjsRunCode();});return;}
   rxjsStopCode();
 
   const code=rxjsPgGetCode().trim();

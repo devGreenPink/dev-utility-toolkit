@@ -3570,7 +3570,6 @@
       font-family: var(--mono); font-size: .9em; padding: 1px 5px; border-radius: 4px;
       background: color-mix(in srgb, var(--text) 8%, transparent); color: var(--text); overflow-wrap: anywhere;
     }
-    .tool-search { margin-bottom: 16px; }
     .tool-opt { margin-top: 10px; flex-wrap: wrap; }
     .tool-opt .field-label { margin: 0; white-space: nowrap; }
     .tool-opt input[type="text"] { max-width: 240px; }
@@ -3732,11 +3731,14 @@
       content: 'ใส่ Unix timestamp หรือเลือกค่าที่ใช้บ่อยด้านล่าง';
       font-family: var(--sans); font-size: .9rem; letter-spacing: 0; color: var(--text-muted);
     }
-    #sql-results:empty::before {
-      content: 'วางโค้ด Java ที่ประกอบ SQL แล้วกด แยก SQL หรือกดลองตัวอย่างด้านบน';
+    :is(#sql-results, #hash-results, #jwt-result, #k8s-output):empty::before {
       display: block; padding: 28px 16px; text-align: center; font-size: .86rem; color: var(--text-muted);
       border: 1px dashed var(--border-strong); border-radius: var(--radius);
     }
+    #sql-results:empty::before { content: 'SQL ที่แยกได้จะขึ้นที่นี่ทันทีที่วางโค้ด Java หรือ SQL'; }
+    #hash-results:empty::before { content: 'SHA-256 · SHA-512 · SHA-1 จะขึ้นที่นี่ทันทีที่พิมพ์'; }
+    #jwt-result:empty::before { content: 'วาง token แล้ว header และ payload จะขึ้นที่นี่'; }
+    #k8s-output:empty::before { content: 'วาง Secret แล้วค่าที่ decode จะขึ้นที่นี่'; }
     .unix-quick { margin-top: 14px; }
     .unix-quick-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 8px; }
     .unix-quick-item {
@@ -3748,7 +3750,6 @@
     .unix-quick-item:hover { border-color: var(--accent); }
     .unix-quick-item:focus-visible { outline: none; box-shadow: var(--focus-ring); }
     .unix-quick-item code { font-family: var(--mono); font-size: .78rem; color: var(--accent2); }
-    .sql-samples { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 10px; }
     .lov-intro ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .86rem; line-height: 1.6; color: var(--text); }
     .lov-intro code { font-family: var(--mono); font-size: .9em; padding: 1px 5px; border-radius: 4px; background: color-mix(in srgb, var(--text) 8%, transparent); }
 
@@ -3827,3 +3828,53 @@
       .sp-bar { flex-direction: column; }
       .sp-paste { margin-left: 0; }
     }
+
+    /* ── TOOL LAYOUT ── every converter: field-head (label left, quiet ล้าง / คัดลอก right),
+       input left / output right, results update while typing */
+    .field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; margin-bottom: 6px; }
+    .field-head .field-label { margin: 0; }
+    .field-head-l { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .field-acts { display: flex; gap: 2px; flex-shrink: 0; }
+    .field-act {
+      appearance: none; display: inline-flex; align-items: center; gap: 4px; min-height: 26px; padding: 3px 8px;
+      border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent;
+      color: var(--text-dim); font-family: var(--sans); font-size: .74rem; font-weight: 500; white-space: nowrap; cursor: pointer;
+      transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
+    }
+    .field-act:hover { background: color-mix(in srgb, var(--text) 8%, transparent); color: var(--text); }
+    .field-act:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .tool-result { min-height: 200px; white-space: pre-wrap; word-break: break-all; }
+    .output-mono[data-empty]:empty::before { content: attr(data-empty); color: var(--text-muted); font-family: var(--sans); }
+    .tool-error-text { margin-top: 6px; font-size: .8rem; color: var(--danger); }
+    .tool-note { display: flex; align-items: center; gap: 5px; margin-top: 10px; font-size: .72rem; color: var(--text-dim); }
+    .sql-badge { padding: 2px 9px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-dim); font-family: var(--mono); font-size: .72rem; }
+    .sql-badge:empty { display: none; }
+    .sql-results { display: flex; flex-direction: column; gap: 10px; }
+    .diff-head { margin-top: 14px; }
+    .diff-stats { gap: 12px; font-family: var(--mono); font-size: .76rem; }
+    .diff-result { min-height: 80px; color: var(--text); white-space: pre-wrap; }
+    .diff-result:empty::before { content: 'พิมพ์หรือวางข้อความทั้งสองฝั่ง แล้วความแตกต่างจะขึ้นที่นี่'; color: var(--text-muted); font-family: var(--sans); }
+    .jwt-enc { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .jwt-enc-out { color: var(--accent2); }
+
+    /* search box with an inline clear that shows only when there is something to clear */
+    .search-field { position: relative; margin-bottom: 14px; }
+    .search-field input[type="text"] { padding-left: 34px; padding-right: 38px; font-family: var(--sans); }
+    .search-field-ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+    .search-clear {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%;
+      background: transparent; color: var(--text-dim); cursor: pointer;
+    }
+    .search-clear:hover { background: color-mix(in srgb, var(--text) 10%, transparent); color: var(--text); }
+    .search-clear:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .search-field input:placeholder-shown ~ .search-clear { display: none; }
+
+    /* copy feedback (flashCopied in core.js): the control turns green with a check for 1.6s */
+    .is-copied, .is-copied:hover {
+      color: var(--success) !important; border-color: color-mix(in srgb, var(--success) 45%, transparent) !important;
+      background: color-mix(in srgb, var(--success) 14%, transparent) !important;
+    }
+    .is-copied .i { animation: copiedPop .32s var(--ease-spring); }
+    .mock-field-value.is-copied { outline: 2px solid color-mix(in srgb, var(--success) 60%, transparent); outline-offset: 2px; }
+    @keyframes copiedPop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }

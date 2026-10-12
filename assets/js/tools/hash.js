@@ -12,7 +12,7 @@ async function computeHash(){
       const buf=await crypto.subtle.digest(algo,enc);
       let hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
       if(upper)hex=hex.toUpperCase();
-      html+=`<div class="hash-result-row"><div class="hash-algo"><span>${label}</span><button class="btn btn-ghost" onclick="copyText('${hex}')">Copy</button></div><div class="hash-value">${hex}</div></div>`;
+      html+=`<div class="hash-result-row"><div class="hash-algo"><span>${label}</span><button type="button" class="field-act" onclick="copyText('${hex}')">${ic('copy')}คัดลอก</button></div><div class="hash-value">${hex}</div></div>`;
     }catch(e){html+=`<div class="hash-result-row"><div class="hash-algo">${label}</div><div style="color:var(--danger);font-size:.76rem;">${e.message}</div></div>`;}
   }
   html+=`<div style="margin-top:8px;font-size:.72rem;color:var(--text-dim);font-family:var(--mono);">Input: ${enc.length} bytes · ${input.length} chars</div>`;

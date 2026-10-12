@@ -50,7 +50,7 @@ function renderHttpList(codes,query){
           <div class="http-desc">${descHl}</div>
           <div class="http-example">${ic('lightbulb')} ${exHl}</div>
         </div>
-        <button class="btn btn-ghost" style="flex-shrink:0;" onclick="copyText('${item.code}')">Copy</button>
+        <button class="btn btn-ghost" style="flex-shrink:0;" onclick="copyText('${item.code}')">คัดลอก</button>
       </div>`;
     }
     html+='</div>';

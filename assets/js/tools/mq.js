@@ -46,9 +46,6 @@ function mqCopyCode(btn) {
   const pre = btn.nextElementSibling;
   if (!pre) return;
   copyText(pre.textContent || pre.innerText);
-  const orig = btn.innerHTML;
-  btn.innerHTML = ic('check') + ' copied';
-  setTimeout(() => { btn.innerHTML = orig; }, 1500);
 }
 
 // ── Reset animation helpers ──

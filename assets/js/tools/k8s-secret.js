@@ -62,11 +62,15 @@ function decodeK8sSecret(){
     outEl.innerHTML=_k8sRows.map((r,i)=>`<div style="margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <span class="field-label">${multi?escHtml(r.secret)+' / ':''}${escHtml(r.key)}${r.note?' <span style="opacity:.6">('+r.note+')</span>':''}</span>
-        ${r.binary?'':`<button class="btn btn-ghost" onclick="copyText(_k8sRows[${i}].value)">Copy</button>`}
+        ${r.binary?'':`<button type="button" class="field-act" onclick="copyText(_k8sRows[${i}].value)">${ic('copy')}คัดลอก</button>`}
       </div>
       <div class="output-mono" style="white-space:pre-wrap;word-break:break-all">${escHtml(r.value)}</div></div>`).join('');
-  }catch(e){outEl.innerHTML='';errEl.textContent='Error: '+e.message;errEl.style.display='block';}
+  }catch(e){outEl.innerHTML='';errEl.textContent='อ่าน Secret ไม่ได้: '+e.message;errEl.style.display='block';}
 }
+const k8sLive=debounced(()=>{
+  if(document.getElementById('k8s-input').value.trim())decodeK8sSecret();
+  else{document.getElementById('k8s-output').innerHTML='';document.getElementById('k8s-error').style.display='none';_k8sRows=[];}
+},300);
 function copyK8sEnv(){
   const rows=_k8sRows.filter(r=>!r.binary);if(!rows.length)return;
   copyText(rows.map(r=>`${r.key}=${/[\s"'#$\\]/.test(r.value)?JSON.stringify(r.value):r.value}`).join('\n'));

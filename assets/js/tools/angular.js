@@ -110,7 +110,7 @@ function renderNgDetail(hook){
   ${hook.tip?`<div class="ng-detail-tip">${ic('lightbulb')} ${escHtml(hook.tip)}</div>`:''}
   <div class="ng-detail-section"><div class="ng-detail-sec-title ng-sec-ok">${ic('check')} ใช้เมื่อ</div>${hook.when.map(w=>`<div class="ng-detail-item">• ${escHtml(w)}</div>`).join('')}</div>
   ${hook.avoid.length?`<div class="ng-detail-section"><div class="ng-detail-sec-title ng-sec-no">${ic('x')} หลีกเลี่ยง</div>${hook.avoid.map(a=>`<div class="ng-detail-item ng-avoid-item">• ${escHtml(a)}</div>`).join('')}</div>`:''}
-  <div class="ng-detail-code-wrap"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">${ic('copy')} copy</button><pre class="rxjs-code"><code>${hlTS(hook.code)}</code></pre></div>
+  <div class="ng-detail-code-wrap"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">${ic('copy')} คัดลอก</button><pre class="rxjs-code"><code>${hlTS(hook.code)}</code></pre></div>
 </div>`;
 }
 
@@ -176,7 +176,7 @@ function renderNgHooks(){
     ${h.avoid.length?'<span class="rxjs-when-no">'+ic('x')+' หลีกเลี่ยง</span>'+h.avoid.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join(''):''}
   </div>
   ${h.tip?`<div class="ng-hook-tip">${ic('lightbulb')} ${escHtml(h.tip)}</div>`:''}
-  <details class="rxjs-details" onclick="event.stopPropagation()"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">code</span> <code class="rxjs-sig-code">${escHtml(h.name)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">${ic('copy')} copy</button><pre class="rxjs-code"><code>${hlTS(h.code)}</code></pre></div></details>
+  <details class="rxjs-details" onclick="event.stopPropagation()"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">code</span> <code class="rxjs-sig-code">${escHtml(h.name)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">${ic('copy')} คัดลอก</button><pre class="rxjs-code"><code>${hlTS(h.code)}</code></pre></div></details>
 </div>`).join('');
 }
 

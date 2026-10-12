@@ -17,7 +17,7 @@ function refHay(it){
   return [it.g,it.t,it.b,it.s,it.d,(it.fix||[]).join(' '),it.tip,code,it.k].filter(Boolean).join(' ').toLowerCase();
 }
 function refCodeBlock(src,lang){
-  return `<div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">${ic('copy')} copy</button><pre class="rxjs-code"><code class="language-${lang||'plaintext'}">${escHtml(src)}</code></pre></div>`;
+  return `<div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="rxjsCopyCode(this)">${ic('copy')} คัดลอก</button><pre class="rxjs-code"><code class="language-${lang||'plaintext'}">${escHtml(src)}</code></pre></div>`;
 }
 function refCard(doc,it,dialect){
   const badge=it.b?`<span class="ref-badge ref-${it.bc||'blue'}">${escHtml(it.b)}</span>`:'';

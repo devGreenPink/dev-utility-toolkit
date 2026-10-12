@@ -1,7 +1,13 @@
 // ── DIFF ──
 let diffMode='char';
-function diffModeChange(){diffMode=document.querySelector('input[name="diff-mode"]:checked').value;}
+function diffModeChange(){diffMode=document.querySelector('input[name="diff-mode"]:checked').value;diffLive();}
+// compares as you type once both sides have text
+const diffLive=debounced(()=>{
+  if(document.getElementById('diff-left').value&&document.getElementById('diff-right').value)compareText();
+  else{document.getElementById('diff-result').innerHTML='';document.getElementById('diff-stats').style.display='none';}
+},300);
 function compareText(){
+  if(!window.Diff){loadLib('diff').then(()=>{if(window.Diff)compareText();});return;}
   let l=document.getElementById('diff-left').value;
   let rr=document.getElementById('diff-right').value;
   try{l=JSON.stringify(JSON.parse(l),null,2);rr=JSON.stringify(JSON.parse(rr),null,2);}catch(e){}
@@ -32,7 +38,7 @@ function compareText(){
     });
   }
   stats.style.display='flex';
-  document.getElementById('diff-added-count').textContent='+'+(diffMode==='line'?addedCount+' lines added':addedCount+' chars added');
-  document.getElementById('diff-removed-count').textContent='-'+(diffMode==='line'?removedCount+' lines removed':removedCount+' chars removed');
+  document.getElementById('diff-added-count').textContent='+'+addedCount+(diffMode==='line'?' บรรทัดที่เพิ่ม':' ตัวอักษรที่เพิ่ม');
+  document.getElementById('diff-removed-count').textContent='-'+removedCount+(diffMode==='line'?' บรรทัดที่ลบ':' ตัวอักษรที่ลบ');
 }
 function clearDiff(){document.getElementById('diff-left').value='';document.getElementById('diff-right').value='';document.getElementById('diff-result').innerHTML='';document.getElementById('diff-stats').style.display='none';}

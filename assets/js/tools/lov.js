@@ -12,13 +12,13 @@ const LOV_RECENT_MAX = 10;
 // the `use` enum case, extra keys, file names and the REST route (checked against the 10.1.0 jar's model).
 const LOV_FORMATS = {
   v8: { // src/main/resources/template/query, cdgs-template-designer 2.1.1: cdgs-extension 8.x and the forks built on it
-    name: 'cdgs-extension 8.x', short: '8.x', usedBy: 'LED 8.1.x, BDE EIA 8.2.0, BDE bde-0.x, DLPW 0.2.0-dlpw',
+    name: 'cdgs-extension 8.x', short: '8.x',
     prio: 'piority', auto: 'auto', optional: 'optional',
     route: 'query/template', type: 'SimpleLovContainer',
     like: 'String.Like', equal: 'String.Equal', in: 'String.In', idType: 'Long',
   },
   v10: { // src/main/resources/queries (filters: Like/Equal/In, String.* also accepted)
-    name: 'cdgs-extension 10.1.0', short: '10.1.0', usedBy: 'EWFUND',
+    name: 'cdgs-extension 10.1.0', short: '10.1.0',
     prio: 'priority', auto: 'AUTO', optional: 'OPTIONAL',
     route: 'template/query', type: 'SimpleQuery',
     like: 'Like', equal: 'Equal', in: 'In', idType: 'Integer',
@@ -28,7 +28,7 @@ const LOV_FORMATS = {
 // Version badge: the short name, with what that version means for the file on hover
 function lovVersionBadge(fmt, extraClass = '') {
   const f = LOV_FORMATS[fmt];
-  const tip = `${f.name} (${f.usedBy}) · sort: ${f.prio} + ${f.optional}/${f.auto} · filter: ${f.like}/${f.equal}/${f.in}`
+  const tip = `${f.name} · sort: ${f.prio} + ${f.optional}/${f.auto} · filter: ${f.like}/${f.equal}/${f.in}`
     + ` · ไฟล์ ${lovIdToFileName('getFooBar', fmt)} · GET <root-path>/${f.route}/<id>`;
   return `<span class="lov-ver${extraClass}" title="${lovAttr(tip)}">LOV ${lovHtml(f.short)}</span>`;
 }
@@ -43,11 +43,11 @@ function lovFileFormat(json) {
     if ('priority' in o || /^[A-Z]+$/.test(o.use || '')) return 'v10';
     if ('piority' in o || /^[a-z]+$/.test(o.use || '')) return 'v8';
   }
-  // Column `visible` is no sign of 10.1.0: some BDE (8.x) files carry it too
+  // Column `visible` is no sign of 10.1.0: some 8.x files carry it too
   return null;
 }
 
-// Majority of the files decides; an empty or undecided folder goes by its name (EWFUND's is "queries")
+// Majority of the files decides; an empty or undecided folder goes by its name (10.1.0 repos use "queries")
 function lovDetectFormat(files, dirName) {
   const votes = { v8: 0, v10: 0 };
   files.forEach(f => {
@@ -468,7 +468,7 @@ function lovRequestExample(id, built) {
   return `GET <root-path>/${LOV_FORMATS[_lovFormat].route}/${id}?${qs.join('&')}`;
 }
 
-// 10.1.0 takes the route from config (framework default api/query); every EWFUND repo sets /template/query
+// 10.1.0 takes the route from config (framework default api/query); the 10.1.0 repos seen so far set /template/query
 function lovRouteNote() {
   return _lovFormat === 'v10' ? 'path ตาม cdgs.template.query.root-path ใน application.properties' : '';
 }
@@ -644,7 +644,7 @@ function lovSqlBlockHtml(label, sql, params, note, lang = 'sql') {
       ${paramsNote}${extraNote}
     </div>
     <div class="rxjs-code-block">
-      <button class="rxjs-copy-btn" onclick="lovCopyBlock(this)">${ic('copy')} copy</button>
+      <button class="rxjs-copy-btn" onclick="lovCopyBlock(this)">${ic('copy')} คัดลอก</button>
       <pre class="rxjs-code"><code class="language-${lang}">${escHtml(sql)}</code></pre>
     </div>`;
 }
@@ -686,7 +686,7 @@ function lovRenderList(files) {
     <div class="rxjs-acc-bd" style="display:none;">
       <div class="toolbar lov-acc-actions">
         <button class="btn btn-ghost" data-file="${file}" onclick="lovEditFile(this.dataset.file)">${ic('pencil')} แก้ไข</button>
-        <button class="btn btn-ghost" data-file="${file}" onclick="lovCopyJson(this.dataset.file)">${ic('copy')} copy JSON</button>
+        <button class="btn btn-ghost" data-file="${file}" onclick="lovCopyJson(this.dataset.file)">${ic('copy')} คัดลอก JSON</button>
         <button class="btn btn-danger" data-file="${file}" onclick="lovDeleteFile(this.dataset.file)">${ic('trash')} ลบ</button>
         ${entry.designerFormat ? '' : '<span class="lov-note">ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer: บันทึกครั้งแรกจะจัดรูปแบบใหม่ทั้งไฟล์</span>'}
       </div>
@@ -1043,8 +1043,8 @@ function lovRenderEditor() {
   const ed = _lovEdit, m = ed.model, f = lovEdFmt();
   const units = lovFolderUnitNames();
   const usedNote = units.length ? `ไฟล์ในโฟลเดอร์นี้ใช้: ${units.map(u => `${u.name} ×${u.count}`).join(', ')}` : '';
-  // A repo rule, so it goes by the folder, not the file. 8.x repos (DLPW, LED, EIA) map unitName in
-  // QueryTemplateConfiguration.java; BDE's bde-0.x forks set it up elsewhere.
+  // A repo rule, so it goes by the folder, not the file. 8.x repos map unitName in
+  // QueryTemplateConfiguration.java; some forks set it up elsewhere.
   const unitHint = _lovFormat === 'v10' ? usedNote
     : 'ต้องตรงกับ persistence unit ที่รีโปนั้นตั้งไว้ (เช่น key ใน QueryTemplateConfiguration.java)' + (usedNote ? ` · ${usedNote}` : '');
   const unitValues = units.map(u => u.name).filter(n => n !== '(ว่าง)');

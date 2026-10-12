@@ -41,6 +41,8 @@ const TAB_META = {
 
 // inline SVG from the sprite in index.html
 function ic(name,cls){return `<svg class="i${cls?' '+cls:''}" aria-hidden="true"><use href="#i-${name}"/></svg>`;}
+// segmented control (.json-view-toggle of data-v buttons): mark the chosen one
+function setSegmented(id,val){document.querySelectorAll(`#${id} [data-v]`).forEach(b=>{const on=b.dataset.v===val;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});}
 
 // ── THEME ──
 // data-theme on <body>: '' = macOS Dark, 'light' = macOS Light, or a preset palette id.
@@ -425,21 +427,24 @@ let activeTabId='home-tab';
 // Heavy per-tab setup (mostly highlight.js, ~360ms cold) runs on the tab's first open, not at page load.
 // Arrow wrappers: the init functions live in tools/*.js, which load after this file
 const TAB_INIT={
-  'rxjs-tab':()=>initRxjs(),
-  'angular-tab':()=>{initAngular();highlightCode('#angular-tab pre.rxjs-code code');},
+  'rxjs-tab':()=>{initRxjs();loadLib('rxjs');},
+  'angular-tab':()=>loadLib('hljs').then(()=>{initAngular();highlightCode('#angular-tab pre.rxjs-code code');}),
+  'compare-tab':()=>loadLib('diff'),
   'mq-tab':()=>highlightCode('#mq-tab pre.mq-code code'),
   'storage-tab':()=>storInitHljs(),
   'sqlref-tab':()=>refInit('sqlref'),
   'db2err-tab':()=>refInit('db2err'),
   'javaex-tab':()=>refInit('javaex'),
   'javaint-tab':()=>refInit('javaint'),
-  'k8sref-tab':()=>{k8sInit();refInit('k8s');},
+  'k8sref-tab':()=>{k8sInit();refInit('k8s');loadLib('hljs').then(()=>{if(_k8sCur)k8sShow(_k8sCur);});},
   'gateway-tab':()=>{gwInit();refInit('gateway');},
   'ngrx-tab':()=>{ngrxInit();refInit('ngrx');},
   'clicheat-tab':()=>cliInit(),
   'thai-tab':()=>thaiInit(),
   'unix-tab':()=>unixQuickRender(),
-  'props-tab':()=>pySetDir(_pyDir),
+  'base64-tab':()=>setSegmented('b64-mode',_b64Mode),
+  'url-tab':()=>setSegmented('url-dir',_urlMode),
+  'props-tab':()=>pySetDir(recallOpt('py-dir','p2y')),
 };
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
@@ -478,12 +483,12 @@ document.addEventListener('keydown',e=>{
       case'compare-tab':compareText();break;
       case'json-tab':formatJSON(4);break;
       case'unix-tab':convertUnix();break;
-      case'base64-tab':b64Encode();break;
+      case'base64-tab':b64Convert();break;
       case'cron-tab':parseCronManual();break;
       case'hash-tab':computeHash();break;
       case'jwt-tab':decodeJWT_UI();break;
       case'k8s-secret-tab':decodeK8sSecret();break;
-      case'url-tab':urlEncode();break;
+      case'url-tab':urlConvert();break;
       case'regex-tab':runRegex();break;
       case'numbase-tab':numBaseConvert('dec',document.getElementById('nb-dec')?.value||'');break;
       case'lov-tab':if(_lovEdit)lovSaveEditor();break;
@@ -606,11 +611,50 @@ function showToast(msg,kind){
   kind=TOAST_IC[kind]?kind:'ok';
   t.className='toast show'+(kind==='ok'?'':' '+kind);
   t.querySelector('use').setAttribute('href','#i-'+TOAST_IC[kind]);
-  t.querySelector('.toast-msg').textContent=msg||'Copied';
+  t.querySelector('.toast-msg').textContent=msg||'คัดลอกแล้ว';
   clearTimeout(_toastTimer);
   _toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
 }
-function copyText(txt){navigator.clipboard.writeText(txt).then(()=>showToast('Copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Copied');});}
+// ── COPY ── every copy goes through copyText: the clicked control turns into "คัดลอกแล้ว" for a moment
+// and the toast shows what landed on the clipboard, so a click is never silent
+let _copySrc=null;
+document.addEventListener('click',e=>{
+  _copySrc=e.target.closest?e.target.closest('button,[role="button"],.mock-field-value,.cmd-card'):null;
+  setTimeout(()=>{_copySrc=null;}); // only this click's own handler may use it
+},true);
+function copyText(txt){
+  const src=_copySrc;
+  const done=ok=>{
+    if(!ok){showToast('คัดลอกไม่ได้ ลองเลือกข้อความแล้วกด Ctrl+C','err');return;}
+    flashCopied(src);
+    const one=String(txt).replace(/\s+/g,' ').trim();
+    showToast(one?'คัดลอกแล้ว: '+(one.length>40?one.slice(0,40)+'…':one):'คัดลอกแล้ว');
+  };
+  const fallback=()=>{
+    const ta=document.createElement('textarea');
+    ta.value=txt;ta.style.cssText='position:fixed;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);ta.select();
+    let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+    ta.remove();done(ok);
+  };
+  try{navigator.clipboard.writeText(txt).then(()=>done(true),fallback);}catch(e){fallback();}
+}
+function flashCopied(el){
+  if(!el||!document.contains(el))return;
+  clearTimeout(el._copiedT);
+  if(!el.classList.contains('is-copied')){
+    el.classList.add('is-copied');
+    // a short copy button swaps its label; a value or card that copies itself only lights up
+    if(el.tagName==='BUTTON'&&el.textContent.trim().length<=24){
+      el._copiedHtml=el.innerHTML;
+      el.innerHTML=ic('check')+(el.textContent.trim()?'คัดลอกแล้ว':'');
+    }
+  }
+  el._copiedT=setTimeout(()=>{
+    el.classList.remove('is-copied');
+    if(el._copiedHtml!=null){el.innerHTML=el._copiedHtml;el._copiedHtml=null;}
+  },1600);
+}
 function copyVal(id){const el=document.getElementById(id);if(el&&el.textContent&&el.textContent)copyText(el.textContent);}
 // คลิก/Enter/Space บนตัวค่าเอง (ไม่ใช่แค่ปุ่ม Copy) ก็ copy ได้
 document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
@@ -620,7 +664,7 @@ document.querySelectorAll('.mock-field-value[id]').forEach(el=>{
 });
 // tooltip "คลิกเพื่อ copy" แบบ custom (title ของ browser เล็กและปรับขนาดไม่ได้)
 const copyTip=document.createElement('div');
-copyTip.className='copy-tip';copyTip.innerHTML=ic('copy')+' คลิกเพื่อ copy';copyTip.setAttribute('aria-hidden','true');
+copyTip.className='copy-tip';copyTip.innerHTML=ic('copy')+' คลิกเพื่อคัดลอก';copyTip.setAttribute('aria-hidden','true');
 document.body.appendChild(copyTip);
 function showCopyTip(el){
   const r=el.getBoundingClientRect();
@@ -642,9 +686,36 @@ document.addEventListener('click',e=>{
 });
 function copyElText(id){const el=document.getElementById(id);if(el)copyText(el.value!==undefined?el.value:el.textContent);}
 function copyArea(id){const el=document.getElementById(id);if(el)copyText(el.value||el.textContent);}
+// ── LAZY CDN LIBS ── fetched on a tool's first use, so the first visit only downloads the app itself
+const CDN='https://cdnjs.cloudflare.com/ajax/libs/';
+const LIBS={ // the first file is the core; the rest need it and load after it in parallel
+  hljs:['highlight.js/11.9.0/highlight.min.js',...['typescript','java','properties','sql','nginx','dockerfile'].map(l=>`highlight.js/11.9.0/languages/${l}.min.js`)],
+  diff:['jsdiff/5.1.0/diff.min.js'],
+  rxjs:['rxjs/7.8.1/rxjs.umd.min.js'],
+  codemirror:['codemirror/5.65.16/codemirror.min.js','codemirror/5.65.16/codemirror.min.css','codemirror/5.65.16/theme/dracula.min.css',
+    'codemirror/5.65.16/mode/javascript/javascript.min.js','codemirror/5.65.16/addon/edit/closebrackets.min.js',
+    'codemirror/5.65.16/addon/edit/matchbrackets.min.js','codemirror/5.65.16/addon/comment/comment.min.js'],
+};
+const _libs={};
+function loadAsset(path){
+  return new Promise(done=>{
+    const css=path.endsWith('.css'),el=document.createElement(css?'link':'script');
+    el.onload=el.onerror=()=>done(); // a failed load leaves the tool on its plain-text fallback
+    if(!css){el.src=CDN+path;document.head.appendChild(el);return;}
+    el.rel='stylesheet';el.href=CDN+path;
+    // before style.css, so the app's own overrides still win
+    document.head.insertBefore(el,document.querySelector('link[href$="style.css"]'));
+  });
+}
+function loadLib(name){
+  const files=LIBS[name];
+  return _libs[name]||(_libs[name]=loadAsset(files[0]).then(()=>Promise.all(files.slice(1).map(loadAsset))));
+}
+function debounced(fn,ms=250){let t=0;return()=>{clearTimeout(t);t=setTimeout(fn,ms);};}
+
 // highlight.js marks what it has done with data-highlighted, so this is safe to call repeatedly
 function highlightCode(sel){
-  if(!window.hljs)return;
+  if(!window.hljs){loadLib('hljs').then(()=>{if(window.hljs)highlightCode(sel);});return;}
   document.querySelectorAll(sel).forEach(el=>{if(!el.dataset.highlighted)window.hljs.highlightElement(el);});
 }
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -703,8 +774,23 @@ function rememberedFields(){
   return Array.from(document.querySelectorAll('.tab-content textarea[id], .tab-content input[id]'))
     .filter(el=>!INPUT_NEVER.includes(el.id)&&!/-search$|^ref-q-/.test(el.id)&&!el.readOnly&&(el.tagName==='TEXTAREA'||['text','number','url'].includes(el.type)));
 }
+let _remembered=[];
+// clear buttons and smart paste change values without an input event; pagehide catches those
+function saveRememberedInputs(){
+  if(!rememberInputs)return;
+  _remembered.forEach(el=>{try{
+    if(el.value&&el.value.length<=INPUT_MAX)localStorage.setItem(inputKey(el.id),el.value);
+    else localStorage.removeItem(inputKey(el.id));
+  }catch(e){}});
+}
+// a tool's remembered option (direction, mode), cleared together with the inputs
+function rememberOpt(key,val){try{if(rememberInputs)localStorage.setItem(STORAGE_INPUT+key,val);}catch(e){}}
+function recallOpt(key,def){try{return localStorage.getItem(STORAGE_INPUT+key)||def;}catch(e){return def;}}
 function initRememberedInputs(){
-  rememberedFields().forEach(el=>{
+  _remembered=rememberedFields();
+  addEventListener('pagehide',saveRememberedInputs);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)saveRememberedInputs();});
+  _remembered.forEach(el=>{
     let saved=null;
     if(rememberInputs)try{saved=localStorage.getItem(inputKey(el.id));}catch(e){}
     if(saved!==null&&saved!==el.value){
@@ -731,8 +817,9 @@ function forgetRemembered(){
   if(activeTabId==='home-tab')homeRender();
 }
 function clearRemembered(){
+  _remembered.forEach(el=>{if(el.value){el.value='';try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}}});
   forgetRemembered();
-  showToast('ล้างข้อมูลที่จำไว้แล้ว ช่องที่เปิดอยู่ยังไม่ถูกลบจนกว่าจะรีโหลด','info');
+  showToast('ล้างข้อมูลที่จำไว้และช่องที่กรอกไว้แล้ว','info');
 }
 function toggleRemember(){
   rememberInputs=!rememberInputs;

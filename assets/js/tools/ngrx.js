@@ -65,9 +65,9 @@ REF_DOCS.ngrx={
   {g:'แนวคิด',t:'Redux pattern คืออะไร',b:'concept',bc:'blue',k:'single source of truth immutable unidirectional',
    d:'เก็บ state ของแอปไว้ที่ Store ที่เดียว · เปลี่ยนได้ทางเดียวคือ dispatch action · reducer คำนวณ state ใหม่แบบ pure function (ไม่แก้ของเดิม) · component อ่านผ่าน selector · งานที่มีผลข้างเคียง (เรียก API) อยู่ใน effect',
    fix:['เหมาะกับ state ที่หลายหน้าใช้ร่วมกัน (user ที่ login, เมนู, breadcrumb)','state ที่ใช้แค่ในหน้าเดียว ใช้ signal / service ธรรมดาก็พอ']},
-  {g:'แนวคิด',t:'ในโปรเจคนี้ framework ใช้ NgRx ทำอะไร',b:'cdgs',bc:'purple',k:'cdgs-fw-ui program guard breadcrumb userservice currentuserinfostate',
-   d:'`@cdgs/cdgs-fw-ui` มี store slice: config, menu, message, program, user · breadcrumb ถูกเติมโดย `programGuard` ตอนเข้า route (`InitProgramBreadCrumb`, `AddBreadcrumb`) แล้ว `CdgsBreadcrumbComponent` อ่านจาก program state · ข้อมูล user อ่านผ่าน `UserService` (NgRx) ได้เลยหลัง login',
-   fix:['อย่า dispatch action ของ breadcrumb เอง ให้ตั้ง `data: { programId }` และ `titleCode` ใน route แทน']},
+  {g:'แนวคิด',t:'framework UI กลางขององค์กรใช้ NgRx ทำอะไร',b:'framework',bc:'purple',k:'ui framework route guard breadcrumb user menu program',
+   d:'framework UI ที่หลายแอปใช้ร่วมกันมักมี store slice กลาง เช่น config, menu, message, program, user · breadcrumb ถูกเติมโดย route guard ตอนเข้า route แล้ว component breadcrumb อ่านจาก state · ข้อมูล user อ่านผ่าน service ที่ครอบ store ได้เลยหลัง login',
+   fix:['อย่า dispatch action ของ breadcrumb เอง ให้ใส่ข้อมูลใน `data` ของ route (เช่น `programId`, `titleCode`) แล้วให้ guard จัดการ']},
   {g:'Action',t:'createActionGroup',b:'action',bc:'green',k:'props emptyprops source events',
    d:'ประกาศ action หลายตัวของ feature เดียวกันในที่เดียว ได้ type เป็น `[Source] Event Name` อัตโนมัติ',
    code:`import { createActionGroup, emptyProps, props } from '@ngrx/store';

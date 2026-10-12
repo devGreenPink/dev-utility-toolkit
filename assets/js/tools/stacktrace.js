@@ -45,7 +45,7 @@ function stIsFramework(cls,appPrefix){
   if(appPrefix&&cls.startsWith(appPrefix))return /_Subclass|_ClientProxy|\$\$/.test(cls);
   return ST_FRAMEWORK.some(p=>cls.startsWith(p))||/_Subclass|_ClientProxy|\$\$/.test(cls);
 }
-// Most common package (first 3 segments) among non-framework frames, e.g. "th.co.cdgs"
+// Most common package (first 3 segments) among non-framework frames, e.g. "com.example.shop"
 function stGuessApp(chain){
   const count={};
   chain.forEach(c=>c.frames.forEach(f=>{
@@ -73,19 +73,19 @@ function stFindDb2(text){
 }
 
 // ── UI ──
-const ST_SAMPLE=`2026-10-12 10:15:42,118 ERROR [io.qua.ver.htt.run.QuarkusErrorHandler] (executor-thread-3) HTTP Request to /api/wfcs/orders failed, error id: 3f1c: jakarta.persistence.PersistenceException: org.hibernate.exception.ConstraintViolationException: could not execute statement
+const ST_SAMPLE=`2026-10-12 10:15:42,118 ERROR [io.qua.ver.htt.run.QuarkusErrorHandler] (executor-thread-3) HTTP Request to /api/orders failed, error id: 3f1c: jakarta.persistence.PersistenceException: org.hibernate.exception.ConstraintViolationException: could not execute statement
 \tat org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:165)
 \tat org.hibernate.internal.SessionImpl.firePersist(SessionImpl.java:752)
-\tat th.co.cdgs.ewfund.wfcs.service.OrderService.create(OrderService.java:88)
-\tat th.co.cdgs.ewfund.wfcs.service.OrderService_Subclass.create$$superforward(Unknown Source)
+\tat com.example.shop.order.service.OrderService.create(OrderService.java:88)
+\tat com.example.shop.order.service.OrderService_Subclass.create$$superforward(Unknown Source)
 \tat io.quarkus.narayana.jta.runtime.interceptor.TransactionalInterceptorRequired.intercept(TransactionalInterceptorRequired.java:32)
-\tat th.co.cdgs.ewfund.wfcs.resource.OrderResource.create(OrderResource.java:41)
+\tat com.example.shop.order.resource.OrderResource.create(OrderResource.java:41)
 \tat io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:145)
-Caused by: org.hibernate.exception.ConstraintViolationException: could not execute statement [DB2 SQL Error: SQLCODE=-803, SQLSTATE=23505, SQLERRMC=2;EWFUND.WFCS_ORDER, DRIVER=4.33.31]
+Caused by: org.hibernate.exception.ConstraintViolationException: could not execute statement [DB2 SQL Error: SQLCODE=-803, SQLSTATE=23505, SQLERRMC=2;SHOP.ORDERS, DRIVER=4.33.31]
 \tat org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:95)
 \tat org.hibernate.engine.jdbc.batch.internal.BatchImpl.performExecution(BatchImpl.java:111)
 \t... 42 more
-Caused by: com.ibm.db2.jcc.am.SqlIntegrityConstraintViolationException: DB2 SQL Error: SQLCODE=-803, SQLSTATE=23505, SQLERRMC=2;EWFUND.WFCS_ORDER, DRIVER=4.33.31
+Caused by: com.ibm.db2.jcc.am.SqlIntegrityConstraintViolationException: DB2 SQL Error: SQLCODE=-803, SQLSTATE=23505, SQLERRMC=2;SHOP.ORDERS, DRIVER=4.33.31
 \tat com.ibm.db2.jcc.am.b7.a(b7.java:806)
 \tat com.ibm.db2.jcc.am.k3.executeUpdate(k3.java:479)
 \tat io.agroal.pool.wrapper.PreparedStatementWrapper.executeUpdate(PreparedStatementWrapper.java:88)
@@ -108,7 +108,7 @@ function stAnalyze(){
   const hideFw=document.getElementById('st-hide-fw').checked;
   const appInput=document.getElementById('st-app');
   const app=appInput.value.trim()||stGuessApp(chain);
-  if(!appInput.value.trim())appInput.placeholder=app?`เดาจาก trace: ${app}`:'เช่น th.co.cdgs.';
+  if(!appInput.value.trim())appInput.placeholder=app?`เดาจาก trace: ${app}`:'เช่น com.example.';
   const root=chain[chain.length-1];
   const firstMine=chain.slice().reverse().flatMap(c=>c.frames).find(f=>!stIsFramework(f.cls,app));
   const ref=stFindRef(root.type)||chain.slice().reverse().map(c=>stFindRef(c.type)).find(Boolean);

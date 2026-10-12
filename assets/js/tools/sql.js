@@ -305,7 +305,7 @@ function convertSQL(){
       });
       hdr.appendChild(legend);
     }
-    const btn=document.createElement('button');btn.className='btn btn-ghost btn-sm';btn.innerHTML=ic('copy')+' Copy';
+    const btn=document.createElement('button');btn.className='btn btn-ghost btn-sm';btn.innerHTML=ic('copy')+' คัดลอก';
     hdr.appendChild(btn);
     // Body
     const pre=document.createElement('pre');pre.className='sql-result-body';
@@ -347,6 +347,10 @@ function sqlSample(k){
   detectSqlMode(el.value);
   convertSQL();
 }
+const sqlLive=debounced(()=>{
+  if(document.getElementById('sql-input').value.trim())convertSQL();
+  else{document.getElementById('sql-results').innerHTML='';const e=document.getElementById('sql-error');e.classList.remove('visible');e.textContent='';}
+},300);
 function clearSQL(){
   document.getElementById('sql-input').value='';
   document.getElementById('sql-results').innerHTML='';

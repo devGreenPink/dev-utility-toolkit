@@ -288,11 +288,9 @@ function storDtRender(key) {
 function storCopyCode(btn) {
   const pre=btn.nextElementSibling; if(!pre)return;
   copyText(pre.textContent||pre.innerText);
-  const orig=btn.innerHTML; btn.innerHTML=ic('check')+' copied';
-  setTimeout(()=>{btn.innerHTML=orig;},1800);
 }
 function storInitHljs() {
-  if(!window.hljs)return;
+  if(!window.hljs){loadLib('hljs').then(()=>{if(window.hljs)storInitHljs();});return;}
   document.querySelectorAll('#storage-tab pre.stor-code').forEach(pre=>{
     if(pre.dataset.hlInit)return;
     pre.dataset.hlInit='1';
