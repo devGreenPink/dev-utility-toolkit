@@ -249,6 +249,9 @@
       </div>
 
       <nav class="sidebar-nav" id="sidebar-nav" aria-label="เครื่องมือ">
+        <div class="nav-item nav-home active" aria-current="page" data-tab="home-tab" data-no-fav role="button" tabindex="0" onclick="openTab(event, 'home-tab')">
+          <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-house"/></svg></span><span class="nav-label">หน้าแรก</span>
+        </div>
         <div class="nav-fav-section" id="nav-fav-section" style="display: none">
           <div class="nav-section-label nav-fav-label">
             <span><svg class="i i-fill" aria-hidden="true"><use href="#i-star"/></svg> รายการโปรด</span>
@@ -260,7 +263,7 @@
         <div class="nav-group" data-group="data">
           <button type="button" class="nav-section-label" aria-expanded="true" onclick="toggleNavGroup(this)">ข้อมูล &amp; JSON<svg class="i chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
           <div class="nav-group-items"><div class="nav-group-inner">
-            <div class="nav-item active" data-tab="random-tab" onclick="openTab(event, 'random-tab')">
+            <div class="nav-item" data-tab="random-tab" onclick="openTab(event, 'random-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-dices"/></svg></span> Mock Data Generator
             </div>
             <div class="nav-item" data-tab="json-tab" onclick="openTab(event, 'json-tab')">
@@ -420,10 +423,8 @@
       <div class="top-bar">
         <button class="tb-btn menu-toggle" onclick="toggleSidebar()" aria-label="เมนู"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
         <div class="top-bar-heading">
-          <div class="page-title" id="topbar-title">Mock Data Generator</div>
-          <div class="page-sub" id="topbar-sub">
-            สร้างข้อมูลจำลองสำหรับทดสอบระบบ · รองรับภาษาไทย
-          </div>
+          <div class="page-title" id="topbar-title">หน้าแรก</div>
+          <div class="page-sub" id="topbar-sub">วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด</div>
         </div>
         <div class="top-bar-actions">
           <button class="tb-btn tb-search" onclick="openPalette()" title="ค้นหาเครื่องมือและคำสั่ง"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span>ค้นหา</span><kbd class="cmdk-key">Ctrl K</kbd></button>
@@ -463,14 +464,66 @@
                 </div>
                 <button type="button" class="switch" id="fx-switch" role="switch" aria-checked="true" aria-labelledby="fx-label" aria-describedby="fx-hint" onclick="toggleClickFx()"></button>
               </div>
+              <div class="pop-section pop-row">
+                <div>
+                  <div class="pop-row-title" id="remember-label">จำข้อมูลที่กรอกไว้</div>
+                  <div class="pop-hint" id="remember-hint">ข้อความในทุกเครื่องมือและเครื่องมือล่าสุด เก็บในเบราว์เซอร์นี้เท่านั้น ไม่จำ JWT และ Secret</div>
+                </div>
+                <button type="button" class="switch" id="remember-switch" role="switch" aria-checked="true" aria-labelledby="remember-label" aria-describedby="remember-hint" onclick="toggleRemember()"></button>
+              </div>
+              <div class="pop-section">
+                <button type="button" class="btn btn-danger btn-full" onclick="clearRemembered()"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg>ล้างข้อมูลที่จำไว้</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="content-area">
+        <!-- HOME -->
+        <div id="home-tab" class="tab-content active">
+          <section class="home-hero" aria-labelledby="sp-title">
+            <h2 class="home-title" id="sp-title">ค้นหาเครื่องมือ <span>หรือวางอะไรก็ได้</span></h2>
+            <p class="home-lead">วาง JWT, stack trace, JSON, SQL ใน Java, Secret YAML, timestamp, เลขบัตร หรือ SQLCODE แล้วจะเปิดเครื่องมือที่ใช่พร้อมกรอกให้ ทุกอย่างทำงานในเบราว์เซอร์ ไม่ส่งข้อมูลออกไปไหน</p>
+            <div class="sp-box">
+              <textarea id="sp-input" rows="4" spellcheck="false" aria-label="ค้นหาเครื่องมือ หรือวางข้อความ" placeholder="พิมพ์ชื่อเครื่องมือ เช่น jwt, cron หรือวางข้อความที่นี่" oninput="spLive()"></textarea>
+              <div class="sp-bar">
+                <div id="sp-result" class="sp-result" aria-live="polite"></div>
+                <button type="button" class="btn btn-ghost sp-paste" onclick="spPasteClipboard()"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg>วางจากคลิปบอร์ด</button>
+              </div>
+            </div>
+            <div class="sp-try">
+              <span>ลอง:</span>
+              <button type="button" class="rxjs-chip" onclick="spTry('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzb21jaGFpIiwicm9sZSI6ImFkbWluIn0.c2lnbmF0dXJl')">JWT</button>
+              <button type="button" class="rxjs-chip" onclick="spTry(ST_SAMPLE)">Stack trace</button>
+              <button type="button" class="rxjs-chip" onclick="spTry('1700000000')">1700000000</button>
+              <button type="button" class="rxjs-chip" onclick="spTry('SQLCODE=-803')">SQLCODE=-803</button>
+              <button type="button" class="rxjs-chip" onclick="spTry('1234567890121')">เลข 13 หลัก</button>
+            </div>
+          </section>
+          <div class="home-cols">
+            <section class="card home-card" aria-labelledby="home-recent-h">
+              <h2 class="card-title" id="home-recent-h"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>ใช้ล่าสุด</h2>
+              <div id="home-recent" class="home-list"></div>
+            </section>
+            <section class="card home-card" aria-labelledby="home-fav-h">
+              <h2 class="card-title" id="home-fav-h"><svg class="i" aria-hidden="true"><use href="#i-star"/></svg>รายการโปรด</h2>
+              <div id="home-fav" class="home-list"></div>
+            </section>
+          </div>
+          <section aria-labelledby="home-all-h">
+            <h2 class="home-all-h" id="home-all-h">เครื่องมือทั้งหมด</h2>
+            <div id="home-all"></div>
+          </section>
+          <footer class="home-foot">
+            <span><kbd class="home-mod">Ctrl</kbd><kbd>K</kbd> ค้นหาจากทุกหน้า</span>
+            <span><kbd class="home-mod">Ctrl</kbd><kbd>Enter</kbd> รันเครื่องมือที่เปิดอยู่</span>
+            <span><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg>ข้อมูลอยู่ในเครื่องนี้เท่านั้น</span>
+          </footer>
+        </div>
+
         <!-- MOCK DATA -->
-        <div id="random-tab" class="tab-content active">
+        <div id="random-tab" class="tab-content">
           <!-- Action Bar -->
           <div
             style="
@@ -5453,6 +5506,7 @@ self.addEventListener('fetch', e => {
     <script defer src="assets/js/tools/k8s-ref.js"></script>
     <script defer src="assets/js/tools/gateway.js"></script>
     <script defer src="assets/js/tools/ngrx.js"></script>
+    <script defer src="assets/js/tools/home.js"></script>
     <script defer src="assets/js/init.js"></script>
   </body>
 </html>

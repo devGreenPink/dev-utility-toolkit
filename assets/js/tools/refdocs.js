@@ -56,7 +56,7 @@ function refFocus(id,query){
   if(tab)openTab(null,tab);
   if(!_refState[id])refInit(id);
   const inp=document.getElementById('ref-q-'+id);
-  if(inp){inp.value=query;refSet(id,'g','ทั้งหมด');refSet(id,'q',query);}
+  if(inp){inp.value=query;refSet(id,'g','ทั้งหมด');refSet(id,'q',query);inp.focus({preventScroll:true});}
 }
 function refRender(id){
   const doc=REF_DOCS[id],st=_refState[id];

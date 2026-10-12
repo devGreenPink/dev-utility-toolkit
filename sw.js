@@ -38,6 +38,7 @@ const STATIC_ASSETS = [
   './assets/js/tools/k8s-ref.js',
   './assets/js/tools/gateway.js',
   './assets/js/tools/ngrx.js',
+  './assets/js/tools/home.js',
   './assets/js/init.js',
   './assets/images/favicon.svg',
   './manifest.json',

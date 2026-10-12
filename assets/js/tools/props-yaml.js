@@ -175,8 +175,11 @@ quarkus.rest-client."report-api".read-timeout=120000
 %dev.quarkus.log.level=DEBUG
 %local.quarkus.datasource.jdbc.url=jdbc:db2://127.0.0.1:50001/EWFUND`;
 let _pyDir='p2y',_pyTimer=0;
+// remembered with the inputs, so a restored YAML is not converted as properties
+try{if(localStorage.getItem(STORAGE_INPUT+'py-dir')==='y2p')_pyDir='y2p';}catch(e){}
 function pySetDir(d){
   _pyDir=d;
+  try{if(rememberInputs)localStorage.setItem(STORAGE_INPUT+'py-dir',d);}catch(e){}
   document.querySelectorAll('#py-dir .json-view-btn').forEach(b=>{const on=b.dataset.d===d;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
   document.getElementById('py-in-label').textContent=d==='p2y'?'application.properties':'application.yaml';
   document.getElementById('py-out-label').textContent=d==='p2y'?'application.yaml':'application.properties';

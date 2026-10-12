@@ -35,6 +35,7 @@ const TAB_META = {
   'k8sref-tab': { title: 'Docker & K8s', sub: 'อ่าน manifest ทีละบรรทัด · แนวคิดหลัก · แก้ปัญหา Pod' },
   'gateway-tab': { title: 'Request Path', sub: 'Browser → Load Balancer → Kong → Service → Pod · nginx' },
   'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
+  'home-tab': { title: 'หน้าแรก', sub: 'วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด' },
   'esan-agent-tab': { title: 'ESAN AI AGENT', sub: 'Claude Code plugin · ติดตั้ง · อัปเดต · เปิดใช้งานที่ localhost:4567 บนเครื่องตัวเอง' },
 };
 
@@ -172,6 +173,7 @@ function syncSettingsUI(){
   if(hint)hint.textContent=!mac?'ใช้กับธีม macOS เท่านั้น ตอนนี้ใช้ธีมพิเศษอยู่':named?named[1]:'กำหนดเอง '+theme.accent.toUpperCase();
   document.querySelectorAll('.preset-opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.preset===theme.id)));
   document.getElementById('fx-switch')?.setAttribute('aria-checked',String(clickFx));
+  document.getElementById('remember-switch')?.setAttribute('aria-checked',String(rememberInputs));
 }
 
 // ── POPOVERS ──
@@ -314,6 +316,7 @@ function renderFavorites(){
     makeNavItemFocusable(item);
     list.appendChild(item);
   });
+  if(activeTabId==='home-tab')homeRender();
 }
 function makeNavItemFocusable(item){
   item.setAttribute('role','button');
@@ -323,7 +326,7 @@ function makeNavItemFocusable(item){
 function injectFavStars(){
   document.querySelectorAll('#sidebar-nav .nav-item').forEach(item=>{
     const id=item.dataset.tab;
-    if(!id||item.classList.contains('nav-fav-item'))return;
+    if(!id||item.classList.contains('nav-fav-item')||'noFav' in item.dataset)return;
     // wrap the label text so the star can sit flush right
     if(!item.querySelector('.nav-label')){
       const icon=item.querySelector('.nav-icon');
@@ -407,8 +410,18 @@ function restoreNavGroups(){
   document.querySelectorAll('.nav-group').forEach(g=>setNavGroup(g,ids.includes(g.dataset.group)));
 }
 
+// ── RECENT TOOLS (home page) ──
+const STORAGE_RECENT='esan-devtools-recent';
+function recentTabs(){
+  try{const ids=JSON.parse(localStorage.getItem(STORAGE_RECENT)||'[]');return Array.isArray(ids)?ids.filter(id=>srcNavItem(id)):[];}catch(e){return[];}
+}
+function pushRecent(id){
+  if(!rememberInputs)return; // the Settings switch covers history too
+  try{localStorage.setItem(STORAGE_RECENT,JSON.stringify([id,...recentTabs().filter(x=>x!==id)].slice(0,8)));}catch(e){}
+}
+
 // ── NAV ──
-let activeTabId='random-tab';
+let activeTabId='home-tab';
 // Heavy per-tab setup (mostly highlight.js, ~360ms cold) runs on the tab's first open, not at page load.
 // Arrow wrappers: the init functions live in tools/*.js, which load after this file
 const TAB_INIT={
@@ -426,6 +439,7 @@ const TAB_INIT={
   'clicheat-tab':()=>cliInit(),
   'thai-tab':()=>thaiInit(),
   'unix-tab':()=>unixQuickRender(),
+  'props-tab':()=>pySetDir(_pyDir),
 };
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
@@ -443,11 +457,12 @@ function openTab(evt,id){
   document.getElementById('topbar-title').textContent=meta.title;
   document.getElementById('topbar-sub').textContent=meta.sub;
   try{localStorage.setItem(STORAGE_TAB,id);}catch(e){}
+  if(id==='home-tab')homeRender();else pushRecent(id);
   closeSidebar();
 }
 function restoreTab(){
-  let saved='random-tab';
-  try{saved=localStorage.getItem(STORAGE_TAB)||'random-tab';}catch(e){}
+  let saved='home-tab';
+  try{saved=localStorage.getItem(STORAGE_TAB)||'home-tab';}catch(e){}
   const el=document.getElementById(saved);
   if(!el)return;
   openTab(null,saved);
@@ -475,6 +490,7 @@ document.addEventListener('keydown',e=>{
       case'stacktrace-tab':stAnalyze();break;
       case'json2type-tab':j2tConvert();break;
       case'props-tab':pyConvert();break;
+      case'home-tab':spOpenFirst();break;
     }
   }
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'&&activeTabId==='lov-tab'&&_lovEdit){
@@ -499,6 +515,8 @@ const PALETTE_CMDS=[ // [label, sub, icon, run]
   ['ลักษณะ: มืด','ธีม macOS','moon',()=>setAppearance('dark')],
   ['ลักษณะ: อัตโนมัติ','ตามการตั้งค่าเครื่อง','monitor',()=>setAppearance('auto')],
   ['เปิด/ปิดเอฟเฟกต์และแอนิเมชัน','การตั้งค่า','sparkles',()=>toggleClickFx()],
+  ['หน้าแรก','วางข้อความแล้วเปิดเครื่องมือที่ใช่','house',()=>openTab(null,'home-tab')],
+  ['ล้างข้อมูลที่จำไว้','ข้อความที่กรอกไว้และเครื่องมือล่าสุด','trash',()=>clearRemembered()],
 ];
 const _cmdk={items:[],sel:0,ret:null};
 function paletteItems(q){
@@ -509,10 +527,13 @@ function paletteItems(q){
       icon:el.querySelector('.nav-icon')?.innerHTML||'',hay:`${label} ${meta.title||''} ${meta.sub||''}`.toLowerCase(),run:()=>openTab(null,id)};
   });
   const cmds=PALETTE_CMDS.map(([label,sub,icon,run])=>({group:'คำสั่ง',label,sub,icon:ic(icon),hay:`${label} ${sub}`.toLowerCase(),run}));
+  // a pasted value (JWT, timestamp, SQLCODE...) offers the tools that understand it
+  const text=q.trim();
+  const smart=spDetect(text).map(d=>({group:'เปิดข้อความนี้ใน',label:d.tool,sub:d.label,icon:ic('sparkles'),run:()=>spOpen(d.kind,text)}));
   // label hits rank above subtitle-only hits; sort is stable, so nav order holds within a rank
   const rank=x=>{const l=x.label.toLowerCase();return words.every(w=>l.includes(w))?(l.startsWith(words[0]||'')?0:1):2;};
   const match=list=>list.filter(x=>words.every(w=>x.hay.includes(w))).sort((a,b)=>rank(a)-rank(b));
-  return match(tools).concat(match(cmds));
+  return match(tools).concat(smart,match(cmds));
 }
 function renderPalette(){
   const list=document.getElementById('cmdk-list'),input=document.getElementById('cmdk-input');
@@ -664,6 +685,61 @@ function toggleClickFx(){
   applyFx();
   syncSettingsUI();
   showToast(clickFx?'เปิดเอฟเฟกต์และแอนิเมชันแล้ว':'ปิดเอฟเฟกต์และแอนิเมชันแล้ว','info');
+}
+
+// ── REMEMBERED INPUTS ── every tool's text fields survive a reload; secrets and search boxes never do
+const STORAGE_REMEMBER='esan-devtools-remember'; // '0' = off, unset = on
+const STORAGE_INPUT='esan-devtools-in:';         // + element id
+const INPUT_LEGACY_KEYS={'sql-input':'esan-devtools-sql-last','b64-input':'esan-devtools-b64-last','url-input':'esan-devtools-url-last',
+  'hash-input':'esan-devtools-hash-last','regex-pattern':'esan-devtools-regex-pat','regex-flags':'esan-devtools-regex-flg','regex-input':'esan-devtools-regex-txt'};
+// secrets, then fields that only mirror another one (restoring the source refills them)
+const INPUT_NEVER=['jwt-input','jwt-enc-secret','k8s-input','sp-input',
+  'json-input-split','nb-hex','nb-bin','nb-oct','rgb-r-n','rgb-g-n','rgb-b-n','hsl-h-n','hsl-s-n','hsl-l-n'];
+const INPUT_MAX=200000; // ponytail: bigger values are not saved; raise it or move to IndexedDB if people paste huge logs
+let rememberInputs=true;
+try{rememberInputs=localStorage.getItem(STORAGE_REMEMBER)!=='0';}catch(e){}
+function inputKey(id){return INPUT_LEGACY_KEYS[id]||STORAGE_INPUT+id;}
+function rememberedFields(){
+  return Array.from(document.querySelectorAll('.tab-content textarea[id], .tab-content input[id]'))
+    .filter(el=>!INPUT_NEVER.includes(el.id)&&!/-search$|^ref-q-/.test(el.id)&&!el.readOnly&&(el.tagName==='TEXTAREA'||['text','number','url'].includes(el.type)));
+}
+function initRememberedInputs(){
+  rememberedFields().forEach(el=>{
+    let saved=null;
+    if(rememberInputs)try{saved=localStorage.getItem(inputKey(el.id));}catch(e){}
+    if(saved!==null&&saved!==el.value){
+      el.value=saved;
+      // replay the field's own handler so outputs come back too
+      try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}
+    }
+    let t=0;
+    el.addEventListener('input',()=>{
+      if(!rememberInputs)return;
+      clearTimeout(t);
+      t=setTimeout(()=>{try{
+        if(el.value&&el.value.length<=INPUT_MAX)localStorage.setItem(inputKey(el.id),el.value);
+        else localStorage.removeItem(inputKey(el.id));
+      }catch(e){}},300);
+    });
+  });
+}
+function forgetRemembered(){
+  try{
+    Object.keys(localStorage).filter(k=>k.startsWith(STORAGE_INPUT)).forEach(k=>localStorage.removeItem(k));
+    Object.values(INPUT_LEGACY_KEYS).concat(STORAGE_RECENT).forEach(k=>localStorage.removeItem(k));
+  }catch(e){}
+  if(activeTabId==='home-tab')homeRender();
+}
+function clearRemembered(){
+  forgetRemembered();
+  showToast('ล้างข้อมูลที่จำไว้แล้ว ช่องที่เปิดอยู่ยังไม่ถูกลบจนกว่าจะรีโหลด','info');
+}
+function toggleRemember(){
+  rememberInputs=!rememberInputs;
+  try{localStorage.setItem(STORAGE_REMEMBER,rememberInputs?'1':'0');}catch(e){}
+  if(!rememberInputs)forgetRemembered(); // off means nothing stays behind
+  syncSettingsUI();
+  showToast(rememberInputs?'จะจำข้อมูลที่กรอกไว้ในเครื่องนี้':'ไม่จำข้อมูลแล้ว และลบที่เคยจำไว้','info');
 }
 (function(){
   const fxOn=()=>clickFx;

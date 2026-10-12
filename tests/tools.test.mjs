@@ -6,8 +6,8 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ctx = vm.createContext({ console, Intl, BigInt });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace']) {
+const ctx = vm.createContext({ console, Intl, BigInt, atob, TextDecoder });
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -127,6 +127,39 @@ t('stacktrace: plain trace, module prefixes, suppressed frames', () => {
   assert.equal(c[0].frames[0].line, 12);
   assert.equal(c[1].type, 'java.lang.NullPointerException');
   assert.deepEqual(c[1].frames.map(f => f.method), ['len']);
+});
+
+// ── SMART PASTE (home) ── first guess per pasted text; '' = nothing detected
+const smart = {
+  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ4In0.abc': 'jwt',
+  'Exception in thread "main" java.lang.IllegalStateException: boom\n\tat com.acme.App.run(App.java:12)': 'stacktrace',
+  'apiVersion: v1\nkind: Secret\ndata:\n  a: YWJj': 'k8s-secret',
+  'apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: x': 'k8s-yaml',
+  '{"a": [1, 2]}': 'json',
+  'sb.append("SELECT * FROM T WHERE ID = ?");': 'sql-java',
+  'select * from t': 'sql',
+  'SQLCODE=-803, SQLSTATE=23505': 'db2code',
+  '-805': 'db2code',
+  'java.lang.NullPointerException': 'exception',
+  'quarkus.http.port=8080\n%dev.quarkus.log.level=DEBUG': 'props',
+  'quarkus:\n  http:\n    port: 8080': 'yaml',
+  '1-2345-67890-12-1': 'thai-id',
+  '1700000000': 'unix',
+  '1700000000000': 'unix',
+  '12/10/2569': 'be-date',
+  '1,234.50': 'amount',
+  '*/5 * * * *': 'cron',
+  '0 0 12 * * ?': 'cron',
+  '#ff8800': 'color',
+  '404': 'http',
+  'a%20b%E0%B8%81': 'url-enc',
+  'SGVsbG8gV29ybGQ=': 'base64',
+  'password': '', 'kubectl': '', 'hello world': '', '': '', '{not json': '',
+};
+for (const [text, want] of Object.entries(smart)) t(`spDetect(${JSON.stringify(text).slice(0, 40)})`, () => assert.equal(run(`(spDetect(${JSON.stringify(text)})[0]||{}).kind||''`), want));
+t('spDetect: JSON also offers JSON → Type, an ID with a bad check digit is not an ID', () => {
+  assert.deepEqual(run(`spDetect('{"a":1}').map(d=>d.kind)`), ['json', 'json2type']);
+  assert.ok(!run(`spDetect('1234567890122').map(d=>d.kind)`).includes('thai-id'));
 });
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

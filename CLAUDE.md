@@ -13,7 +13,7 @@ Live: https://devgreenpink.github.io/dev-utility-toolkit/
 Open `index.html` directly in a browser, or serve it with VS Code Live Server. No build or install step needed.
 
 `node tests/tools.test.mjs` self-checks the pure converters and parsers (BAHTTEXT / Thai ID in
-`thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`) by loading the tool files into one
+`thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`, smart paste `spDetect` in `home.js`) by loading the tool files into one
 `vm` context, the same way the page loads them. Keep new parsing logic in pure functions so it can be
 covered there.
 
@@ -35,6 +35,11 @@ The app is a single HTML page with a few companion files:
     `REF_DOCS[id] = {placeholder, dialects?, items:[{g, t, b, bc, s, d, fix, tip, code, lang, k}]}` and the
     tab holds `<div class="ref-tool" id="ref-<id>">`; `TAB_INIT` calls `refInit(id)`. Backticks in
     `d`/`fix`/`tip` render as inline code. `refFocus(id, query)` jumps to a tab with a search filled in.
+  - `tools/home.js` — the home tab (default for a first visit): one box that searches tools or, via
+    smart paste, detects what was pasted and opens the tool that understands it with the input filled.
+    `SP_RULES` = `[kind, label, test]` (order = priority), `SP_OPEN[kind]` = `[tool label, open(text)]`;
+    the pure `spDetect(text)` also feeds the Ctrl+K palette. Recent / favorites / all-tools lists are
+    built from the sidebar nav, so a new tool shows up there with no extra wiring.
   - `init.js` — the `DOMContentLoaded` init; loads last.
   - A file's top-level code may only *call* functions from files loaded before it (calls inside functions/handlers are fine — they run after every file has loaded). A new file goes in both `index.html` and `sw.js` `STATIC_ASSETS`.
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
@@ -50,6 +55,9 @@ Adding a new tool requires four things:
 2. A `<div class="nav-item" data-tab="newtool-tab" onclick="openTab(event,'newtool-tab')">` in the sidebar nav
 3. An entry in `TAB_META` in `core.js`
 4. Its logic in `assets/js/tools/newtool.js`, as a `<script defer>` before `init.js` in `index.html` and in `sw.js` `STATIC_ASSETS`
+
+Its text inputs are remembered automatically (see State persistence). Optionally add a smart paste rule in
+`home.js` if the tool has a recognisable input.
 
 Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`, not in the
 `DOMContentLoaded` init — it runs once on the tab's first open. All `<script>` tags are `defer`
@@ -68,6 +76,13 @@ Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`
 - `esan-devtools-tab` — last active tab id
 - `esan-devtools-navsearch` — last sidebar search query
 - `esan-devtools-favorites` — favorited tool ids (see Favorites below)
+- `esan-devtools-recent` — last 8 opened tool ids, shown on the home tab
+- `esan-devtools-remember` — `0` when the Settings switch "จำข้อมูลที่กรอกไว้" is off (unset = on)
+- `esan-devtools-in:<element id>` — last value of every `textarea`/text/number `input` with an id inside a
+  `.tab-content`, restored on load by `initRememberedInputs()` (core.js), which replays the field's `input`
+  event so outputs come back too. Seven older fields keep their pre-v2 keys (`INPUT_LEGACY_KEYS`, e.g.
+  `esan-devtools-sql-last`). Never saved: `INPUT_NEVER` (JWT token/secret, K8s Secret, mirror fields) and
+  any `*-search` / `ref-q-*` box. "ล้างข้อมูลที่จำไว้" and turning the switch off drop these and the recent list.
 
 ### Favorites store
 
