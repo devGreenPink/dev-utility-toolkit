@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const ctx = vm.createContext({ console, Intl, BigInt, atob, TextDecoder });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home']) {
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -154,12 +154,33 @@ const smart = {
   '404': 'http',
   'a%20b%E0%B8%81': 'url-enc',
   'SGVsbG8gV29ybGQ=': 'base64',
+  'pipeline {\n  agent any\n  stages {\n    stage(\'Build\') { steps { sh \'mvn package\' } }\n  }\n}': 'jenkinsfile',
+  "@Library('shop-lib@main') _\nbuildQuarkus(app: 'order-api')": 'jenkinsfile',
+  'FROM eclipse-temurin:21-jre\nCOPY target/quarkus-app/ /app/\nENTRYPOINT ["java", "-jar", "/app/quarkus-run.jar"]': 'dockerfile',
   'password': '', 'kubectl': '', 'hello world': '', '': '', '{not json': '',
 };
 for (const [text, want] of Object.entries(smart)) t(`spDetect(${JSON.stringify(text).slice(0, 40)})`, () => assert.equal(run(`(spDetect(${JSON.stringify(text)})[0]||{}).kind||''`), want));
 t('spDetect: JSON also offers JSON → Type, an ID with a bad check digit is not an ID', () => {
   assert.deepEqual(run(`spDetect('{"a":1}').map(d=>d.kind)`), ['json', 'json2type']);
   assert.ok(!run(`spDetect('1234567890122').map(d=>d.kind)`).includes('thai-id'));
+});
+
+// ── LINE EXPLORER DATA ── every annotated file is well formed and explains something
+t('explorer files: unique ids, a group, [code, note] lines, at least one note', () => {
+  for (const name of ['K8S_MANIFESTS', 'JK_FILES']) {
+    const files = run(name);
+    assert.ok(files.length > 5, name);
+    assert.equal(new Set(files.map(f => f.id)).size, files.length, name + ' ids');
+    for (const f of files) {
+      assert.ok(f.g && f.label && f.lang && f.intro, f.id);
+      assert.ok(f.lines.every(l => Array.isArray(l) && l.length === 2 && typeof l[0] === 'string' && typeof l[1] === 'string'), f.id);
+      assert.ok(f.lines.some(l => l[1]), f.id + ' has no note');
+    }
+  }
+});
+t('flow nodes and reference cards have what the renderers read', () => {
+  for (const name of ['JK_FLOW', 'GW_NODES']) for (const n of run(name)) assert.ok(n.id && n.icon && n.t && n.d && n.err.length, name + ' ' + n.id);
+  for (const id of ['k8s', 'jenkins', 'gateway']) for (const it of run(`REF_DOCS.${id}.items`)) assert.ok(it.g && it.t, id + ' ' + it.t);
 });
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

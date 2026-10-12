@@ -31,10 +31,16 @@ The app is a single HTML page with a few companion files:
   - `tools/<tool>.js` — one file per tool (`cheatsheets.js` holds kubectl/Linux/Git/CLI cheatsheets and
     the Linux folder view, which share `renderCmdList`).
   - `tools/refdocs.js` — shared renderer for the knowledge tabs (SQL & System Catalog, DB2 Error Codes,
-    Java Exceptions / Internals, Docker & K8s, Request Path, NgRx). Each data file registers
+    Java Exceptions / Internals, Docker & K8s, Request Path, Jenkins CI/CD, NgRx). Each data file registers
     `REF_DOCS[id] = {placeholder, dialects?, items:[{g, t, b, bc, s, d, fix, tip, code, lang, k}]}` and the
     tab holds `<div class="ref-tool" id="ref-<id>">`; `TAB_INIT` calls `refInit(id)`. Backticks in
     `d`/`fix`/`tip` render as inline code. `refFocus(id, query)` jumps to a tab with a search filled in.
+    It also holds two shared widgets: `yxInit(rootId, files, cur)` — the line-by-line file explorer
+    (`files` = `[{id, g, label, lang, intro, lines:[[code, note]]}]`, used by `K8S_MANIFESTS` in
+    `k8s-ref.js` and `JK_FILES` in `jenkins.js`) — and `flowInit(rootId, nodes, cur, opt)` — the clickable
+    step chain (`GW_NODES` in `gateway.js`, `JK_FLOW` in `jenkins.js`).
+    Example content uses made-up names (`order-api`, namespace `shop`, `registry.example.com`) and fake
+    values (`changeme`); never real project names, hosts or credentials.
   - `tools/home.js` — the home tab (default for a first visit): one box that searches tools or, via
     smart paste, detects what was pasted and opens the tool that understands it with the input filled.
     `SP_RULES` = `[kind, label, test]` (order = priority), `SP_OPEN[kind]` = `[tool label, open(text)]`;
@@ -123,7 +129,7 @@ them on a tool's first use, so a first visit downloads only the app. `highlightC
 highlight.js by itself; anything else waits on `loadLib(...)` (in `TAB_INIT` or before first use) and
 falls back to plain text if the CDN fails.
 
-- **highlight.js 11.9.0** (+ typescript/java/properties/sql/nginx/dockerfile) — code blocks
+- **highlight.js 11.9.0** (+ typescript/java/properties/sql/nginx/dockerfile/groovy) — code blocks
 - **CodeMirror 5.65.16** — RxJS Playground editor (loaded when the RxJS tab opens)
 - **RxJS 7.8.1** — RxJS Playground runtime
 - **jsdiff 5.1.0** (`diff.min.js` from cdnjs) — Text/JSON diff

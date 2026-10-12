@@ -363,6 +363,9 @@
             <div class="nav-item" data-tab="gateway-tab" onclick="openTab(event, 'gateway-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-network"/></svg></span> Request Path
             </div>
+            <div class="nav-item" data-tab="jenkins-tab" onclick="openTab(event, 'jenkins-tab')">
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-workflow"/></svg></span> Jenkins CI/CD
+            </div>
             <div class="nav-item" data-tab="kubectl-tab" onclick="openTab(event, 'kubectl-tab')">
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-ship-wheel"/></svg></span> kubectl Cheatsheet
             </div>
@@ -4909,7 +4912,7 @@ self.addEventListener('fetch', e => {
         <!-- K8SREF -->
         <div id="k8sref-tab" class="tab-content">
           <section class="card">
-            <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> อ่าน manifest ทีละบรรทัด</div>
+            <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> อ่านไฟล์ทีละบรรทัด: manifest, mount ไฟล์, Dockerfile, compose, Helm</div>
             <div id="k8s-explorer"></div>
           </section>
           <div class="ref-tool" id="ref-k8s"></div>
@@ -4920,6 +4923,17 @@ self.addEventListener('fetch', e => {
           <p class="tool-lead">request หนึ่งครั้งวิ่งผ่านหลายชั้นก่อนถึงแอป แต่ละชั้นพังได้ด้วยอาการต่างกัน · กดแต่ละกล่องเพื่อดูหน้าที่และอาการที่เจอบ่อย</p>
           <div id="gw-flow"></div>
           <div class="ref-tool" id="ref-gateway"></div>
+        </div>
+
+        <!-- JENKINS -->
+        <div id="jenkins-tab" class="tab-content">
+          <p class="tool-lead">เส้นทางจาก git push ถึง Pod ใหม่บน Kubernetes: Jenkins build และส่ง image ส่วน CD แก้ tag ใน repo manifest แล้วให้ ArgoCD sync · กดแต่ละขั้นเพื่อดูว่าพังบ่อยตรงไหน</p>
+          <div id="jk-flow"></div>
+          <section class="card">
+            <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> อ่าน Jenkinsfile ทีละบรรทัด</div>
+            <div id="jk-explorer"></div>
+          </section>
+          <div class="ref-tool" id="ref-jenkins"></div>
         </div>
 
         <!-- CLICHEAT -->
@@ -5178,6 +5192,7 @@ self.addEventListener('fetch', e => {
     <script defer src="assets/js/tools/thai-tools.js"></script>
     <script defer src="assets/js/tools/k8s-ref.js"></script>
     <script defer src="assets/js/tools/gateway.js"></script>
+    <script defer src="assets/js/tools/jenkins.js"></script>
     <script defer src="assets/js/tools/ngrx.js"></script>
     <script defer src="assets/js/tools/home.js"></script>
     <script defer src="assets/js/init.js"></script>

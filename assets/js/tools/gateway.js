@@ -23,26 +23,6 @@ const GW_NODES=[
   err:['500 = error ในแอป ดู log ของ Pod','redirect ไป http แทน https = แอปไม่ได้อ่าน X-Forwarded-Proto (Quarkus: `quarkus.http.proxy.proxy-address-forwarding=true`)'],
   code:'kubectl logs -f deploy/order-api -n shop\nkubectl exec -it deploy/order-api -n shop -- curl -s localhost:8080/q/health'},
 ];
-let _gwCur='kong';
-function gwInit(){
-  const root=document.getElementById('gw-flow');
-  if(!root)return;
-  root.innerHTML=`<ol class="gw-chain" aria-label="เส้นทางของ request">${GW_NODES.map((n,i)=>
-    `<li><button type="button" class="gw-node" data-n="${n.id}" aria-pressed="false" onclick="gwShow('${n.id}')"><span class="gw-ic">${ic(n.icon)}</span><span class="gw-t">${escHtml(n.t)}</span><span class="gw-s">${escHtml(n.s)}</span></button>${i<GW_NODES.length-1?`<span class="gw-arrow" aria-hidden="true">${ic('chevrons-right')}</span>`:''}</li>`).join('')}</ol>
-  <div class="gw-detail card" id="gw-detail" aria-live="polite"></div>`;
-  gwShow(_gwCur);
-}
-function gwShow(id){
-  const n=GW_NODES.find(x=>x.id===id);
-  if(!n)return;
-  _gwCur=id;
-  document.querySelectorAll('.gw-node').forEach(b=>{const on=b.dataset.n===id;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
-  document.getElementById('gw-detail').innerHTML=`<div class="card-title">${ic(n.icon)} ${escHtml(n.t)}</div><p class="ref-desc">${refInline(n.d)}</p>`
-    +`<div class="ref-fix"><div class="ref-fix-h gw-err-h">${ic('triangle-alert')} อาการที่เจอบ่อยที่ชั้นนี้</div><ul>${n.err.map(e=>`<li>${refInline(e)}</li>`).join('')}</ul></div>`
-    +(n.code?refCodeBlock(n.code,'bash'):'');
-  highlightCode('#gw-detail pre code');
-}
-
 REF_DOCS.gateway={
   placeholder:'ค้นหา... เช่น round robin, strip-path, try_files, 504, proxy_pass',
   lang:'nginx',

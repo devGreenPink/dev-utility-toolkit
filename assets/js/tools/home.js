@@ -7,6 +7,8 @@ const SP_RULES=[
   ['stacktrace','Java stack trace',t=>/\n\s*at\s+[\w$.<>\/-]+\([^)]*\)/.test(t)||/^(Caused by:|Exception in thread )/m.test(t)],
   ['k8s-secret','Kubernetes Secret',t=>/^\s*kind:\s*Secret\b/m.test(t)&&/^\s*(data|stringData):/m.test(t)],
   ['k8s-yaml','Kubernetes manifest',t=>/^apiVersion:\s*\S+/m.test(t)&&/^kind:\s*\w+/m.test(t)&&!/^\s*kind:\s*Secret\b/m.test(t)],
+  ['jenkinsfile','Jenkinsfile',t=>/^\s*@Library\(/m.test(t)||/^\s*(pipeline|node)\s*(\(.*\))?\s*\{/m.test(t)&&/\bstages?\s*[({]/.test(t)],
+  ['dockerfile','Dockerfile',t=>/^FROM\s+\S+/im.test(t)&&/^(RUN|COPY|ENTRYPOINT|CMD|WORKDIR)\s/im.test(t)],
   ['json','JSON',t=>/^[[{]/.test(t)&&spIsJson(t)],
   ['sql-java','SQL ใน Java / MyBatis',t=>/(StringBuilder|\.append\s*\(|"""|@Query|prepareStatement|<(select|insert|update|delete)\b)/i.test(t)&&/\b(select|insert|update|delete)\b/i.test(t)],
   ['sql','SQL',t=>/^\s*(select|insert|update|delete|with|merge)\b/i.test(t)],
@@ -29,7 +31,14 @@ const SP_OPEN={
   jwt:['JWT Decoder',t=>spFill('jwt-tab','jwt-input',t.replace(/^Bearer\s+/,''))],
   stacktrace:['Stack Trace Analyzer',t=>spFill('stacktrace-tab','st-input',t,()=>stAnalyze())],
   'k8s-secret':['K8s Secret Decoder',t=>spFill('k8s-secret-tab','k8s-input',t,()=>decodeK8sSecret())],
-  'k8s-yaml':['Docker & K8s',t=>refFocus('k8s',(t.match(/^kind:\s*(\w+)/m)||[])[1]||'')],
+  'k8s-yaml':['Docker & K8s',t=>{
+    const kind=(t.match(/^kind:\s*(\w+)/m)||[])[1]||'';
+    const f=K8S_MANIFESTS.find(x=>x.lines.some(l=>l[0]==='kind: '+kind)); // the annotated file of the same kind
+    spExplorer('k8sref-tab','k8s-explorer',f&&f.id);
+    refFocus('k8s',kind);
+  }],
+  jenkinsfile:['Jenkins CI/CD',t=>spExplorer('jenkins-tab','jk-explorer',/@Library\(/.test(t)&&!/pipeline\s*\{/.test(t)?'lib-use':'ci')],
+  dockerfile:['Docker & K8s',t=>spExplorer('k8sref-tab','k8s-explorer',/nginx/i.test(t)?'nginx':/quarkus-micro/i.test(t)?'docker-native':/openjdk|run-java/i.test(t)?'docker-jvm':'docker')],
   json:['JSON Tools',t=>spFill('json-tab','json-input',t,()=>formatJSON(4))],
   json2type:['JSON → Type',t=>spFill('json2type-tab','j2t-input',t,()=>j2tConvert())],
   'sql-java':['SQL Parser',t=>spFill('sql-tab','sql-input',t,()=>convertSQL())],
@@ -86,6 +95,12 @@ function spFill(tab,id,value,after){
   el.dispatchEvent(new Event('input',{bubbles:true})); // live tools react and the value is remembered
   if(after)after();
   el.focus({preventScroll:true});
+}
+// open a reference tab on one of its annotated files
+function spExplorer(tab,rootId,fileId){
+  openTab(null,tab);
+  if(fileId)yxShow(rootId,fileId);
+  document.getElementById(rootId)?.scrollIntoView({block:'start'});
 }
 function spOpen(kind,text){const o=SP_OPEN[kind];if(o)o[1](text);}
 // one box: a pasted value opens the tool that understands it, a short word searches the tools

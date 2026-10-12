@@ -32,8 +32,9 @@ const TAB_META = {
   'javaex-tab': { title: 'Java Exceptions', sub: 'exception ที่เจอบ่อยใน Java / Quarkus / Hibernate และวิธีแก้' },
   'javaint-tab': { title: 'Java Internals', sub: 'compile vs runtime · JVM memory · annotation · transaction' },
   'ngrx-tab': { title: 'NgRx / Redux', sub: 'Action · Reducer · Selector · Effect แบบเห็นภาพทีละขั้น' },
-  'k8sref-tab': { title: 'Docker & K8s', sub: 'อ่าน manifest ทีละบรรทัด · แนวคิดหลัก · แก้ปัญหา Pod' },
+  'k8sref-tab': { title: 'Docker & K8s', sub: 'ไฟล์ตัวอย่างอ่านทีละบรรทัด · mount ไฟล์ · Helm · ArgoCD · แก้ปัญหา Pod' },
   'gateway-tab': { title: 'Request Path', sub: 'Browser → Load Balancer → Kong → Service → Pod · nginx' },
+  'jenkins-tab': { title: 'Jenkins CI/CD', sub: 'Jenkinsfile ทีละบรรทัด · shared library · CD แบบ GitOps · แก้ปัญหา pipeline' },
   'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
   'home-tab': { title: 'หน้าแรก', sub: 'วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด' },
   'esan-agent-tab': { title: 'ESAN AI AGENT', sub: 'Claude Code plugin · ติดตั้ง · อัปเดต · เปิดใช้งานที่ localhost:4567 บนเครื่องตัวเอง' },
@@ -136,11 +137,17 @@ function accentVars(hex,surface){
   return{'--accent':hex,'--accent-fg':fg,'--on-accent':contrast(hex,'#ffffff')>=contrast(hex,INK)?'#ffffff':INK,
     '--accent-glow':`rgba(${r},${g},${b},${dark?.3:.2})`,'--btn-primary-bg':bg,'--btn-primary-text':text};
 }
+// --surface2 is a constant per theme and never depends on the accent, so it is read once per theme;
+// reading it on every accent change forced a whole-page style recalc each time (the picker lagged)
+const _surfaceOf={};
+function themeSurface(){
+  const k=document.body.getAttribute('data-theme')||'';
+  return _surfaceOf[k]||(_surfaceOf[k]=getComputedStyle(document.body).getPropertyValue('--surface2').trim());
+}
 function applyAccent(hex){
   const s=document.body.style;
-  ACCENT_VARS.forEach(v=>s.removeProperty(v));
-  if(!hex)return;
-  const surface=getComputedStyle(document.body).getPropertyValue('--surface2').trim();
+  if(!hex){ACCENT_VARS.forEach(v=>s.removeProperty(v));return;}
+  const surface=themeSurface();
   const vars=accentVars(hex,surface);
   console.assert(contrast(vars['--accent-fg'],surface)>=4.5&&contrast(vars['--btn-primary-bg'],vars['--btn-primary-text'])>=4.5,'accent contrast below 4.5:1',hex);
   Object.entries(vars).forEach(([k,v])=>s.setProperty(k,v));
@@ -154,8 +161,19 @@ function renderThemePickers(){
       `<button type="button" class="accent-dot" role="radio" aria-checked="false" data-accent="${id}" style="--dot:${light}" title="${name}" aria-label="${name}" onclick="setAccent('${id}')"></button>`).join('')
       +'<span class="accent-dot accent-custom" data-accent="custom" title="กำหนดเอง"><input type="color" id="accent-custom-input" aria-label="สีเน้นกำหนดเอง"></span>';
     const ci=document.getElementById('accent-custom-input');
-    // live while dragging in the native picker; no view transition per tick
-    ci.addEventListener('input',()=>{theme.id='mac';theme.accent=ci.value.toLowerCase();saveTheme();applyTheme();});
+    // live while dragging: the picker fires several inputs per frame, so only the accent changes,
+    // once per frame; saving and the full theme pass wait for the picker to close
+    let raf=0;
+    ci.addEventListener('input',()=>{
+      if(raf)return;
+      raf=requestAnimationFrame(()=>{
+        raf=0;
+        const fromPreset=theme.id!=='mac';
+        theme.id='mac';theme.accent=ci.value.toLowerCase();
+        if(fromPreset)applyTheme();else{applyAccent(theme.accent);syncSettingsUI();}
+      });
+    });
+    ci.addEventListener('change',()=>{theme.id='mac';theme.accent=ci.value.toLowerCase();saveTheme();applyTheme();});
   }
   const pr=document.getElementById('preset-row');
   if(pr)pr.innerHTML=PRESETS.map(([id,name,sw])=>
@@ -436,8 +454,9 @@ const TAB_INIT={
   'db2err-tab':()=>refInit('db2err'),
   'javaex-tab':()=>refInit('javaex'),
   'javaint-tab':()=>refInit('javaint'),
-  'k8sref-tab':()=>{k8sInit();refInit('k8s');loadLib('hljs').then(()=>{if(_k8sCur)k8sShow(_k8sCur);});},
-  'gateway-tab':()=>{gwInit();refInit('gateway');},
+  'k8sref-tab':()=>{yxInit('k8s-explorer',K8S_MANIFESTS,'deploy');refInit('k8s');},
+  'gateway-tab':()=>{flowInit('gw-flow',GW_NODES,'kong',{label:'เส้นทางของ request',errLabel:'อาการที่เจอบ่อยที่ชั้นนี้'});refInit('gateway');},
+  'jenkins-tab':()=>{flowInit('jk-flow',JK_FLOW,'ci',{label:'ขั้นของ CI/CD',errLabel:'พังบ่อยที่ขั้นนี้',lang:'groovy'});yxInit('jk-explorer',JK_FILES,'ci');refInit('jenkins');},
   'ngrx-tab':()=>{ngrxInit();refInit('ngrx');},
   'clicheat-tab':()=>cliInit(),
   'thai-tab':()=>thaiInit(),
@@ -689,7 +708,7 @@ function copyArea(id){const el=document.getElementById(id);if(el)copyText(el.val
 // ── LAZY CDN LIBS ── fetched on a tool's first use, so the first visit only downloads the app itself
 const CDN='https://cdnjs.cloudflare.com/ajax/libs/';
 const LIBS={ // the first file is the core; the rest need it and load after it in parallel
-  hljs:['highlight.js/11.9.0/highlight.min.js',...['typescript','java','properties','sql','nginx','dockerfile'].map(l=>`highlight.js/11.9.0/languages/${l}.min.js`)],
+  hljs:['highlight.js/11.9.0/highlight.min.js',...['typescript','java','properties','sql','nginx','dockerfile','groovy'].map(l=>`highlight.js/11.9.0/languages/${l}.min.js`)],
   diff:['jsdiff/5.1.0/diff.min.js'],
   rxjs:['rxjs/7.8.1/rxjs.umd.min.js'],
   codemirror:['codemirror/5.65.16/codemirror.min.js','codemirror/5.65.16/codemirror.min.css','codemirror/5.65.16/theme/dracula.min.css',
