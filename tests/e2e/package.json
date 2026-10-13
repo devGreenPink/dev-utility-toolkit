@@ -1,0 +1,13 @@
+{
+  "name": "esan-devtools-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Browser checks for อีสาน DevTools (the app itself has no build step and no dependencies)",
+  "scripts": {
+    "test": "node run.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "4.14.0",
+    "playwright": "1.64.0"
+  }
+}

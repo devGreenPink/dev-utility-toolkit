@@ -61,7 +61,7 @@ function formatJSON(sp){
     refreshJsonTree();runJsonPath();
   }catch(e){
     renderJsonError(e, txt.value, 'json-error');
-    showToast('Invalid JSON ❌');
+    showToast('Invalid JSON','err');
   }
 }
 function formatJSONSplit(sp){
@@ -73,7 +73,7 @@ function formatJSONSplit(sp){
     onJsonSplitInput();
   }catch(e){
     renderJsonError(e, txt.value, 'json-split-error');
-    showToast('Invalid JSON ❌');
+    showToast('Invalid JSON','err');
   }
 }
 function clearJSON(){
@@ -173,14 +173,14 @@ function renderJsonError(error, jsonText, elementId) {
     }
     html = `
       <div class="json-error-card">
-        <div class="json-error-title">⚠️ JSON รูปแบบไม่ถูกต้อง (บรรทัดที่ ${lineNum}, คอลัมน์ที่ ${colNum})</div>
+        <div class="json-error-title">${ic('triangle-alert')} JSON รูปแบบไม่ถูกต้อง (บรรทัดที่ ${lineNum}, คอลัมน์ที่ ${colNum})</div>
         <div class="json-error-context">${contextHtml}</div>
       </div>
     `;
   } else {
     html = `
       <div class="json-error-card">
-        <div class="json-error-title">⚠️ JSON รูปแบบไม่ถูกต้อง</div>
+        <div class="json-error-title">${ic('triangle-alert')} JSON รูปแบบไม่ถูกต้อง</div>
         <div style="font-family:var(--mono); font-size:.76rem; color:var(--text); margin-top: 4px;">${escHtml(error.message)}</div>
       </div>
     `;
@@ -200,7 +200,7 @@ function refreshJsonTree(){
     outEl.appendChild(tree);
     const keys=countKeys(obj);
     statsEl.textContent=`${keys.total} nodes · depth ${keys.depth}`;
-  }catch(e){outEl.innerHTML=`<span style="color:var(--danger);">⚠ ${escHtml(e.message)}</span>`;statsEl.textContent='';}
+  }catch(e){outEl.innerHTML=`<span style="color:var(--danger);">${ic('triangle-alert')} ${escHtml(e.message)}</span>`;statsEl.textContent='';}
 }
 function countKeys(obj,d=0){
   if(obj===null||typeof obj!=='object')return{total:1,depth:d};
@@ -215,8 +215,8 @@ function buildTree(val,key,depth,isRoot){
   const isComplex=type==='object'||type==='array';
   const line=document.createElement('div');line.className='tree-line';
   if(isComplex){
-    const toggle=document.createElement('span');toggle.className='tree-toggle';toggle.textContent='▼';
-    toggle.onclick=function(){const ch=wrap.querySelector(':scope > .tree-children');const collapsed=ch.classList.toggle('collapsed');toggle.textContent=collapsed?'▶':'▼';};
+    const toggle=document.createElement('span');toggle.className='tree-toggle';toggle.innerHTML=ic('chevron-down');
+    toggle.onclick=function(){const ch=wrap.querySelector(':scope > .tree-children');toggle.classList.toggle('is-collapsed',ch.classList.toggle('collapsed'));};
     line.appendChild(toggle);
   }
   if(key!==null){const keyEl=document.createElement('span');keyEl.className='tree-key';keyEl.textContent=JSON.stringify(key)+':';line.appendChild(keyEl);}
@@ -246,8 +246,8 @@ function buildTree(val,key,depth,isRoot){
   }
   return wrap;
 }
-function jsonTreeExpandAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.remove('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.textContent='▼');}
-function jsonTreeCollapseAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.add('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.textContent='▶');}
+function jsonTreeExpandAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.remove('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.classList.remove('is-collapsed'));}
+function jsonTreeCollapseAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.add('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.classList.add('is-collapsed'));}
 
 // JSONPath
 function runJsonPath(){
@@ -259,7 +259,7 @@ function runJsonPath(){
     const obj=JSON.parse(document.getElementById('json-input').value);
     const results=jsonPathQuery(obj,path);
     el.textContent=results.length===1?JSON.stringify(results[0],null,2):JSON.stringify(results,null,2);
-  }catch(e){el.textContent='⚠ '+e.message;}
+  }catch(e){el.textContent=e.message;}
 }
 function jsonPathQuery(root,path){
   if(!path||path==='$')return[root];

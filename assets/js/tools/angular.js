@@ -1,75 +1,99 @@
 // ── ANGULAR LIFECYCLE ──
 const NG_HOOKS=[
   {id:'constructor',name:'constructor()',iface:null,phase:['create'],freq:'once',fires_on:['create'],
-   desc:'สร้าง instance ของ component — Angular inject dependencies ที่นี่ก่อนสิ่งอื่นทั้งหมด',
+   desc:'สร้าง instance ของ component: Angular inject dependencies ที่นี่ก่อนสิ่งอื่นทั้งหมด',
    when:['inject services ผ่าน DI','initialize ค่าเริ่มต้นที่ไม่ต้องการ DOM หรือ @Input'],
-   avoid:['เรียก HTTP requests — @Input ยังไม่พร้อม','เข้าถึง DOM — ยังไม่ render','logic ซับซ้อน — ย้ายไป ngOnInit'],
-   tip:'ใช้แค่ inject dependencies + assign ค่าง่ายๆ เท่านั้น',
-   code:'constructor(\n  private userService: UserService,\n  private router: Router\n) {\n  // inject เท่านั้น — ห้าม logic, HTTP call\n}'},
+   avoid:['เรียก HTTP requests: @Input ยังไม่พร้อม','เข้าถึง DOM: ยังไม่ render','logic ซับซ้อน: ย้ายไป ngOnInit'],
+   tip:'Angular 14+ ใช้ inject() ที่ field ได้เลย ไม่ต้องเขียน constructor',
+   code:'// แบบใหม่: inject() ที่ field\nprivate userService = inject(UserService);\nprivate router = inject(Router);\n\n// แบบเดิม: constructor injection\nconstructor(private http: HttpClient) {\n  // inject เท่านั้น · ห้าม logic, HTTP call\n}'},
   {id:'ngOnChanges',name:'ngOnChanges(changes)',iface:'OnChanges',phase:['create','update'],freq:'on-input-change',fires_on:['create','update'],
-   desc:'เรียกทุกครั้งที่ @Input property เปลี่ยน — รวมถึงครั้งแรกที่ create (ก่อน ngOnInit)',
+   desc:'เรียกทุกครั้งที่ @Input property เปลี่ยน: รวมถึงครั้งแรกที่ create (ก่อน ngOnInit)',
    when:['react ต่อการเปลี่ยน @Input','เปรียบเทียบ previousValue กับ currentValue','reset state เมื่อ @Input เปลี่ยน'],
-   avoid:['logic หนักโดยไม่ check firstChange','pass object/array แบบ mutate — reference เดิม Angular ตรวจไม่เจอ'],
+   avoid:['logic หนักโดยไม่ check firstChange','pass object/array แบบ mutate: reference เดิม Angular ตรวจไม่เจอ','component ที่ไม่มี @Input จะไม่ถูกเรียกเลย'],
    tip:"ใช้ changes['prop'].firstChange เพื่อแยก 'สร้างครั้งแรก' กับ 'update'",
-   code:"ngOnChanges(changes: SimpleChanges): void {\n  if (changes['userId'] && !changes['userId'].firstChange) {\n    // @Input เปลี่ยนหลัง init — โหลดข้อมูลใหม่\n    this.loadUser(changes['userId'].currentValue);\n  }\n}"},
+   code:"ngOnChanges(changes: SimpleChanges): void {\n  if (changes['userId'] && !changes['userId'].firstChange) {\n    // @Input เปลี่ยนหลัง init - โหลดข้อมูลใหม่\n    this.loadUser(changes['userId'].currentValue);\n  }\n}"},
   {id:'ngOnInit',name:'ngOnInit()',iface:'OnInit',phase:['create'],freq:'once',fires_on:['create'],
-   desc:'เรียกครั้งเดียวหลัง ngOnChanges ครั้งแรก — @Input พร้อม เหมาะที่สุดสำหรับ initialization',
+   desc:'เรียกครั้งเดียวหลัง ngOnChanges ครั้งแรก: @Input พร้อม เหมาะที่สุดสำหรับ initialization',
    when:['fetch data จาก API','subscribe to Observables','initialize component state โดยใช้ @Input'],
-   avoid:['เข้าถึง @ViewChild — DOM ยังไม่พร้อม','ใส่ logic ที่ต้องรู้ DOM'],
-   tip:'Best place สำหรับ initialization ทั้งหมด — ย้าย HTTP call จาก constructor มาที่นี่เสมอ',
-   code:"ngOnInit(): void {\n  // ✅ ที่ที่ดีที่สุดสำหรับ initialization\n  this.userId = this.route.snapshot.params['id'];\n  this.user$ = this.userService.getUser(this.userId).pipe(\n    takeUntil(this.destroy$)\n  );\n}"},
+   avoid:['เข้าถึง @ViewChild: DOM ยังไม่พร้อม (ยกเว้นประกาศ { static: true })','ใส่ logic ที่ต้องรู้ DOM'],
+   tip:'Best place สำหรับ initialization ทั้งหมด: ย้าย HTTP call จาก constructor มาที่นี่เสมอ',
+   code:"ngOnInit(): void {\n  // ที่ที่ดีที่สุดสำหรับ initialization\n  this.userId = this.route.snapshot.params['id'];\n  this.user$ = this.userService.getUser(this.userId).pipe(\n    takeUntil(this.destroy$)\n  );\n}"},
   {id:'ngDoCheck',name:'ngDoCheck()',iface:'DoCheck',phase:['update'],freq:'every-cd',fires_on:['create','update','cd'],
-   desc:'เรียกทุก Change Detection cycle — ใช้ detect การเปลี่ยนที่ Angular ตรวจไม่เจอเอง เช่น object mutate',
+   desc:'เรียกทุก Change Detection cycle: ใช้ detect การเปลี่ยนที่ Angular ตรวจไม่เจอเอง เช่น object mutate',
    when:['ต้องการ custom change detection','ตรวจ array/object ที่ mutate โดยไม่เปลี่ยน reference'],
-   avoid:['logic หนักทุกชนิด — runs ทุก click, keystroke, async event','ส่วนใหญ่ใช้ ngOnChanges แทนได้และดีกว่า'],
-   tip:'⚠️ hook ที่ run บ่อยที่สุด — ใส่แค่ early return + O(1) operation เท่านั้น',
-   code:'ngDoCheck(): void {\n  // ⚠️ ทำงานทุก CD cycle — ต้องเร็วมาก\n  if (this.items.length !== this.prevLength) {\n    this.prevLength = this.items.length;\n    this.recalculate(); // O(1) เท่านั้น!\n  }\n}'},
+   avoid:['logic หนักทุกชนิด: runs ทุก click, keystroke, async event','ส่วนใหญ่ใช้ ngOnChanges แทนได้และดีกว่า'],
+   tip:'hook ที่ run บ่อยที่สุด: ใส่แค่ early return + O(1) operation เท่านั้น',
+   code:'ngDoCheck(): void {\n  // ระวัง: ทำงานทุก CD cycle · ต้องเร็วมาก\n  if (this.items.length !== this.prevLength) {\n    this.prevLength = this.items.length;\n    this.recalculate(); // O(1) เท่านั้น!\n  }\n}'},
   {id:'ngAfterContentInit',name:'ngAfterContentInit()',iface:'AfterContentInit',phase:['create'],freq:'once',fires_on:['create'],
    desc:'เรียกครั้งเดียวหลัง Angular project content จาก parent (<ng-content>) เข้า component เสร็จ',
    when:['เข้าถึง @ContentChild / @ContentChildren','init logic ที่ต้องรอ projected content พร้อม'],
-   avoid:['component ที่ไม่มี <ng-content> — hook นี้ไม่มีประโยชน์'],
+   avoid:['component ที่ไม่มี <ng-content>: hook นี้ไม่มีประโยชน์'],
    tip:'Content = HTML ที่ parent ส่งมาผ่าน <ng-content> ไม่ใช่ template ของ component เอง',
-   code:'@ContentChild(TabHeaderComponent)\nheader!: TabHeaderComponent;\n\nngAfterContentInit(): void {\n  // ✅ projected content พร้อมแล้ว\n  this.header.setActive(true);\n}'},
+   code:'@ContentChild(TabHeaderComponent)\nheader!: TabHeaderComponent;\n\nngAfterContentInit(): void {\n  // projected content พร้อมแล้ว\n  this.header.setActive(true);\n}'},
   {id:'ngAfterContentChecked',name:'ngAfterContentChecked()',iface:'AfterContentChecked',phase:['update'],freq:'every-cd',fires_on:['create','update','cd'],
    desc:'เรียกทุก CD cycle หลัง Angular check projected content (<ng-content>) เสร็จ',
    when:['ต้องการ react หลัง content projection ถูก check และ update'],
-   avoid:['เปลี่ยน @ContentChild properties ที่ผูกกับ template — ExpressionChangedAfterItHasBeenCheckedError','logic หนัก — runs ทุก CD cycle'],
-   tip:'⚠️ ระวัง ExpressionChangedAfterItHasBeenCheckedError ถ้าเปลี่ยน binding ที่นี่',
-   code:'ngAfterContentChecked(): void {\n  // ⚠️ ทำงานทุก CD cycle หลัง check content\n  // ห้ามเปลี่ยน bound properties — ExpressionChangedError\n}'},
+   avoid:['เปลี่ยน @ContentChild properties ที่ผูกกับ template: ExpressionChangedAfterItHasBeenCheckedError','logic หนัก: runs ทุก CD cycle'],
+   tip:'ระวัง ExpressionChangedAfterItHasBeenCheckedError ถ้าเปลี่ยน binding ที่นี่',
+   code:'ngAfterContentChecked(): void {\n  // ระวัง: ทำงานทุก CD cycle หลัง check content\n  // ห้ามเปลี่ยน bound properties · ExpressionChangedError\n}'},
   {id:'ngAfterViewInit',name:'ngAfterViewInit()',iface:'AfterViewInit',phase:['create'],freq:'once',fires_on:['create'],
-   desc:'เรียกครั้งเดียวหลัง Angular render view ของ component และ child components เสร็จ — DOM พร้อมทั้งหมด',
+   desc:'เรียกครั้งเดียวหลัง Angular render view ของ component และ child components เสร็จ · DOM พร้อมทั้งหมด',
    when:['เข้าถึง @ViewChild / @ViewChildren','init third-party DOM libraries (Chart.js, maps, D3)','measure DOM element sizes'],
-   avoid:['ย้ายมาจาก ngOnInit เท่านั้น — ngOnInit DOM ยังไม่พร้อม'],
-   tip:'First place ที่ DOM พร้อม 100% — @ViewChild ทุกตัว accessible ที่นี่',
-   code:"@ViewChild('chart') chartRef!: ElementRef;\n\nngAfterViewInit(): void {\n  // ✅ DOM พร้อม 100% — เข้าถึง ViewChild ได้\n  this.chart = new Chart(\n    this.chartRef.nativeElement,\n    this.chartConfig\n  );\n}"},
+   avoid:['ย้ายมาจาก ngOnInit เท่านั้น: ngOnInit DOM ยังไม่พร้อม'],
+   tip:'First place ที่ DOM พร้อม 100%: @ViewChild ทุกตัว accessible ที่นี่',
+   code:"@ViewChild('chart') chartRef!: ElementRef;\n\nngAfterViewInit(): void {\n  // DOM พร้อม 100% - เข้าถึง ViewChild ได้\n  this.chart = new Chart(\n    this.chartRef.nativeElement,\n    this.chartConfig\n  );\n}"},
   {id:'ngAfterViewChecked',name:'ngAfterViewChecked()',iface:'AfterViewChecked',phase:['update'],freq:'every-cd',fires_on:['create','update','cd'],
    desc:'เรียกทุก CD cycle หลัง Angular check view ของ component และ child views เสร็จ',
-   when:['ต้องการ react หลัง view update เสร็จทุกครั้ง — ใช้น้อยมากในทางปฏิบัติ'],
-   avoid:['detectChanges() ที่นี่ — infinite loop','เปลี่ยน data binding — ExpressionChangedAfterItHasBeenCheckedError','heavy logic — runs บ่อยมาก'],
-   tip:'⚠️ Hook อันตรายที่สุด — ส่วนใหญ่ไม่ควรใช้ ถ้าต้องใช้ ให้ early return เสมอ',
-   code:'ngAfterViewChecked(): void {\n  // ⚠️ DANGER ZONE — ทำงานทุก CD cycle\n  // ห้ามเรียก detectChanges() — infinite loop\n  // ห้ามเปลี่ยน data binding — ExpressionChangedError\n}'},
+   when:['ต้องการ react หลัง view update เสร็จทุกครั้ง: ใช้น้อยมากในทางปฏิบัติ'],
+   avoid:['detectChanges() ที่นี่: infinite loop','เปลี่ยน data binding: ExpressionChangedAfterItHasBeenCheckedError','heavy logic: runs บ่อยมาก'],
+   tip:'Hook อันตรายที่สุด: ส่วนใหญ่ไม่ควรใช้ ถ้าต้องใช้ ให้ early return เสมอ',
+   code:'ngAfterViewChecked(): void {\n  // ระวัง: DANGER ZONE · ทำงานทุก CD cycle\n  // ห้ามเรียก detectChanges() · infinite loop\n  // ห้ามเปลี่ยน data binding · ExpressionChangedError\n}'},
   {id:'ngOnDestroy',name:'ngOnDestroy()',iface:'OnDestroy',phase:['destroy'],freq:'once',fires_on:['destroy'],
-   desc:'เรียกก่อน Angular ทำลาย component — cleanup ทุกอย่างที่นี่เพื่อป้องกัน memory leak',
+   desc:'เรียกก่อน Angular ทำลาย component: cleanup ทุกอย่างที่นี่เพื่อป้องกัน memory leak',
    when:['unsubscribe Observables','clearInterval / clearTimeout','remove event listeners','destroy third-party libraries'],
-   avoid:['ลืม implement — memory leak ทันที'],
-   tip:'ใช้ Subject + takeUntil pattern เพื่อ unsubscribe ทุก Observable ในคำสั่งเดียว',
-   code:'private destroy$ = new Subject<void>();\n\nngOnInit(): void {\n  interval(1000).pipe(\n    takeUntil(this.destroy$)\n  ).subscribe(t => this.tick = t);\n}\n\nngOnDestroy(): void {\n  // ✅ cleanup ทุกอย่าง — ป้องกัน memory leak\n  this.destroy$.next();\n  this.destroy$.complete();\n}'}
+   avoid:['ลืม implement: memory leak ทันที'],
+   tip:'Angular 16+: takeUntilDestroyed() และ DestroyRef ทำแทนได้โดยไม่ต้องเขียน ngOnDestroy',
+   code:'// Angular 16+: ไม่ต้องมี ngOnDestroy\nconstructor() {\n  interval(1000).pipe(takeUntilDestroyed())\n    .subscribe(t => this.tick = t);\n}\n\n// cleanup อื่นๆ\nprivate destroyRef = inject(DestroyRef);\nngOnInit(): void {\n  const id = setInterval(() => this.poll(), 5000);\n  this.destroyRef.onDestroy(() => clearInterval(id));\n}\n\n// แบบเดิม: Subject + takeUntil\nprivate destroy$ = new Subject<void>();\nngOnDestroy(): void {\n  this.destroy$.next();\n  this.destroy$.complete();\n}'},
+  {id:'afterNextRender',name:'afterNextRender()',iface:null,phase:['create'],freq:'once',fires_on:['create'],
+   desc:'Angular 17+: เรียกครั้งเดียวหลัง Angular render ลง DOM รอบถัดไปเสร็จ ใช้แทน ngAfterViewInit สำหรับงานที่ต้องแตะ DOM จริง และไม่ทำงานตอน SSR',
+   when:['init library ที่ต้องใช้ DOM (chart, map, editor)','วัดขนาด element ครั้งแรก'],
+   avoid:['แก้ state ที่ผูกกับ template: ทำใน ngOnInit หรือ signal แทน'],
+   tip:'เรียกใน constructor หรือ injection context เท่านั้น',
+   code:'constructor() {\n  afterNextRender(() => {\n    this.chart = new Chart(this.canvas().nativeElement, this.config);\n  });\n}'},
+  {id:'afterEveryRender',name:'afterEveryRender()',iface:null,phase:['update'],freq:'every-cd',fires_on:['create','update','cd'],
+   desc:'Angular 20+ (ก่อนหน้านี้ชื่อ afterRender): เรียกหลัง render ทุกครั้ง คล้าย ngAfterViewChecked แต่หลัง DOM ของทั้งแอปเสร็จ',
+   when:['sync DOM กับ library ภายนอกหลังทุกการเปลี่ยนแปลง'],
+   avoid:['งานหนัก: ทำงานทุกครั้งที่ render','แก้ state ที่ทำให้ render ใหม่: วนไม่จบ'],
+   tip:'ส่วนใหญ่ afterNextRender หรือ effect() ก็พอ',
+   code:'constructor() {\n  afterEveryRender(() => {\n    this.editor.layout();\n  });\n}'}
 ];
 
 const NG_SCENARIOS={
-  create: ['constructor','ngOnChanges','ngOnInit','ngDoCheck','ngAfterContentInit','ngAfterContentChecked','ngAfterViewInit','ngAfterViewChecked'],
-  update: ['ngOnChanges','ngDoCheck','ngAfterContentChecked','ngAfterViewChecked'],
-  cd:     ['ngDoCheck','ngAfterContentChecked','ngAfterViewChecked'],
+  create: ['constructor','ngOnChanges','ngOnInit','ngDoCheck','ngAfterContentInit','ngAfterContentChecked','ngAfterViewInit','ngAfterViewChecked','afterNextRender','afterEveryRender'],
+  update: ['ngOnChanges','ngDoCheck','ngAfterContentChecked','ngAfterViewChecked','afterEveryRender'],
+  cd:     ['ngDoCheck','ngAfterContentChecked','ngAfterViewChecked','afterEveryRender'],
   destroy:['ngOnDestroy']
 };
-const NG_PC={'create':'#22d3ee','update':'#fbbf24','destroy':'#f87171'};
-const NG_FC={'once':'#34d399','every-cd':'#f87171','on-input-change':'#fbbf24'};
-const NG_FL={'once':'เรียกครั้งเดียว','every-cd':'ทุก CD cycle ⚠️','on-input-change':'ทุกครั้งที่ @Input เปลี่ยน'};
+const NG_PC={'create':'var(--c-cyan)','update':'var(--c-yellow)','destroy':'var(--c-red)'};
+const NG_FC={'once':'var(--c-green)','every-cd':'var(--c-red)','on-input-change':'var(--c-yellow)'};
+const NG_FL={'once':'เรียกครั้งเดียว','every-cd':'ทุก CD cycle','on-input-change':'ทุกครั้งที่ @Input เปลี่ยน'};
 let ngTimer=null,ngQ='';
 
 function hlTS(code){return window.hljs?window.hljs.highlight(code,{language:'typescript'}).value:escHtml(code);}
 
-function initAngular(){renderNgTimeline();renderNgHooks();renderNgDetail(null);}
+// parent and child order on creation (drawn by dgInit in refdocs.js)
+const NG_DIAGRAMS=[
+ {id:'order',t:'ลำดับ parent กับ child',kind:'flow',
+  intro:'parent เริ่มก่อน แต่ AfterView ของ parent จบทีหลัง child เสมอ เพราะ view ของ parent ยังไม่ครบจนกว่า child ทุกตัวจะ render เสร็จ',
+  opt:{label:'ลำดับ hook ของ parent และ child ตอนสร้าง',errLabel:'ใช้อะไรได้ ณ จุดนี้',lang:'typescript'},
+  nodes:[
+   {id:'p1',icon:'layers',t:'Parent',s:'constructor → OnInit → DoCheck',d:'parent ได้ค่า @Input และ init ก่อน',err:['@Input ของ parent พร้อมใน ngOnInit','child ยังไม่ถูกสร้าง @ViewChild ยังเป็น undefined']},
+   {id:'p2',icon:'layers',t:'Parent',s:'AfterContentInit',d:'เนื้อหาที่ถูก project ผ่าน `<ng-content>` พร้อมแล้ว',err:['@ContentChild ใช้ได้']},
+   {id:'c',icon:'file-code',t:'Child',s:'constructor → … → AfterViewInit',d:'ระหว่างที่ parent render template ของตัวเอง child แต่ละตัวถูกสร้างและผ่าน hook ครบชุดของตัวเอง เรียงตามลำดับใน template',err:['child ได้ค่า @Input จาก parent แล้วใน ngOnChanges / ngOnInit']},
+   {id:'p3',icon:'layers',t:'Parent',s:'AfterViewInit',d:'มาหลัง child ทุกตัว render เสร็จ จึงเป็นจุดแรกที่ parent ใช้ @ViewChild ของ child ได้แน่นอน',err:['@ViewChild / @ViewChildren ใช้ได้','แก้ค่าที่ผูกกับ template ตรงนี้จะได้ ExpressionChangedAfterItHasBeenCheckedError']},
+   {id:'nr',icon:'zap',t:'afterNextRender',s:'หลัง DOM ทั้งหน้าเสร็จ',d:'Angular 17+: หลังทุก component render ลง DOM แล้ว เหมาะกับงานที่ต้องวัดหรือแตะ DOM จริง',err:['ไม่ทำงานตอน SSR','ต้องเรียกใน constructor / injection context']}]},
+];
+function initAngular(){dgInit('angular',NG_DIAGRAMS);renderNgTimeline();renderNgHooks();renderNgDetail(null);}
 
 function ngPB(p){return 'ng-pb-'+p;}
 function ngFB(f){return 'ng-fb-'+f.replace(/-/g,'-');}
@@ -96,7 +120,7 @@ function renderNgDetail(hook){
   const el=document.getElementById('ng-detail');
   if(!el)return;
   if(!hook){
-    el.innerHTML=`<div class="ng-detail-empty"><div class="ng-detail-empty-icon">🎬</div><div>กด <strong>▶ Simulate</strong> เพื่อดู hooks ที่ fire ตามลำดับ</div><div class="ng-detail-empty-sub">หรือ click hook ในแผนภูมิซ้ายเพื่อดูรายละเอียด</div></div>`;
+    el.innerHTML=`<div class="ng-detail-empty"><div class="ng-detail-empty-icon">${ic('play')}</div><div>กดปุ่ม <strong>จำลอง</strong> เพื่อดู hooks ที่ fire ตามลำดับ</div><div class="ng-detail-empty-sub">หรือ click hook ในแผนภูมิซ้ายเพื่อดูรายละเอียด</div></div>`;
     return;
   }
   el.innerHTML=`<div class="ng-detail-content">
@@ -107,10 +131,10 @@ function renderNgDetail(hook){
     ${hook.iface?`<span class="ng-iface-badge">implements ${hook.iface}</span>`:''}
   </div>
   <div class="ng-detail-desc">${hook.desc}</div>
-  ${hook.tip?`<div class="ng-detail-tip">💡 ${escHtml(hook.tip)}</div>`:''}
-  <div class="ng-detail-section"><div class="ng-detail-sec-title ng-sec-ok">✓ ใช้เมื่อ</div>${hook.when.map(w=>`<div class="ng-detail-item">• ${escHtml(w)}</div>`).join('')}</div>
-  ${hook.avoid.length?`<div class="ng-detail-section"><div class="ng-detail-sec-title ng-sec-no">✗ หลีกเลี่ยง</div>${hook.avoid.map(a=>`<div class="ng-detail-item ng-avoid-item">• ${escHtml(a)}</div>`).join('')}</div>`:''}
-  <div class="ng-detail-code-wrap"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>${hlTS(hook.code)}</code></pre></div>
+  ${hook.tip?`<div class="ng-detail-tip">${ic('lightbulb')} ${escHtml(hook.tip)}</div>`:''}
+  <div class="ng-detail-section"><div class="ng-detail-sec-title ng-sec-ok">${ic('check')} ใช้เมื่อ</div>${hook.when.map(w=>`<div class="ng-detail-item">• ${escHtml(w)}</div>`).join('')}</div>
+  ${hook.avoid.length?`<div class="ng-detail-section"><div class="ng-detail-sec-title ng-sec-no">${ic('x')} หลีกเลี่ยง</div>${hook.avoid.map(a=>`<div class="ng-detail-item ng-avoid-item">• ${escHtml(a)}</div>`).join('')}</div>`:''}
+  <div class="ng-detail-code-wrap"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">${ic('copy')} คัดลอก</button><pre class="rxjs-code"><code>${hlTS(hook.code)}</code></pre></div>
 </div>`;
 }
 
@@ -171,12 +195,12 @@ function renderNgHooks(){
   </div>
   <div class="rxjs-op-summary">${escHtml(h.desc)}</div>
   <div class="rxjs-op-when">
-    <span class="rxjs-when-ok">✓ ใช้เมื่อ</span>
+    <span class="rxjs-when-ok">${ic('check')} ใช้เมื่อ</span>
     ${h.when.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}
-    ${h.avoid.length?'<span class="rxjs-when-no">✗ หลีกเลี่ยง</span>'+h.avoid.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join(''):''}
+    ${h.avoid.length?'<span class="rxjs-when-no">'+ic('x')+' หลีกเลี่ยง</span>'+h.avoid.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join(''):''}
   </div>
-  ${h.tip?`<div class="ng-hook-tip">💡 ${escHtml(h.tip)}</div>`:''}
-  <details class="rxjs-details" onclick="event.stopPropagation()"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">code</span> <code class="rxjs-sig-code">${escHtml(h.name)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">⎘ copy</button><pre class="rxjs-code"><code>${hlTS(h.code)}</code></pre></div></details>
+  ${h.tip?`<div class="ng-hook-tip">${ic('lightbulb')} ${escHtml(h.tip)}</div>`:''}
+  <details class="rxjs-details" onclick="event.stopPropagation()"><summary class="rxjs-details-sum"><span class="rxjs-sig-lbl">code</span> <code class="rxjs-sig-code">${escHtml(h.name)}</code></summary><div class="rxjs-code-block"><button class="rxjs-copy-btn" onclick="event.stopPropagation();rxjsCopyCode(this)">${ic('copy')} คัดลอก</button><pre class="rxjs-code"><code>${hlTS(h.code)}</code></pre></div></details>
 </div>`).join('');
 }
 

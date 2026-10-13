@@ -74,8 +74,8 @@ function genLuhnCard(prefix){
   return(num+((10-(sum%10))%10)).replace(/(\d{4})(?=\d)/g,'$1-');
 }
 function genJuristicId(){
-  let n='0';for(let i=0;i<12;i++)n+=Math.floor(Math.random()*10);
-  return n.replace(/(\d)(\d{4})(\d{5})(\d{2})(\d)/,'$1-$2-$3-$4-$5');
+  // juristic IDs carry the same mod-11 check digit as citizen IDs (thai-tools.js)
+  return thaiIdRandom('0').replace(/(\d)(\d{4})(\d{5})(\d{2})(\d)/,'$1-$2-$3-$4-$5');
 }
 function genOneMock(){
   let id='';
@@ -126,7 +126,7 @@ function generateAll(){
   document.getElementById('bulk-output-area').style.display='none';
 }
 function clearMock(){
-  ['out-id','out-name','out-nickname','out-gender','out-dob','out-phone','out-email','out-uuid','out-province','out-zip','out-company','out-juristic','out-job','out-salary','out-credit'].forEach(id=>{document.getElementById(id).textContent='—';});
+  ['out-id','out-name','out-nickname','out-gender','out-dob','out-phone','out-email','out-uuid','out-province','out-zip','out-company','out-juristic','out-job','out-salary','out-credit'].forEach(id=>{document.getElementById(id).textContent='';});
   document.getElementById('out-card-type').textContent='';
   document.getElementById('bulk-output-area').style.display='none';
   document.getElementById('bulk-json-output').value='';
@@ -134,7 +134,7 @@ function clearMock(){
 function copyAllMock(){
   const g=id=>document.getElementById(id).textContent;
   const fields={บัตรประชาชน:g('out-id'),ชื่อนามสกุล:g('out-name'),ฉายา:g('out-nickname'),เพศ:g('out-gender'),วันเกิด:g('out-dob'),เบอร์โทร:g('out-phone'),อีเมล:g('out-email'),จังหวัด:g('out-province'),รหัสไปรษณีย์:g('out-zip'),บริษัท:g('out-company'),เลขนิติบุคคล:g('out-juristic'),ตำแหน่ง:g('out-job'),เงินเดือน:g('out-salary'),บัตรเครดิต:g('out-credit'),uuid:g('out-uuid')};
-  if(Object.values(fields).every(v=>v==='—')){showToast('กรุณาสุ่มข้อมูลก่อน');return;}
+  if(Object.values(fields).every(v=>!v)){showToast('กรุณาสุ่มข้อมูลก่อน');return;}
   copyText(JSON.stringify(fields,null,2));
 }
 function exportBulkJSON(){

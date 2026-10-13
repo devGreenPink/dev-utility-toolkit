@@ -1,19 +1,15 @@
 {
-  "name": "อีสาน DevTools",
-  "short_name": "DevTools",
+  "name": "อีสาน Dev Tools",
+  "short_name": "Dev Tools",
   "description": "Developer toolkit สำหรับนักพัฒนาไทย — 21 เครื่องมือในหน้าเดียว ทำงานใน browser ล้วน ไม่มี backend",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0f1117",
-  "theme_color": "#6366f1",
+  "background_color": "#1c1c1e",
+  "theme_color": "#1c1c1e",
   "lang": "th",
   "icons": [
-    {
-      "src": "assets/images/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "assets/images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ],
   "categories": ["developer", "productivity", "utilities"],
   "screenshots": []

@@ -9,7 +9,7 @@ function runRegex(){
   if(!patStr){hlEl.textContent=input;grEl.innerHTML='';cntEl.textContent='0 matches';return;}
   let regex;
   try{const f=flags.includes('g')?flags:flags+'g';regex=new RegExp(patStr,f);}
-  catch(e){errEl.textContent='⚠ '+e.message;hlEl.textContent=input;return;}
+  catch(e){errEl.textContent=e.message;hlEl.textContent=input;return;}
   const matches=[];let lastIndex=-1;
   const scanRe=new RegExp(patStr,flags.includes('g')?flags:flags+'g');let m;
   while((m=scanRe.exec(input))!==null){
@@ -26,7 +26,7 @@ function runRegex(){
     pos=match.index+match.length;
   }
   if(pos<input.length)html+=escHtml(input.slice(pos));
-  hlEl.innerHTML=html||'<span style="color:var(--text-dim)">— ไม่มีข้อความ —</span>';
+  hlEl.innerHTML=html||'<span style="color:var(--text-dim)">: ไม่มีข้อความ · </span>';
   if(!matches.length){grEl.innerHTML='<span style="color:var(--text-dim)">ไม่พบผลลัพธ์</span>';return;}
   let gHtml='';
   matches.slice(0,10).forEach((match,i)=>{

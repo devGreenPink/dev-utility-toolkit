@@ -1,0 +1,1269 @@
+<!-- mq-tab: loaded into #mq-tab on first open (openTab in core.js) -->
+
+          <div class="section-header">
+            <div class="json-view-toggle" id="mq-view" role="group" aria-label="หัวข้อ">
+              <button type="button" class="json-view-btn active" data-v="rabbit" aria-pressed="true" onclick="mqSwitchView('rabbit')"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg> RabbitMQ</button>
+              <button type="button" class="json-view-btn" data-v="redis" aria-pressed="false" onclick="mqSwitchView('redis')"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Redis</button>
+              <button type="button" class="json-view-btn" data-v="quarkus" aria-pressed="false" onclick="mqSwitchView('quarkus')"><svg class="i" aria-hidden="true"><use href="#i-coffee"/></svg> Quarkus</button>
+            </div>
+          </div>
+          <!-- ═══ RABBITMQ VIEW ═══ -->
+          <div id="mq-rabbit-view">
+
+            <!-- Core Concepts Grid -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> Core Entities: ส่วนประกอบหลักของ RabbitMQ</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-pink)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></div>
+                  <div class="mq-concept-name">Producer</div>
+                  <div class="mq-concept-desc">แอปที่ส่ง message เข้าระบบ: เหมือน<strong>ผู้ส่งจดหมาย</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg></div>
+                  <div class="mq-concept-name">Consumer</div>
+                  <div class="mq-concept-desc">แอปที่รับและประมวลผล message: เหมือน<strong>ผู้รับจดหมาย</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg></div>
+                  <div class="mq-concept-name">Queue</div>
+                  <div class="mq-concept-desc">คิวเก็บ message รอส่ง: เหมือน<strong>ตู้ไปรษณีย์</strong> message อยู่จนกว่า consumer จะดึงไป</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg></div>
+                  <div class="mq-concept-name">Exchange</div>
+                  <div class="mq-concept-desc">ตัวรับ message จาก producer แล้วกระจายไปยัง queue ตาม routing rules · เหมือน<strong>ไปรษณีย์กลาง</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></div>
+                  <div class="mq-concept-name">Binding</div>
+                  <div class="mq-concept-desc">การเชื่อม Exchange กับ Queue ด้วย routing key: เหมือน<strong>ที่อยู่บนซอง</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-radio"/></svg></div>
+                  <div class="mq-concept-name">Channel</div>
+                  <div class="mq-concept-desc">ช่องทางสื่อสารเสมือนใน Connection หนึ่ง: ประหยัด resource กว่าการเปิด Connection ใหม่ทุกครั้ง</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></div>
+                  <div class="mq-concept-name">Connection</div>
+                  <div class="mq-concept-desc">TCP connection จริงระหว่าง app กับ RabbitMQ broker: หนึ่ง Connection มีได้หลาย Channel</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-orange)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-house"/></svg></div>
+                  <div class="mq-concept-name">VHost</div>
+                  <div class="mq-concept-desc">Virtual Host: แยก namespace ของ exchange/queue ออกจากกัน เหมือน<strong>ห้องแยกในอาคาร</strong> เดียวกัน</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Exchange Types -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg> Exchange Types: 4 ประเภทการกระจาย message</div>
+              <div class="mq-exchange-tabs">
+                <button class="mq-ex-tab mq-ex-active" data-type="direct"  onclick="mqExTab(this,'direct')"><span class="dot dot-blue" aria-hidden="true"></span> Direct</button>
+                <button class="mq-ex-tab" data-type="fanout"  onclick="mqExTab(this,'fanout')"><span class="dot dot-green" aria-hidden="true"></span> Fanout</button>
+                <button class="mq-ex-tab" data-type="topic"   onclick="mqExTab(this,'topic')"><span class="dot dot-yellow" aria-hidden="true"></span> Topic</button>
+                <button class="mq-ex-tab" data-type="headers" onclick="mqExTab(this,'headers')"><span class="dot dot-purple" aria-hidden="true"></span> Headers</button>
+              </div>
+              <div id="mq-ex-detail">
+
+                <!-- Direct -->
+                <div class="mq-ex-panel" id="mq-ex-direct">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:var(--c-blue)">Direct Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-blue);border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.1)">point-to-point</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-blue)"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg> เหมือนส่งพัสดุ EMS: routing key ต้องตรงกัน 100% ถึงส่งถึง queue ปลายทาง</div>
+                      <div class="mq-ex-desc">Producer ระบุ <code>routingKey="order.created"</code> → Exchange ส่งเฉพาะ Queue ที่ binding key ตรงกัน queue อื่นไม่ได้รับ</div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Task queue</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Load balance workers</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Microservice events</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">order.created</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-blue);color:var(--c-blue);background:rgba(96,165,250,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">direct</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">order.created</span>
+                              <span class="mq-exv-tick"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-skip"></div>
+                            <div class="mq-exv-qbox mq-qbox-skip">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">order.updated</span>
+                              <span class="mq-exv-tick"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Fanout -->
+                <div class="mq-ex-panel mq-ex-hidden" id="mq-ex-fanout">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:var(--c-green)">Fanout Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.1)">broadcast</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-green)"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg> เหมือนประกาศเสียงตามสาย: ส่งไปทุก Queue ที่ bind ไว้ ไม่สนใจ routing key เลย</div>
+                      <div class="mq-ex-desc">Producer ส่ง 1 message → Exchange กระจายไปยังทุก Queue ที่ bind ไว้พร้อมกัน ไม่มีเงื่อนไข</div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Broadcast event</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Multi-system notification</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Cache invalidation</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">(any key)</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-green);color:var(--c-green);background:rgba(52,211,153,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">fanout</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">email service</span>
+                              <span class="mq-exv-tick"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">sms service</span>
+                              <span class="mq-exv-tick"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue C</span>
+                              <span class="mq-exv-binding">push service</span>
+                              <span class="mq-exv-tick"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Topic -->
+                <div class="mq-ex-panel mq-ex-hidden" id="mq-ex-topic">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:var(--c-yellow)">Topic Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-yellow);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.1)">pattern routing</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-yellow)"><svg class="i" aria-hidden="true"><use href="#i-newspaper"/></svg> เหมือนสมัครรับข่าวตามหัวข้อ: <code>*</code> แทน 1 word, <code>#</code> แทน 0 คำขึ้นไป</div>
+                      <div class="mq-ex-desc">Routing key รูปแบบ <code>word.word.word</code> เช่น <code>order.th.created</code><br>Queue subscribe ด้วย pattern เช่น <code>order.#</code> หรือ <code>*.th.*</code></div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Multi-tenant routing</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Microservice events</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Flexible subscription</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">order.th.created</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-yellow);color:var(--c-yellow);background:rgba(251,191,36,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">topic</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">order.#</span>
+                              <span class="mq-exv-tick"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">*.th.*</span>
+                              <span class="mq-exv-tick"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-skip"></div>
+                            <div class="mq-exv-qbox mq-qbox-skip">
+                              <span class="mq-exv-qname">Queue C</span>
+                              <span class="mq-exv-binding">payment.#</span>
+                              <span class="mq-exv-tick"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Headers -->
+                <div class="mq-ex-panel mq-ex-hidden" id="mq-ex-headers">
+                  <div class="mq-ex-body">
+                    <div class="mq-ex-info">
+                      <div class="mq-ex-head">
+                        <span class="mq-ex-title" style="color:var(--c-purple)">Headers Exchange</span>
+                        <span class="mq-ex-use-badge" style="color:var(--c-purple);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)">content-based</span>
+                      </div>
+                      <div class="mq-ex-analogy" style="border-left-color:var(--c-purple)"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> เหมือนกรองอีเมลด้วย label: match ตาม message headers แทน routing key</div>
+                      <div class="mq-ex-desc">Route ตาม headers เช่น <code>{"format":"pdf"}</code> ใช้ <code>x-match: all</code> (AND) หรือ <code>x-match: any</code> (OR) เหมาะกับ routing ซับซ้อน</div>
+                      <div class="mq-ex-tags">
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Content-based routing</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Complex conditions</span>
+                        <span class="mq-ex-tag"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> Multi-attribute filter</span>
+                      </div>
+                    </div>
+                    <div class="mq-ex-vis">
+                      <div class="mq-exv-stage">
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-pnode"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></div>
+                          <div class="mq-exv-nodelabel">Producer</div>
+                        </div>
+                        <div class="mq-exv-arr">
+                          <div class="mq-exv-arrline"></div>
+                          <div class="mq-exv-arrkey">format: pdf</div>
+                        </div>
+                        <div class="mq-exv-side">
+                          <div class="mq-exv-exnode" style="border-color:var(--c-purple);color:var(--c-purple);background:rgba(167,139,250,.08)">
+                            <div class="mq-exv-exname">Exchange</div>
+                            <div class="mq-exv-extype">headers</div>
+                          </div>
+                        </div>
+                        <div class="mq-exv-queues">
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-match"></div>
+                            <div class="mq-exv-qbox mq-qbox-match">
+                              <span class="mq-exv-qname">Queue A</span>
+                              <span class="mq-exv-binding">format=pdf</span>
+                              <span class="mq-exv-tick"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span>
+                            </div>
+                          </div>
+                          <div class="mq-exv-qrow">
+                            <div class="mq-exv-qline mq-qline-skip"></div>
+                            <div class="mq-exv-qbox mq-qbox-skip">
+                              <span class="mq-exv-qname">Queue B</span>
+                              <span class="mq-exv-binding">format=csv</span>
+                              <span class="mq-exv-tick"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Message Lifecycle Animation -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Message Lifecycle Animation: lifecycle ของ message</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" onclick="mqRunAnim('lifecycle')"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> เล่น Animation</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('lifecycle')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="mq-lifecycle-step">กดเล่นเพื่อเริ่ม</span>
+              </div>
+              <div class="mq-lifecycle-stage" id="mq-lifecycle-stage">
+                <div class="mq-lc-node mq-lc-producer" id="mq-lc-producer">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></div>
+                  <div class="mq-lc-label">Producer</div>
+                </div>
+                <div class="mq-lc-arrow" id="mq-lc-arr1">
+                  <div class="mq-lc-line"></div>
+                  <div class="mq-lc-msg" id="mq-lc-msg1"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg></div>
+                </div>
+                <div class="mq-lc-node mq-lc-exchange" id="mq-lc-exchange">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-shuffle"/></svg></div>
+                  <div class="mq-lc-label">Exchange</div>
+                </div>
+                <div class="mq-lc-arrow" id="mq-lc-arr2">
+                  <div class="mq-lc-line"></div>
+                  <div class="mq-lc-msg mq-lc-msg-hidden" id="mq-lc-msg2"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg></div>
+                </div>
+                <div class="mq-lc-node mq-lc-queue" id="mq-lc-queue">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg></div>
+                  <div class="mq-lc-label">Queue</div>
+                  <div class="mq-lc-queue-items" id="mq-lc-queue-items"></div>
+                </div>
+                <div class="mq-lc-arrow" id="mq-lc-arr3">
+                  <div class="mq-lc-line"></div>
+                  <div class="mq-lc-msg mq-lc-msg-hidden" id="mq-lc-msg3"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg></div>
+                </div>
+                <div class="mq-lc-node mq-lc-consumer" id="mq-lc-consumer">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg></div>
+                  <div class="mq-lc-label">Consumer</div>
+                </div>
+                <div class="mq-lc-arrow mq-lc-ack-arr" id="mq-lc-arr4">
+                  <div class="mq-lc-line mq-lc-ack-line"></div>
+                  <div class="mq-lc-ack-label" id="mq-lc-ack">ack <svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg></div>
+                </div>
+              </div>
+              <div class="mq-lc-steps">
+                <div class="mq-lc-step" id="mq-lcs-0">1. Producer สร้าง message และ publish ไปที่ Exchange</div>
+                <div class="mq-lc-step" id="mq-lcs-1">2. Exchange ตรวจ routing key และส่งไปยัง Queue ที่ match</div>
+                <div class="mq-lc-step" id="mq-lcs-2">3. Message นั่งรอใน Queue จนกว่า Consumer พร้อม</div>
+                <div class="mq-lc-step" id="mq-lcs-3">4. Consumer ดึง message ออกมาประมวลผล</div>
+                <div class="mq-lc-step" id="mq-lcs-4">5. Consumer ส่ง ack (acknowledge) กลับ → RabbitMQ ลบ message ออกจาก Queue</div>
+              </div>
+            </div>
+
+            <!-- Queue Fill/Drain Animation -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Queue Backpressure: เมื่อ Consumer ช้ากว่า Producer</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" id="mq-qfill-btn" onclick="mqToggleQFill()"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> เริ่ม Producer เร็ว</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetQFill()"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="mq-qfill-status">Queue ว่าง · Consumer หยุดรอ</span>
+              </div>
+              <div class="mq-qfill-stage">
+                <div class="mq-qf-side">
+                  <div class="mq-qf-actor"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg> Producer</div>
+                  <div class="mq-qf-rate" id="mq-qf-prod-rate">ส่ง 1 msg/s</div>
+                </div>
+                <div class="mq-qf-queue-wrap">
+                  <div class="mq-qf-queue-label">Queue <span id="mq-qf-count">0</span>/10</div>
+                  <div class="mq-qf-queue" id="mq-qf-queue"></div>
+                  <div class="mq-qf-bar-wrap">
+                    <div class="mq-qf-bar" id="mq-qf-bar" style="width:0%"></div>
+                  </div>
+                </div>
+                <div class="mq-qf-side">
+                  <div class="mq-qf-actor"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg> Consumer</div>
+                  <div class="mq-qf-rate" id="mq-qf-cons-rate">ดึง 1 msg/3s</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DLQ, Durability, Prefetch concepts -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Advanced Concepts</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-skull"/></svg></span>
+                    <span class="mq-adv-title">Dead Letter Queue (DLQ)</span>
+                    <span class="mq-badge mq-badge-danger">สำคัญ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>Queue พิเศษที่รับ message ที่ "ตาย" ไปแล้ว กล่าวคือ message ที่ถูก reject, หมดอายุ (TTL) หรือ queue เต็ม</p>
+                    <div class="mq-adv-when">
+                      <span class="mq-when-label">เกิดเมื่อ:</span>
+                      <div class="mq-when-item">• Consumer nack message โดยไม่ requeue</div>
+                      <div class="mq-when-item">• Message หมด TTL (message-ttl)</div>
+                      <div class="mq-when-item">• Queue เต็ม (x-max-length)</div>
+                    </div>
+                    <div class="mq-code-snippet"><pre tabindex="0">// ตั้ง DLQ ใน application.properties (Quarkus + SmallRye RabbitMQ)
+mp.messaging.incoming.orders.auto-bind-dlq=true
+mp.messaging.incoming.orders.dead-letter-exchange=dlx
+mp.messaging.incoming.orders.dead-letter-routing-key=dead
+// queue ปลายทางชื่อ orders.dlq (เปลี่ยนได้ด้วย dead-letter-queue-name)</pre></div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg></span>
+                    <span class="mq-adv-title">Durability: ความทนทานของข้อมูล</span>
+                    <span class="mq-badge mq-badge-warning">ต้องรู้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header">
+                        <div>ประเภท</div><div>รอด restart?</div><div>ใช้เมื่อ</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Durable Queue</strong></div>
+                        <div class="mq-dt-yes"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ใช่</div>
+                        <div>งาน critical ที่ห้ามสูญ</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Transient Queue</strong></div>
+                        <div class="mq-dt-no"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg> ไม่</div>
+                        <div>cache/temp ที่ไม่สำคัญ</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Persistent Msg</strong></div>
+                        <div class="mq-dt-yes"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ใช่</div>
+                        <div>delivery-mode=2 ใน message</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>Transient Msg</strong></div>
+                        <div class="mq-dt-no"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg> ไม่</div>
+                        <div>realtime/low-priority events</div>
+                      </div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ต้องทั้ง durable queue + persistent message ถึงจะปลอดภัยจริง</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
+                    <span class="mq-adv-title">Prefetch / QoS: คุม throughput</span>
+                    <span class="mq-badge mq-badge-info">Performance</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>จำกัดจำนวน message ที่ RabbitMQ ส่งให้ Consumer ก่อนจะรอ ack กลับ · ป้องกัน Consumer ถูก flood</p>
+                    <div class="mq-code-snippet"><pre tabindex="0">// prefetch = 10 → consumer ได้รับสูงสุด 10 msg
+// ก่อน ack ใด ก็ไม่ได้รับ msg ที่ 11 (SmallRye เรียกค่านี้ว่า max-outstanding-messages)
+mp.messaging.incoming.orders.max-outstanding-messages=10</pre></div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> prefetch=1 = round-robin ที่สมบูรณ์แบบ แต่ throughput ต่ำ | prefetch สูง = throughput สูง แต่อาจ unbalanced</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span>
+                    <span class="mq-adv-title">Use Cases หลัก</span>
+                    <span class="mq-badge mq-badge-success">Real World</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-usecase-list">
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></span>
+                        <div><strong>Async Task Queue</strong>: ส่งงานหนัก (resize image, send email) ไปทำ background โดยไม่บล็อก HTTP response</div>
+                      </div>
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></span>
+                        <div><strong>Event-driven Microservices</strong>: service A publish event, service B/C/D consume แยกกัน ไม่ต้อง couple กัน</div>
+                      </div>
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg></span>
+                        <div><strong>Work Queue / Load Balancing</strong>: consumer หลาย instance แย่ง task จาก queue เดียว · scale out ได้ง่าย</div>
+                      </div>
+                      <div class="mq-usecase-item">
+                        <span class="mq-uc-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span>
+                        <div><strong>Circuit Breaker Buffer</strong>: เมื่อ downstream ล่ม message ค้างใน queue รอจนกว่าระบบกลับมา</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /mq-rabbit-view -->
+
+          <!-- ═══ REDIS VIEW ═══ -->
+          <div id="mq-redis-view" class="mq-hidden">
+
+            <!-- Data Structures -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-folder"/></svg> Data Structures: โครงสร้างข้อมูลใน Redis</div>
+              <div class="mq-redis-ds-tabs">
+                <button class="mq-ds-tab mq-ds-active" onclick="mqDsTab(this,'string')">String</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'hash')">Hash</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'list')">List</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'set')">Set</button>
+                <button class="mq-ds-tab" onclick="mqDsTab(this,'zset')">Sorted Set</button>
+              </div>
+              <div id="mq-ds-detail">
+
+                <div class="mq-ds-panel" id="mq-ds-string">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-blue)">String</span>
+                    <span class="mq-badge mq-badge-info">พื้นฐาน</span>
+                  </div>
+                  <div class="mq-ds-desc">ค่าเดียวที่เป็น text, number, หรือ binary (สูงสุด 512MB): รองรับ INCR/DECR แบบ atomic</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> เหมือนกล่องเก็บของชิ้นเดียว</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg> <strong>Cache ผลลัพธ์ SQL/API</strong>: SET product:123 "{json}" EX 300</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hash"/></svg> <strong>Counter</strong>: INCR page:views → atomic, thread-safe</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> <strong>Rate limiting</strong>: INCR + EXPIRE ใน pipeline</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> <strong>Distributed Lock</strong>: SET lock:resource uuid NX EX 30</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre tabindex="0">SET user:token:abc123 "eyJhbG..." EX 3600
+GET user:token:abc123
+INCR api:calls:2024-06-29
+SET lock:order:789 "worker-1" NX EX 30  # NX = เฉพาะถ้ายังไม่มี, EX = ปลด lock เองถ้าคนถือ crash</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-hash">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-green)">Hash</span>
+                    <span class="mq-badge mq-badge-success">Session/Object</span>
+                  </div>
+                  <div class="mq-ds-desc">Map ของ field → value: เหมาะสำหรับเก็บ object ที่มีหลาย field โดยไม่ต้อง serialize ทั้งก้อน</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> เหมือนแบบฟอร์มที่มีหลายช่อง: แก้ไขทีละช่องได้โดยไม่ต้องอ่านทั้งใบ</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg> <strong>User Session</strong>: HSET session:abc userId "123" role "admin" exp "1234567890"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-shopping-cart"/></svg> <strong>Shopping Cart</strong>: HSET cart:user:1 product:456 "2" product:789 "1"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> <strong>Config Cache</strong>: เก็บ config หลาย key ใน hash เดียว</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre tabindex="0">HSET session:abc userId "123" name "สมชาย" role "admin"
+HGET session:abc role          # "admin"
+HGETALL session:abc            # ได้ทุก field
+HINCRBY cart:user:1 product:456 1   # เพิ่ม quantity</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-list">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-yellow)">List</span>
+                    <span class="mq-badge mq-badge-warning">Queue/Stack</span>
+                  </div>
+                  <div class="mq-ds-desc">Linked list ของ string: push/pop จากหัว (L) หรือท้าย (R) ได้ O(1)</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg> เหมือนรถไฟ: ต่อตู้หัว/ท้ายได้ตลอดเวลา</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg> <strong>Simple Queue</strong>: LPUSH + RPOP (FIFO)</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> <strong>Stack</strong>: LPUSH + LPOP (LIFO)</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-newspaper"/></svg> <strong>Activity Feed</strong>: LPUSH + LTRIM เก็บแค่ 100 รายการล่าสุด</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg> <strong>Blocking Queue</strong>: BLPOP รอ message โดยไม่ poll</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre tabindex="0">LPUSH jobs "email-123"        # push หัว
+RPOP jobs                     # pop ท้าย = FIFO queue
+BLPOP jobs 30                 # block รอสูงสุด 30s
+LRANGE feed:user:1 0 99       # ดู 100 รายการแรก</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-set">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-purple)">Set</span>
+                    <span class="mq-badge mq-badge-purple">Unique Members</span>
+                  </div>
+                  <div class="mq-ds-desc">Collection ของ string ที่ไม่ซ้ำกัน (unordered): รองรับ union/intersection/difference</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> เหมือนกล่อง tag: ใส่ซ้ำไม่ได้ สลับที่ได้</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> <strong>Online Users</strong>: SADD online:users "user:123" → รู้ว่าใคร online</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> <strong>Tags</strong>: SADD article:1:tags "java" "quarkus" "backend"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> <strong>Unique Visitors</strong>: SADD visitors:2024-06-29 "ip:1.2.3.4"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> <strong>Common Friends</strong>: SINTER friends:user1 friends:user2</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre tabindex="0">SADD online:users "user:123" "user:456"
+SISMEMBER online:users "user:123"   # 1 (ใช่)
+SMEMBERS online:users               # ดูทุกคน
+SINTER tags:java tags:backend       # intersection</pre></div>
+                </div>
+
+                <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-zset">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-red)">Sorted Set</span>
+                    <span class="mq-badge mq-badge-danger">Leaderboard</span>
+                  </div>
+                  <div class="mq-ds-desc">Set ที่แต่ละ member มี score (float): เรียงลำดับตาม score อัตโนมัติ O(log N)</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> เหมือนตารางคะแนน: ใส่คะแนนแล้วได้ rank ทันที</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-trophy"/></svg> <strong>Leaderboard</strong>: ZADD scores 9500 "player:1" → ได้ rank ทันที</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-alarm-clock"/></svg> <strong>Delayed Queue</strong>: score = timestamp → ดึง job ที่ถึงเวลา</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> <strong>Rate Window</strong>: score = timestamp ของ request → นับ requests ใน window</div>
+                  </div>
+                  <div class="mq-code-snippet"><pre tabindex="0">ZADD leaderboard 9500 "player:1" 8200 "player:2"
+ZREVRANK leaderboard "player:1"    # rank (0-based)
+ZREVRANGE leaderboard 0 9 WITHSCORES  # top 10
+ZINCRBY leaderboard 100 "player:2"    # เพิ่ม score</pre></div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- TTL, Persistence, Pub/Sub, Cache Patterns -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Redis Concepts เพิ่มเติม</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg></span>
+                    <span class="mq-adv-title">TTL / Expiration</span>
+                    <span class="mq-badge mq-badge-info">สำคัญ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>ตั้งเวลาหมดอายุของ key: Redis ลบ key อัตโนมัติหลังหมดเวลา ไม่ต้องเขียน cleanup code</p>
+                    <div class="mq-code-snippet"><pre tabindex="0">SET session:abc "data" EX 3600      # หมดใน 1 ชั่วโมง
+EXPIRE key 300                       # ตั้ง TTL ทีหลัง
+TTL key                              # เหลืออีกกี่วินาที
+PERSIST key                          # ยกเลิก TTL</pre></div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg></span>
+                    <span class="mq-adv-title">Persistence: RDB vs AOF</span>
+                    <span class="mq-badge mq-badge-warning">ต้องรู้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>Mode</div><div>วิธีทำงาน</div><div>Trade-off</div></div>
+                      <div class="mq-dt-row">
+                        <div><strong>RDB</strong></div>
+                        <div>Snapshot ตาม schedule (BGSAVE)</div>
+                        <div>เร็ว / อาจสูญข้อมูลช่วงสุดท้าย</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div><strong>AOF</strong></div>
+                        <div>Log ทุก write command</div>
+                        <div>ปลอดภัย / file ใหญ่กว่า</div>
+                      </div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> Production แนะนำ AOF + RDB ร่วมกัน (hybrid)</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-radio"/></svg></span>
+                    <span class="mq-adv-title">Pub/Sub: vs RabbitMQ</span>
+                    <span class="mq-badge mq-badge-purple">Realtime</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>Publisher ส่ง message ไปยัง channel → Subscriber ทุกตัวที่ subscribe channel นั้นได้รับพร้อมกัน</p>
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div></div><div>Redis Pub/Sub</div><div>RabbitMQ</div></div>
+                      <div class="mq-dt-row">
+                        <div>Persistence</div>
+                        <div class="mq-dt-no"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg> ไม่มี</div>
+                        <div class="mq-dt-yes"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> มี</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div>Ack / Retry</div>
+                        <div class="mq-dt-no"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg> ไม่มี</div>
+                        <div class="mq-dt-yes"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> มี</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div>Miss if offline</div>
+                        <div class="mq-dt-no"><svg class="i t-red" aria-hidden="true"><use href="#i-x"/></svg> สูญ</div>
+                        <div class="mq-dt-yes"><svg class="i t-green" aria-hidden="true"><use href="#i-check"/></svg> ค้างใน queue</div>
+                      </div>
+                      <div class="mq-dt-row">
+                        <div>Latency</div>
+                        <div class="mq-dt-yes">~1ms</div>
+                        <div>~5-10ms</div>
+                      </div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> Redis Pub/Sub = fire-and-forget realtime. RabbitMQ = reliable delivery</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></span>
+                    <span class="mq-adv-title">Cache Patterns</span>
+                    <span class="mq-badge mq-badge-success">Design</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">Cache-Aside (Lazy)</div>
+                      <div class="mq-cp-flow">App → Redis (miss?) → DB → store in Redis → return</div>
+                      <div class="mq-cp-when">ใช้บ่อยที่สุด: App control cache เอง</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">Write-Through</div>
+                      <div class="mq-cp-flow">App → เขียน DB + Redis พร้อมกัน</div>
+                      <div class="mq-cp-when">Cache ตรงกับ DB เสมอ: write ช้ากว่า</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">Write-Behind (Write-Back)</div>
+                      <div class="mq-cp-flow">App → เขียน Redis → async flush → DB</div>
+                      <div class="mq-cp-when">Write เร็วมาก: risk data loss หาก crash</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Cache hit/miss animation -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Cache Hit vs Miss Animation</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" onclick="mqCacheAnim('hit')"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> Cache Hit</button>
+                <button class="mq-anim-btn" onclick="mqCacheAnim('miss')"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> Cache Miss</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('cache')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="mq-cache-step">เลือก Hit หรือ Miss เพื่อดู animation</span>
+              </div>
+              <div class="mq-cache-stage">
+                <div class="mq-cache-node mq-cache-app" id="mq-cache-app">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg></div>
+                  <div class="mq-lc-label">Application</div>
+                </div>
+                <div class="mq-cache-conn" id="mq-cache-conn1">
+                  <div class="mq-cc-msg" id="mq-cache-msg1"></div>
+                  <div class="mq-cc-time" id="mq-cache-time1"></div>
+                </div>
+                <div class="mq-cache-node mq-cache-redis" id="mq-cache-redis-node">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></div>
+                  <div class="mq-lc-label">Redis Cache</div>
+                  <div class="mq-cache-status" id="mq-cache-redis-status"></div>
+                </div>
+                <div class="mq-cache-conn mq-cache-conn-db" id="mq-cache-conn2">
+                  <div class="mq-cc-msg" id="mq-cache-msg2"></div>
+                  <div class="mq-cc-time" id="mq-cache-time2"></div>
+                </div>
+                <div class="mq-cache-node mq-cache-db" id="mq-cache-db-node">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></div>
+                  <div class="mq-lc-label">Database</div>
+                </div>
+              </div>
+              <div class="mq-lc-steps" id="mq-cache-steps">
+                <div class="mq-lc-step" id="mq-cache-s0">กด <svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> Cache Hit หรือ <svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> Cache Miss เพื่อดู flow</div>
+              </div>
+            </div>
+
+            <!-- Redis Pub/Sub animation -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Redis Pub/Sub Animation</div>
+              <div class="mq-anim-controls">
+                <button class="mq-anim-btn" onclick="mqRunAnim('pubsub')"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Publish Message</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('pubsub')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="mq-pubsub-step">กดเล่นเพื่อเริ่ม</span>
+              </div>
+              <div class="mq-pubsub-stage">
+                <div class="mq-ps-publisher" id="mq-ps-pub">
+                  <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg></div>
+                  <div class="mq-lc-label">Publisher</div>
+                  <div style="font-size:0.7rem;color:var(--text-dim)">PUBLISH news "ข่าวด่วน"</div>
+                </div>
+                <div class="mq-ps-channel-wrap">
+                  <div class="mq-ps-channel" id="mq-ps-channel">
+                    <div class="mq-ps-ch-label">Channel: news</div>
+                    <div class="mq-ps-msg" id="mq-ps-msg"></div>
+                  </div>
+                </div>
+                <div class="mq-ps-subscribers">
+                  <div class="mq-ps-sub" id="mq-ps-sub1">
+                    <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-smartphone"/></svg></div>
+                    <div class="mq-lc-label">Sub A</div>
+                    <div class="mq-ps-received" id="mq-ps-recv1"></div>
+                  </div>
+                  <div class="mq-ps-sub" id="mq-ps-sub2">
+                    <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg></div>
+                    <div class="mq-lc-label">Sub B</div>
+                    <div class="mq-ps-received" id="mq-ps-recv2"></div>
+                  </div>
+                  <div class="mq-ps-sub" id="mq-ps-sub3">
+                    <div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg></div>
+                    <div class="mq-lc-label">Sub C</div>
+                    <div class="mq-ps-received" id="mq-ps-recv3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /mq-redis-view -->
+
+          <!-- ═══ QUARKUS VIEW ═══ -->
+          <div id="mq-quarkus-view" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-coffee"/></svg> Quarkus Integration Overview</div>
+              <div class="mq-q-overview">
+
+                <!-- RabbitMQ card -->
+                <div class="mq-q-ext-card" style="border-top-color:var(--c-pink)">
+                  <div class="mq-q-ext-head">
+                    <span class="mq-q-ext-icon"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></span>
+                    <span class="mq-q-ext-badge" style="background:var(--c-pink)">RabbitMQ</span>
+                  </div>
+                  <div class="mq-q-ext-name">quarkus-messaging-rabbitmq</div>
+                  <div class="mq-q-ext-cmd-wrap">
+                    <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="messaging-rabbitmq"</code></div>
+                  </div>
+                  <div class="mq-q-ext-desc">SmallRye Reactive Messaging: annotation-driven, non-blocking, reactive โดย default</div>
+                  <div class="mq-q-ext-features">
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">@Incoming / @Outgoing</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">Emitter&lt;T&gt;</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">ack / nack</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-pink);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">DLQ support</span>
+                  </div>
+                </div>
+
+                <!-- Redis card -->
+                <div class="mq-q-ext-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-q-ext-head">
+                    <span class="mq-q-ext-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
+                    <span class="mq-q-ext-badge" style="background:var(--c-green)">Redis</span>
+                  </div>
+                  <div class="mq-q-ext-name">quarkus-redis-client</div>
+                  <div class="mq-q-ext-cmd-wrap">
+                    <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="redis-client"</code></div>
+                  </div>
+                  <div class="mq-q-ext-desc">Vert.x Redis client: รองรับทั้ง reactive และ blocking API พร้อม type-safe commands</div>
+                  <div class="mq-q-ext-features">
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">ValueCommands</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">HashCommands</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">KeyCommands</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">TTL / Pub-Sub</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- application.properties -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> application.properties: Config Keys ที่ต้องรู้</div>
+              <div class="mq-props-tabs">
+                <button class="mq-props-tab mq-props-active" onclick="mqPropsTab(this,'rabbit-props')">RabbitMQ</button>
+                <button class="mq-props-tab" onclick="mqPropsTab(this,'redis-props')">Redis</button>
+              </div>
+              <div id="mq-rabbit-props" class="mq-props-panel">
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                  <pre class="mq-code"><code class="language-properties"># ── RabbitMQ Connection ──────────────────────────────────────
+rabbitmq-host=localhost
+rabbitmq-port=5672
+rabbitmq-username=guest
+rabbitmq-password=guest
+rabbitmq-virtual-host=/
+
+# ── Incoming channel (Consumer) ───────────────────────────────
+mp.messaging.incoming.orders-in.connector=smallrye-rabbitmq
+mp.messaging.incoming.orders-in.queue.name=orders
+mp.messaging.incoming.orders-in.queue.durable=true
+mp.messaging.incoming.orders-in.max-outstanding-messages=10
+# Dead Letter Queue
+mp.messaging.incoming.orders-in.auto-bind-dlq=true
+mp.messaging.incoming.orders-in.dead-letter-exchange=dlx
+mp.messaging.incoming.orders-in.dead-letter-routing-key=dead.orders
+# nack แล้วทำอะไร: reject (ค่าเริ่ม, ไป DLQ) | accept | fail
+mp.messaging.incoming.orders-in.failure-strategy=reject
+
+# ── Outgoing channel (Producer) ───────────────────────────────
+mp.messaging.outgoing.orders-out.connector=smallrye-rabbitmq
+mp.messaging.outgoing.orders-out.exchange.name=orders-exchange
+mp.messaging.outgoing.orders-out.exchange.type=direct
+mp.messaging.outgoing.orders-out.exchange.durable=true
+mp.messaging.outgoing.orders-out.routing-key=order.created
+
+# ── Exchange routing (topic example) ─────────────────────────
+mp.messaging.outgoing.events-out.connector=smallrye-rabbitmq
+mp.messaging.outgoing.events-out.exchange.name=events-exchange
+mp.messaging.outgoing.events-out.exchange.type=topic
+mp.messaging.outgoing.events-out.routing-key=order.th.created</code></pre>
+                </div>
+              </div>
+              <div id="mq-redis-props" class="mq-props-panel mq-hidden">
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                  <pre class="mq-code"><code class="language-properties"># ── Redis Connection ─────────────────────────────────────────
+quarkus.redis.hosts=redis://localhost:6379
+
+# ── Redis with password ───────────────────────────────────────
+quarkus.redis.hosts=redis://:changeme@localhost:6379
+
+# ── Redis Cluster ─────────────────────────────────────────────
+quarkus.redis.client-type=cluster
+quarkus.redis.hosts=redis://node1:6379,redis://node2:6379
+
+# ── Connection pool ───────────────────────────────────────────
+quarkus.redis.max-pool-size=10
+quarkus.redis.max-pool-waiting=50
+quarkus.redis.tcp.connection-timeout=5S
+
+# ── Named client (multiple Redis instances) ───────────────────
+quarkus.redis.cache.hosts=redis://cache-server:6379
+quarkus.redis.session.hosts=redis://session-server:6379
+
+# ── TLS (production) ─────────────────────────────────────────
+quarkus.redis.tls.enabled=true</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Code Examples -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code Examples: ตัวอย่างโค้ด Java / Quarkus</div>
+
+              <!-- Example 1: Producer -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">1</span>
+                  <span class="mq-ce-title">RabbitMQ Producer: REST Endpoint → Publish to Queue</span>
+                  <span class="mq-badge mq-badge-info">Emitter&lt;T&gt;</span>
+                </div>
+                <div class="mq-ce-desc">ใช้ <code>@Channel</code> + <code>Emitter&lt;String&gt;</code> ใน REST endpoint เพื่อส่ง message เข้า RabbitMQ แบบ non-blocking</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                  <pre class="mq-code"><code class="language-java">import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+
+@Path("/orders")
+@ApplicationScoped
+public class OrderResource {
+
+    // Channel name ต้องตรงกับ mp.messaging.outgoing.orders-out ใน application.properties
+    @Inject
+    @Channel("orders-out")
+    Emitter&lt;String&gt; orderEmitter;
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createOrder(OrderRequest req) {
+        // สร้าง JSON payload (หรือ serialize ด้วย Jackson)
+        String payload = "{\"orderId\":\"" + req.id + "\",\"amount\":" + req.amount + "}";
+
+        // ส่ง message - non-blocking, fire-and-forget
+        orderEmitter.send(payload);
+
+        return Response.accepted()
+            .entity("{\"status\":\"queued\",\"orderId\":\"" + req.id + "\"}")
+            .build();
+    }
+}
+
+// application.properties
+// mp.messaging.outgoing.orders-out.connector=smallrye-rabbitmq
+// mp.messaging.outgoing.orders-out.exchange.name=orders-exchange
+// mp.messaging.outgoing.orders-out.routing-key=order.created</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 2: Consumer -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">2</span>
+                  <span class="mq-ce-title">RabbitMQ Consumer: @Incoming + Message&lt;T&gt; wrapper</span>
+                  <span class="mq-badge mq-badge-success">@Incoming</span>
+                </div>
+                <div class="mq-ce-desc">ใช้ <code>@Incoming</code> เพื่อรับ message: ใช้ <code>Message&lt;T&gt;</code> wrapper เพื่อควบคุม ack/nack เองได้</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                  <pre class="mq-code"><code class="language-java">import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
+import jakarta.enterprise.context.ApplicationScoped;
+import java.util.concurrent.CompletionStage;
+
+@ApplicationScoped
+public class OrderConsumer {
+
+    // ─── Pattern 1: plain payload (auto-ack on success, auto-nack on exception) ───
+    @Incoming("orders-in")
+    public void processOrder(String payload) {
+        System.out.println("Got order: " + payload);
+        // ถ้า throw exception → message จะถูก nack
+        // ถ้าสำเร็จ → auto ack
+    }
+
+    // ─── Pattern 2: Message&lt;T&gt; wrapper (manual ack/nack) ───────────────────────
+    @Incoming("orders-in-manual")
+    public CompletionStage&lt;Void&gt; processOrderManual(Message&lt;String&gt; message) {
+        String payload = message.getPayload();
+        try {
+            processBusinessLogic(payload);
+            return message.ack();   // บอก RabbitMQ ว่าสำเร็จ → ลบออกจาก queue
+        } catch (Exception e) {
+            // nack → ทำตาม failure-strategy ของ channel (ค่าเริ่ม reject = ไม่วนกลับ queue, ไป DLQ ถ้าตั้งไว้)
+            return message.nack(e);
+        }
+    }
+
+    private void processBusinessLogic(String payload) {
+        // parse JSON, save to DB, call API, etc.
+    }
+}
+
+// application.properties
+// mp.messaging.incoming.orders-in.connector=smallrye-rabbitmq
+// mp.messaging.incoming.orders-in.queue.name=orders
+// mp.messaging.incoming.orders-in.queue.durable=true
+// mp.messaging.incoming.orders-in.max-outstanding-messages=10</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 3: Redis Cache-Aside -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">3</span>
+                  <span class="mq-ce-title">Redis Cache-Aside Pattern: ตรวจ Cache ก่อน ถ้า Miss ดึงจาก DB</span>
+                  <span class="mq-badge mq-badge-warning">ValueCommands</span>
+                </div>
+                <div class="mq-ce-desc">Pattern ที่ใช้บ่อยที่สุด: ลด load จาก DB สูงสุด 90% สำหรับข้อมูลที่อ่านบ่อย</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                  <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
+import io.quarkus.redis.datasource.keys.KeyCommands;
+import io.quarkus.redis.datasource.value.SetArgs;
+import io.quarkus.redis.datasource.value.ValueCommands;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+@ApplicationScoped
+public class ProductService {
+
+    private final ValueCommands&lt;String, String&gt; valueCmds;
+    private final KeyCommands&lt;String&gt; keyCmds;
+
+    @Inject
+    ProductRepository productRepo; // ตัวอย่าง JPA repository
+
+    public ProductService(RedisDataSource ds) {
+        // inject RedisDataSource แล้วขอชุดคำสั่งแบบ type-safe (value = คำสั่งกลุ่ม string ของ Redis)
+        this.valueCmds = ds.value(String.class);
+        this.keyCmds = ds.key();
+    }
+
+    public String getProduct(String productId) {
+        String cacheKey = "product:" + productId;
+
+        // Step 1: ตรวจ Redis cache ก่อน
+        String cached = valueCmds.get(cacheKey);
+        if (cached != null) {
+            System.out.println("Cache HIT for " + cacheKey);
+            return cached; // คืนจาก cache ทันที ~1ms
+        }
+
+        // Step 2: Cache MISS → ดึงจาก DB
+        System.out.println("Cache MISS - querying DB for " + cacheKey);
+        Product product = productRepo.findById(productId);
+        if (product == null) return null;
+
+        // Step 3: แปลงเป็น JSON string และ store ใน Redis พร้อม TTL 5 นาที
+        String json = toJson(product); // Jackson ObjectMapper.writeValueAsString
+        SetArgs args = new SetArgs().ex(300); // EX 300 seconds
+        valueCmds.set(cacheKey, json, args);
+
+        return json;
+    }
+
+    public void invalidateProduct(String productId) {
+        // เมื่อ update ข้อมูล → ลบ cache (cache invalidation)
+        keyCmds.del("product:" + productId);   // DEL อยู่ในกลุ่มคำสั่งของ key
+    }
+
+    private String toJson(Product p) {
+        // Jackson serialize
+        return "{\"id\":\"" + p.id + "\",\"name\":\"" + p.name + "\"}";
+    }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 4: Redis Session Storage -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">4</span>
+                  <span class="mq-ce-title">Redis Session Storage: Hash HSET/HGET</span>
+                  <span class="mq-badge mq-badge-purple">HashCommands</span>
+                </div>
+                <div class="mq-ce-desc">เก็บ user session ใน Redis Hash: แก้ไขแต่ละ field ได้โดยไม่ต้อง serialize ทั้งก้อน</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                  <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
+import io.quarkus.redis.datasource.hash.HashCommands;
+import io.quarkus.redis.datasource.keys.KeyCommands;
+import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Map;
+import java.util.UUID;
+
+@ApplicationScoped
+public class SessionService {
+
+    private final HashCommands&lt;String, String, String&gt; hashCmds;
+    private final KeyCommands&lt;String&gt; keyCmds;
+
+    public SessionService(RedisDataSource ds) {
+        this.hashCmds = ds.hash(String.class, String.class, String.class);
+        this.keyCmds  = ds.key(String.class);
+    }
+
+    /** สร้าง session ใหม่หลัง login สำเร็จ */
+    public String createSession(String userId, String role) {
+        String sessionId = UUID.randomUUID().toString();
+        String key = "session:" + sessionId;
+
+        // HSET session:&lt;id&gt; userId "123" role "admin" createdAt "..."
+        // hset รับ Map - ไม่มี varargs version ใน Quarkus Redis API
+        hashCmds.hset(key, Map.of(
+            "userId",    userId,
+            "role",      role,
+            "createdAt", String.valueOf(System.currentTimeMillis())
+        ));
+
+        // ตั้ง TTL 30 นาที ด้วย KeyCommands.expire()
+        keyCmds.expire(key, 1800);
+
+        return sessionId;
+    }
+
+    /** ดึงข้อมูล session ทั้งหมด */
+    public Map&lt;String, String&gt; getSession(String sessionId) {
+        return hashCmds.hgetall("session:" + sessionId);
+    }
+
+    /** ดึง field เดียว (เร็วกว่า HGETALL) */
+    public String getSessionField(String sessionId, String field) {
+        return hashCmds.hget("session:" + sessionId, field);
+    }
+
+    /** ลบ session เมื่อ logout */
+    public void deleteSession(String sessionId) {
+        keyCmds.del("session:" + sessionId);
+    }
+}</code></pre>
+                </div>
+              </div>
+
+              <!-- Example 5: Rate Limiting -->
+              <div class="mq-code-example">
+                <div class="mq-ce-header">
+                  <span class="mq-ce-num">5</span>
+                  <span class="mq-ce-title">Rate Limiting ด้วย Redis INCR + EXPIRE</span>
+                  <span class="mq-badge mq-badge-danger">INCR + TTL</span>
+                </div>
+                <div class="mq-ce-desc">จำกัด API calls ต่อ IP หรือ user: INCR เป็น atomic ไม่มีการนับชนกัน แล้วตั้ง EXPIRE ตอนนับครั้งแรกของแต่ละนาที · ตัวอย่าง: 100 requests/minute</div>
+                <div class="mq-code-block">
+                  <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                  <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
+import io.quarkus.redis.datasource.keys.KeyCommands;
+import io.quarkus.redis.datasource.value.ValueCommands;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+
+@ApplicationScoped
+public class RateLimiter {
+
+    private static final int MAX_REQUESTS   = 100; // สูงสุด 100 requests
+    private static final int WINDOW_SECONDS = 60;  // ต่อ 1 นาที
+
+    private final ValueCommands&lt;String, String&gt; valueCmds;
+    private final KeyCommands&lt;String&gt; keyCmds;
+
+    public RateLimiter(RedisDataSource ds) {
+        this.valueCmds = ds.value(String.class);
+        this.keyCmds    = ds.key(String.class);
+    }
+
+    /**
+     * ตรวจสอบ rate limit
+     * @param identifier เช่น IP address หรือ userId
+     * @throws WebApplicationException 429 Too Many Requests ถ้าเกินลิมิต
+     */
+    public void checkRateLimit(String identifier) {
+        String key = "rate:" + identifier + ":" + getCurrentMinuteBucket();
+
+        // INCR เป็น atomic - ได้ค่า count ใหม่ทันที ไม่มี race condition
+        long count = valueCmds.incr(key);
+
+        if (count == 1) {
+            // request แรกใน window นี้ → ตั้ง TTL ด้วย KeyCommands
+            keyCmds.expire(key, WINDOW_SECONDS);
+        }
+
+        if (count &gt; MAX_REQUESTS) {
+            throw new WebApplicationException(
+                Response.status(429)
+                    .header("X-RateLimit-Limit",     MAX_REQUESTS)
+                    .header("X-RateLimit-Remaining", 0)
+                    .header("Retry-After",           WINDOW_SECONDS)
+                    .entity("{\"error\":\"Rate limit exceeded. Try again in " + WINDOW_SECONDS + "s\"}")
+                    .build()
+            );
+        }
+    }
+
+    /** Bucket ต่อนาที - key เปลี่ยนทุก 60 วินาทีอัตโนมัติ */
+    private String getCurrentMinuteBucket() {
+        return String.valueOf(System.currentTimeMillis() / (WINDOW_SECONDS * 1000L));
+    }
+}
+
+// การใช้งานใน JAX-RS resource:
+// @Inject RateLimiter rateLimiter;
+//
+// @GET @Path("/api/data")
+// public Response getData(@Context HttpHeaders headers) {
+//     String ip = headers.getRequestHeader("X-Forwarded-For").get(0);
+//     rateLimiter.checkRateLimit(ip);
+//     // ... proceed
+// }</code></pre>
+                </div>
+              </div>
+
+            </div><!-- /code examples section -->
+
+            <!-- Annotations quick reference -->
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> Annotation Quick Reference</div>
+              <div class="mq-ann-grid">
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@Incoming("channel")</div>
+                  <div class="mq-ann-desc">รับ message จาก channel ที่กำหนด: ใส่บน method ใน @ApplicationScoped bean</div>
+                  <div class="mq-ann-note">method parameter = payload type หรือ Message&lt;T&gt;</div>
+                </div>
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@Outgoing("channel")</div>
+                  <div class="mq-ann-desc">ส่ง message ออกไปยัง channel: ใส่บน method ที่ return ค่า</div>
+                  <div class="mq-ann-note">return type = T, Message&lt;T&gt;, Publisher&lt;T&gt;</div>
+                </div>
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@Channel("channel")</div>
+                  <div class="mq-ann-desc">Inject Emitter หรือ Multi สำหรับส่ง/รับ message จาก code โดยตรง</div>
+                  <div class="mq-ann-note">ใช้คู่กับ Emitter&lt;T&gt; หรือ Multi&lt;T&gt;</div>
+                </div>
+                <div class="mq-ann-card">
+                  <div class="mq-ann-name">@RedisClientName("cache")</div>
+                  <div class="mq-ann-desc">เลือก named Redis client เมื่อมีหลาย instance: <code>@Inject @RedisClientName("cache") RedisDataSource ds</code></div>
+                  <div class="mq-ann-note">ใช้ค่าของ quarkus.redis.cache.* (ไม่ใส่ = client หลัก quarkus.redis.*)</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /mq-quarkus-view -->

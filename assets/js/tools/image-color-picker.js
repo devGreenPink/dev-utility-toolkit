@@ -43,7 +43,7 @@
   }
 
   function icpFormatValue(picked, fmt) {
-    if (!picked) return '—';
+    if (!picked) return '';
     switch (fmt) {
       case 'rgb': return picked.rgb;
       case 'hsl': return picked.hsl;
@@ -90,7 +90,7 @@
     $id('icp-placeholder').style.display       = 'none';
     $id('image-drop-zone').classList.add('has-image');
     $id('icp-img-info').textContent =
-      `${_icpImage.naturalWidth} × ${_icpImage.naturalHeight}px — คลิกเพื่อดูดสี`;
+      `${_icpImage.naturalWidth} × ${_icpImage.naturalHeight}px: คลิกเพื่อดูดสี`;
     $id('icp-btn-clear').style.display = '';
 
     if (window.EyeDropper) $id('icp-eyedropper-btn').style.display = '';
@@ -211,7 +211,7 @@
 
   function icpCopyActive() {
     const val = icpFormatValue(_icpPicked, _icpFmt);
-    if (val && val !== '—') copyPickedHex(val);
+    if (val) copyPickedHex(val);
   }
 
   // ── Zoom slider ──
@@ -262,48 +262,31 @@
       _icpUpdateActiveValue();
       _icpAddHistory(hex);
       icpShowPanel(true);
-      showToast('ดูดสี ' + hex + ' จากหน้าจอ ✓');
-    } catch (_) { /* user cancelled — no-op */ }
+      showToast('ดูดสี ' + hex + ' จากหน้าจอ');
+    } catch (_) { /* user cancelled: no-op */ }
   }
 
   // ── Copy helpers ──
   function icpCopyValue(elemId) {
     const text = $id(elemId).textContent;
-    if (!text || text === '—') return;
+    if (!text) return;
     copyPickedHex(text);
   }
 
-  function copyPickedHex(text) {
-    try {
-      navigator.clipboard.writeText(text)
-        .then(() => showToast('คัดลอก ' + text + ' แล้ว ✓'))
-        .catch(() => fallbackCopy(text));
-    } catch (_) { fallbackCopy(text); }
-  }
-
-  function fallbackCopy(text) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); showToast('คัดลอก ' + text + ' แล้ว ✓'); }
-    catch (_) { showToast('⚠️ คัดลอกไม่ได้'); }
-    ta.remove();
-  }
+  function copyPickedHex(text) { copyText(text); }
 
   // ── Apply to main Color Picker ──
   function icpApplyToMainPicker() {
     if (!_icpPicked) return;
     if (typeof updateColorUI === 'function') {
       updateColorUI({ r: _icpPicked.r, g: _icpPicked.g, b: _icpPicked.b });
-      showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker ✓');
+      showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker');
     } else {
       const hexInput = $id('color-hex');
       if (hexInput) {
         hexInput.value = _icpPicked.hex;
         hexInput.dispatchEvent(new Event('input', { bubbles: true }));
-        showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker ✓');
+        showToast('นำสี ' + _icpPicked.hex + ' เข้า Color Picker');
       }
     }
   }
@@ -330,7 +313,7 @@
     if (!file) return;
     const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
     if (!allowed.includes(file.type)) {
-      showToast('⚠️ รองรับเฉพาะ PNG, JPG, WEBP, GIF');
+      showToast('รองรับเฉพาะ PNG, JPG, WEBP, GIF','warn');
       return;
     }
     const url = URL.createObjectURL(file);
@@ -344,7 +327,7 @@
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      showToast('⚠️ โหลดภาพไม่ได้ กรุณาลองใหม่');
+      showToast('โหลดภาพไม่ได้ กรุณาลองใหม่','err');
     };
     img.src = url;
   }
@@ -357,7 +340,7 @@
     $id('image-drop-zone').classList.remove('dragover');
     const file = e.dataTransfer.files[0];
     if (file) handleImageFile(file);
-    else showToast('⚠️ ไม่พบไฟล์ในที่วาง');
+    else showToast('ไม่พบไฟล์ในที่วาง','warn');
   }
 
   function icpFileInputChange(e) {
