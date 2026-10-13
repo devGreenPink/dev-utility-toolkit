@@ -140,6 +140,32 @@ export class UserEffects {
     ),
   );
 }`},
+  {g:'Signals',t:'NgRx Signals Store (signalStore)',b:'signals',bc:'cyan',k:'signalstore withstate withcomputed withmethods patchstate rxmethod ngrx signals',
+   d:'store แบบเบาที่สร้างจาก signal (แพ็กเกจ `@ngrx/signals`) ไม่มี action / reducer แยก เหมาะกับ state ของ feature หรือหน้าจอเดียว ส่วน state กลางทั้งแอปใช้ Store แบบเดิมต่อได้',
+   fix:['`withState` = ค่าเริ่ม · `withComputed` = ค่าที่คำนวณต่อ · `withMethods` = method ที่แก้ state ด้วย `patchState`','งาน async ที่เป็น Observable ใช้ `rxMethod` และใส่ `catchError` ไว้ใน `switchMap` เหมือน effect','provide ที่ component (`providers: [UserStore]`) state จะหายไปพร้อม component'],
+   code:`export const UserStore = signalStore(
+  withState({ users: [] as User[], loading: false }),
+  withComputed(({ users }) => ({
+    count: computed(() => users().length),
+  })),
+  withMethods((store, api = inject(UserService)) => ({
+    load: rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, { loading: true })),
+        switchMap(() => api.getAll().pipe(
+          tap(users => patchState(store, { users, loading: false })),
+          catchError(() => { patchState(store, { loading: false }); return EMPTY; }),
+        )),
+      ),
+    ),
+  })),
+);
+
+@Component({ providers: [UserStore] /* ... */ })
+export class UserListComponent {
+  store = inject(UserStore);     // template: store.users(), store.count()
+  ngOnInit() { this.store.load(); }
+}`},
   {g:'แนวปฏิบัติ',t:'ข้อควรระวัง',b:'tips',bc:'red',k:'mutate state devtools serializable facade',
    fix:['ห้าม mutate state (`state.users.push(...)`) ให้สร้าง object ใหม่เสมอ','เก็บแต่ข้อมูลที่ serialize ได้ (ไม่เก็บ Date object, class instance, Observable)','ใช้ Redux DevTools ดู action และ state ทีละขั้น: `provideStoreDevtools({ maxAge: 25 })`','component ไม่ควรรู้จัก action มากเกินไป ทำ facade service ห่อ dispatch / select ได้']},
   ],

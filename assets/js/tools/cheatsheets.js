@@ -16,7 +16,7 @@ const KUBECTL_CMDS=[
   {group:'EXEC / DEBUG',cmd:'kubectl exec -it <pod-name> -- bash',desc:'เข้า shell ภายใน pod (bash)'},
   {group:'EXEC / DEBUG',cmd:'kubectl exec -it <pod-name> -- sh',desc:'เข้า shell ภายใน pod (sh) สำหรับ Alpine image'},
   {group:'EXEC / DEBUG',cmd:'kubectl exec <pod-name> -- env',desc:'แสดง environment variables ภายใน pod'},
-  {group:'EXEC / DEBUG',cmd:'kubectl exec <pod-name> -- curl http://localhost:8080/health',desc:'เรียก endpoint จากภายใน pod โดยตรง'},
+  {group:'EXEC / DEBUG',cmd:'kubectl exec <pod-name> -- curl -s http://localhost:8080/q/health',desc:'เรียก health ของ Quarkus จากในพ็อด (/q/health/ready, /q/health/live)'},
   {group:'EXEC / DEBUG',cmd:'kubectl port-forward pod/<pod> 8080:8080',desc:'forward port จาก pod มายัง localhost'},
   {group:'EXEC / DEBUG',cmd:'kubectl port-forward svc/<svc> 8080:80',desc:'forward port จาก service มายัง localhost'},
   {group:'DEPLOYMENT',cmd:'kubectl get deployments',desc:'แสดงรายการ deployment ทั้งหมด'},
@@ -181,7 +181,8 @@ const GIT_CMDS=[
   {group:'SETUP / CONFIG',cmd:'git config --global pull.rebase true',desc:'ทำให้ git pull ใช้ rebase แทน merge เป็น default'},
   {group:'SETUP / CONFIG',cmd:'git config --global push.autoSetupRemote true',desc:'push branch ใหม่โดยไม่ต้องพิมพ์ -u origin ทุกครั้ง'},
   {group:'SETUP / CONFIG',cmd:'git config --global rerere.enabled true',desc:'จำ conflict resolution ไว้ใช้ซ้ำอัตโนมัติ'},
-  {group:'SETUP / CONFIG',cmd:'git config --global core.autocrlf input',desc:'แก้ปัญหา CRLF บน Windows (แนะนำ)'},
+  {group:'SETUP / CONFIG',cmd:'git config --global core.autocrlf true',desc:'Windows: checkout เป็น CRLF, commit เป็น LF'},
+  {group:'SETUP / CONFIG',cmd:'git config --global core.autocrlf input',desc:'Mac / Linux: commit เป็น LF เสมอ ไม่แปลงตอน checkout'},
   {group:'SETUP / CONFIG',cmd:'git config --list',desc:'แสดง config ทั้งหมดที่ใช้งานอยู่'},
   {group:'SETUP / CONFIG',cmd:'git init',desc:'สร้าง Git repository ใหม่ในโฟลเดอร์ปัจจุบัน'},
   {group:'SETUP / CONFIG',cmd:'git clone <url>',desc:'clone repository จาก remote'},
@@ -229,6 +230,7 @@ const GIT_CMDS=[
   {group:'UNDO / RESET',cmd:'git reset --mixed HEAD~1',desc:'ย้อน 1 commit กลับมา working tree (unstaged)'},
   {group:'UNDO / RESET',cmd:'git reset --hard HEAD~1',desc:'ระวัง: ย้อน 1 commit และทิ้งการเปลี่ยนแปลงทั้งหมด'},
   {group:'UNDO / RESET',cmd:'git clean -fd',desc:'ระวัง: ลบไฟล์ untracked ทั้งหมด (-f force, -d รวม directory)'},
+  {group:'UNDO / RESET',cmd:'git rm --cached <file>',desc:'เลิก track ไฟล์ที่เคย commit (ไฟล์ยังอยู่ในเครื่อง) ใช้หลังเพิ่มชื่อไฟล์ลง .gitignore'},
   {group:'UNDO / RESET',cmd:'git reflog',desc:'ดู history ทุกการเคลื่อนไหวของ HEAD: ใช้กู้คืน commit ที่หายไป'},
   // STASH
   {group:'STASH',cmd:'git stash push -m "wip: xxx"',desc:'บันทึก work-in-progress ชั่วคราวพร้อม message'},
@@ -244,6 +246,12 @@ const GIT_CMDS=[
   {group:'REBASE',cmd:'git rebase --continue',desc:'ดำเนินต่อหลังแก้ conflict'},
   {group:'REBASE',cmd:'git rebase --abort',desc:'ยกเลิก rebase และกลับสู่สถานะเดิม'},
   {group:'REBASE',cmd:'git rebase --skip',desc:'ข้าม commit ที่มี conflict แล้วดำเนินต่อ'},
+  // TAG / RELEASE
+  {group:'TAG / RELEASE',cmd:'git tag -a v1.5.0 -m "release 1.5.0"',desc:'สร้าง annotated tag ที่ commit ปัจจุบัน (มีผู้สร้าง วันที่ และข้อความ)'},
+  {group:'TAG / RELEASE',cmd:'git push origin v1.5.0',desc:'push tag ขึ้น remote (git push ปกติไม่ส่ง tag ไปด้วย)'},
+  {group:'TAG / RELEASE',cmd:'git tag -l "v1.*"',desc:'แสดง tag ที่ตรงรูปแบบ'},
+  {group:'TAG / RELEASE',cmd:'git describe --tags --abbrev=0',desc:'tag ล่าสุดก่อน HEAD (ใช้ทำเลขเวอร์ชันใน CI)'},
+  {group:'TAG / RELEASE',cmd:'git tag -d v1.5.0 && git push origin --delete v1.5.0',desc:'ลบ tag ทั้งในเครื่องและบน remote'},
   // SEARCH & INSPECT
   {group:'SEARCH & INSPECT',cmd:'git log --all -S "keyword"',desc:'ค้นหา commit ที่เพิ่มหรือลบ keyword นั้น'},
   {group:'SEARCH & INSPECT',cmd:'git log --all --grep="message"',desc:'ค้นหา commit ที่ message ตรงกับ pattern'},
@@ -254,6 +262,21 @@ const GIT_CMDS=[
   {group:'SEARCH & INSPECT',cmd:'git bisect reset',desc:'จบการใช้ bisect และกลับสู่ HEAD เดิม'},
   {group:'SEARCH & INSPECT',cmd:'git shortlog -sn',desc:'สรุปจำนวน commit ต่อคน เรียงจากมากไปน้อย'},
   {group:'SEARCH & INSPECT',cmd:'git ls-files',desc:'แสดงไฟล์ทั้งหมดที่ Git track อยู่'},
+];
+// where a change lives and which command takes it back (drawn by dgInit in refdocs.js)
+const GIT_DIAGRAMS=[
+ {id:'areas',t:'4 พื้นที่ของ Git',kind:'flow',
+  intro:'ไฟล์ที่แก้เดินทางผ่าน 4 ที่ คำสั่งย้อนกลับแต่ละตัวทำงานกับคนละที่ กดแต่ละที่เพื่อดูว่าย้อนด้วยอะไร',
+  opt:{label:'พื้นที่ของ Git จากเครื่องเราถึง remote',errLabel:'ย้อนกลับจากตรงนี้',lang:'bash'},
+  nodes:[
+   {id:'wt',icon:'file-code',t:'Working tree',s:'ไฟล์ที่แก้อยู่',d:'ไฟล์ในโฟลเดอร์ที่แก้แล้วแต่ยังไม่บอก git · `git add` ย้ายไป staging',
+    err:['ทิ้งที่แก้ในไฟล์: `git restore <file>` (หายจริง)','ทิ้งไฟล์ใหม่ที่ไม่ได้ track: `git clean -fd` (หายจริง)','เก็บไว้ก่อน: `git stash push -m "wip"`'],code:'git status\ngit diff'},
+   {id:'idx',icon:'layers',t:'Staging (index)',s:'รอ commit',d:'ของที่ `git add` แล้วจะเข้า commit ถัดไป · `git commit` ย้ายเข้า repo ในเครื่อง',
+    err:['เอาออกจาก staging แต่เก็บที่แก้ไว้: `git restore --staged <file>`'],code:'git diff --staged'},
+   {id:'head',icon:'database',t:'Local repo (HEAD)',s:'commit ในเครื่อง',d:'commit ที่ยังไม่ push มีแค่ในเครื่องเรา แก้ประวัติได้ปลอดภัย · `git push` ส่งขึ้น remote',
+    err:['แก้ commit ล่าสุด: `git commit --amend`','ย้อน 1 commit ของกลับไปอยู่ใน staging: `git reset --soft HEAD~1`','ย้อน 1 commit ของกลับไปอยู่ใน working tree: `git reset --mixed HEAD~1`','ย้อนและทิ้งทั้งหมด: `git reset --hard HEAD~1` (กู้ได้จาก `git reflog`)'],code:'git log --oneline -5'},
+   {id:'remote',icon:'globe',t:'Remote (origin)',s:'คนอื่นเห็นแล้ว',d:'commit ที่ push แล้ว คนอื่นอาจดึงไปใช้ต่อ ห้ามแก้ประวัติของ branch ที่ใช้ร่วมกัน',
+    err:['ย้อนแบบปลอดภัย: `git revert <hash>` สร้าง commit ใหม่ที่กลับค่าเดิม','branch ส่วนตัวที่ต้องแก้ประวัติจริง: `git push --force-with-lease`']}]},
 ];
 function filterGit(q){
   const query=(q||'').trim().toLowerCase();

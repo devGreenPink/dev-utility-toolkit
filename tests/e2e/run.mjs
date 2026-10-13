@@ -27,14 +27,20 @@ const BASE = `http://127.0.0.1:${server.address().port}/`;
 const browser = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
 const failures = [];
 let passed = 0;
+// every check closes the contexts it opened: left open, a dozen of them broke the last (offline) check
+const contexts = [];
 async function check(name, fn) {
   try { await fn(); passed++; console.log('  ok  ' + name); }
   catch (e) { failures.push(name); console.log('  FAIL ' + name + '\n       ' + String(e.message || e).split('\n').join('\n       ')); }
+  finally { await Promise.all(contexts.splice(0).map(c => c.close().catch(() => {}))); }
 }
 function expect(cond, msg) { if (!cond) throw new Error(msg); }
-async function newPage(opts = {}) {
+async function newPage({ theme, ...opts } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'dark', serviceWorkers: 'block',
     permissions: ['clipboard-read', 'clipboard-write'], ...opts });
+  contexts.push(ctx);
+  // a stored theme wins over the first-visit default (Dracula), e.g. 'mac' to follow colorScheme
+  if (theme) await ctx.addInitScript(t => localStorage.setItem('esan-devtools-theme', t), theme);
   const page = await ctx.newPage();
   page.errors = [];
   page.on('pageerror', e => page.errors.push(e.message));
@@ -63,9 +69,10 @@ await check('no CDN script loads with the first page', async () => {
   expect(!cdn.length, 'loaded at start: ' + cdn.join(', '));
   await ctx.close();
 });
-for (const scheme of ['dark', 'light']) {
-  await check(`axe: WCAG 2.2 AA on every tab (${scheme})`, async () => {
-    const page = await newPage({ colorScheme: scheme, reducedMotion: 'reduce' });
+// the phone run catches what only narrow screens show, e.g. a code block that scrolls sideways but takes no focus
+for (const [label, theme, scheme, width] of [['default, Dracula', null, 'dark'], ['dark', 'mac', 'dark'], ['light', 'mac', 'light'], ['phone 375 px', null, 'dark', 375]]) {
+  await check(`axe: WCAG 2.2 AA on every tab (${label})`, async () => {
+    const page = await newPage({ theme, colorScheme: scheme, reducedMotion: 'reduce', ...(width ? { viewport: { width, height: 812 } } : {}) });
     const found = [];
     for (const t of tabs) {
       await open(page, t); await page.waitForTimeout(250);

@@ -405,9 +405,11 @@
                       <div class="mq-when-item">• Message หมด TTL (message-ttl)</div>
                       <div class="mq-when-item">• Queue เต็ม (x-max-length)</div>
                     </div>
-                    <div class="mq-code-snippet"><pre tabindex="0">// ตั้ง DLQ ใน application.properties (Quarkus)
-mp.messaging.incoming.orders.x-dead-letter-exchange=dlx
-mp.messaging.incoming.orders.x-dead-letter-routing-key=dead</pre></div>
+                    <div class="mq-code-snippet"><pre tabindex="0">// ตั้ง DLQ ใน application.properties (Quarkus + SmallRye RabbitMQ)
+mp.messaging.incoming.orders.auto-bind-dlq=true
+mp.messaging.incoming.orders.dead-letter-exchange=dlx
+mp.messaging.incoming.orders.dead-letter-routing-key=dead
+// queue ปลายทางชื่อ orders.dlq (เปลี่ยนได้ด้วย dead-letter-queue-name)</pre></div>
                   </div>
                 </div>
 
@@ -456,8 +458,8 @@ mp.messaging.incoming.orders.x-dead-letter-routing-key=dead</pre></div>
                   <div class="mq-adv-body">
                     <p>จำกัดจำนวน message ที่ RabbitMQ ส่งให้ Consumer ก่อนจะรอ ack กลับ · ป้องกัน Consumer ถูก flood</p>
                     <div class="mq-code-snippet"><pre tabindex="0">// prefetch = 10 → consumer ได้รับสูงสุด 10 msg
-// ก่อน ack ใด ก็ไม่ได้รับ msg ที่ 11
-mp.messaging.incoming.orders.prefetch=10</pre></div>
+// ก่อน ack ใด ก็ไม่ได้รับ msg ที่ 11 (SmallRye เรียกค่านี้ว่า max-outstanding-messages)
+mp.messaging.incoming.orders.max-outstanding-messages=10</pre></div>
                     <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> prefetch=1 = round-robin ที่สมบูรณ์แบบ แต่ throughput ต่ำ | prefetch สูง = throughput สูง แต่อาจ unbalanced</div>
                   </div>
                 </div>
@@ -527,7 +529,7 @@ mp.messaging.incoming.orders.prefetch=10</pre></div>
                   <div class="mq-code-snippet"><pre tabindex="0">SET user:token:abc123 "eyJhbG..." EX 3600
 GET user:token:abc123
 INCR api:calls:2024-06-29
-SETNX lock:order:789 "worker-1"  # NX = only if Not eXists</pre></div>
+SET lock:order:789 "worker-1" NX EX 30  # NX = เฉพาะถ้ายังไม่มี, EX = ปลด lock เองถ้าคนถือ crash</pre></div>
                 </div>
 
                 <div class="mq-ds-panel mq-ds-hidden" id="mq-ds-hash">
@@ -810,10 +812,10 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
                     <span class="mq-q-ext-icon"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></span>
                     <span class="mq-q-ext-badge" style="background:var(--c-pink)">RabbitMQ</span>
                   </div>
-                  <div class="mq-q-ext-name">quarkus-smallrye-reactive-messaging-rabbitmq</div>
+                  <div class="mq-q-ext-name">quarkus-messaging-rabbitmq</div>
                   <div class="mq-q-ext-cmd-wrap">
                     <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
-                    <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="smallrye-reactive-messaging-rabbitmq"</code></div>
+                    <div class="mq-q-ext-cmd"><code>./mvnw quarkus:add-extension -Dextensions="messaging-rabbitmq"</code></div>
                   </div>
                   <div class="mq-q-ext-desc">SmallRye Reactive Messaging: annotation-driven, non-blocking, reactive โดย default</div>
                   <div class="mq-q-ext-features">
@@ -837,7 +839,7 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
                   </div>
                   <div class="mq-q-ext-desc">Vert.x Redis client: รองรับทั้ง reactive และ blocking API พร้อม type-safe commands</div>
                   <div class="mq-q-ext-features">
-                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">StringCommands</span>
+                    <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">ValueCommands</span>
                     <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">HashCommands</span>
                     <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">KeyCommands</span>
                     <span class="mq-q-ext-feat" style="color:var(--c-green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)">TTL / Pub-Sub</span>
@@ -868,10 +870,13 @@ rabbitmq-virtual-host=/
 mp.messaging.incoming.orders-in.connector=smallrye-rabbitmq
 mp.messaging.incoming.orders-in.queue.name=orders
 mp.messaging.incoming.orders-in.queue.durable=true
-mp.messaging.incoming.orders-in.prefetch=10
+mp.messaging.incoming.orders-in.max-outstanding-messages=10
 # Dead Letter Queue
-mp.messaging.incoming.orders-in.x-dead-letter-exchange=dlx
-mp.messaging.incoming.orders-in.x-dead-letter-routing-key=dead.orders
+mp.messaging.incoming.orders-in.auto-bind-dlq=true
+mp.messaging.incoming.orders-in.dead-letter-exchange=dlx
+mp.messaging.incoming.orders-in.dead-letter-routing-key=dead.orders
+# nack แล้วทำอะไร: reject (ค่าเริ่ม, ไป DLQ) | accept | fail
+mp.messaging.incoming.orders-in.failure-strategy=reject
 
 # ── Outgoing channel (Producer) ───────────────────────────────
 mp.messaging.outgoing.orders-out.connector=smallrye-rabbitmq
@@ -894,15 +899,16 @@ mp.messaging.outgoing.events-out.routing-key=order.th.created</code></pre>
 quarkus.redis.hosts=redis://localhost:6379
 
 # ── Redis with password ───────────────────────────────────────
-quarkus.redis.hosts=redis://:mypassword@localhost:6379
+quarkus.redis.hosts=redis://:changeme@localhost:6379
 
 # ── Redis Cluster ─────────────────────────────────────────────
+quarkus.redis.client-type=cluster
 quarkus.redis.hosts=redis://node1:6379,redis://node2:6379
 
 # ── Connection pool ───────────────────────────────────────────
 quarkus.redis.max-pool-size=10
 quarkus.redis.max-pool-waiting=50
-quarkus.redis.connect-timeout=5S
+quarkus.redis.tcp.connection-timeout=5S
 
 # ── Named client (multiple Redis instances) ───────────────────
 quarkus.redis.cache.hosts=redis://cache-server:6379
@@ -1003,7 +1009,7 @@ public class OrderConsumer {
             processBusinessLogic(payload);
             return message.ack();   // บอก RabbitMQ ว่าสำเร็จ → ลบออกจาก queue
         } catch (Exception e) {
-            // nack(true) = requeue | nack(false) = drop / ส่งไป DLQ
+            // nack → ทำตาม failure-strategy ของ channel (ค่าเริ่ม reject = ไม่วนกลับ queue, ไป DLQ ถ้าตั้งไว้)
             return message.nack(e);
         }
     }
@@ -1017,7 +1023,7 @@ public class OrderConsumer {
 // mp.messaging.incoming.orders-in.connector=smallrye-rabbitmq
 // mp.messaging.incoming.orders-in.queue.name=orders
 // mp.messaging.incoming.orders-in.queue.durable=true
-// mp.messaging.incoming.orders-in.prefetch=10</code></pre>
+// mp.messaging.incoming.orders-in.max-outstanding-messages=10</code></pre>
                 </div>
               </div>
 
@@ -1026,35 +1032,38 @@ public class OrderConsumer {
                 <div class="mq-ce-header">
                   <span class="mq-ce-num">3</span>
                   <span class="mq-ce-title">Redis Cache-Aside Pattern: ตรวจ Cache ก่อน ถ้า Miss ดึงจาก DB</span>
-                  <span class="mq-badge mq-badge-warning">StringCommands</span>
+                  <span class="mq-badge mq-badge-warning">ValueCommands</span>
                 </div>
                 <div class="mq-ce-desc">Pattern ที่ใช้บ่อยที่สุด: ลด load จาก DB สูงสุด 90% สำหรับข้อมูลที่อ่านบ่อย</div>
                 <div class="mq-code-block">
                   <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
-import io.quarkus.redis.datasource.string.SetArgs;
-import io.quarkus.redis.datasource.string.StringCommands;
+import io.quarkus.redis.datasource.keys.KeyCommands;
+import io.quarkus.redis.datasource.value.SetArgs;
+import io.quarkus.redis.datasource.value.ValueCommands;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ProductService {
 
-    private final StringCommands&lt;String, String&gt; stringCmds;
+    private final ValueCommands&lt;String, String&gt; valueCmds;
+    private final KeyCommands&lt;String&gt; keyCmds;
 
     @Inject
     ProductRepository productRepo; // ตัวอย่าง JPA repository
 
     public ProductService(RedisDataSource ds) {
-        // inject RedisDataSource แล้ว get type-safe commands
-        this.stringCmds = ds.string(String.class, String.class);
+        // inject RedisDataSource แล้วขอชุดคำสั่งแบบ type-safe (value = คำสั่งกลุ่ม string ของ Redis)
+        this.valueCmds = ds.value(String.class);
+        this.keyCmds = ds.key();
     }
 
     public String getProduct(String productId) {
         String cacheKey = "product:" + productId;
 
         // Step 1: ตรวจ Redis cache ก่อน
-        String cached = stringCmds.get(cacheKey);
+        String cached = valueCmds.get(cacheKey);
         if (cached != null) {
             System.out.println("Cache HIT for " + cacheKey);
             return cached; // คืนจาก cache ทันที ~1ms
@@ -1068,14 +1077,14 @@ public class ProductService {
         // Step 3: แปลงเป็น JSON string และ store ใน Redis พร้อม TTL 5 นาที
         String json = toJson(product); // Jackson ObjectMapper.writeValueAsString
         SetArgs args = new SetArgs().ex(300); // EX 300 seconds
-        stringCmds.set(cacheKey, json, args);
+        valueCmds.set(cacheKey, json, args);
 
         return json;
     }
 
     public void invalidateProduct(String productId) {
         // เมื่อ update ข้อมูล → ลบ cache (cache invalidation)
-        stringCmds.del("product:" + productId);
+        keyCmds.del("product:" + productId);   // DEL อยู่ในกลุ่มคำสั่งของ key
     }
 
     private String toJson(Product p) {
@@ -1158,12 +1167,12 @@ public class SessionService {
                   <span class="mq-ce-title">Rate Limiting ด้วย Redis INCR + EXPIRE</span>
                   <span class="mq-badge mq-badge-danger">INCR + TTL</span>
                 </div>
-                <div class="mq-ce-desc">จำกัด API calls ต่อ IP หรือ user: ใช้ INCR + EXPIRE แบบ atomic · ตัวอย่าง: 100 requests/minute</div>
+                <div class="mq-ce-desc">จำกัด API calls ต่อ IP หรือ user: INCR เป็น atomic ไม่มีการนับชนกัน แล้วตั้ง EXPIRE ตอนนับครั้งแรกของแต่ละนาที · ตัวอย่าง: 100 requests/minute</div>
                 <div class="mq-code-block">
                   <button class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                   <pre class="mq-code"><code class="language-java">import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.KeyCommands;
-import io.quarkus.redis.datasource.string.StringCommands;
+import io.quarkus.redis.datasource.value.ValueCommands;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
@@ -1174,11 +1183,11 @@ public class RateLimiter {
     private static final int MAX_REQUESTS   = 100; // สูงสุด 100 requests
     private static final int WINDOW_SECONDS = 60;  // ต่อ 1 นาที
 
-    private final StringCommands&lt;String, String&gt; stringCmds;
+    private final ValueCommands&lt;String, String&gt; valueCmds;
     private final KeyCommands&lt;String&gt; keyCmds;
 
     public RateLimiter(RedisDataSource ds) {
-        this.stringCmds = ds.string(String.class, String.class);
+        this.valueCmds = ds.value(String.class);
         this.keyCmds    = ds.key(String.class);
     }
 
@@ -1191,7 +1200,7 @@ public class RateLimiter {
         String key = "rate:" + identifier + ":" + getCurrentMinuteBucket();
 
         // INCR เป็น atomic - ได้ค่า count ใหม่ทันที ไม่มี race condition
-        long count = stringCmds.incr(key);
+        long count = valueCmds.incr(key);
 
         if (count == 1) {
             // request แรกใน window นี้ → ตั้ง TTL ด้วย KeyCommands
@@ -1250,9 +1259,9 @@ public class RateLimiter {
                   <div class="mq-ann-note">ใช้คู่กับ Emitter&lt;T&gt; หรือ Multi&lt;T&gt;</div>
                 </div>
                 <div class="mq-ann-card">
-                  <div class="mq-ann-name">@RedisDataSource</div>
-                  <div class="mq-ann-desc">Inject RedisDataSource สำหรับ named Redis client (ถ้ามีหลาย instance)</div>
-                  <div class="mq-ann-note">@RedisDataSource("cache") สำหรับ quarkus.redis.cache.*</div>
+                  <div class="mq-ann-name">@RedisClientName("cache")</div>
+                  <div class="mq-ann-desc">เลือก named Redis client เมื่อมีหลาย instance: <code>@Inject @RedisClientName("cache") RedisDataSource ds</code></div>
+                  <div class="mq-ann-note">ใช้ค่าของ quarkus.redis.cache.* (ไม่ใส่ = client หลัก quarkus.redis.*)</div>
                 </div>
               </div>
             </div>

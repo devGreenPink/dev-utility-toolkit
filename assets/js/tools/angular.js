@@ -4,18 +4,18 @@ const NG_HOOKS=[
    desc:'สร้าง instance ของ component: Angular inject dependencies ที่นี่ก่อนสิ่งอื่นทั้งหมด',
    when:['inject services ผ่าน DI','initialize ค่าเริ่มต้นที่ไม่ต้องการ DOM หรือ @Input'],
    avoid:['เรียก HTTP requests: @Input ยังไม่พร้อม','เข้าถึง DOM: ยังไม่ render','logic ซับซ้อน: ย้ายไป ngOnInit'],
-   tip:'ใช้แค่ inject dependencies + assign ค่าง่ายๆ เท่านั้น',
-   code:'constructor(\n  private userService: UserService,\n  private router: Router\n) {\n  // inject เท่านั้น · ห้าม logic, HTTP call\n}'},
+   tip:'Angular 14+ ใช้ inject() ที่ field ได้เลย ไม่ต้องเขียน constructor',
+   code:'// แบบใหม่: inject() ที่ field\nprivate userService = inject(UserService);\nprivate router = inject(Router);\n\n// แบบเดิม: constructor injection\nconstructor(private http: HttpClient) {\n  // inject เท่านั้น · ห้าม logic, HTTP call\n}'},
   {id:'ngOnChanges',name:'ngOnChanges(changes)',iface:'OnChanges',phase:['create','update'],freq:'on-input-change',fires_on:['create','update'],
    desc:'เรียกทุกครั้งที่ @Input property เปลี่ยน: รวมถึงครั้งแรกที่ create (ก่อน ngOnInit)',
    when:['react ต่อการเปลี่ยน @Input','เปรียบเทียบ previousValue กับ currentValue','reset state เมื่อ @Input เปลี่ยน'],
-   avoid:['logic หนักโดยไม่ check firstChange','pass object/array แบบ mutate: reference เดิม Angular ตรวจไม่เจอ'],
+   avoid:['logic หนักโดยไม่ check firstChange','pass object/array แบบ mutate: reference เดิม Angular ตรวจไม่เจอ','component ที่ไม่มี @Input จะไม่ถูกเรียกเลย'],
    tip:"ใช้ changes['prop'].firstChange เพื่อแยก 'สร้างครั้งแรก' กับ 'update'",
    code:"ngOnChanges(changes: SimpleChanges): void {\n  if (changes['userId'] && !changes['userId'].firstChange) {\n    // @Input เปลี่ยนหลัง init - โหลดข้อมูลใหม่\n    this.loadUser(changes['userId'].currentValue);\n  }\n}"},
   {id:'ngOnInit',name:'ngOnInit()',iface:'OnInit',phase:['create'],freq:'once',fires_on:['create'],
    desc:'เรียกครั้งเดียวหลัง ngOnChanges ครั้งแรก: @Input พร้อม เหมาะที่สุดสำหรับ initialization',
    when:['fetch data จาก API','subscribe to Observables','initialize component state โดยใช้ @Input'],
-   avoid:['เข้าถึง @ViewChild: DOM ยังไม่พร้อม','ใส่ logic ที่ต้องรู้ DOM'],
+   avoid:['เข้าถึง @ViewChild: DOM ยังไม่พร้อม (ยกเว้นประกาศ { static: true })','ใส่ logic ที่ต้องรู้ DOM'],
    tip:'Best place สำหรับ initialization ทั้งหมด: ย้าย HTTP call จาก constructor มาที่นี่เสมอ',
    code:"ngOnInit(): void {\n  // ที่ที่ดีที่สุดสำหรับ initialization\n  this.userId = this.route.snapshot.params['id'];\n  this.user$ = this.userService.getUser(this.userId).pipe(\n    takeUntil(this.destroy$)\n  );\n}"},
   {id:'ngDoCheck',name:'ngDoCheck()',iface:'DoCheck',phase:['update'],freq:'every-cd',fires_on:['create','update','cd'],
@@ -52,14 +52,26 @@ const NG_HOOKS=[
    desc:'เรียกก่อน Angular ทำลาย component: cleanup ทุกอย่างที่นี่เพื่อป้องกัน memory leak',
    when:['unsubscribe Observables','clearInterval / clearTimeout','remove event listeners','destroy third-party libraries'],
    avoid:['ลืม implement: memory leak ทันที'],
-   tip:'ใช้ Subject + takeUntil pattern เพื่อ unsubscribe ทุก Observable ในคำสั่งเดียว',
-   code:'private destroy$ = new Subject<void>();\n\nngOnInit(): void {\n  interval(1000).pipe(\n    takeUntil(this.destroy$)\n  ).subscribe(t => this.tick = t);\n}\n\nngOnDestroy(): void {\n  // cleanup ทุกอย่าง · ป้องกัน memory leak\n  this.destroy$.next();\n  this.destroy$.complete();\n}'}
+   tip:'Angular 16+: takeUntilDestroyed() และ DestroyRef ทำแทนได้โดยไม่ต้องเขียน ngOnDestroy',
+   code:'// Angular 16+: ไม่ต้องมี ngOnDestroy\nconstructor() {\n  interval(1000).pipe(takeUntilDestroyed())\n    .subscribe(t => this.tick = t);\n}\n\n// cleanup อื่นๆ\nprivate destroyRef = inject(DestroyRef);\nngOnInit(): void {\n  const id = setInterval(() => this.poll(), 5000);\n  this.destroyRef.onDestroy(() => clearInterval(id));\n}\n\n// แบบเดิม: Subject + takeUntil\nprivate destroy$ = new Subject<void>();\nngOnDestroy(): void {\n  this.destroy$.next();\n  this.destroy$.complete();\n}'},
+  {id:'afterNextRender',name:'afterNextRender()',iface:null,phase:['create'],freq:'once',fires_on:['create'],
+   desc:'Angular 17+: เรียกครั้งเดียวหลัง Angular render ลง DOM รอบถัดไปเสร็จ ใช้แทน ngAfterViewInit สำหรับงานที่ต้องแตะ DOM จริง และไม่ทำงานตอน SSR',
+   when:['init library ที่ต้องใช้ DOM (chart, map, editor)','วัดขนาด element ครั้งแรก'],
+   avoid:['แก้ state ที่ผูกกับ template: ทำใน ngOnInit หรือ signal แทน'],
+   tip:'เรียกใน constructor หรือ injection context เท่านั้น',
+   code:'constructor() {\n  afterNextRender(() => {\n    this.chart = new Chart(this.canvas().nativeElement, this.config);\n  });\n}'},
+  {id:'afterEveryRender',name:'afterEveryRender()',iface:null,phase:['update'],freq:'every-cd',fires_on:['create','update','cd'],
+   desc:'Angular 20+ (ก่อนหน้านี้ชื่อ afterRender): เรียกหลัง render ทุกครั้ง คล้าย ngAfterViewChecked แต่หลัง DOM ของทั้งแอปเสร็จ',
+   when:['sync DOM กับ library ภายนอกหลังทุกการเปลี่ยนแปลง'],
+   avoid:['งานหนัก: ทำงานทุกครั้งที่ render','แก้ state ที่ทำให้ render ใหม่: วนไม่จบ'],
+   tip:'ส่วนใหญ่ afterNextRender หรือ effect() ก็พอ',
+   code:'constructor() {\n  afterEveryRender(() => {\n    this.editor.layout();\n  });\n}'}
 ];
 
 const NG_SCENARIOS={
-  create: ['constructor','ngOnChanges','ngOnInit','ngDoCheck','ngAfterContentInit','ngAfterContentChecked','ngAfterViewInit','ngAfterViewChecked'],
-  update: ['ngOnChanges','ngDoCheck','ngAfterContentChecked','ngAfterViewChecked'],
-  cd:     ['ngDoCheck','ngAfterContentChecked','ngAfterViewChecked'],
+  create: ['constructor','ngOnChanges','ngOnInit','ngDoCheck','ngAfterContentInit','ngAfterContentChecked','ngAfterViewInit','ngAfterViewChecked','afterNextRender','afterEveryRender'],
+  update: ['ngOnChanges','ngDoCheck','ngAfterContentChecked','ngAfterViewChecked','afterEveryRender'],
+  cd:     ['ngDoCheck','ngAfterContentChecked','ngAfterViewChecked','afterEveryRender'],
   destroy:['ngOnDestroy']
 };
 const NG_PC={'create':'var(--c-cyan)','update':'var(--c-yellow)','destroy':'var(--c-red)'};
@@ -69,7 +81,19 @@ let ngTimer=null,ngQ='';
 
 function hlTS(code){return window.hljs?window.hljs.highlight(code,{language:'typescript'}).value:escHtml(code);}
 
-function initAngular(){renderNgTimeline();renderNgHooks();renderNgDetail(null);}
+// parent and child order on creation (drawn by dgInit in refdocs.js)
+const NG_DIAGRAMS=[
+ {id:'order',t:'ลำดับ parent กับ child',kind:'flow',
+  intro:'parent เริ่มก่อน แต่ AfterView ของ parent จบทีหลัง child เสมอ เพราะ view ของ parent ยังไม่ครบจนกว่า child ทุกตัวจะ render เสร็จ',
+  opt:{label:'ลำดับ hook ของ parent และ child ตอนสร้าง',errLabel:'ใช้อะไรได้ ณ จุดนี้',lang:'typescript'},
+  nodes:[
+   {id:'p1',icon:'layers',t:'Parent',s:'constructor → OnInit → DoCheck',d:'parent ได้ค่า @Input และ init ก่อน',err:['@Input ของ parent พร้อมใน ngOnInit','child ยังไม่ถูกสร้าง @ViewChild ยังเป็น undefined']},
+   {id:'p2',icon:'layers',t:'Parent',s:'AfterContentInit',d:'เนื้อหาที่ถูก project ผ่าน `<ng-content>` พร้อมแล้ว',err:['@ContentChild ใช้ได้']},
+   {id:'c',icon:'file-code',t:'Child',s:'constructor → … → AfterViewInit',d:'ระหว่างที่ parent render template ของตัวเอง child แต่ละตัวถูกสร้างและผ่าน hook ครบชุดของตัวเอง เรียงตามลำดับใน template',err:['child ได้ค่า @Input จาก parent แล้วใน ngOnChanges / ngOnInit']},
+   {id:'p3',icon:'layers',t:'Parent',s:'AfterViewInit',d:'มาหลัง child ทุกตัว render เสร็จ จึงเป็นจุดแรกที่ parent ใช้ @ViewChild ของ child ได้แน่นอน',err:['@ViewChild / @ViewChildren ใช้ได้','แก้ค่าที่ผูกกับ template ตรงนี้จะได้ ExpressionChangedAfterItHasBeenCheckedError']},
+   {id:'nr',icon:'zap',t:'afterNextRender',s:'หลัง DOM ทั้งหน้าเสร็จ',d:'Angular 17+: หลังทุก component render ลง DOM แล้ว เหมาะกับงานที่ต้องวัดหรือแตะ DOM จริง',err:['ไม่ทำงานตอน SSR','ต้องเรียกใน constructor / injection context']}]},
+];
+function initAngular(){dgInit('angular',NG_DIAGRAMS);renderNgTimeline();renderNgHooks();renderNgDetail(null);}
 
 function ngPB(p){return 'ng-pb-'+p;}
 function ngFB(f){return 'ng-fb-'+f.replace(/-/g,'-');}

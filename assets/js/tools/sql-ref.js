@@ -5,6 +5,16 @@ REF_DOCS.sqlref={
   dialectLabel:'เลือกฐานข้อมูล',
   lang:'sql',
   fixLabel:'ข้อควรรู้',
+  diagrams:[
+  {id:'join',t:'JOIN แต่ละแบบ',kind:'venn',sets:['EMPLOYEE','DEPT'],
+   intro:'วงซ้ายคือแถวของ EMPLOYEE วงขวาคือ DEPARTMENT ส่วนที่ระบายคือแถวที่ได้ในผลลัพธ์ · กดแต่ละแบบเพื่อดูคำอธิบาย',
+   cases:[
+    {t:'INNER JOIN',s:'ตรงกันทั้งสองฝั่ง',shade:'inner',tone:'blue',q:'JOIN',note:'ได้เฉพาะพนักงานที่มีแผนกตรงกัน · พนักงานที่ไม่มีแผนก และแผนกที่ไม่มีคน ไม่ออกมา · `FROM EMPLOYEE E JOIN DEPARTMENT D ON D.DEPTNO = E.WORKDEPT`'},
+    {t:'LEFT JOIN',s:'ทุกแถวฝั่งซ้าย',shade:'left',tone:'green',q:'JOIN',note:'ได้พนักงานทุกคน คนที่ไม่มีแผนกจะได้คอลัมน์ของ D เป็น NULL · เงื่อนไขของ D ต้องอยู่ใน ON ถ้าใส่ใน WHERE จะกลายเป็น INNER JOIN'},
+    {t:'RIGHT JOIN',s:'ทุกแถวฝั่งขวา',shade:'right',tone:'purple',q:'JOIN',note:'ได้ทุกแผนก รวมแผนกที่ไม่มีพนักงาน · ส่วนใหญ่เขียนสลับตารางเป็น LEFT JOIN จะอ่านง่ายกว่า'},
+    {t:'FULL OUTER JOIN',s:'ทั้งสองฝั่ง',shade:'all',tone:'orange',q:'JOIN',note:'ได้ทุกแถวของทั้งสองตาราง ฝั่งที่ไม่มีคู่เป็น NULL · MariaDB ไม่มี ต้องใช้ LEFT JOIN UNION RIGHT JOIN'},
+    {t:'ไม่มีคู่ (anti join)',s:'ไม่มีแผนก',shade:'leftonly',tone:'red',q:'NOT EXISTS',note:'พนักงานที่ไม่มีแผนก: `LEFT JOIN ... WHERE D.DEPTNO IS NULL` หรือ `NOT EXISTS (...)` · อย่าใช้ `NOT IN` ถ้า subquery มี NULL ได้'}]},
+  ],
   items:[
   // ── System Catalog ──
   {g:'System Catalog',t:'รายชื่อตารางใน schema',b:'TABLES',bc:'blue',
@@ -155,6 +165,19 @@ CALL SYSPROC.ADMIN_CMD('REORG TABLE MYSCHEMA.EMPLOYEE');`,maria:`SELECT TABLE_NA
 FROM information_schema.TABLES
 WHERE TABLE_SCHEMA = 'mydb'
 ORDER BY size_mb DESC;`}},
+  {g:'System Catalog',t:'หา query ที่ช้า / กินเวลามากสุด',b:'PERF',bc:'orange',k:'slow query explain plan package cache mon_get_pkg_cache_stmt index',
+   d:'DB2 เก็บสถิติของ statement ที่เคยรันไว้ใน package cache · MariaDB เปิด slow query log แล้วดู plan ด้วย EXPLAIN',
+   fix:['เจอ query ที่ช้าแล้วดู plan ว่าใช้ index ไหม (`EXPLAIN`)','ตารางที่เพิ่งโหลดข้อมูลเยอะให้ RUNSTATS ก่อน ไม่งั้น optimizer เลือก plan ผิด'],
+   code:{db2:`-- 10 statement ที่ใช้เวลารวมมากสุด
+SELECT NUM_EXECUTIONS, TOTAL_ACT_TIME, ROWS_READ,
+       SUBSTR(STMT_TEXT, 1, 200) AS STMT
+FROM TABLE(MON_GET_PKG_CACHE_STMT(NULL, NULL, NULL, -2))
+ORDER BY TOTAL_ACT_TIME DESC
+FETCH FIRST 10 ROWS ONLY;`,maria:`-- เปิด slow query log (เกิน 2 วินาที)
+SET GLOBAL slow_query_log = 'ON';
+SET GLOBAL long_query_time = 2;
+
+EXPLAIN SELECT * FROM payment WHERE customer_id = 42;`}},
   {g:'System Catalog',t:'ใครถือ lock อยู่ / session ที่ค้าง',b:'LOCKS',bc:'red',k:'deadlock 911 timeout',
    d:'ใช้ตอนเจอ SQLCODE -911 / -913 (lock timeout, deadlock) หรือ query ค้างไม่จบ',
    fix:['DB2 ปลด session: `FORCE APPLICATION (<handle>)` ผ่าน CLP หรือ `CALL SYSPROC.ADMIN_CMD(\'FORCE APPLICATION (123)\')`','MariaDB ปลด session: `KILL <id>;`','ปลดแล้ว transaction ของ session นั้นจะ rollback'],
@@ -359,6 +382,14 @@ SELECT * FROM EMPLOYEE E
 WHERE NOT EXISTS (
   SELECT 1 FROM DEPARTMENT D WHERE D.MANAGER_ID = E.EMPNO
 );`},
+  {g:'Query พื้นฐาน',t:'BETWEEN กับ TIMESTAMP: ข้อมูลวันสุดท้ายหาย',b:'gotcha',bc:'red',k:'between timestamp date range end of day inclusive',
+   d:'`BETWEEN \'2026-01-01\' AND \'2026-01-31\'` กับคอลัมน์ TIMESTAMP ได้ถึงแค่ `2026-01-31 00:00:00` ข้อมูลที่เกิดระหว่างวันที่ 31 หายหมด',
+   fix:['ใช้ช่วงครึ่งเปิด: `>=` วันแรก และ `<` วันถัดจากวันสุดท้าย','อย่าครอบคอลัมน์ด้วย `DATE(col)` ใน WHERE เพราะใช้ index ไม่ได้'],
+   code:{db2:`SELECT * FROM PAYMENT
+WHERE PAID_AT >= TIMESTAMP('2026-01-01-00.00.00')
+  AND PAID_AT <  TIMESTAMP('2026-02-01-00.00.00');`,maria:`SELECT * FROM payment
+WHERE paid_at >= '2026-01-01'
+  AND paid_at <  '2026-02-01';`}},
   {g:'Query พื้นฐาน',t:'WITH (CTE) และ recursive',b:'CTE',bc:'blue',k:'with recursive hierarchy',
    d:'แยก query ซับซ้อนเป็นชั้นๆ อ่านง่ายขึ้น และใช้ recursive ไล่โครงสร้างลำดับชั้น เช่น หน่วยงานแม่ลูก',
    code:{db2:`WITH ORG (DEPTNO, PARENT, LVL) AS (

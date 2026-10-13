@@ -19,7 +19,7 @@ const TAB_META = {
   'git-tab': { title: 'Git CLI Cheatsheet', sub: 'คำสั่ง Git ที่ใช้บ่อย: commit · branch · rebase · stash · undo' },
   'numbase-tab': { title: 'Number Base Converter', sub: 'แปลงเลขฐาน 10 ↔ 16 ↔ 2 ↔ 8' },
   'rxjs-tab': { title: 'RxJS Reference', sub: 'Operator Explorer · Marble Diagrams · คำอธิบายภาษาไทย' },
-  'angular-tab': { title: 'Angular Lifecycle', sub: '9 Lifecycle Hooks · Interactive Simulator · คำอธิบายภาษาไทย' },
+  'angular-tab': { title: 'Angular Lifecycle', sub: 'Lifecycle Hooks · afterNextRender · Interactive Simulator · คำอธิบายภาษาไทย' },
   'mq-tab': { title: 'RabbitMQ · Redis · Quarkus', sub: 'Concepts · Animations · Code Examples สำหรับมือใหม่' },
   'storage-tab': { title: 'Browser Storage APIs', sub: 'localStorage · sessionStorage · IndexedDB · Cookies · Cache API · OPFS' },
   'lov-tab': { title: 'LOV Query Template Browser / Editor', sub: 'ดู · แก้ · สร้าง · ลบ .lov.json ในโฟลเดอร์ได้เลย ไม่ต้องเปิด cdgs-template-designer · ประกอบ SQL พร้อม copy' },
@@ -79,7 +79,7 @@ function loadTheme(){
   // before v2 the key held 'default' (dark) / 'light' / esan / cdg / south — the retired ones become macOS Dark
   if(t==='light'){t='mac';ap=ap||'light';}
   else if(t&&t!=='mac'&&!PRESETS.some(p=>p[0]===t)){t='mac';ap=ap||'dark';}
-  theme.id=t||'mac';
+  theme.id=t||'dracula'; // first visit
   theme.appearance=['light','dark','auto'].includes(ap)?ap:'auto';
   theme.accent=ac&&(ACCENTS.some(a=>a[0]===ac)||/^#[0-9a-f]{6}$/i.test(ac))?ac:'blue';
 }
@@ -190,7 +190,7 @@ function syncSettingsUI(){
   const ci=document.getElementById('accent-custom-input');
   if(ci&&!named)ci.value=theme.accent;
   const hint=document.getElementById('accent-hint');
-  if(hint)hint.textContent=!mac?'ใช้กับธีม macOS เท่านั้น ตอนนี้ใช้ธีมพิเศษอยู่':named?named[1]:'กำหนดเอง '+theme.accent.toUpperCase();
+  if(hint)hint.textContent=!mac?'ใช้ไม่ได้กับธีมพิเศษ เลือก สว่าง / มืด / อัตโนมัติ ด้านบนก่อน':named?named[1]:'กำหนดเอง '+theme.accent.toUpperCase();
   document.querySelectorAll('.preset-opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.preset===theme.id)));
   document.getElementById('fx-switch')?.setAttribute('aria-checked',String(clickFx));
   document.getElementById('remember-switch')?.setAttribute('aria-checked',String(rememberInputs));
@@ -315,6 +315,15 @@ function syncFavStars(){
     s.classList.toggle('on',fav);
     s.title=fav?'เอาออกจากรายการโปรด':'เพิ่มเข้ารายการโปรด';
   });
+  const tf=document.getElementById('topbar-fav');
+  if(tf){
+    const fav=isFavorite(activeTabId),label=fav?'เอาออกจากรายการโปรด':'เพิ่มเข้ารายการโปรด';
+    tf.hidden=!srcNavItem(activeTabId)?.closest('.nav-group'); // tools only, not the home page
+    tf.classList.toggle('on',fav);
+    tf.setAttribute('aria-pressed',String(fav));
+    tf.setAttribute('aria-label',label);
+    tf.title=label;
+  }
 }
 function renderFavorites(){
   const section=document.getElementById('nav-fav-section');
@@ -457,7 +466,7 @@ const TAB_INIT={
   'http-tab':()=>initHttp(),
   'kubectl-tab':()=>renderCmdList(KUBECTL_CMDS,'kubectl-list',''),
   'linux-tab':()=>renderCmdList(LINUX_CMDS,'linux-list',''),
-  'git-tab':()=>renderCmdList(GIT_CMDS,'git-list',''),
+  'git-tab':()=>{dgInit('git',GIT_DIAGRAMS);renderCmdList(GIT_CMDS,'git-list','');},
   'lov-tab':()=>lovInit(),
   'sqlref-tab':()=>refInit('sqlref'),
   'db2err-tab':()=>refInit('db2err'),
@@ -492,12 +501,22 @@ function openTab(evt,id){
   const grp=srcNavItem(id)?.closest('.nav-group.collapsed');
   if(grp)toggleNavGroup(grp.querySelector('.nav-section-label'));
   if(!remote&&!_tabLoads[id])tabReady(tabEl,id,lazy); // a fetched tab does this once its markup has arrived
-  const meta=TAB_META[id]||{title:'',sub:''};
-  document.getElementById('topbar-title').textContent=meta.title;
-  document.getElementById('topbar-sub').textContent=meta.sub;
+  setTopbar(id);
   try{localStorage.setItem(STORAGE_TAB,id);}catch(e){}
   if(id==='home-tab')homeRender();else pushRecent(id);
   closeSidebar();
+}
+// toolbar heading: the tool's sidebar icon and group, its title and line, and a favorite star
+function setTopbar(id){
+  const meta=TAB_META[id]||{title:'',sub:''},nav=srcNavItem(id);
+  const group=nav?.closest('.nav-group')?.querySelector('.nav-section-label')?.textContent.trim();
+  document.getElementById('topbar-title').textContent=meta.title;
+  document.getElementById('topbar-sub').textContent=meta.sub;
+  document.getElementById('topbar-icon').innerHTML=nav?.querySelector('.nav-icon')?.innerHTML||'';
+  const g=document.getElementById('topbar-group');
+  g.hidden=!group;
+  g.innerHTML=group?escHtml(group)+ic('chevron-right'):'';
+  syncFavStars();
 }
 const _tabLoads={};
 // per-tab setup, once its markup is in the page: TAB_INIT, then the remembered inputs and history of its fields
@@ -573,8 +592,8 @@ document.addEventListener('keydown',e=>{
 
 // ── COMMAND PALETTE (Ctrl/⌘+K) ──
 const PALETTE_CMDS=[ // [label, sub, icon, run]
-  ['ลักษณะ: สว่าง','ธีม macOS','sun',()=>setAppearance('light')],
-  ['ลักษณะ: มืด','ธีม macOS','moon',()=>setAppearance('dark')],
+  ['ลักษณะ: สว่าง','การตั้งค่า','sun',()=>setAppearance('light')],
+  ['ลักษณะ: มืด','การตั้งค่า','moon',()=>setAppearance('dark')],
   ['ลักษณะ: อัตโนมัติ','ตามการตั้งค่าเครื่อง','monitor',()=>setAppearance('auto')],
   ['เปิด/ปิดเอฟเฟกต์และแอนิเมชัน','การตั้งค่า','sparkles',()=>toggleClickFx()],
   ['หน้าแรก','วางข้อความแล้วเปิดเครื่องมือที่ใช่','house',()=>openTab(null,'home-tab')],

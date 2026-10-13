@@ -181,8 +181,8 @@
       --accent3: #ff79c6;
       --success: #50fa7b;
       --text: #f8f8f2;
-      --text-dim: #97a4cc;
-      --text-muted: #808db4;
+      --text-dim: #adb8d9; /* 4.5:1 on the toolbar kbd tint too */
+      --text-muted: #8995bb;
       --btn-primary-bg: #8668b1;
       --btn-primary-text: #ffffff;
     }
@@ -579,17 +579,40 @@
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid var(--border);
+      border-image: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3)) 1;
     }
 
-    .top-bar-heading { min-width: 0; flex: 1; }
+    .top-bar-heading { min-width: 0; flex: 1; display: flex; align-items: center; gap: 10px; }
+    .top-bar-text { min-width: 0; flex: 1; }
+    .top-bar-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    /* the tool's sidebar icon on an accent tint */
+    .tb-tool-ic {
+      flex-shrink: 0; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px;
+      background: var(--accent-glow); color: var(--accent-fg);
+    }
+    .tb-tool-ic:empty { display: none; }
+    .tb-tool-ic .i { width: 18px; height: 18px; }
+    .tb-group { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; font-size: 0.6875rem; color: var(--text-dim); white-space: nowrap; }
+    .tb-group .i { width: 12px; height: 12px; }
     .page-title,
     .page-sub {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .page-title { margin: 0; font-size: 0.9375rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; line-height: 1.3; }
+    .page-title { margin: 0; min-width: 0; font-size: 1rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; line-height: 1.3; }
     .page-sub { font-size: 0.75rem; color: var(--text-dim); line-height: 1.35; }
+    .tb-fav {
+      appearance: none; flex-shrink: 0; display: grid; place-items: center; width: 24px; height: 24px; padding: 0;
+      border: none; border-radius: 6px; background: transparent; color: var(--text-dim); cursor: pointer;
+      transition: color var(--dur-fast), background var(--dur-fast);
+    }
+    .tb-fav .i { width: 15px; height: 15px; }
+    .tb-fav:hover { background: var(--hover); color: var(--c-yellow); }
+    .tb-fav:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .tb-fav.on { color: var(--c-yellow); }
+    .tb-fav.on .i { fill: currentColor; }
+    .tb-fav[hidden], .tb-group[hidden] { display: none; }
 
     .top-bar-actions { margin-left: auto; display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
 
@@ -617,7 +640,7 @@
     .tb-btn[aria-expanded="true"] { background: var(--press); color: var(--text); }
 
     .tb-search {
-      width: 210px;
+      width: clamp(150px, 22vw, 270px);
       justify-content: flex-start;
       padding: 0 6px 0 9px;
       margin-right: 4px;
@@ -627,7 +650,7 @@
       font-weight: 400;
     }
     .tb-search .i { width: 14px; height: 14px; }
-    .tb-search span { flex: 1; text-align: left; }
+    .tb-search span { flex: 1; min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tb-search kbd { font-size: 0.65625rem; }
 
     .content-area {
@@ -1489,7 +1512,6 @@
       transition-delay: 0s;
     }
 
-    .kb-pop-title { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); margin-bottom: 10px; }
     .kb-pop-row { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; font-size: 0.8125rem; color: var(--text); }
     .kb-pop-row:last-child { margin-bottom: 0; }
     .kb-pop-row span { margin-left: 6px; color: var(--text-dim); font-size: 0.78125rem; }
@@ -1724,6 +1746,8 @@
       .content-area { padding: 18px 14px 32px; }
       .tb-search { width: auto; padding: 0 7px; margin-right: 0; background: transparent; box-shadow: none; }
       .tb-search span, .tb-search kbd { display: none; }
+      .tb-group { display: none; }
+      .tb-tool-ic { width: 28px; height: 28px; }
     }
 
     /* ── SCROLL TO TOP ── */
@@ -1838,12 +1862,13 @@
     }
     .mock-field-row:last-child { border-bottom: none; }
     .mock-field-row:hover { background: color-mix(in srgb, var(--text) 2%, transparent); }
+    /* one label column width for every row, so values line up and a long hint wraps instead of squeezing the value */
     .mock-field-meta {
       display: flex;
       flex-direction: column;
       gap: 2px;
-      min-width: 100px;
-      flex-shrink: 0;
+      flex: 0 0 7rem;
+      min-width: 0;
     }
     .mock-field-label {
       font-size: .78rem;
@@ -1854,7 +1879,10 @@
       font-size: .64rem;
       color: var(--text-muted);
       font-family: var(--mono);
+      overflow-wrap: anywhere;
     }
+    .mock-card-type { color: var(--accent-fg); }
+    .mock-card-type:empty { display: none; }
     .mock-field-value {
       flex: 1;
       color: var(--accent2);
@@ -3893,3 +3921,109 @@
     .tree-toggle.is-collapsed .i { transform: rotate(-90deg); }
     /* LOV unsaved marker: a dot, not a ● character */
     .lov-ed-dirty:not(:empty)::before { content: ''; display: inline-block; inline-size: 7px; block-size: 7px; margin-right: 5px; border-radius: 50%; background: currentColor; vertical-align: middle; }
+
+    /* ════════════════════════════════════════════════════════════════════
+       DIAGRAMS (refdocs.js dgShow): tree, boxes, timeline, anatomy; 'flow' reuses .gw-chain
+       Each part takes a hue from its tone: tinted fill, hue border, text stays --text.
+       ════════════════════════════════════════════════════════════════════ */
+    .dg { margin-bottom: 18px; padding: 14px 16px; }
+    .dg-sum { display: flex; align-items: center; gap: 8px; font-size: .9rem; font-weight: 600; cursor: pointer; list-style: none; border-radius: 6px; }
+    .dg-sum::-webkit-details-marker { display: none; }
+    .dg-sum::after { content: ''; margin-left: auto; inline-size: 7px; block-size: 7px; border-right: 2px solid var(--text-dim); border-bottom: 2px solid var(--text-dim); transform: rotate(45deg); transition: transform var(--dur-fast); }
+    .dg:not([open]) .dg-sum::after { transform: rotate(-45deg); }
+    .dg-sum:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .dg-pick { margin-top: 12px; flex-wrap: wrap; inline-size: fit-content; max-inline-size: 100%; }
+    .dg-intro { margin: 10px 0 12px; font-size: .82rem; line-height: 1.6; color: var(--text-dim); }
+    .dg-intro:empty { display: none; }
+    /* the explanation floats at the bottom of the screen while a tall diagram scrolls past,
+       so a click near the top shows its note at once; the right padding keeps clear of the scroll-to-top button */
+    .dg-note {
+      position: sticky; bottom: 12px; z-index: 2; max-block-size: 45vh; overflow-y: auto;
+      margin-top: 12px; padding: 12px 3.25rem 12px 14px; border-radius: var(--radius-sm);
+      background: var(--surface2); border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border)); box-shadow: var(--shadow-md);
+    }
+    .dg-note[hidden] { display: none; }
+    .dg-note-hint { margin: 0; display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--text-dim); }
+    .dg-note-t { margin-bottom: 4px; font-size: .85rem; font-weight: 600; overflow-wrap: anywhere; }
+    .dg-go { margin-top: 8px; }
+
+    [class*="dg-tone-"] { --dg: var(--text-dim); }
+    .dg-tone-red { --dg: var(--c-red); }
+    .dg-tone-orange { --dg: var(--c-orange); }
+    .dg-tone-yellow { --dg: var(--c-yellow); }
+    .dg-tone-green { --dg: var(--c-green); }
+    .dg-tone-blue { --dg: var(--c-blue); }
+    .dg-tone-purple { --dg: var(--c-purple); }
+    .dg-tone-cyan { --dg: var(--c-cyan); }
+    .dg-tone-pink { --dg: var(--c-pink); }
+    .dg-node, .dg-cell-h, .dg-bar, .dg-mark, .dg-seg {
+      appearance: none; font: inherit; color: var(--text); text-align: left;
+      background: color-mix(in srgb, var(--dg) 14%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--dg) 60%, transparent);
+    }
+    button:is(.dg-node, .dg-cell-h, .dg-bar, .dg-mark, .dg-seg) { cursor: pointer; transition: background var(--dur-fast); }
+    button:is(.dg-node, .dg-cell-h, .dg-bar, .dg-mark, .dg-seg):hover { background: color-mix(in srgb, var(--dg) 26%, var(--surface)); }
+    button:is(.dg-node, .dg-cell-h, .dg-bar, .dg-mark, .dg-seg)[aria-pressed="true"] { outline: 2px solid var(--dg); outline-offset: 1px; }
+    button:is(.dg-node, .dg-cell-h, .dg-bar, .dg-mark, .dg-seg):focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .dg-t { font-size: .8rem; font-weight: 600; overflow-wrap: anywhere; }
+    .dg-s { display: block; font-size: .7rem; color: var(--text-dim); overflow-wrap: anywhere; }
+
+    /* tree: nested lists with connector lines */
+    .dg-tree, .dg-tree ul { list-style: none; margin: 0; padding: 0; }
+    .dg-tree ul { margin-left: 12px; padding-left: 18px; border-left: 1px solid var(--line); }
+    .dg-tree li { position: relative; margin: 6px 0; }
+    .dg-tree ul > li::before { content: ''; position: absolute; left: -18px; top: 1.1rem; inline-size: 16px; border-top: 1px solid var(--line); }
+    .dg-node { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; max-inline-size: 100%; padding: 6px 10px; border-radius: 8px; }
+    /* leaves lie side by side in a row; a node with children takes a full line of its own */
+    .dg-tree ul { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; padding-block: 6px 2px; }
+    .dg-tree ul > li { margin: 0; }
+    .dg-tree ul > li:has(> ul) { flex-basis: 100%; }
+    .dg-tree ul > li:not(:has(> ul))::before { display: none; }
+
+    /* boxes: a frame whose children share the space by size */
+    .dg-boxes > .dg-cell { min-block-size: 15rem; }
+    .dg-cell { display: flex; flex-direction: column; gap: 6px; min-inline-size: 0; }
+    .dg-cell:has(> .dg-cell-kids) { padding: 6px; border: 1px dashed var(--line); border-radius: 10px; }
+    .dg-cell-h { display: flex; flex-direction: column; align-items: flex-start; padding: 6px 10px; border-radius: 8px; }
+    .dg-cell:not(:has(> .dg-cell-kids)) > .dg-cell-h { flex: 1; justify-content: center; }
+    .dg-cell-kids { display: flex; flex: 1; gap: 6px; min-inline-size: 0; }
+    .dg-row { flex-direction: row; flex-wrap: wrap; }
+    .dg-row > .dg-cell { min-inline-size: min(9rem, 100%); }
+    .dg-col { flex-direction: column; }
+
+    /* timeline: one row per lane, bars placed by percent of the track */
+    .dg-tl { display: grid; gap: 6px; }
+    .dg-tl-axis { display: flex; justify-content: flex-end; align-items: center; gap: 4px; font-size: .7rem; color: var(--text-dim); }
+    .dg-lane { display: grid; grid-template-columns: minmax(7rem, 12rem) minmax(0, 1fr); gap: 10px; align-items: center; }
+    .dg-lane-t { font-size: .75rem; color: var(--text-dim); overflow-wrap: anywhere; }
+    .dg-track { position: relative; block-size: 2.4rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 4%, transparent); }
+    .dg-bar { position: absolute; top: 4px; bottom: 4px; display: flex; align-items: center; min-inline-size: 24px; padding: 0 8px; border-radius: 6px; overflow: hidden; font-size: .72rem; }
+    .dg-bar span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .dg-guide { position: absolute; top: -4px; bottom: -4px; border-left: 2px dashed var(--dg); pointer-events: none; }
+    .dg-marks .dg-track { block-size: 2.6rem; background: none; }
+    .dg-mark { position: absolute; top: 2px; transform: translateX(-50%); max-inline-size: min(15rem, 70%); padding: 3px 9px; border-radius: 999px; font-size: .72rem; }
+    .dg-mark.dg-mark-start { transform: none; }
+    .dg-mark.dg-mark-end { transform: translateX(-100%); }
+    @media (max-width: 680px) {
+      .dg-lane { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+      .dg-marks .dg-lane-t { display: none; }
+    }
+
+    /* anatomy: a real message with explained parts */
+    .dg-anat { display: grid; gap: 8px; }
+    .dg-anat-line { display: block; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); font-family: var(--mono); font-size: .8rem; line-height: 2.2; overflow-wrap: anywhere; }
+    .dg-seg { margin: 0 1px; padding: 2px 4px; border-radius: 4px; }
+    .dg-seg-plain { color: var(--text-dim); }
+
+    /* venn: one small card per JOIN, the rows it returns filled in the tone */
+    .dg-venn { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 8px; }
+    .dg-venn-case { display: flex; align-items: center; padding: 8px; }
+    .dg-venn-svg { inline-size: 100%; max-inline-size: 9rem; block-size: auto; margin-bottom: 4px; }
+    .dg-venn-fill { fill: color-mix(in srgb, var(--dg) 55%, transparent); }
+    .dg-venn-line { fill: none; stroke: var(--text-dim); stroke-width: 1.2; }
+    .dg-venn-svg text { fill: var(--text-dim); font: 600 8px var(--sans); text-anchor: middle; }
+    .dg-venn-case .dg-t, .dg-venn-case .dg-s { text-align: center; align-self: center; }
+
+    /* HTTP status: which layer answers */
+    .http-src { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; font-size: .74rem; color: var(--text-dim); }
+    .http-src .i { flex-shrink: 0; inline-size: 13px; block-size: 13px; margin-top: 2px; }

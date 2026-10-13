@@ -414,21 +414,19 @@
       <div class="top-bar">
         <button class="tb-btn menu-toggle" onclick="toggleSidebar()" aria-label="เมนู"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
         <div class="top-bar-heading">
-          <h1 class="page-title" id="topbar-title">หน้าแรก</h1>
-          <div class="page-sub" id="topbar-sub">วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด</div>
+          <span class="tb-tool-ic" id="topbar-icon" aria-hidden="true"></span>
+          <div class="top-bar-text">
+            <div class="top-bar-line">
+              <span class="tb-group" id="topbar-group" hidden></span>
+              <h1 class="page-title" id="topbar-title">หน้าแรก</h1>
+              <button type="button" class="tb-fav" id="topbar-fav" onclick="toggleFavorite(event, activeTabId)" aria-pressed="false" aria-label="เพิ่มเข้ารายการโปรด" title="เพิ่มเข้ารายการโปรด" hidden><svg class="i" aria-hidden="true"><use href="#i-star"/></svg></button>
+            </div>
+            <div class="page-sub" id="topbar-sub">วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด</div>
+          </div>
         </div>
         <div class="top-bar-actions">
           <button class="tb-btn" id="share-btn" onclick="shareLink()" aria-label="คัดลอกลิงก์ของเครื่องมือนี้" title="คัดลอกลิงก์ของเครื่องมือนี้พร้อมข้อมูลที่กรอก (ไม่รวม token / secret)"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></button>
-          <button class="tb-btn tb-search" onclick="openPalette()" title="ค้นหาเครื่องมือและคำสั่ง"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span>ค้นหา</span><kbd class="cmdk-key">Ctrl K</kbd></button>
-          <div class="pop-wrap">
-            <button class="tb-btn" id="kb-pop-btn" onclick="togglePop('kb-pop')" aria-label="คีย์ลัด" aria-expanded="false" aria-controls="kb-pop" title="คีย์ลัด"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg></button>
-            <div class="popover kb-pop" id="kb-pop">
-              <div class="kb-pop-title">คีย์ลัด</div>
-              <div class="kb-pop-row"><kbd class="cmdk-mod">Ctrl</kbd><kbd>Enter</kbd><span>รันเครื่องมือที่เปิดอยู่</span></div>
-              <div class="kb-pop-row"><kbd class="cmdk-mod">Ctrl</kbd><kbd>K</kbd><span>ค้นหาเครื่องมือและคำสั่ง</span></div>
-              <div class="kb-pop-row"><kbd>Esc</kbd><span>ปิดหน้าต่างที่เปิดอยู่</span></div>
-            </div>
-          </div>
+          <button class="tb-btn tb-search" onclick="openPalette()" title="ค้นหาเครื่องมือและคำสั่ง"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><span>ค้นหาเครื่องมือ หรือวางข้อความ</span><kbd class="cmdk-key">Ctrl K</kbd></button>
           <div class="pop-wrap">
             <button class="tb-btn" id="settings-btn" onclick="togglePop('settings-pop')" aria-label="ตั้งค่า" aria-expanded="false" aria-controls="settings-pop" title="ตั้งค่า"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg></button>
             <div class="popover settings-pop" id="settings-pop" role="dialog" aria-label="ตั้งค่า">
@@ -480,6 +478,12 @@
                   <div class="pop-hint" id="remember-hint">ข้อความในทุกเครื่องมือและเครื่องมือล่าสุด เก็บในเบราว์เซอร์นี้เท่านั้น ไม่จำ JWT และ Secret</div>
                 </div>
                 <button type="button" class="switch" id="remember-switch" role="switch" aria-checked="true" aria-labelledby="remember-label" aria-describedby="remember-hint" onclick="toggleRemember()"></button>
+              </div>
+              <div class="pop-section">
+                <div class="pop-label">คีย์ลัด</div>
+              <div class="kb-pop-row"><kbd class="cmdk-mod">Ctrl</kbd><kbd>Enter</kbd><span>รันเครื่องมือที่เปิดอยู่</span></div>
+              <div class="kb-pop-row"><kbd class="cmdk-mod">Ctrl</kbd><kbd>K</kbd><span>ค้นหาเครื่องมือและคำสั่ง</span></div>
+              <div class="kb-pop-row"><kbd>Esc</kbd><span>ปิดหน้าต่างที่เปิดอยู่</span></div>
               </div>
               <div class="pop-section">
                 <button type="button" class="btn btn-danger btn-full" onclick="clearRemembered()"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg>ล้างข้อมูลที่จำไว้</button>
@@ -733,9 +737,9 @@
                   <div class="mock-field-meta">
                     <span class="mock-field-label">บัตรเครดิต</span>
                     <span class="mock-field-hint">Luhn-valid (test only)</span>
+                    <span class="mock-field-hint mock-card-type" id="out-card-type"></span>
                   </div>
-                  <span class="mock-field-value mono-sm" id="out-credit" style="font-size:0.74rem"></span>
-                  <span id="out-card-type" style="font-size:0.62rem;color:var(--accent2);font-family:var(--mono);margin-left:4px;flex-shrink:0"></span>
+                  <span class="mock-field-value mono-sm" id="out-credit"></span>
                   <button class="mock-copy-btn" onclick="copyVal('out-credit')" title="คัดลอก"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg></button>
                 </div>
               </div>
@@ -1076,6 +1080,7 @@
 
         <!-- CRON -->
         <div id="cron-tab" class="tab-content"><template class="tab-lazy">
+          <div id="dg-cron"></div>
           <div class="section-header">
             <button class="btn btn-ghost" onclick="clearCron()"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
           </div>
@@ -1412,11 +1417,11 @@
               >
                 Copy cron
               </button>
-              <button class="btn btn-ghost" onclick="copySpring()">
-                Copy @Scheduled
+              <button class="btn btn-ghost" onclick="copySpring()" title="6 ช่อง มีวินาทีนำหน้า">
+                Spring @Scheduled
               </button>
-              <button class="btn btn-ghost" onclick="copyQuartz()">
-                Copy Quartz
+              <button class="btn btn-ghost" onclick="copyQuartz()" title="รูปแบบ Quartz: วินาทีนำหน้า, ชื่อวัน, ? ในช่องวันที่ไม่ใช้">
+                Quarkus @Scheduled
               </button>
             </div>
           </div>
@@ -2082,6 +2087,7 @@
 
         <!-- HTTP STATUS -->
         <div id="http-tab" class="tab-content">
+          <div id="dg-http"></div>
           <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="http-search" placeholder="ค้นหา เช่น 404, unauthorized, redirect" aria-label="ค้นหา HTTP status" oninput="filterHttp(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearHttp();document.getElementById('http-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
           <div
             style="
@@ -2115,6 +2121,7 @@
 
         <!-- GIT CLI -->
         <div id="git-tab" class="tab-content">
+          <div id="dg-git"></div>
           <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="git-search" placeholder="ค้นหาคำสั่ง เช่น commit, branch, rebase, stash" aria-label="ค้นหาคำสั่ง Git" oninput="filterGit(this.value)" /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="clearGit();document.getElementById('git-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
           <div id="git-list"></div>
         </div>

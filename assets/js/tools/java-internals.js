@@ -3,6 +3,46 @@ REF_DOCS.javaint={
   placeholder:'ค้นหา... เช่น retention, interceptor, requires_new, rollback, isolation, metaspace',
   lang:'java',
   fixLabel:'จำไว้',
+  diagrams:[
+  {id:'mem',t:'Memory ของ JVM',kind:'boxes',
+   intro:'Pod ถูก kernel ฆ่า (`OOMKilled`, exit 137) เมื่อทุกส่วนรวมกันเกิน memory limit ไม่ใช่แค่ heap · `-XX:MaxRAMPercentage=75.0` เผื่อ 25% ไว้ให้ส่วนที่อยู่นอก heap',
+   root:{t:'Container memory limit',s:'เช่น resources.limits.memory: 1Gi',q:'container',dir:'row',
+    note:'เพดานของทั้ง process ถ้าเกิน kernel ฆ่าทันที (`OOMKilled`, exit 137) โดยที่ Java ไม่ได้ throw อะไรเลย',kids:[
+    {t:'Heap',s:'-Xmx / MaxRAMPercentage',size:3,tone:'blue',dir:'row',q:'heap',note:'object ทั้งหมดที่ `new` ขึ้นมา GC จัดการให้ · เต็มแล้วได้ `OutOfMemoryError: Java heap space`',kids:[
+      {t:'Young',s:'Eden + Survivor',tone:'cyan',note:'object เกิดใหม่ ส่วนใหญ่ตายเร็ว (เช่น DTO ของแต่ละ request) GC เก็บบ่อยและเร็ว (minor GC)'},
+      {t:'Old',s:'object อายุยืน',size:1.5,tone:'blue',note:'object ที่รอด GC หลายรอบ เช่น cache, connection pool · เต็มบ่อยทำให้เกิด GC ใหญ่ และแอปหยุดชั่วขณะ'}]},
+    {t:'นอก heap',s:'native memory',size:1.4,tone:'purple',dir:'col',note:'ส่วนที่ `-Xmx` ไม่ได้คุม แต่ container นับรวมด้วย',kids:[
+      {t:'Metaspace',s:'ข้อมูลของ class',tone:'purple',q:'metaspace',note:'โครงสร้างของทุก class ที่โหลด · เต็ม = `OutOfMemoryError: Metaspace` (class เยอะ หรือ ClassLoader รั่ว)'},
+      {t:'Thread stacks',s:'-Xss ต่อ thread',tone:'orange',q:'StackOverflowError',note:'แต่ละ thread มี stack ของตัวเอง เรียกซ้ำลึกเกิน = `StackOverflowError` · thread เยอะเกิน = `unable to create native thread`'},
+      {t:'Code cache',s:'machine code จาก JIT',tone:'green',note:'method ที่ JIT compile เป็น machine code แล้ว'},
+      {t:'Direct buffers',s:'Netty / Vert.x',tone:'yellow',note:'buffer นอก heap ที่ Netty / Vert.x ใช้รับส่ง network'}]}]}},
+  {id:'run',t:'จาก .java ถึงตอนรัน',kind:'flow',
+   intro:'error แต่ละแบบเกิดคนละขั้น รู้ว่าเกิดขั้นไหนก็รู้ว่าต้องแก้ที่โค้ด ที่ dependency หรือที่สภาพแวดล้อม',
+   opt:{label:'ขั้นตอนจาก source ถึงการรัน',errLabel:'ปัญหาที่เกิดที่ขั้นนี้',lang:'bash'},
+   nodes:[
+    {id:'src',icon:'file-code',t:'.java',s:'source',d:'โค้ดที่เราเขียน ยังไม่มีอะไรรัน',err:['IDE ขีดเส้นแดง = compile ไม่ผ่านแน่นอน']},
+    {id:'javac',icon:'settings',t:'javac',s:'compile',d:'แปลงเป็น bytecode และตรวจ type ทั้งหมด · annotation processor (Lombok, MapStruct) ทำงานตอนนี้',
+     err:['`cannot find symbol` / type ไม่ตรง: แก้โค้ด หรือ dependency ที่ใช้ compile','`release 21 not supported`: JDK ที่ใช้ build เก่ากว่า `maven.compiler.release`'],code:'mvn clean compile'},
+    {id:'class',icon:'package',t:'.class / jar',s:'bytecode',d:'ไม่ผูกกับ OS · เลข major version ใน class file บอกว่า compile ด้วย JDK ไหน (65 = 21)',
+     err:['`UnsupportedClassVersionError`: รันด้วย JDK ที่เก่ากว่าตอน compile'],code:'javap -v target/classes/org/acme/App.class | grep major'},
+    {id:'load',icon:'download',t:'ClassLoader',s:'โหลด + verify',d:'หา class ตาม classpath แล้วตรวจ bytecode ก่อนใช้งาน',
+     err:['`ClassNotFoundException` / `NoClassDefFoundError`: jar ไม่อยู่ใน classpath หรือ scope ผิด','`NoSuchMethodError`: library คนละเวอร์ชันกับตอน compile']},
+    {id:'jit',icon:'zap',t:'Interpreter → JIT',s:'รันจริง',d:'เริ่มด้วยการแปลทีละคำสั่ง method ที่ถูกเรียกบ่อยถูก JIT compile เป็น machine code จึงเร็วขึ้นหลัง warm-up',
+     err:['exception ทั่วไป (NullPointer, ClassCast) เกิดขั้นนี้: แก้ที่ข้อมูลหรือ logic','ช้าเฉพาะช่วงแรกหลัง deploy = JIT ยังไม่ warm-up']}]},
+  {id:'cl',t:'ClassLoader',kind:'tree',
+   intro:'ตัวลูกถามตัวแม่ก่อนเสมอ (parent delegation) ตัวแม่หาไม่เจอตัวลูกจึงหาเอง · class ชื่อเดียวกันที่โหลดคนละตัวถือเป็นคนละ type',
+   root:{t:'Bootstrap',s:'java.base: java.lang, java.util',note:'ฝังอยู่ใน JVM โหลด class พื้นฐานเช่น `String`, `List` ไม่มีใครแทนที่ได้',kids:[
+    {t:'Platform',s:'java.sql, java.xml',tone:'blue',note:'module อื่นของ JDK ที่ไม่ใช่แกนหลัก',kids:[
+     {t:'Application',s:'classpath / jar ของแอป',tone:'green',q:'ClassLoader',note:'jar ของแอปกับ dependency ทั้งหมด · class ของ framework ส่วนใหญ่อยู่ที่นี่',kids:[
+      {t:'Quarkus dev mode',s:'โค้ดที่เราแก้',tone:'orange',q:'cannot be cast',note:'`mvn quarkus:dev` โหลดโค้ดของเราด้วย ClassLoader แยก เพื่อทิ้งแล้วโหลดใหม่ตอน hot reload · เจอ `X cannot be cast to X` แปลว่า class เดียวกันถูกโหลดสองที่'}]}]}]}},
+  {id:'tx',t:'REQUIRED vs REQUIRES_NEW',kind:'timeline',
+   intro:'`REQUIRED` ร่วม transaction เดียวกับคนที่เรียก จึง rollback ไปด้วยกัน · `REQUIRES_NEW` พักตัวนอกไว้แล้ว commit ของตัวเองแยก',
+   lanes:[
+    {t:'OrderService.place() · tx1',bars:[{from:3,to:80,t:'tx1 ทำงาน',tone:'blue',note:'`@Transactional` (REQUIRED เป็นค่าเริ่ม) เปิด tx1'},{from:81,to:97,t:'rollback tx1',tone:'red',note:'exception ออกจาก `place()` ทุกอย่างใน tx1 ถูกยกเลิก'}]},
+    {t:'AuditService.log() · REQUIRES_NEW',bars:[{from:16,to:38,t:'tx2 แยก → commit',tone:'green',q:'REQUIRES_NEW',note:'tx1 ถูกพักไว้ระหว่างนี้ tx2 commit ทันทีเมื่อ method จบ จึงรอดแม้ tx1 rollback ภายหลัง เหมาะกับ audit log'}]},
+    {t:'PaymentService.charge() · REQUIRED',bars:[{from:44,to:72,t:'ร่วม tx1',tone:'orange',note:'ไม่มี transaction ของตัวเอง ข้อมูลที่บันทึกตรงนี้ถูก rollback ไปพร้อม tx1'}]}],
+   marks:[{at:80,t:'throw exception',tone:'red',q:'rollback',note:'`RuntimeException` ออกจาก `place()` → tx1 rollback · ถ้าเป็น checked exception จะ commit แทน เว้นแต่ตั้ง `rollbackOn`'}]},
+  ],
   items:[
   // ── Compile vs Runtime ──
   {g:'Compile vs Runtime',t:'จาก .java ไปจนรันบน JVM',b:'flow',bc:'blue',k:'javac bytecode classloader jit interpreter javap',
@@ -42,6 +82,52 @@ jcmd <pid> GC.heap_dump /tmp/h.hprof`},
 resources:
   limits:
     memory: 1Gi`},
+
+  {g:'JVM Memory',t:'Garbage Collection (GC) เบื้องต้น',b:'gc',bc:'purple',k:'g1 zgc serial minor major full gc pause young old xlog jstat',
+   d:'GC เก็บ object ที่ไม่มีใครอ้างถึงแล้ว · Minor GC = เก็บ Young (บ่อยและเร็ว) · Major / Full GC = เก็บ Old ด้วย (นานกว่า แอปอาจหยุดชั่วขณะ) · ค่าเริ่มคือ G1 · ZGC หยุดสั้นมาก เหมาะกับ heap ใหญ่',
+   fix:['container ที่ได้ CPU น้อยกว่า 2 หรือ memory น้อยกว่าราว 1.8 GB JVM เลือก SerialGC เอง (หยุดทั้งแอปตอน GC) ระบุ `-XX:+UseG1GC` ถ้าต้องการ','GC ถี่จนกิน CPU แต่ heap ไม่ลด = memory รั่ว (เช่น เก็บ object ใน static Map ที่ไม่มีวันลบ)','ดู GC log ก่อนปรับ flag ใดๆ'],
+   lang:'bash',
+   code:`# GC log ลงไฟล์
+java -Xlog:gc*:file=/tmp/gc.log:time,uptime -jar app.jar
+
+# ดูขณะรัน
+jcmd <pid> GC.heap_info
+jstat -gcutil <pid> 1000`},
+
+  // ── กับดักของภาษา ──
+  {g:'กับดักของภาษา',t:'== กับ equals() และ Integer cache',b:'gotcha',bc:'orange',k:'integer long cache 127 128 equals string compare boxing',
+   d:'`==` เทียบว่าเป็น object ตัวเดียวกัน ไม่ใช่ค่าเท่ากัน · `Integer` / `Long` ค่า -128 ถึง 127 ถูก cache ไว้ `==` จึงบังเอิญเป็นจริง พอเกิน 127 เป็นเท็จ',
+   fix:['เทียบ object ด้วย `equals()` หรือ `Objects.equals(a, b)` (ปลอดภัยกับ null)','`String` เทียบด้วย `equals()` เสมอ','id ของ entity เป็น `Long` อย่าใช้ `==`'],
+   code:`Long a = 127L, b = 127L;
+System.out.println(a == b);        // true  (มาจาก cache)
+Long c = 128L, d = 128L;
+System.out.println(c == d);        // false (คนละ object)
+System.out.println(c.equals(d));   // true`},
+  {g:'กับดักของภาษา',t:'equals / hashCode ของ JPA entity',b:'gotcha',bc:'orange',k:'equals hashcode entity set hashset lombok data id null',
+   d:'entity ที่ยังไม่ persist มี id เป็น null ถ้า `hashCode()` คำนวณจาก id พอ persist แล้ว hash เปลี่ยน object จะหายจาก `HashSet` ที่ใส่ไว้ก่อน · Lombok `@Data` สร้าง equals / hashCode จากทุก field รวม relation (ช้าและวนลูปได้)',
+   fix:['เทียบด้วย id เมื่อมีค่าแล้ว และให้ `hashCode()` คงที่ตลอดอายุ object','entity อย่าใช้ `@Data` ใช้ `@Getter` / `@Setter` แทน'],
+   code:`@Entity
+public class Employee {
+    @Id @GeneratedValue Long id;
+
+    @Override public boolean equals(Object o) {
+        return this == o || (o instanceof Employee e && id != null && id.equals(e.id));
+    }
+    @Override public int hashCode() { return getClass().hashCode(); }  // คงที่ ไม่ขึ้นกับ id
+}`},
+
+  // ── Thread ──
+  {g:'Thread',t:'Virtual thread (Java 21) และ @RunOnVirtualThread',b:'java21',bc:'cyan',k:'virtual thread loom runonvirtualthread blocking event loop pinning synchronized',
+   d:'virtual thread เป็น thread เบาๆ ที่ JVM จัดการเอง สร้างได้เป็นแสน เขียนโค้ดแบบ blocking ธรรมดาแต่รับงานพร้อมกันได้มากขึ้น · Quarkus ใช้กับ endpoint ด้วย `@RunOnVirtualThread`',
+   fix:['เหมาะกับงานที่รอ I/O (DB, REST) ไม่ช่วยงานที่กิน CPU','ระวัง pinning: blocking ใน `synchronized` ทำให้ virtual thread ติดกับ thread จริง (Java 21-23) ใช้ `ReentrantLock` แทน','connection pool ยังจำกัดจำนวนงาน DB พร้อมกันเท่าเดิม'],
+   code:`@Path("/orders")
+public class OrderResource {
+    @GET
+    @RunOnVirtualThread
+    public List<OrderDto> list() {
+        return service.findAll();   // JDBC แบบ blocking ได้ตามปกติ
+    }
+}`},
 
   // ── Annotation ──
   {g:'Annotation',t:'Annotation คืออะไร + meta-annotation',b:'basic',bc:'green',k:'retention source class runtime target documented inherited repeatable',

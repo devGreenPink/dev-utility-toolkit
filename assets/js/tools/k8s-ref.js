@@ -486,7 +486,7 @@ const K8S_MANIFESTS=[
   ["          configMap:",""],
   ["            name: order-api-config",""],
   ["            items:","เลือกเฉพาะบาง key และตั้งชื่อไฟล์ ไม่ใส่ = ทุก key กลายเป็นไฟล์"],
-  ["              - key: app-config.json","key ใน ConfigMap ถ้า key นี้ไม่มี Pod จะ start ไม่ได้ (CreateContainerConfigError)"],
+  ["              - key: app-config.json","key ใน ConfigMap ถ้าไม่มี key นี้ Pod ค้างที่ ContainerCreating และ Events ขึ้น FailedMount (non-existent config key)"],
   ["                path: app-config.json","ชื่อไฟล์ใน volume (subPath ข้างบนต้องตรงกับชื่อนี้)"],
   ["                mode: 0444","permission ของไฟล์ (เลขฐาน 8) 0444 = ทุกคนอ่านได้อย่างเดียว"],
   ["        - name: nginx-conf",""],
@@ -905,6 +905,40 @@ const K8S_MANIFESTS=[
 REF_DOCS.k8s={
   placeholder:'ค้นหา เช่น CrashLoopBackOff, subPath, PVC, probe, ArgoCD, permission',
   lang:'bash',
+  diagrams:[
+  {id:'status',t:'Pod ค้างตรงไหน',kind:'flow',
+   intro:'Pod ผ่านทีละขั้นตั้งแต่ถูกสร้างจนรับ traffic ได้ สถานะใน `kubectl get pods` บอกว่าติดขั้นไหน กดแต่ละขั้นเพื่อดูสาเหตุที่เจอบ่อยและคำสั่งที่ใช้ดู',
+   opt:{label:'ขั้นตอนชีวิตของ Pod',errLabel:'ติดที่ขั้นนี้เพราะ',lang:'bash'},
+   nodes:[
+    {id:'sched',icon:'layers',t:'Pending',s:'หา node วาง',d:'scheduler หา node ที่มีทรัพยากรพอตาม `requests` และตรงกับ nodeSelector / taint',
+     err:['`Insufficient cpu / memory`: requests เกินที่ node ไหนว่างอยู่','PVC ยังไม่ Bound (ดูการ์ด PVC ค้าง Pending)','nodeSelector / affinity / taint ไม่ตรงกับ node ไหนเลย'],
+     code:'kubectl describe pod <pod> -n shop | tail -20   # ดู FailedScheduling'},
+    {id:'create',icon:'download',t:'ContainerCreating',s:'ดึง image + mount',d:'kubelet บน node ดึง image, mount volume และเตรียม env ก่อนสั่งรัน container',
+     err:['`ImagePullBackOff` / `ErrImagePull`: ชื่อหรือ tag ผิด หรือไม่มี imagePullSecrets','`FailedMount`: ConfigMap / Secret / PVC ที่ volume อ้างไม่มี หรือ key ใน items ไม่มี','`CreateContainerConfigError`: env อ้าง ConfigMap / Secret หรือ key ที่ไม่มี'],
+     code:'kubectl get events -n shop --sort-by=.lastTimestamp | tail -20'},
+    {id:'start',icon:'zap',t:'Running',s:'startup / liveness',d:'container เริ่มแล้ว startupProbe รอให้แอป start เสร็จ จากนั้น livenessProbe เช็คเป็นระยะว่ายังไม่ค้าง',
+     err:['`CrashLoopBackOff`: แอปตายตอน start ดู `kubectl logs --previous`','`OOMKilled` (exit 137): memory เกิน limit','liveness ไม่ผ่านติดกัน = restart วน (อย่าให้ liveness เช็ค DB)'],
+     code:"kubectl logs <pod> -n shop --previous\nkubectl get pod <pod> -n shop -o jsonpath='{.status.containerStatuses[0].lastState}'"},
+    {id:'ready',icon:'circle-check',t:'Ready',s:'รับ traffic',d:'readinessProbe ผ่าน Pod ถูกใส่เข้า endpoints ของ Service จึงได้รับ traffic',
+     err:['READY 0/1: readiness ไม่ผ่าน (path ของ probe ขาด root path, DB ต่อไม่ได้)','`kubectl get endpoints` ว่าง: label ของ Pod ไม่ตรงกับ selector ของ Service'],
+     code:'kubectl get endpoints order-api -n shop'},
+    {id:'term',icon:'circle-x',t:'Terminating',s:'ปิดตัว',d:'ตอน rollout / scale down kubelet ส่ง SIGTERM แล้วรอ `terminationGracePeriodSeconds` (ค่าเริ่ม 30 วินาที) ก่อนส่ง SIGKILL',
+     err:['request ที่กำลังทำถูกตัด: ตั้ง `quarkus.shutdown.timeout` ให้ Quarkus รอ request ที่ค้างก่อนปิด (ค่าเริ่มไม่รอ)','ค้าง Terminating นาน: finalizer ค้าง หรือ volume ถอดไม่ออก','exit 143 = จบด้วย SIGTERM ตามปกติ, 137 = ถูก SIGKILL']}]},
+  {id:'owners',t:'ใครสร้าง Pod',kind:'tree',
+   intro:'ส่วนใหญ่ไม่ได้สร้าง Pod ตรงๆ แต่ให้ controller สร้างและดูแล ลบ Pod ที่มีเจ้าของแล้ว controller สร้างใหม่ทันที ต้องแก้ที่ตัวเจ้าของ',
+   root:{t:'Controller',s:'ดูแลให้ตรงกับ spec',note:'controller แต่ละชนิดดู spec ที่เราประกาศ แล้วสร้าง / ลบ Pod ให้ตรงตลอดเวลา',kids:[
+    {t:'Deployment',s:'แอปไม่มี state',tone:'blue',q:'Deployment',note:'API, เว็บ: Pod แทนกันได้ · เปลี่ยน image แล้วสร้าง ReplicaSet ใหม่และย้าย Pod ทีละตัว (rolling update)',kids:[
+      {t:'ReplicaSet',s:'หนึ่งตัวต่อเวอร์ชัน',tone:'blue',note:'คุมจำนวน Pod ของเวอร์ชันหนึ่ง ReplicaSet เก่าเก็บไว้ให้ `rollout undo` (ตาม revisionHistoryLimit)',kids:[
+        {t:'Pod × replicas',s:'ชื่อสุ่ม เช่น order-api-7d9f8c-x2k4q',tone:'blue',note:'ชื่อเปลี่ยนทุกครั้งที่สร้างใหม่ อย่าอ้างชื่อ Pod ตรงๆ ให้เรียกผ่าน Service'}]}]},
+    {t:'StatefulSet',s:'มี state',tone:'purple',q:'StatefulSet',note:'DB, Redis, RabbitMQ: Pod มีชื่อและ PVC คงที่ของตัวเอง สร้าง / ลบตามลำดับ',kids:[
+      {t:'Pod ชื่อคงที่',s:'redis-0, redis-1',tone:'purple',note:'DNS ของแต่ละ Pod คงที่ผ่าน headless Service'},
+      {t:'PVC ต่อ Pod',s:'data-redis-0',tone:'purple',q:'volumeClaimTemplates',note:'สร้างจาก volumeClaimTemplates ลบ StatefulSet แล้ว PVC ยังอยู่'}]},
+    {t:'DaemonSet',s:'หนึ่ง Pod ต่อ node',tone:'green',q:'DaemonSet',note:'agent ระดับเครื่อง เช่น Filebeat, node exporter',kids:[
+      {t:'Pod บนทุก node',tone:'green',note:'เพิ่ม node ใหม่แล้วได้ Pod บนเครื่องนั้นเอง'}]},
+    {t:'CronJob',s:'ตามเวลา',tone:'orange',q:'CronJob',note:'สร้าง Job ตาม schedule',kids:[
+      {t:'Job',s:'รันจนจบ',tone:'orange',note:'ลองใหม่ตาม backoffLimit และหยุดเมื่อเกิน activeDeadlineSeconds',kids:[
+        {t:'Pod',s:'restartPolicy: Never / OnFailure',tone:'orange',note:'จบแล้วไม่ถูกสร้างใหม่ เก็บไว้ดู log ตาม history limit'}]}]}]}},
+  ],
   items:[
   {g:'แนวคิด',t:'Image vs Container vs VM',b:'docker',bc:'blue',k:'layer namespace cgroup',
    d:'Image = แม่แบบอ่านอย่างเดียว ประกอบจาก layer หลายชั้น · Container = process ที่รันจาก image โดยแยก filesystem / network / process ด้วย namespace และจำกัดทรัพยากรด้วย cgroup ใช้ kernel ร่วมกับเครื่อง จึงเบากว่า VM ที่ต้องมี OS ของตัวเอง',
@@ -918,7 +952,7 @@ docker exec -it api sh`},
    code:`kubectl get pods -n shop -o wide
 kubectl describe pod <pod> -n shop      # ดู Events ท้ายสุดเมื่อมีปัญหา`},
   {g:'แนวคิด',t:'Deployment / ReplicaSet / StatefulSet',b:'workload',bc:'blue',k:'rollout rollback stateful mariadb rabbitmq',
-   d:'Deployment = แอปที่ไม่มี state (API, web) Pod แทนกันได้ · StatefulSet = แอปที่มี state ต้องการชื่อและ volume คงที่ต่อ Pod เช่น MariaDB, RabbitMQ (ในโปรเจคนี้ใช้ StatefulSet กับ RabbitmqCluster)',
+   d:'Deployment = แอปที่ไม่มี state (API, web) Pod แทนกันได้ · StatefulSet = แอปที่มี state ต้องการชื่อและ volume คงที่ต่อ Pod เช่น MariaDB, Redis และ RabbitMQ (ติดตั้งด้วย operator ผ่าน `RabbitmqCluster` ก็ได้ StatefulSet เช่นกัน)',
    code:`kubectl rollout status deployment/order-api -n shop
 kubectl rollout history deployment/order-api -n shop
 kubectl rollout undo deployment/order-api -n shop      # ย้อนเวอร์ชันก่อน
@@ -928,12 +962,12 @@ kubectl rollout restart deployment/order-api -n shop   # restart ทุก Pod �
    code:`kubectl get svc -n shop
 kubectl get endpoints order-api -n shop   # ว่าง = selector ไม่ตรง หรือ Pod ยังไม่ ready`},
   {g:'แนวคิด',t:'Ingress และ Ingress Controller',b:'network',bc:'blue',k:'kong nginx route host path tls',
-   d:'Ingress เป็นแค่กฎ (host / path → Service) ต้องมี Ingress Controller มาทำตาม ในโปรเจคนี้คือ Kong ดูรายละเอียดในหน้า Request Path'},
+   d:'Ingress เป็นแค่กฎ (host / path → Service) ต้องมี Ingress Controller มาทำตาม ในตัวอย่างนี้คือ Kong ดูรายละเอียดในหน้า Request Path'},
   {g:'แนวคิด',t:'ConfigMap และ Secret',b:'config',bc:'blue',k:'base64 env volume encrypt',
    d:'ConfigMap เก็บ config ทั่วไป · Secret เก็บรหัสผ่าน / token แต่เป็นแค่ base64 ไม่ได้เข้ารหัส ใครมีสิทธิ์อ่าน Secret ก็อ่านได้ (ลองถอดด้วยหน้า K8s Secret Decoder)',
    fix:['อย่า commit Secret ลง git แบบ plain','แก้ ConfigMap / Secret แล้วต้อง restart Pod ถ้าใช้เป็น env (env อ่านครั้งเดียวตอน start)'],
    code:`kubectl create secret generic order-db -n shop \\
-  --from-literal=username=app --from-literal=password='s3cret'
+  --from-literal=username=app --from-literal=password=changeme
 
 kubectl get secret order-db -n shop -o jsonpath='{.data.password}' | base64 -d`},
   {g:'แนวคิด',t:'PersistentVolume / PVC / StorageClass',b:'storage',bc:'blue',k:'pv pvc volume storage nfs',
@@ -964,7 +998,7 @@ kubectl describe pod <pod> -n shop | tail -30`},
   {g:'แก้ปัญหา Pod',t:'ImagePullBackOff / ErrImagePull',b:'status',bc:'red',k:'registry secret tag not found',
    d:'ดึง image ไม่ได้: ชื่อ / tag ผิด, ไม่มีสิทธิ์ registry (imagePullSecrets) หรือ node ต่อ registry ไม่ได้',
    code:`kubectl describe pod <pod> -n shop      # ดูข้อความใน Events
-kubectl get secret docker-secret -n shop`},
+kubectl get secret registry-cred -n shop     # Secret ของ imagePullSecrets ต้องอยู่ namespace เดียวกับ Pod`},
   {g:'แก้ปัญหา Pod',t:'Pending',b:'status',bc:'orange',k:'insufficient cpu memory pvc unbound schedule',
    d:'scheduler หา node วางไม่ได้: ทรัพยากรไม่พอตาม requests, PVC ยังไม่ bound หรือ nodeSelector / taint ไม่ตรง',
    code:`kubectl describe pod <pod> -n shop      # FailedScheduling: Insufficient memory
@@ -978,7 +1012,7 @@ kubectl top pod -n shop`},
    code:`kubectl get endpoints order-api -n shop
 kubectl port-forward svc/order-api 8080:80 -n shop   # ทดสอบตรงจากเครื่องเรา
 curl -v http://localhost:8080/q/health`},
-  {g:"แก้ปัญหา Pod",t:"CreateContainerConfigError",b:"status",bc:"red",k:"configmap secret key not found env",d:"kubelet สร้าง container ไม่ได้เพราะอ้าง ConfigMap / Secret หรือ key ที่ไม่มีอยู่จริง (env หรือ volume items)",fix:["ดูข้อความใน Events ว่าขาดตัวไหน เช่น `secret \"order-db\" not found` หรือ `couldn't find key password`", "สร้าง / แก้ชื่อ key ให้ตรง หรือใส่ `optional: true` ถ้ายอมให้ไม่มีได้", "Secret ต้องอยู่ namespace เดียวกับ Pod"],code:"kubectl describe pod <pod> -n shop | tail -15\nkubectl get secret order-db -n shop -o jsonpath='{.data}' | jq 'keys'   # ดูแค่ชื่อ key ไม่แสดงค่า"},
+  {g:"แก้ปัญหา Pod",t:"CreateContainerConfigError",b:"status",bc:"red",k:"configmap secret key not found env",d:"kubelet สร้าง container ไม่ได้เพราะ env อ้าง ConfigMap / Secret หรือ key ที่ไม่มีอยู่จริง (`configMapKeyRef`, `secretKeyRef`, `envFrom`) · ถ้าเป็น volume ที่อ้างของที่ไม่มี Pod จะค้าง `ContainerCreating` และ Events ขึ้น `FailedMount` แทน",fix:["ดูข้อความใน Events ว่าขาดตัวไหน เช่น `secret \"order-db\" not found` หรือ `couldn't find key password`", "สร้าง / แก้ชื่อ key ให้ตรง หรือใส่ `optional: true` ถ้ายอมให้ไม่มีได้", "Secret ต้องอยู่ namespace เดียวกับ Pod"],code:"kubectl describe pod <pod> -n shop | tail -15\nkubectl get secret order-db -n shop -o jsonpath='{.data}' | jq 'keys'   # ดูแค่ชื่อ key ไม่แสดงค่า"},
   {g:"แก้ปัญหา Pod",t:"Readiness probe failed: HTTP probe failed with statuscode: 404",b:"status",bc:"red",k:"probe 404 root-path health ready",d:"Pod รันอยู่แต่ READY เป็น 0/1 และ Service ไม่ส่ง traffic ให้ · มักเพราะแอปตั้ง `quarkus.http.root-path` แต่ probe ยังเรียก `/q/health/ready` โดยไม่มี root path นำหน้า หรือยังไม่ได้ใส่ extension smallrye-health",fix:["แก้ path ของ probe เป็น `/<root-path>/q/health/ready`", "ตรวจว่ามี dependency `quarkus-smallrye-health`", "ถ้า readiness ไม่ผ่านเพราะ DB ต่อไม่ได้ ดู log ของแอป"],code:"kubectl describe pod <pod> -n shop | grep -i probe\nkubectl port-forward <pod> 8080 -n shop\ncurl -i localhost:8080/order-api/q/health/ready"},
   {g:"แก้ปัญหา Pod",t:"Evicted / DiskPressure",b:"status",bc:"orange",k:"evicted disk pressure ephemeral storage node",d:"node ทรัพยากรไม่พอ (ดิสก์ / memory) kubelet จึงไล่ Pod ออก ที่พบบ่อยคือ log หรือไฟล์ชั่วคราวในคอนเทนเนอร์กินดิสก์ของ node และ image เก่าค้างเยอะ",fix:["ตั้ง `resources.requests/limits.ephemeral-storage` และ `emptyDir.sizeLimit`", "ไฟล์ใหญ่ให้เขียนลง PVC ไม่ใช่ filesystem ของคอนเทนเนอร์", "ลบ Pod ที่ Evicted ค้างไว้ (ไม่ถูกลบเอง)"],code:"kubectl get pods -A --field-selector=status.phase=Failed | grep Evicted\nkubectl delete pods -n shop --field-selector=status.phase=Failed\nkubectl describe node <node> | grep -A5 Conditions"},
   {g:"แก้ปัญหา Pod",t:"ArgoCD ขึ้น OutOfSync วนไม่จบ",b:"gitops",bc:"purple",k:"argocd outofsync replicas hpa selfheal ignoredifferences",d:"ค่าในคลัสเตอร์ไม่ตรงกับ git ตลอดเวลา: HPA ปรับ replicas, mutating webhook เติม field, หรือ controller อื่นแก้ resource · selfHeal จะดึงกลับและ HPA ก็ปรับใหม่ วนไปเรื่อยๆ",fix:["ใส่ `ignoreDifferences` สำหรับ `/spec/replicas` ของ Deployment ที่มี HPA (ดูไฟล์ ArgoCD Application)", "หรือไม่ต้องใส่ `replicas` ใน YAML เลยเมื่อมี HPA", "กด Diff ใน UI ของ ArgoCD ดูว่า field ไหนต่าง"],code:"argocd app diff shop\nargocd app get shop --refresh\nargocd app sync shop --prune"},

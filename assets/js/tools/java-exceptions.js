@@ -3,6 +3,99 @@
 REF_DOCS.javaex={
   placeholder:'ค้นหา exception หรือข้อความ... เช่น LazyInitialization, no Session, acquisition timeout',
   lang:'java',
+  diagrams:[
+  {id:'tree',t:'ลำดับชั้น',kind:'tree',
+   intro:'ทุก exception สืบทอดจาก `Throwable` · ตัวที่อยู่ใต้ `RuntimeException` เป็น unchecked (compiler ไม่บังคับ catch) และทำให้ `@Transactional` rollback เอง · checked exception ต้อง catch หรือ `throws` และจะ commit ถ้าไม่ตั้ง `rollbackOn`',
+   root:{t:'Throwable',s:'java.lang',note:'แม่ของทุกอย่างที่ throw ได้ แยกเป็น `Error` (ปัญหาของ JVM / สภาพแวดล้อม) กับ `Exception` (ปัญหาที่โปรแกรมรับมือได้)',kids:[
+    {t:'Error',s:'ไม่ควร catch',tone:'red',note:'JVM หรือสภาพแวดล้อมพัง catch แล้วก็ทำงานต่อไม่ได้ ต้องแก้ที่สาเหตุ · ออกจาก `@Transactional` แล้ว rollback',kids:[
+      {t:'VirtualMachineError',s:'JVM หมดทรัพยากร',tone:'red',note:'memory หรือ stack ไม่พอ ดูข้อความต่อท้ายว่าส่วนไหนหมด',kids:[
+        {t:'OutOfMemoryError',tone:'red',note:'heap / metaspace / thread ไม่พอ',q:'OutOfMemoryError'},
+        {t:'StackOverflowError',tone:'red',note:'เรียกซ้ำไม่จบ มักเป็น `toString()` / `hashCode()` / JSON ของ entity ที่ชี้กันไปมา',q:'StackOverflowError'}]},
+      {t:'LinkageError',s:'classpath / เวอร์ชัน',tone:'red',note:'class ที่ใช้ตอนรันไม่ตรงกับตอน compile: jar ขาด, คนละเวอร์ชัน หรือ JDK เก่ากว่า',kids:[
+        {t:'NoClassDefFoundError',tone:'red',note:'ตอนรันหา class ที่ตอน compile มีไม่เจอ หรือ static initializer พังไปก่อนแล้ว',q:'NoClassDefFoundError'},
+        {t:'NoSuchMethodError / NoSuchFieldError',tone:'red',note:'library คนละเวอร์ชันกับตอน compile (dependency ชนกัน)',q:'NoSuchMethodError'},
+        {t:'ExceptionInInitializerError',tone:'red',note:'static block / static field พังตอนโหลด class',q:'ExceptionInInitializerError'},
+        {t:'UnsupportedClassVersionError',tone:'red',note:'class ถูก compile ด้วย JDK ใหม่กว่าที่ใช้รัน',q:'UnsupportedClassVersionError'}]}]},
+    {t:'Exception',s:'checked',tone:'orange',note:'ต้อง catch หรือประกาศ `throws` ไม่งั้น compile ไม่ผ่าน · throw ออกจาก `@Transactional` แล้ว commit (ไม่ rollback) ถ้าไม่ตั้ง `rollbackOn`',kids:[
+      {t:'InterruptedException',tone:'orange',note:'thread ถูกสั่งหยุดระหว่างรอ ต้องคืน interrupt flag ก่อนออก',q:'InterruptedException'},
+      {t:'ExecutionException',s:'java.util.concurrent',tone:'orange',note:'ห่อ exception ที่เกิดใน task อื่น ดูที่ `getCause()`',q:'ExecutionException'},
+      {t:'ClassNotFoundException',s:'reflection',tone:'orange',note:'โหลด class ด้วยชื่อแล้วหาไม่เจอ (Class.forName, driver, plugin)',q:'ClassNotFoundException'},
+      {t:'RollbackException',s:'jakarta.transaction',tone:'orange',note:'commit ไม่สำเร็จหรือ transaction ถูก rollback ไปแล้ว ใน Quarkus มักโผล่เป็น `Caused by` ใต้ `ArcUndeclaredThrowableException`',q:'RollbackException'},
+      {t:'IOException',s:'java.io',tone:'orange',note:'อ่าน / เขียนไฟล์ หรือ network ไม่สำเร็จ',q:'IOException',kids:[
+        {t:'FileNotFoundException / NoSuchFileException',tone:'orange',note:'path ไม่มีจริง หรือ path แบบ relative ต่างกันระหว่างเครื่องกับ container',q:'NoSuchFileException'},
+        {t:'SocketTimeoutException',tone:'orange',note:'ปลายทางตอบช้ากว่า timeout',q:'SocketTimeoutException'},
+        {t:'ConnectException / UnknownHostException',tone:'orange',note:'ต่อปลายทางไม่ได้ หรือหาชื่อ host ไม่เจอ',q:'UnknownHostException'},
+        {t:'SSLHandshakeException',tone:'orange',note:'JVM ไม่เชื่อ certificate ของปลายทาง',q:'SSLHandshakeException'},
+        {t:'JsonProcessingException',s:'Jackson 2',tone:'orange',note:'Jackson 2 เป็น checked (สืบจาก IOException) · ตอนอ่าน request Quarkus แปลงเป็น HTTP 400 ให้',kids:[
+          {t:'MismatchedInputException / UnrecognizedPropertyException',tone:'orange',note:'shape ของ JSON ไม่ตรงกับ class หรือมี field ที่ class ไม่รู้จัก',q:'MismatchedInputException'},
+          {t:'InvalidDefinitionException',tone:'orange',note:'Jackson สร้าง / อ่าน object ไม่ได้ (ไม่มี constructor, Hibernate proxy)',q:'InvalidDefinitionException'}]}]},
+      {t:'SQLException',s:'java.sql',tone:'cyan',note:'error จาก JDBC / database · ข้อความของ DB2 มี SQLCODE ให้ไปค้นในหน้า DB2 Error Codes',q:'SQLException',kids:[
+        {t:'BatchUpdateException',tone:'cyan',note:'บางคำสั่งใน batch พัง สาเหตุจริงอยู่ใน `getNextException()`',q:'BatchUpdateException'},
+        {t:'SQLTransientConnectionException',tone:'cyan',note:'รอ connection จาก pool ไม่ได้ (pool หมด / รั่ว)',q:'SQLTransientConnectionException'},
+        {t:'SQLIntegrityConstraintViolationException',s:'DB2 -803 / -530',tone:'cyan',note:'ผิด constraint ของ database เช่น ค่าซ้ำ หรือ FK ไม่มีแถวแม่ · ใน JPA มาถึงเราโดยห่ออยู่ใน PersistenceException',q:'803'}]},
+      {t:'RuntimeException',s:'unchecked',tone:'blue',note:'compiler ไม่บังคับ catch · ส่วนใหญ่คือ bug หรือข้อมูลผิด · ออกจาก `@Transactional` แล้ว rollback ทันที',kids:[
+        {t:'NullPointerException',tone:'blue',note:'เรียก method บนค่าที่เป็น null · JDK 14+ บอกชื่อตัวแปรที่ null',q:'NullPointerException'},
+        {t:'ArithmeticException',tone:'blue',note:'หาร int ด้วย 0 หรือ BigDecimal หารแล้วไม่รู้จบเพราะไม่ได้ระบุ scale',q:'ArithmeticException'},
+        {t:'ClassCastException',tone:'blue',note:'cast ผิดชนิด เจอบ่อยกับผลของ native query',q:'ClassCastException'},
+        {t:'IllegalStateException',tone:'blue',note:'เรียกในสถานะที่ไม่ถูก เช่น stream ที่ใช้ไปแล้ว หรือ POI อ่าน cell ผิดชนิด (`Cannot get a STRING value`)',q:'IllegalStateException'},
+        {t:'IndexOutOfBoundsException / StringIndexOutOfBoundsException',tone:'blue',note:'`get(0)` บน list ว่าง หรือ `substring` เกินความยาว',q:'IndexOutOfBoundsException'},
+        {t:'UnsupportedOperationException',tone:'blue',note:'แก้ list ที่แก้ไม่ได้ เช่น `List.of(...)`',q:'UnsupportedOperationException'},
+        {t:'ConcurrentModificationException',tone:'blue',note:'แก้ collection ระหว่างวน for-each',q:'ConcurrentModificationException'},
+        {t:'NoSuchElementException',tone:'blue',note:'`Optional.get()` บน Optional ว่าง หรือ iterator หมดแล้ว',q:'NoSuchElementException'},
+        {t:'DateTimeParseException',tone:'blue',note:'string ไม่ตรงรูปแบบวันที่ที่ parse',q:'DateTimeParseException'},
+        {t:'CompletionException',tone:'blue',note:'ห่อ exception จาก CompletableFuture ดูที่ `getCause()`',q:'CompletionException'},
+        {t:'RejectedExecutionException',tone:'blue',note:'thread pool เต็มหรือถูก shutdown แล้ว',q:'RejectedExecutionException'},
+        {t:'UnauthorizedException / ForbiddenException',s:'401 / 403',tone:'purple',note:'Quarkus security: ไม่มี token ที่ใช้ได้ หรือ role ไม่พอ',q:'ForbiddenException'},
+        {t:'UnsatisfiedResolutionException / AmbiguousResolutionException',s:'CDI',tone:'purple',note:'หา bean ให้ inject ไม่เจอ หรือเจอหลายตัว (เกิดตอน build)',q:'UnsatisfiedResolutionException'},
+        {t:'ContextNotActiveException',s:'CDI',tone:'purple',note:'ใช้ bean `@RequestScoped` นอก request เช่น ใน consumer ของ messaging',q:'ContextNotActiveException'},
+        {t:'BlockingOperationNotAllowedException',s:'Quarkus',tone:'purple',note:'งาน blocking (JDBC, Hibernate ORM) บน IO thread ของ Vert.x',q:'BlockingOperationNotAllowedException'},
+        {t:'DeploymentException / ConfigurationException',s:'Quarkus',tone:'purple',note:'แอป start ไม่ขึ้น เช่น ขาดค่า config ใน profile ที่รัน',q:'ConfigurationException'},
+        {t:'IllegalArgumentException',tone:'blue',note:'argument ไม่ถูก เช่น enum ไม่มีค่านี้ หรือ key ซ้ำใน `toMap`',q:'IllegalArgumentException',kids:[
+          {t:'NumberFormatException',tone:'blue',note:'แปลง string เป็นตัวเลขไม่ได้',q:'NumberFormatException'},
+          {t:'QueryArgumentException',s:'Hibernate',tone:'blue',note:'ส่ง parameter ชนิดไม่ตรงกับ field ใน JPQL (`Parameter value did not match expected type`)',q:'QueryArgumentException'},
+          {t:'NotOfficeXmlFileException / OLE2NotOfficeXmlFileException',s:'POI',tone:'green',note:'ไฟล์ Excel ไม่ใช่ชนิดที่เปิด (.xls กับ .xlsx สลับกัน หรือไม่ใช่ Excel จริง)',q:'NotOfficeXmlFileException'}]},
+        {t:'PersistenceException',s:'jakarta.persistence',tone:'purple',note:'error ของ JPA เป็น unchecked ทั้งหมด',q:'PersistenceException',kids:[
+          {t:'NoResultException / NonUniqueResultException',tone:'purple',note:'`getSingleResult()` ไม่เจอแถว หรือเจอเกิน 1 แถว',q:'NoResultException'},
+          {t:'OptimisticLockException',tone:'purple',note:'มีคนแก้แถวเดียวกันก่อน (`@Version` ไม่ตรง)',q:'OptimisticLockException'},
+          {t:'TransactionRequiredException',tone:'purple',note:'persist / update โดยไม่มี transaction',q:'TransactionRequiredException'},
+          {t:'EntityNotFoundException',tone:'purple',note:'proxy ชี้ไปแถวที่ไม่มีแล้ว',q:'EntityNotFoundException'},
+          {t:'HibernateException',s:'org.hibernate',tone:'purple',note:'error ของ Hibernate เองก็สืบจาก PersistenceException',kids:[
+            {t:'LazyInitializationException',tone:'purple',note:'แตะ relation แบบ LAZY หลัง session ปิด',q:'LazyInitializationException'},
+            {t:'ConstraintViolationException',s:'Hibernate',tone:'purple',note:'ห่อ SQLException จาก database (SQLCODE อยู่ใน Caused by)',q:'803'},
+            {t:'StaleObjectStateException',tone:'purple',note:'version ของแถวไม่ตรง แบบเดียวกับ OptimisticLockException',q:'StaleObjectStateException'},
+            {t:'PersistentObjectException',tone:'purple',note:'`persist()` กับ entity ที่มี id แล้ว (detached)',q:'PersistentObjectException'},
+            {t:'TransientPropertyValueException',tone:'purple',note:'ชี้ไปหา entity ที่ยังไม่ได้บันทึก',q:'TransientPropertyValueException'},
+            {t:'UnknownEntityException / SemanticException',tone:'purple',note:'HQL / JPQL อ้างชื่อ entity หรือ field ผิด',q:'SemanticException'}]}]},
+        {t:'WebApplicationException',s:'jakarta.ws.rs',tone:'purple',note:'REST: ตอบ / ได้รับ status ที่ไม่ใช่ 2xx',q:'WebApplicationException',kids:[
+          {t:'NotSupportedException / NotAllowedException',s:'415 / 405',tone:'purple',note:'Content-Type หรือ method ไม่ตรงกับ endpoint',q:'NotSupportedException'},
+          {t:'ClientWebApplicationException',s:'REST client',tone:'purple',note:'REST client ได้ status ไม่ใช่ 2xx จากปลายทาง',q:'ClientWebApplicationException'}]},
+        {t:'ValidationException',s:'jakarta.validation',tone:'blue',note:'Bean Validation',kids:[
+          {t:'ConstraintViolationException',s:'Bean Validation',tone:'blue',note:'`@NotNull` / `@Size` ไม่ผ่าน Quarkus ตอบ 400 ให้ · คนละตัวกับของ Hibernate',q:'bean validation'}]}]}]}]}},
+  {id:'cause',t:'อ่าน Caused by',kind:'flow',
+   intro:'stack trace เรียงจาก exception ตัวนอกสุดลงไปหาต้นเหตุ ตัวนอกบอกแค่ว่า "ทำไม่สำเร็จ" ส่วน `Caused by:` ตัวล่างสุดคือสาเหตุจริง ตัวอย่างนี้คือบันทึกข้อมูลซ้ำใน DB2',
+   opt:{label:'ลำดับ Caused by จากนอกเข้าใน',errLabel:'ดูอะไรที่ชั้นนี้',lang:'plaintext'},
+   nodes:[
+    {id:'http',icon:'monitor',t:'HTTP 500',s:'ที่หน้าจอเห็น',d:'Angular ได้แค่ `500 Internal Server Error` ข้อความจริงอยู่ใน log ของ Pod ไม่ใช่ใน browser',
+     err:['`kubectl logs deploy/order-api -n shop --tail=200`','หาบรรทัด ERROR ที่เวลาตรงกับตอนที่ผู้ใช้กด']},
+    {id:'outer',icon:'layers',t:'PersistenceException',s:'ตัวนอกสุด',d:'Hibernate แปลง error เป็น exception ของ JPA ตอน flush ข้อความบอกแค่ `could not execute statement`',
+     err:['ยังไม่ใช่สาเหตุ เลื่อนลงไปหา `Caused by:`','บรรทัด `at` แรกที่เป็น package ของเรา บอกว่า method ไหนสั่งบันทึก'],
+     code:'jakarta.persistence.PersistenceException: Converting org.hibernate.exception.ConstraintViolationException to JPA PersistenceException : could not execute statement\n    at org.acme.shop.order.OrderService.place(OrderService.java:42)'},
+    {id:'mid',icon:'database',t:'ConstraintViolationException',s:'Caused by (Hibernate)',d:'Hibernate บอกว่า statement ไหนพัง และแนบ SQL ที่รันมาด้วย',
+     err:['คนละตัวกับ `jakarta.validation.ConstraintViolationException` ที่มาจาก Bean Validation','ดู SQL ที่แนบมาว่า INSERT / UPDATE ตารางไหน'],
+     code:'Caused by: org.hibernate.exception.ConstraintViolationException: could not execute statement [DB2 SQL Error: SQLCODE=-803, SQLSTATE=23505, SQLERRMC=2;SHOP.ORDERS, DRIVER=4.33.31]'},
+    {id:'root',icon:'target',t:'SqlIntegrityConstraintViolation',s:'ตัวล่างสุด = สาเหตุจริง',d:'DB2 ตอบ SQLCODE -803: ค่าซ้ำใน primary key หรือ unique index · ตัวเลขใน `SQLERRMC` บอก index ที่ชน',
+     err:['เอา SQLCODE ไปค้นในหน้า DB2 Error Codes','วาง stack trace ทั้งก้อนในหน้า Stack Trace Analyzer ระบบหาตัวล่างสุดให้'],
+     code:'Caused by: com.ibm.db2.jcc.am.SqlIntegrityConstraintViolationException: DB2 SQL Error: SQLCODE=-803, SQLSTATE=23505, SQLERRMC=2;SHOP.ORDERS, DRIVER=4.33.31'}]},
+  {id:'lazy',t:'LazyInitializationException',kind:'timeline',
+   intro:'relation แบบ LAZY โหลดได้เฉพาะตอน session ของ Hibernate ยังเปิด (ช่วงที่ `@Transactional` ทำงาน) · ถ้า Jackson ไปแตะ relation ตอนแปลงเป็น JSON หลัง method จบแล้วจะพัง',
+   lanes:[
+    {t:'@Transactional (session เปิด)',bars:[{from:4,to:54,t:'session เปิดอยู่',tone:'green',note:'ช่วงนี้แตะ `order.getItems()` ได้ Hibernate query ให้เอง'}]},
+    {t:'OrderService.find()',bars:[{from:8,to:50,t:'em.find(Order.class, id)',tone:'blue',note:'ได้ Order มา แต่ `items` ยังเป็น proxy ว่างๆ (LAZY) เพราะยังไม่มีใครแตะ'}]},
+    {t:'OrderResource',bars:[{from:55,to:64,t:'return order',note:'method ของ service จบแล้ว transaction commit และ session ปิด'}]},
+    {t:'Jackson → JSON',bars:[{from:65,to:94,t:'แปลง order เป็น JSON',tone:'orange',note:'Jackson เรียก getter ทุกตัวรวมถึง `getItems()` ซึ่งต้อง query แต่ไม่มี session แล้ว'}]}],
+   marks:[{at:72,t:'LazyInitializationException',tone:'red',q:'LazyInitializationException',
+     note:'`could not initialize proxy - no Session` · แก้: ดึงมาพร้อมกันด้วย `JOIN FETCH` หรือแปลงเป็น DTO ภายใน method ที่มี `@Transactional`'}]},
+  ],
   items:[
   // ── Core / Runtime ──
   {g:'Core / Runtime',t:'NullPointerException',b:'unchecked',bc:'red',s:'java.lang',k:'npe null cannot invoke because is null unboxing',
@@ -179,9 +272,9 @@ quarkus.index-dependency.shop-shared.artifact-id=shop-shared`},
   {g:'Quarkus / CDI',t:'AmbiguousResolutionException',b:'deploy',bc:'purple',s:'jakarta.enterprise.inject',k:'ambiguous dependencies multiple beans qualifier named',
    d:'มี bean ที่ตรง type มากกว่า 1 ตัว',
    fix:['ใส่ qualifier (`@Named`, qualifier ที่สร้างเอง)','เลือกตัวหลักด้วย `@Default` หรือ `@Alternative @Priority`']},
-  {g:'Quarkus / CDI',t:'ContextNotActiveException',b:'unchecked',bc:'purple',s:'jakarta.enterprise.context',k:'requestscoped context was not active scheduler consumer startup',
-   d:'ใช้ bean `@RequestScoped` (เช่น `SecurityIdentity`, ข้อมูล user ของ request) ใน thread ที่ไม่มี request: `@Scheduled`, consumer ของ RabbitMQ/Kafka, `@Startup`, thread ที่สร้างเอง',
-   fix:['ใส่ `@ActivateRequestContext` ที่ method ที่รันนอก HTTP request','ส่งค่าที่ต้องใช้เป็น parameter แทนการ inject bean แบบ request'],
+  {g:'Quarkus / CDI',t:'ContextNotActiveException',b:'unchecked',bc:'purple',s:'jakarta.enterprise.context',k:'requestscoped context was not active consumer incoming messaging thread executor',
+   d:'ใช้ bean `@RequestScoped` (เช่น ข้อมูล user ของ request) ใน thread ที่ไม่มี request: `@Incoming` ของ RabbitMQ / Kafka, thread หรือ `CompletableFuture` ที่สร้างเอง · `@Scheduled` ของ Quarkus เปิด request context ให้อยู่แล้ว ไม่ใช่สาเหตุ',
+   fix:['consumer ทุกตัว: `quarkus.messaging.request-scoped.enabled=true` (build time) เปิด context ให้ทีละ message','เฉพาะ method: ใส่ `@ActivateRequestContext` (อายุของ context ไม่ผูกกับ message)','งานใน thread ที่สร้างเอง: ส่งค่าที่ต้องใช้เป็น parameter แทนการ inject bean แบบ request'],
    code:`@ApplicationScoped
 public class MailConsumer {
     @Incoming("mail")
@@ -206,10 +299,10 @@ public Uni<List<Employee>> list() {
   {g:'REST / JSON',t:'WebApplicationException / ClientWebApplicationException',b:'unchecked',bc:'blue',s:'jakarta.ws.rs / io.quarkus.rest.client',k:'received not found status code 404 401 500 rest client',
    d:'REST client ได้ response ที่ไม่ใช่ 2xx จากปลายทาง (`Received: \'Not Found, status code 404\'`)',
    fix:['เช็ค URL ใน `quarkus.rest-client.<name>.url` ของ profile ที่รัน','401: token หมดอายุ / ไม่ได้ส่ง header','แปลงเป็น exception ของระบบด้วย `ResponseExceptionMapper`']},
-  {g:'REST / JSON',t:'MismatchedInputException / UnrecognizedPropertyException',b:'unchecked',bc:'blue',s:'com.fasterxml.jackson',k:'cannot deserialize value of type from object array unrecognized field',
+  {g:'REST / JSON',t:'MismatchedInputException / UnrecognizedPropertyException',b:'checked',bc:'blue',s:'com.fasterxml.jackson',k:'cannot deserialize value of type from object array unrecognized field',
    d:'JSON กับ class ไม่ตรงกัน: ส่ง object แต่ field เป็น List หรือกลับกัน · มี field ที่ class ไม่รู้จัก',
    fix:['เทียบ shape ของ JSON กับ DTO (ลองใช้หน้า JSON → Type สร้าง DTO จาก JSON จริง)','ไม่สน field เกิน: `@JsonIgnoreProperties(ignoreUnknown = true)` หรือ `quarkus.jackson.fail-on-unknown-properties=false`']},
-  {g:'REST / JSON',t:'InvalidDefinitionException',b:'unchecked',bc:'blue',s:'com.fasterxml.jackson',k:'no serializer found no creators default constructor',
+  {g:'REST / JSON',t:'InvalidDefinitionException',b:'checked',bc:'blue',s:'com.fasterxml.jackson',k:'no serializer found no creators default constructor',
    d:'Jackson สร้าง / อ่าน object ไม่ได้: ไม่มี default constructor, ไม่มี getter หรือ class ที่ serialize ไม่ได้ (เช่น Hibernate proxy)',
    fix:['เพิ่ม no-args constructor หรือใช้ record','ส่ง DTO ไม่ใช่ entity ที่มี lazy proxy']},
   {g:'REST / JSON',t:'jakarta.validation.ConstraintViolationException',b:'unchecked',bc:'blue',s:'jakarta.validation',k:'bean validation valid notnull size 400',
@@ -230,5 +323,52 @@ quarkus.datasource.jdbc.leak-detection-interval=5M`},
   {g:'JDBC / Pool',t:'BatchUpdateException',b:'checked',bc:'cyan',s:'java.sql',k:'batch 4229 getnextexception',
    d:'บางคำสั่งใน batch พัง สาเหตุจริงต้องดึงจาก `getNextException()` (DB2 ERRORCODE=-4229)',
    fix:['ดูตัวอย่างโค้ดในหน้า DB2 Error Codes รหัส -4229']},
+
+  // ── added in v2.0 ──
+  {g:'Core / Runtime',t:'NoSuchElementException',b:'unchecked',bc:'orange',s:'java.util',k:'no value present optional get orelsethrow iterator next',
+   d:'`Optional.get()` / `orElseThrow()` บน Optional ว่าง (`No value present`) หรือ `iterator.next()` ที่หมดแล้ว',
+   fix:['ใช้ `orElse(...)`, `orElseGet(...)` หรือ `orElseThrow(() -> new NotFoundException(...))` ที่บอกว่าหาอะไรไม่เจอ (ได้ HTTP 404 ด้วย)'],
+   code:`Employee e = repo.findByCode(code)
+    .orElseThrow(() -> new NotFoundException("ไม่พบพนักงาน " + code));`},
+  {g:'JPA / Hibernate',t:'PersistentObjectException (detached entity passed to persist)',b:'unchecked',bc:'orange',s:'org.hibernate',k:'detached entity passed to persist id merge',
+   d:'`persist()` กับ entity ที่มี id อยู่แล้ว (เช่น object ที่มาจาก JSON หรือจาก transaction ก่อน) Hibernate ถือว่าเป็นของเก่าที่หลุดจาก session (detached)',
+   fix:['ของใหม่: อย่า set id เอง ให้ sequence / identity สร้าง','ของเดิมที่จะแก้: โหลดด้วย `find()` แล้วแก้ field หรือใช้ `merge()`','Panache: `persist()` ใช้กับของใหม่เท่านั้น'],
+   code:`@Transactional
+public void update(OrderDto dto) {
+    Order o = em.find(Order.class, dto.id());
+    o.setRemark(dto.remark());     // จบ method แล้ว commit ให้เอง ไม่ต้อง persist
+}`},
+  {g:'JPA / Hibernate',t:'TransientPropertyValueException (unsaved transient instance)',b:'unchecked',bc:'orange',s:'org.hibernate',k:'object references an unsaved transient instance save before flushing cascade',
+   d:'entity ชี้ไปหา entity อีกตัวที่ยังไม่ได้บันทึก (ยังไม่มี id) ตอน flush Hibernate จึงไม่รู้ว่าจะใส่ FK เป็นค่าอะไร',
+   fix:['`persist` ตัวที่ถูกอ้างถึงก่อน','ลูกที่ต้องบันทึกพร้อมแม่: ใส่ `cascade = CascadeType.PERSIST` (หรือ ALL) ฝั่งแม่','ของที่มีอยู่แล้วใน DB: ใช้ `em.getReference(Customer.class, id)` แทนการ new object ที่มีแค่ id']},
+  {g:'JPA / Hibernate',t:'Parameter value did not match expected type',b:'unchecked',bc:'orange',s:'org.hibernate.query',k:'queryargumentexception illegalargumentexception setparameter type mismatch long integer string',
+   d:'ส่ง parameter ชนิดไม่ตรงกับ field ใน JPQL เช่น field เป็น `Long` แต่ส่ง `String` หรือ `Integer`',
+   fix:['แปลงชนิดก่อน `setParameter` ให้ตรงกับ field ของ entity','enum: ส่งค่า enum ไม่ใช่ String'],
+   code:`em.createQuery("FROM Order o WHERE o.customerId = :cid", Order.class)
+  .setParameter("cid", Long.valueOf(cidText))   // field เป็น Long
+  .getResultList();`},
+  {g:'JPA / Hibernate',t:'RollbackException / transaction timeout (ARJUNA)',b:'checked',bc:'red',s:'jakarta.transaction · Narayana',k:'arjuna012117 arjuna016053 transaction timeout aborted rolled back could not commit arcundeclaredthrowableexception',
+   d:'`ARJUNA012117` = transaction ทำงานนานเกิน timeout (ค่าเริ่ม 60 วินาที) ระบบจึง rollback ทิ้ง · `ARJUNA016053: Could not commit transaction` = commit ไม่ผ่าน ให้ดู `Caused by` ว่า database ตอบอะไร · เป็น checked exception จึงมักมาถึงเราห่ออยู่ใน `ArcUndeclaredThrowableException`',
+   fix:['งานยาว (import, batch) แบ่งเป็น transaction ย่อย ไม่ใช่ก้อนเดียว','ขยายเฉพาะ method: `@TransactionConfiguration(timeout = 600)` (วินาที)','ขยายทั้งแอป: `quarkus.transaction-manager.default-transaction-timeout=5M`'],
+   code:`@Transactional
+@TransactionConfiguration(timeout = 600)
+public void importAll(List<Row> rows) { /* ... */ }`},
+  {g:'REST / JSON',t:'NotSupportedException (415) / NotAllowedException (405)',b:'unchecked',bc:'blue',s:'jakarta.ws.rs',k:'415 unsupported media type content-type consumes 405 method not allowed',
+   d:'415 = `Content-Type` ที่ส่งมาไม่ตรงกับ `@Consumes` (ส่ง form แต่ endpoint รับ JSON หรือลืม header) · 405 = path ถูกแต่ไม่รับ method นี้',
+   fix:['ส่ง JSON ต้องมี `Content-Type: application/json`','อัปโหลดไฟล์ใช้ `multipart/form-data` และ endpoint ต้อง `@Consumes(MediaType.MULTIPART_FORM_DATA)`','405: เช็คว่า GET / POST / PUT ตรงกับที่ endpoint ประกาศ']},
+  {g:'REST / JSON',t:'UnauthorizedException (401) / ForbiddenException (403)',b:'unchecked',bc:'blue',s:'io.quarkus.security',k:'401 403 rolesallowed token expired keycloak oidc',
+   d:'401 = ไม่ได้ส่ง token หรือ token ใช้ไม่ได้ (หมดอายุ, ผิด realm) · 403 = ยืนยันตัวตนผ่าน แต่ไม่มี role ที่ `@RolesAllowed` ต้องการ',
+   fix:['401: เช็ค header `Authorization: Bearer ...` และ `exp` / `iss` ของ token (ดูได้ในหน้า JWT Decoder)','403: เทียบ role ใน token (`realm_access.roles`, `resource_access`) กับ `@RolesAllowed`','เปิด log: `quarkus.log.category."io.quarkus.oidc".level=DEBUG`']},
+  {g:'Apache POI (Excel)',t:'Cannot get a STRING value from a NUMERIC cell',b:'unchecked',bc:'green',s:'IllegalStateException · org.apache.poi',k:'excel poi cell type numeric string getstringcellvalue dataformatter',
+   d:'อ่าน cell ด้วยชนิดที่ไม่ตรงกับของจริง เช่น cell เป็นตัวเลข (รหัส 00123 ที่ Excel เก็บเป็นเลข) แต่เรียก `getStringCellValue()`',
+   fix:['อ่านเป็นข้อความตามที่เห็นใน Excel ด้วย `DataFormatter`','วันที่: เช็ค `DateUtil.isCellDateFormatted(cell)` แล้วใช้ `getLocalDateTimeCellValue()`'],
+   code:`DataFormatter fmt = new DataFormatter();
+String code = fmt.formatCellValue(row.getCell(0));   // ได้ "00123" ตามที่เห็นใน Excel`},
+  {g:'Apache POI (Excel)',t:'NotOfficeXmlFileException / OLE2NotOfficeXmlFileException',b:'unchecked',bc:'green',s:'org.apache.poi',k:'xls xlsx hssf xssf workbookfactory file format',
+   d:'ไฟล์ไม่ใช่ชนิดที่คิด: เปิด `.xls` (Excel 97-2003) ด้วย `XSSFWorkbook` หรือ `.xlsx` ด้วย `HSSFWorkbook` หรือไฟล์ที่อัปโหลดไม่ใช่ Excel จริง (CSV / HTML ที่เปลี่ยนนามสกุล)',
+   fix:['ใช้ `WorkbookFactory.create(...)` ให้ POI ดูจากเนื้อไฟล์เอง','แจ้งผู้ใช้ว่ารองรับ .xls / .xlsx เมื่อเปิดไม่ได้'],
+   code:`try (Workbook wb = WorkbookFactory.create(upload.uploadedFile().toFile())) {
+    Sheet sheet = wb.getSheetAt(0);
+}`},
   ],
 };

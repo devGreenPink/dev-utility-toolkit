@@ -17,7 +17,7 @@ const RXJS_OPS=[
 {n:'fromEvent',c:'creation',s:'แปลง DOM event เป็น Observable stream',w:['click / keyup / scroll events','WebSocket messages','input + debounce'],a:['ต้อง unsubscribe ตอน component destroy (ใช้ takeUntil)'],sig:'fromEvent<T>(target: EventTarget, event: string): Observable<T>',code:"const clicks$ = fromEvent(document, 'click');\nclicks$.pipe(\n  map(e => ({ x: e.clientX, y: e.clientY }))\n).subscribe(pos => console.log(pos));\n\n// search real-time\nfromEvent(input, 'input').pipe(\n  debounceTime(300),\n  map(e => e.target.value),\n  switchMap(term => searchApi(term))\n).subscribe(render);",rel:['debounceTime','switchMap']},
 {n:'interval',c:'creation',s:'emit 0, 1, 2... ทุก X ms ไปเรื่อยๆ (ต้อง unsubscribe เอง)',w:['polling API ทุก N วินาที','animation counter','countdown'],a:['ต้อง unsubscribe ไม่งั้น memory leak'],sig:'interval(period: number): Observable<number>',code:"const sub = interval(5000).pipe(\n  switchMap(() => http.get('/api/status'))\n).subscribe(status => update(status));\n\nsub.unsubscribe(); // หยุดเมื่อไม่ต้องการ",rel:['timer','takeUntil']},
 {n:'timer',c:'creation',s:'รอ X ms แล้ว emit (หรือ emit ทุก Y ms หลังรอ X ms)',w:['delay ก่อนทำงาน','polling ที่มี initial delay','timeout'],a:[],sig:'timer(dueTime?: number, interval?: number): Observable<number>',code:"// emit ครั้งเดียวหลัง 1 วินาที\ntimer(1000).subscribe(() => doWork());\n\n// emit ทุก 2s หลังรอ 5s แรก\ntimer(5000, 2000).subscribe(n => console.log(n));",rel:['interval','delay']},
-{n:'range',c:'creation',s:'emit ตัวเลขต่อเนื่อง start ถึง count',w:['สร้างข้อมูลจำลอง','loop แบบ functional','generate sequence'],a:[],sig:'range(start: number, count?: number): Observable<number>',code:"range(1, 5).subscribe(console.log);\n// 1, 2, 3, 4, 5\n\nrange(0, 10).pipe(\n  filter(n => n % 2 === 0)\n).subscribe(console.log); // 0, 2, 4, 6, 8",rel:['of','from']},
+{n:'range',c:'creation',s:'emit ตัวเลขเรียงกัน count ตัว เริ่มที่ start (range(1, 5) = 1 ถึง 5)',w:['สร้างข้อมูลจำลอง','loop แบบ functional','generate sequence'],a:[],sig:'range(start: number, count?: number): Observable<number>',code:"range(1, 5).subscribe(console.log);\n// 1, 2, 3, 4, 5\n\nrange(0, 10).pipe(\n  filter(n => n % 2 === 0)\n).subscribe(console.log); // 0, 2, 4, 6, 8",rel:['of','from']},
 {n:'EMPTY',c:'creation',s:'Observable ที่ complete ทันทีโดยไม่ emit อะไรเลย',w:['return เมื่อไม่มีข้อมูล (แทน null)','cancel ใน switchMap','absorb error ใน catchError'],a:[],sig:'EMPTY: Observable<never>',code:"search$.pipe(\n  switchMap(term =>\n    term.length < 2 ? EMPTY : searchApi(term)\n  )\n).subscribe(render);",rel:['throwError']},
 {n:'throwError',c:'creation',s:'Observable ที่ error ทันทีโดยไม่ emit อะไร',w:['สร้าง error ใน pipe','re-throw หลัง log','test error handling'],a:[],sig:'throwError(() => new Error(msg))',code:"throwError(() => new Error('API failed'))\n  .pipe(\n    catchError(err => {\n      logError(err);\n      return EMPTY;\n    })\n  ).subscribe();",rel:['catchError','EMPTY']},
 {n:'defer',c:'creation',s:'สร้าง Observable ใหม่ทุกครั้งที่ subscribe: lazy factory',w:['Observable ที่สร้างใหม่ทุก subscribe','wrap side-effectful creation','random / time-sensitive values'],a:[],sig:'defer<T>(factory: () => ObservableInput<T>): Observable<T>',code:"const now$ = defer(() => of(Date.now()));\nnow$.subscribe(t => console.log(t)); // 1000\nnow$.subscribe(t => console.log(t)); // 1050 (ต่างกัน)",rel:['of','from']},
@@ -38,7 +38,7 @@ const RXJS_OPS=[
 // FILTERING
 {n:'filter',c:'filtering',s:'กรองค่าที่ไม่ผ่าน condition ออก (เหมือน Array.filter)',w:['กรอง event ที่ต้องการ','ตรวจ condition ก่อน process','ลด noise ใน stream'],a:[],sig:'filter<T>(predicate: (value: T, index: number) => boolean)',code:"from([1,2,3,4,5,6]).pipe(\n  filter(n => n % 2 === 0)\n).subscribe(console.log); // 2, 4, 6\n\nfromEvent(document, 'click').pipe(\n  filter(e => e.target.matches('.btn-primary'))\n).subscribe(handleClick);",rel:['map','takeWhile','distinctUntilChanged']},
 {n:'take',c:'filtering',s:'รับแค่ N ค่าแรก แล้ว complete',w:['รับค่าแรกจาก stream','จำกัดจำนวน result','one-shot Observable'],a:[],sig:'take<T>(count: number)',code:"interval(1000).pipe(\n  take(3)\n).subscribe(console.log);\n// 0, 1, 2 แล้ว complete\n\nfromEvent(btn, 'click').pipe(\n  take(1)\n).subscribe(handleFirstClick);",rel:['first','takeUntil','takeWhile']},
-{n:'takeUntil',c:'filtering',s:'รับค่าจนกว่า notifier จะ emit แล้ว complete',w:['หยุด subscription เมื่อ component destroy','cancel เมื่อ navigate ออก','cleanup pattern ใน Angular'],a:['notifier ต้อง complete ด้วย ไม่งั้น takeUntil อาจไม่ทำงาน'],sig:'takeUntil<T>(notifier: ObservableInput<any>)',code:"class MyComponent implements OnDestroy {\n  private destroy$ = new Subject<void>();\n\n  ngOnInit() {\n    interval(1000).pipe(\n      takeUntil(this.destroy$)\n    ).subscribe(tick => update(tick));\n  }\n\n  ngOnDestroy() {\n    this.destroy$.next();\n    this.destroy$.complete();\n  }\n}",rel:['take','takeWhile','Subject']},
+{n:'takeUntil',c:'filtering',s:'รับค่าจนกว่า notifier จะ emit แล้ว complete',w:['หยุด subscription เมื่อ component destroy','cancel เมื่อ navigate ออก','cleanup pattern ใน Angular'],a:['วาง takeUntil ไว้ตัวสุดท้ายใน pipe ถ้ามี switchMap / mergeMap อยู่หลังมัน inner จะยังรันต่อ (leak)','notifier ต้อง emit ค่า complete อย่างเดียวไม่ตัด stream','Angular 16+ ใช้ takeUntilDestroyed() แทนได้'],sig:'takeUntil<T>(notifier: ObservableInput<any>)',code:"class MyComponent implements OnDestroy {\n  private destroy$ = new Subject<void>();\n\n  ngOnInit() {\n    interval(1000).pipe(\n      takeUntil(this.destroy$)\n    ).subscribe(tick => update(tick));\n  }\n\n  ngOnDestroy() {\n    this.destroy$.next();\n    this.destroy$.complete();\n  }\n}",rel:['take','takeWhile','Subject']},
 {n:'takeWhile',c:'filtering',s:'รับค่าตราบที่ condition เป็น true: หยุดทันทีที่ false',w:['รับค่าจนถึง threshold','หยุด poll เมื่อ status เปลี่ยน','process จนเงื่อนไขเปลี่ยน'],a:[],sig:'takeWhile<T>(predicate: (value: T, index: number) => boolean, inclusive?: boolean)',code:"interval(2000).pipe(\n  switchMap(() => http.get('/api/job')),\n  takeWhile(job => job.status !== 'done')\n).subscribe(job => updateProgress(job));",rel:['take','takeUntil','filter']},
 {n:'skip',c:'filtering',s:'ข้าม N ค่าแรก แล้ว emit ปกติ',w:['ข้าม initial value ของ BehaviorSubject','skip header row','ละค่าแรกที่ไม่ต้องการ'],a:[],sig:'skip<T>(count: number)',code:"const data$ = new BehaviorSubject(null);\n\ndata$.pipe(\n  skip(1) // ข้าม null initial value\n).subscribe(data => render(data));\n\ndata$.next({ users: [] });",rel:['skipUntil','take','filter']},
 {n:'skipUntil',c:'filtering',s:'ข้าม emissions จนกว่า notifier จะ emit',w:['รอ init สำเร็จก่อน process','รอ user interaction ก่อนเริ่ม','gate-based filtering'],a:[],sig:'skipUntil<T>(notifier: Observable<any>)',code:"const ready$ = fromEvent(document, 'DOMContentLoaded');\n\nstream$.pipe(\n  skipUntil(ready$)\n).subscribe(processEvent);",rel:['skip','takeUntil']},
@@ -69,6 +69,8 @@ const RXJS_OPS=[
 {n:'timeout',c:'utility',s:'throw error ถ้า Observable ไม่ emit ภายใน X ms',w:['กำหนด SLA ให้ HTTP','ป้องกัน hang','UX timeout'],a:[],sig:'timeout<T>(config: number | TimeoutConfig<T>)',code:"http.get('/api').pipe(\n  timeout(5000),\n  catchError(err => {\n    if (err.name === 'TimeoutError')\n      return of({ error: 'timeout' });\n    return throwError(() => err);\n  })\n).subscribe(renderOrError);",rel:['race','catchError','timer']},
 {n:'share',c:'utility',s:'share Observable เดียวกับ subscriber หลายตัว: multicasting hot',w:['ป้องกัน HTTP call ซ้ำ','event stream ที่ต้องการ share','ประหยัด resource'],a:['subscriber ใหม่ที่มาทีหลังไม่ได้ค่าก่อนหน้า: ใช้ shareReplay แทน'],sig:'share<T>()',code:"const data$ = http.get('/api/data').pipe(share());\n\n// HTTP call แค่ 1 ครั้ง\ndata$.subscribe(data => renderList(data));\ndata$.subscribe(data => renderChart(data));",rel:['shareReplay','Subject']},
 {n:'shareReplay',c:'utility',s:'share + replay N ค่าล่าสุดให้ subscriber ใหม่',w:['cache HTTP response','share initial data load','subscriber ใหม่ได้ค่าล่าสุดทันที'],a:['ระวัง memory leak ใน Angular: ใส่ {refCount:true}'],sig:'shareReplay<T>(bufferSize?: number | ShareReplayConfig)',code:"const config$ = http.get('/api/config').pipe(\n  shareReplay({ bufferSize: 1, refCount: true })\n);\n\nconfig$.subscribe(renderHeader);\nconfig$.subscribe(renderSidebar);\n// HTTP call เกิดครั้งเดียว",rel:['share','BehaviorSubject']},
+{n:'firstValueFrom',c:'utility',s:'แปลง Observable เป็น Promise ของค่าแรก ใช้แทน toPromise() ที่เลิกใช้แล้ว',w:['ใช้กับ async / await','เรียก HTTP ครั้งเดียวใน service หรือ guard'],a:['Observable ที่ไม่ emit เลยจะ reject ด้วย EmptyError (ใส่ defaultValue ได้)'],sig:'firstValueFrom<T>(source: Observable<T>, config?: { defaultValue: T }): Promise<T>',code:"async function load() {\n  const n = await firstValueFrom(interval(300));\n  console.log('ค่าแรก:', n);\n}\nload();",rel:['lastValueFrom','first','take']},
+{n:'lastValueFrom',c:'utility',s:'แปลง Observable เป็น Promise ของค่าสุดท้ายตอน complete',w:['stream ที่จบเอง เช่น HTTP, of, range','รอให้ทุกค่าผ่าน pipe แล้วเอาผลสุดท้าย'],a:['stream ที่ไม่ complete (interval, Subject) จะรอตลอดไป'],sig:'lastValueFrom<T>(source: Observable<T>, config?: { defaultValue: T }): Promise<T>',code:"async function total() {\n  const sum = await lastValueFrom(\n    range(1, 5).pipe(reduce((a, b) => a + b, 0))\n  );\n  console.log('ผลรวม:', sum);\n}\ntotal();",rel:['firstValueFrom','last','reduce']},
 // MULTICASTING
 {n:'Subject',c:'multicasting',s:'Observable + Observer ในตัวเดียว: ส่งค่าเข้า stream จากภายนอกได้',w:['event bus','bridge ระหว่าง callback กับ Observable world','trigger events ด้วยตนเอง'],a:['ไม่มี initial value ไม่ replay: ใช้ BehaviorSubject ถ้าต้องการ'],sig:'new Subject<T>()',code:"const action$ = new Subject();\n\nbtn.addEventListener('click', () => {\n  action$.next('clicked');\n});\n\naction$.pipe(\n  filter(a => a === 'clicked'),\n  throttleTime(1000)\n).subscribe(handleClick);\n\naction$.complete(); // cleanup",rel:['BehaviorSubject','ReplaySubject']},
 {n:'BehaviorSubject',c:'multicasting',s:'Subject ที่มี initial value + replay ค่าล่าสุดให้ subscriber ใหม่ทันที',w:['State management (currentUser, cart, settings)','ค่าที่ต้องมี initial state','subscriber ใหม่ต้องได้ค่าทันที'],a:['ถ้าไม่ต้องการ initial value ใช้ Subject หรือ ReplaySubject(1)'],sig:'new BehaviorSubject<T>(initialValue: T)',code:"class CartService {\n  private cart$ = new BehaviorSubject([]);\n\n  addItem(item) {\n    const curr = this.cart$.getValue();\n    this.cart$.next([...curr, item]);\n  }\n\n  getCart() { return this.cart$.asObservable(); }\n}\n\ncartService.getCart().subscribe(renderCart);",rel:['Subject','ReplaySubject','shareReplay']},
@@ -992,36 +994,16 @@ function rxjsRunCode(){
     rxjsStopCode();
   },15000);
 
-  const {of,from,fromEvent,interval,timer,range,EMPTY,throwError,defer,iif,
-    combineLatest,merge,concat,zip,forkJoin,race,Subject,BehaviorSubject,
-    ReplaySubject,AsyncSubject,Observable,
-    map,filter,take,takeUntil,takeWhile,skip,skipUntil,
-    first,last,debounceTime,throttleTime,distinctUntilChanged,
-    distinct,sampleTime,switchMap,mergeMap,concatMap,exhaustMap,
-    scan,reduce,buffer,bufferTime,groupBy,toArray,pairwise,
-    catchError,retry,retryWhen,finalize,tap,delay,timeout,
-    share,shareReplay,startWith,withLatestFrom,pipe}=window.rxjs;
+  // the playground code sees these rxjs exports as plain names
+  const RX_NAMES=['of','from','fromEvent','interval','timer','range','EMPTY','throwError','defer','iif',
+    'combineLatest','merge','concat','zip','forkJoin','race','Subject','BehaviorSubject','ReplaySubject','AsyncSubject','Observable',
+    'map','filter','take','takeUntil','takeWhile','skip','skipUntil','first','last','debounceTime','throttleTime','distinctUntilChanged',
+    'distinct','sampleTime','switchMap','mergeMap','concatMap','exhaustMap','scan','reduce','buffer','bufferTime','groupBy','toArray','pairwise',
+    'catchError','retry','retryWhen','finalize','tap','delay','timeout','share','shareReplay','startWith','withLatestFrom','pipe',
+    'firstValueFrom','lastValueFrom'];
 
   try{
-    new Function('of','from','fromEvent','interval','timer','range','EMPTY','throwError',
-      'defer','iif','combineLatest','merge','concat','zip','forkJoin','race',
-      'Subject','BehaviorSubject','ReplaySubject','AsyncSubject','Observable',
-      'map','filter','take','takeUntil','takeWhile','skip','skipUntil',
-      'first','last','debounceTime','throttleTime','distinctUntilChanged',
-      'distinct','sampleTime','switchMap','mergeMap','concatMap','exhaustMap',
-      'scan','reduce','buffer','bufferTime','groupBy','toArray','pairwise',
-      'catchError','retry','retryWhen','finalize','tap','delay','timeout',
-      'share','shareReplay','startWith','withLatestFrom','pipe',
-      code
-    )(of,from,fromEvent,interval,timer,range,EMPTY,throwError,
-      defer,iif,combineLatest,merge,concat,zip,forkJoin,race,
-      Subject,BehaviorSubject,ReplaySubject,AsyncSubject,Observable,
-      map,filter,take,takeUntil,takeWhile,skip,skipUntil,
-      first,last,debounceTime,throttleTime,distinctUntilChanged,
-      distinct,sampleTime,switchMap,mergeMap,concatMap,exhaustMap,
-      scan,reduce,buffer,bufferTime,groupBy,toArray,pairwise,
-      catchError,retry,retryWhen,finalize,tap,delay,timeout,
-      share,shareReplay,startWith,withLatestFrom,pipe);
+    new Function(...RX_NAMES,code)(...RX_NAMES.map(n=>window.rxjs[n]));
 
     // if synchronous ops, mark done after a tick
     setTimeout(()=>{

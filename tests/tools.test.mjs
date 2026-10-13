@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr']) {
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -256,6 +256,79 @@ t('PromptPay QR: fields, phone number, amount and CRC', () => {
   assert.equal(run(`emvInfo(${JSON.stringify(tampered)}).crcOk`), false);
   assert.equal(run(`emvInfo('https://shop.example.com')`), null);
   assert.equal(run(`emvParse('0002ABC')`), null);
+});
+
+
+// ── DIAGRAMS (refdocs dgShow data) ── well formed, and every q finds at least one card of its own tab
+t('diagrams: kinds, parts and card links', () => {
+  const bad = run(`(() => {
+    const out = [], kinds = ['tree', 'boxes', 'timeline', 'anatomy', 'flow', 'venn'];
+    const sources = Object.entries(REF_DOCS).map(([id, doc]) => [id, doc, doc.diagrams || []])
+      .concat([['http', null, HTTP_DIAGRAMS], ['git', null, GIT_DIAGRAMS], ['cron', null, CRON_DIAGRAMS], ['angular', null, NG_DIAGRAMS]]);
+    for (const [id, doc, list] of sources) for (const d of list) {
+      const where = id + '/' + d.id, parts = [];
+      if (!kinds.includes(d.kind) || !d.t || !d.intro) out.push(where + ': kind / t / intro');
+      const walk = n => { parts.push(n); (n.kids || []).forEach(walk); };
+      if (d.kind === 'tree' || d.kind === 'boxes') walk(d.root);
+      if (d.kind === 'timeline') {
+        d.lanes.forEach(l => l.bars.forEach(b => { parts.push(b); if (!(b.from >= 0 && b.to <= 100 && b.from < b.to)) out.push(where + ': bar ' + b.t); }));
+        (d.marks || []).forEach(m => { parts.push(m); if (!(m.at >= 0 && m.at <= 100)) out.push(where + ': mark ' + m.t); });
+      }
+      if (d.kind === 'anatomy') d.lines.forEach(l => l.forEach(([t, note, tone, q]) => parts.push({ t, note, q })));
+      if (d.kind === 'flow') d.nodes.forEach(n => { if (!n.d || !n.err || !n.err.length || !n.icon) out.push(where + ': node ' + n.id); });
+      if (d.kind === 'venn') d.cases.forEach(c => { parts.push(c); if (!['inner', 'left', 'right', 'all', 'leftonly'].includes(c.shade)) out.push(where + ': shade ' + c.t); });
+      for (const p of parts) {
+        if (!p.t) out.push(where + ': part without t');
+        if (p.q && doc) { const w = p.q.toLowerCase().split(/\\s+/); if (!doc.items.some(it => w.every(x => refHay(it).includes(x)))) out.push(where + ': q "' + p.q + '" finds no card'); }
+      }
+    }
+    return out;
+  })()`);
+  assert.deepEqual(bad, []);
+});
+
+t('diagrams: every exception class with a card has a place in the Java Exceptions tree', () => {
+  const missing = run(`(() => {
+    const names = [], walk = n => { names.push(n.t); (n.kids || []).forEach(walk); };
+    walk(REF_DOCS.javaex.diagrams.find(d => d.id === 'tree').root);
+    const all = names.join(' | ');
+    return [...new Set(REF_DOCS.javaex.items.flatMap(it => it.t.match(/[A-Z][A-Za-z0-9]*(?:Exception|Error)\\b/g) || []))]
+      .filter(c => !new RegExp('\\\\b' + c + '\\\\b').test(all));
+  })()`);
+  assert.deepEqual(missing, []);
+});
+
+// ── CRON ── next runs in a fixed zone from a fixed instant; conversion for Spring / Quartz
+const runs = (expr, n = 3) => run(`cronNextRuns(${JSON.stringify(expr)}, ${n}, new Date('2025-12-31T23:59:00Z'), 'UTC').map(d => d.toISOString().slice(0, 16))`);
+t('cron: steps count from the field start', () => {
+  assert.deepEqual(runs('0 0 1 */3 *'), ['2026-01-01T00:00', '2026-04-01T00:00', '2026-07-01T00:00']);
+  assert.deepEqual(runs('0 0 */10 1 *'), ['2026-01-01T00:00', '2026-01-11T00:00', '2026-01-21T00:00']);
+  assert.deepEqual(runs('*/20 9 * * *'), ['2026-01-01T09:00', '2026-01-01T09:20', '2026-01-01T09:40']);
+});
+t('cron: weekdays, names, 7 = Sunday, ranges with step', () => {
+  // 2026-01-01 is a Thursday
+  assert.deepEqual(runs('0 8 * * 1-5'), ['2026-01-01T08:00', '2026-01-02T08:00', '2026-01-05T08:00']);
+  assert.deepEqual(runs('0 8 * * MON-FRI'), runs('0 8 * * 1-5'));
+  assert.deepEqual(runs('0 0 * * 7', 1), runs('0 0 * * 0', 1));
+  assert.deepEqual(runs('0 0 * JAN-MAR/2 SUN', 2), ['2026-01-04T00:00', '2026-01-11T00:00']);
+});
+t('cron: day of month OR day of week when both are set, L = last day', () => {
+  // the 15th or any Monday
+  assert.deepEqual(runs('0 0 15 * 1'), ['2026-01-05T00:00', '2026-01-12T00:00', '2026-01-15T00:00']);
+  assert.deepEqual(runs('0 0 L * *'), ['2026-01-31T00:00', '2026-02-28T00:00', '2026-03-31T00:00']);
+  assert.deepEqual(runs('0 0 29 2 *', 1), ['2028-02-29T00:00']);
+});
+t('cron: time zone and malformed input', () => {
+  // 09:00 in Bangkok = 02:00 UTC; the result reads as Bangkok wall clock
+  assert.deepEqual(run(`cronNextRuns('0 9 * * *', 1, new Date('2026-01-01T00:00:00Z'), 'Asia/Bangkok').map(d => d.toISOString().slice(0, 16))`), ['2026-01-01T09:00']);
+  for (const bad of ['* * *', '60 * * * *', '0 24 * * *', '0 0 0 * *', '0 0 * 13 *', '0 0 * * 8', '*/0 * * * *', 'x * * * *']) assert.deepEqual(run(`cronNextRuns(${JSON.stringify(bad)})`), [], bad);
+});
+t('cron: Quartz keeps a seconds field, weekday names and one ?', () => {
+  assert.deepEqual(run(`cronToQuartz('0 8 * * 1-5')`), { expr: '0 0 8 ? * MON-FRI', dropped: false });
+  assert.deepEqual(run(`cronToQuartz('30 6 * * 0,6')`), { expr: '0 30 6 ? * SUN,SAT', dropped: false });
+  assert.deepEqual(run(`cronToQuartz('0 0 1 * *')`), { expr: '0 0 0 1 * ?', dropped: false });
+  assert.deepEqual(run(`cronToQuartz('0 0 15 * 1')`), { expr: '0 0 0 15 * ?', dropped: true });
+  assert.equal(run(`cronToQuartz('bad')`), null);
 });
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

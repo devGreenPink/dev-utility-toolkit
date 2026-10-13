@@ -25,7 +25,7 @@ explorer data in `k8s-ref.js` / `jenkins.js`) by loading the tool files into one
 covered there.
 
 `tests/e2e/run.mjs` is the browser suite (Playwright + axe-core, the only npm dependencies, scoped to `tests/e2e/`):
-every tab without errors, axe WCAG 2.2 AA on every tab in light and dark, no sideways scroll at 375 px, and the
+every tab without errors, axe WCAG 2.2 AA on every tab in the default Dracula theme, light, dark and at phone width (375 px), no sideways scroll at 375 px, and the
 features that only exist in a page (smart paste, remembered inputs, share link, file drop, send to / history,
 Ctrl+K paste, QR, offline). It serves the repo itself on a free port.
 `cd tests/e2e && npm ci && npx playwright install chromium && node run.mjs`. `.github/workflows/test.yml` runs
@@ -53,6 +53,12 @@ The app is a single HTML page with a few companion files:
     (`files` = `[{id, g, label, lang, intro, lines:[[code, note]]}]`, used by `K8S_MANIFESTS` in
     `k8s-ref.js` and `JK_FILES` in `jenkins.js`) — and `flowInit(rootId, nodes, cur, opt)` — the clickable
     step chain (`GW_NODES` in `gateway.js`, `JK_FLOW` in `jenkins.js`).
+    Diagrams: `REF_DOCS[id].diagrams = [{id, t, kind, intro, ...}]` draws a collapsible "แผนผัง" above the cards
+    (`dgShow`); kinds `tree`, `boxes`, `timeline`, `anatomy`, `venn` (see the comment above `dgInit`) and `flow`
+    (reuses `flowInit`). Every part with a `note` is a button that explains itself, and `q` fills the card search.
+    Tabs that are not reference docs mount the same diagrams with `dgInit(id, list)` into `<div id="dg-<id>">`
+    (`HTTP_DIAGRAMS`, `GIT_DIAGRAMS`, `CRON_DIAGRAMS`, `NG_DIAGRAMS`). `tests/tools.test.mjs` checks every diagram
+    and that each `q` finds a card.
     Example content uses made-up names (`order-api`, namespace `shop`, `registry.example.com`) and fake
     values (`changeme`); never real project names, hosts or credentials.
   - `tools/home.js` — the home tab (default for a first visit): one box that searches tools or, via
@@ -78,7 +84,8 @@ The app is a single HTML page with a few companion files:
 
 ### Tab/navigation system
 
-`openTab(evt, id)` shows the matching `.tab-content` div and persists the active tab to `localStorage` (`esan-devtools-tab`). Tab metadata (title/subtitle shown in the top bar) is declared in the `TAB_META` object at the top of `core.js`.
+`openTab(evt, id)` shows the matching `.tab-content` div and persists the active tab to `localStorage` (`esan-devtools-tab`). Tab metadata (title/subtitle shown in the top bar) is declared in the `TAB_META` object at the top of `core.js`;
+`setTopbar(id)` adds the tool's sidebar icon, its group label and a favorite star, so a new tool needs nothing extra there.
 
 Adding a new tool requires four things:
 1. A `<div id="newtool-tab" class="tab-content">` block in `index.html`
@@ -114,7 +121,8 @@ elements before that (no load-time `getElementById` on them), and a fragment in 
 ### State persistence
 
 `localStorage` keys used:
-- `esan-devtools-theme` — `mac` or a preset id (`matrix`/`nord`/`dracula`/`kitty`); pre-v2 values
+- `esan-devtools-theme` — `mac` or a preset id (`matrix`/`nord`/`dracula`/`kitty`); unset = `dracula` (the
+  first-visit default, so the e2e axe runs store `mac` to test light/dark); pre-v2 values
   (`default`, `light`, `esan`, `cdg`, `south`) are migrated in `loadTheme()`
 - `esan-devtools-appearance` — `light` / `dark` / `auto` (macOS theme only)
 - `esan-devtools-accent` — accent id from `ACCENTS` or a custom `#rrggbb`
@@ -194,7 +202,7 @@ idle `precacheLibs()` asks it to fetch all of `LIBS`, so every tool works offlin
 macOS-style shell (translucent sidebar, unified toolbar, popovers) shared by every theme.
 `data-theme` on `<body>`: `''` = macOS Dark, `light` = macOS Light, or a preset (`matrix`, `nord`,
 `dracula`, `kitty`). Settings live in the toolbar gear popover (`#settings-pop`): appearance, accent,
-presets, click-effect switch. The macOS themes get their accent written inline on `<body>` by
+presets, text size, font, effects switch, remembered inputs and the keyboard shortcuts list. The macOS themes get their accent written inline on `<body>` by
 `applyAccent()`, which shades it until `--accent-fg` and the `--btn-primary-*` pair reach 4.5:1
 (`console.assert` fires if not). Tokens are declared on `body`, not `:root`, because `data-theme` is on
 `<body>` and derived tokens (`--material-*`, `--focus-ring`, `--wallpaper`) must resolve against it.

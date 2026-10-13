@@ -57,7 +57,7 @@
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> เปรียบเทียบทุกชนิด</div>
               <div class="stor-section-sub">คลิกแถวเพื่อไปดูรายละเอียด</div>
-              <div style="overflow-x:auto">
+              <div style="overflow-x:auto" tabindex="0" role="region" aria-label="ตารางเปรียบเทียบ storage (เลื่อนซ้ายขวาได้)">
                 <table class="stor-cmp-table">
                   <thead><tr>
                     <th>Storage</th><th>ขนาด</th><th>ประเภทข้อมูล</th><th>Lifetime</th><th>Async</th><th>ค้นหาได้</th><th>เหมาะกับ</th>
@@ -421,7 +421,7 @@ request.onsuccess = (e) => {
                   <tbody>
                     <tr><td><code>HttpOnly</code></td><td>JS อ่านไม่ได้ ป้องกัน XSS</td><td><span class="stor-cmp-ok">ใช้เสมอสำหรับ auth</span></td></tr>
                     <tr><td><code>Secure</code></td><td>ส่งผ่าน HTTPS เท่านั้น</td><td><span class="stor-cmp-ok">ใช้เสมอใน production</span></td></tr>
-                    <tr><td><code>SameSite=Strict</code></td><td>ป้องกัน CSRF attack</td><td><span class="stor-cmp-ok">แนะนำ Strict หรือ Lax</span></td></tr>
+                    <tr><td><code>SameSite=Strict</code></td><td>ป้องกัน CSRF attack</td><td><span class="stor-cmp-ok">Lax สำหรับ session ที่ login ผ่าน SSO (Strict ไม่ส่ง cookie ตอน redirect กลับจากหน้า login) · Strict สำหรับ cookie ที่ไม่ต้องตามมาจากเว็บอื่น</span></td></tr>
                     <tr><td><code>expires / Max-Age</code></td><td>กำหนดอายุ cookie</td><td>ตามความต้องการ</td></tr>
                     <tr><td><code>Path</code></td><td>จำกัด path ที่ส่ง cookie</td><td>ระบุให้ specific</td></tr>
                   </tbody>
@@ -458,7 +458,7 @@ document.cookie = "lang=; max-age=0; path=/";
             <div class="stor-section">
               <div class="stor-section-title"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> ใช้เมื่อ / <svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg> อย่าใช้เมื่อ</div>
               <div class="stor-rules">
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Auth token / session ID: httpOnly + Secure + SameSite=Strict เท่านั้น</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Auth token / session ID: httpOnly + Secure + SameSite (Lax หรือ Strict)</span></div>
                 <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">ข้อมูลใหญ่: 4 KB limit และส่งไปกับทุก request (ทำให้ request ใหญ่ขึ้น)</span></div>
                 <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">Sensitive data ใน non-httpOnly cookie: JS อ่านได้ = XSS อ่านได้</span></div>
               </div>
@@ -495,7 +495,7 @@ document.cookie = "lang=; max-age=0; path=/";
             </div>
 
             <div class="stor-section">
-              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Service Worker (sw.js ของ dev-tools นี้)</div>
+              <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg> Code: Service Worker (แนวเดียวกับ sw.js ของ dev-tools นี้)</div>
               <div class="stor-code-block">
                 <button class="stor-copy-btn" onclick="storCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
                 <pre class="stor-code">const CACHE = 'myapp-v1';
@@ -519,18 +519,25 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// ── Fetch: Cache-first strategy ──
+// ── Fetch ──
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  // library จาก CDN ที่ล็อกเวอร์ชันใน URL: cache-first (ไฟล์ไม่มีวันเปลี่ยน)
+  if (url.hostname === 'cdnjs.cloudflare.com') {
+    e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+      const clone = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, clone));
+      return res;
+    })));
+    return;
+  }
+  // ไฟล์ของแอปเอง: network-first ได้เวอร์ชันใหม่ทันทีที่ deploy, ใช้ cache เมื่อ offline
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached; // ← Cache HIT
-      return fetch(e.request).then(res => {
-        // Cache ก่อนส่งกลับ
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return res;
-      });
-    })
+    fetch(e.request).then(res => {
+      const clone = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, clone));
+      return res;
+    }).catch(() => caches.match(e.request))   // ← offline: Cache HIT
   );
 });</pre>
               </div>
@@ -542,7 +549,7 @@ self.addEventListener('fetch', e => {
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">PWA offline support: HTML, CSS, JS, รูปภาพ, fonts</span></div>
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Performance: ลด network round-trip สำหรับ static assets</span></div>
                 <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">เก็บ JSON data ทั่วไป: ใช้ IndexedDB แทน Cache API เก็บได้แค่ HTTP Response</span></div>
-                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">Cache invalidation: ต้อง bump cache version เมื่อ deploy ใหม่ ไม่งั้น user ได้ของเก่า</span></div>
+                <div class="stor-rule stor-rule-warn"><span class="stor-rule-icon"><svg class="i t-yellow" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><span class="stor-rule-text">Cache-first กับไฟล์ที่ชื่อไม่มีเวอร์ชัน (app.js, index.html): user ได้ของเก่าจนกว่าจะ bump cache version ใช้ network-first กับไฟล์พวกนี้แทน</span></div>
               </div>
             </div>
 
@@ -567,7 +574,7 @@ self.addEventListener('fetch', e => {
               <div class="stor-section-title"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Best Practices: กฎที่ต้องจำ</div>
               <div class="stor-rules">
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text"><strong>Auth token → httpOnly Cookie เท่านั้น</strong> ไม่ใช่ localStorage, sessionStorage, หรือ IndexedDB</span></div>
-                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ <code>Secure</code> + <code>SameSite=Strict</code> กับทุก auth cookie</span></div>
+                <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ <code>Secure</code> + <code>SameSite=Lax</code> (หรือ <code>Strict</code> ถ้าไม่มีการ redirect จากเว็บอื่น เช่น SSO) กับทุก auth cookie</span></div>
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">Sanitize ทุก user input ก่อนแสดงผล: ป้องกัน XSS ตั้งแต่ต้นทาง</span></div>
                 <div class="stor-rule stor-rule-ok"><span class="stor-rule-icon"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg></span><span class="stor-rule-text">ใช้ Content Security Policy (CSP) header: จำกัด script ที่รันได้</span></div>
                 <div class="stor-rule stor-rule-bad"><span class="stor-rule-icon"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg></span><span class="stor-rule-text">อย่าเก็บ password, เลขบัตรเครดิต, เลขบัตรประชาชน ใน storage ใดๆ ทั้งสิ้น</span></div>
