@@ -118,8 +118,12 @@ elements before that (no load-time `getElementById` on them), and a fragment in 
   (`default`, `light`, `esan`, `cdg`, `south`) are migrated in `loadTheme()`
 - `esan-devtools-appearance` — `light` / `dark` / `auto` (macOS theme only)
 - `esan-devtools-accent` — accent id from `ACCENTS` or a custom `#rrggbb`
-- `esan-devtools-clickfx` — `1`/`0` from the Settings effects switch (click sparkle, logo animation,
-  transitions via `body.fx-off`); unset = follow the OS `prefers-reduced-motion`
+- `esan-devtools-clickfx` — `0` when the Settings effects switch (click sparkle, logo animation,
+  transitions via `body.fx-off`) is off; unset = on, whatever the OS reduce-motion setting
+- `esan-devtools-fontsize` — `sm`/`md`/`lg`/`xl` from Settings, applied as the root font size (`FONT_SIZES`);
+  text, the sidebar width and the shell are sized in rem so they all follow it (only drawn shapes stay px)
+- `esan-devtools-font` — `system`/`plex`/`noto` (`FONTS` in core.js): overrides `--sans` on `<body>`; Noto Sans
+  Thai + Inter is fetched from Google Fonts only when chosen
 - `esan-devtools-nav-collapsed` — ids of folded sidebar groups (`data-group`)
 - `esan-devtools-tab` — last active tab id
 - `esan-devtools-navsearch` — last sidebar search query

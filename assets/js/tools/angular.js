@@ -96,7 +96,7 @@ function renderNgDetail(hook){
   const el=document.getElementById('ng-detail');
   if(!el)return;
   if(!hook){
-    el.innerHTML=`<div class="ng-detail-empty"><div class="ng-detail-empty-icon">${ic('play')}</div><div>กด <strong>▶ Simulate</strong> เพื่อดู hooks ที่ fire ตามลำดับ</div><div class="ng-detail-empty-sub">หรือ click hook ในแผนภูมิซ้ายเพื่อดูรายละเอียด</div></div>`;
+    el.innerHTML=`<div class="ng-detail-empty"><div class="ng-detail-empty-icon">${ic('play')}</div><div>กดปุ่ม <strong>จำลอง</strong> เพื่อดู hooks ที่ fire ตามลำดับ</div><div class="ng-detail-empty-sub">หรือ click hook ในแผนภูมิซ้ายเพื่อดูรายละเอียด</div></div>`;
     return;
   }
   el.innerHTML=`<div class="ng-detail-content">

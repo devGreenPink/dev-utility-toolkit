@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
     <!-- ── SEO ── -->
-    <title>อีสาน DevTools: Developer Toolkit สำหรับนักพัฒนาไทย</title>
+    <title>อีสาน Dev Tools</title>
     <meta
       name="description"
       content="เครื่องมือ 15 อย่างสำหรับนักพัฒนาในหน้าเดียว: Mock Data Generator, SQL Parser, JSON Tools, JWT Decoder, Hash, Base64, URL Encode, Regex Tester, Cron Builder, Color Picker, HTTP Status Reference, kubectl และ Linux Cheatsheet · ทำงานใน browser ล้วน ไม่มี backend ไม่มี tracking"
@@ -57,11 +57,11 @@
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <meta name="apple-mobile-web-app-title" content="DevTools" />
+    <meta name="apple-mobile-web-app-title" content="Dev Tools" />
 
     <!-- ── Favicon ── -->
-    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="assets/images/favicon.svg" />
+    <link rel="icon" href="assets/images/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
 
     <!-- ── Fonts ── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -207,17 +207,16 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="app-logo">
           <div class="app-logo-icon-wrap">
-            <div class="app-logo-icon" id="logo-icon"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg></div>
+            <div class="app-logo-icon" id="logo-icon"><img src="assets/images/logo.png" alt="" width="42" height="42" /></div>
             <span class="logo-star logo-star-1" aria-hidden="true"></span>
             <span class="logo-star logo-star-2" aria-hidden="true"></span>
             <span class="logo-star logo-star-3" aria-hidden="true"></span>
             <span class="logo-star logo-star-4" aria-hidden="true"></span>
           </div>
           <div>
-            <div class="app-name">อีสาน DevTools</div>
+            <div class="app-name">อีสาน Dev Tools</div>
             <div class="app-version">v2.0</div>
           </div>
         </div>
@@ -450,10 +449,28 @@
                 <div class="pop-label" id="preset-label">ธีมพิเศษ</div>
                 <div class="preset-row" id="preset-row" role="radiogroup" aria-labelledby="preset-label"></div>
               </div>
+              <div class="pop-section">
+                <div class="pop-label" id="fsize-label">ขนาดตัวอักษร</div>
+                <div class="json-view-toggle pop-seg" id="font-size-opt" role="group" aria-labelledby="fsize-label">
+                  <button type="button" class="json-view-btn" data-v="sm" aria-pressed="false" onclick="setTextPref('size','sm')">เล็ก</button>
+                  <button type="button" class="json-view-btn" data-v="md" aria-pressed="false" onclick="setTextPref('size','md')">ปกติ</button>
+                  <button type="button" class="json-view-btn" data-v="lg" aria-pressed="false" onclick="setTextPref('size','lg')">ใหญ่</button>
+                  <button type="button" class="json-view-btn" data-v="xl" aria-pressed="false" onclick="setTextPref('size','xl')">ใหญ่มาก</button>
+                </div>
+              </div>
+              <div class="pop-section">
+                <div class="pop-label" id="font-label">ฟอนต์</div>
+                <div class="json-view-toggle pop-seg" id="font-family-opt" role="group" aria-labelledby="font-label">
+                  <button type="button" class="json-view-btn" data-v="system" aria-pressed="false" onclick="setTextPref('font','system')">ค่าเริ่มต้น</button>
+                  <button type="button" class="json-view-btn" data-v="plex" aria-pressed="false" onclick="setTextPref('font','plex')">IBM Plex</button>
+                  <button type="button" class="json-view-btn" data-v="noto" aria-pressed="false" onclick="setTextPref('font','noto')">Noto + Inter</button>
+                </div>
+                <div class="pop-hint" id="font-hint"></div>
+              </div>
               <div class="pop-section pop-row">
                 <div>
                   <div class="pop-row-title" id="fx-label">เอฟเฟกต์และแอนิเมชัน</div>
-                  <div class="pop-hint" id="fx-hint">ประกายตอนคลิก, logo เคลื่อนไหว และ transition ค่าเริ่มต้นตามการตั้งค่าลดการเคลื่อนไหวของเครื่อง</div>
+                  <div class="pop-hint" id="fx-hint">ประกายตอนคลิก, logo เคลื่อนไหว และ transition เปิดไว้เป็นค่าเริ่มต้น</div>
                 </div>
                 <button type="button" class="switch" id="fx-switch" role="switch" aria-checked="true" aria-labelledby="fx-label" aria-describedby="fx-hint" onclick="toggleClickFx()"></button>
               </div>
@@ -906,12 +923,8 @@
                 flex-wrap: wrap;
               "
             >
-              <button class="btn btn-ghost" onclick="jsonTreeExpandAll()">
-                ▼ Expand All
-              </button>
-              <button class="btn btn-ghost" onclick="jsonTreeCollapseAll()">
-                ▶ Collapse All
-              </button>
+              <button class="btn btn-ghost" onclick="jsonTreeExpandAll()"><svg class="i" aria-hidden="true"><use href="#i-chevron-down"/></svg> ขยายทั้งหมด</button>
+              <button class="btn btn-ghost" onclick="jsonTreeCollapseAll()"><svg class="i" aria-hidden="true"><use href="#i-chevron-right"/></svg> ย่อทั้งหมด</button>
               <span
                 id="json-tree-stats"
                 style="

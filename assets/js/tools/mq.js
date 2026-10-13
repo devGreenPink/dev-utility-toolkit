@@ -65,7 +65,7 @@ function mqResetAnim(name) {
       document.getElementById('mq-lcs-' + i)?.classList.remove('mq-step-active');
     }
     const stepLabel = document.getElementById('mq-lifecycle-step');
-    if (stepLabel) stepLabel.textContent = 'กด ▶ เพื่อเริ่ม';
+    if (stepLabel) stepLabel.textContent = 'กดเล่นเพื่อเริ่ม';
   }
   if (name === 'cache') {
     ['mq-cache-app','mq-cache-redis-node','mq-cache-db-node'].forEach(id => {
@@ -94,7 +94,7 @@ function mqResetAnim(name) {
       if (r) r.textContent = '';
     });
     const stepLabel = document.getElementById('mq-pubsub-step');
-    if (stepLabel) stepLabel.textContent = 'กด ▶ เพื่อเริ่ม';
+    if (stepLabel) stepLabel.textContent = 'กดเล่นเพื่อเริ่ม';
   }
 }
 
@@ -274,7 +274,7 @@ function mqToggleQFill() {
     clearInterval(mqQConsTimer);
     mqQFillTimer = null; mqQConsTimer = null;
     const btn = document.getElementById('mq-qfill-btn');
-    if (btn) btn.textContent = '▶ เริ่ม Producer เร็ว';
+    if (btn) btn.innerHTML = ic('play') + ' เริ่ม Producer เร็ว';
     const status = document.getElementById('mq-qfill-status');
     if (status) status.textContent = 'หยุด';
   } else {
@@ -321,7 +321,7 @@ function mqResetQFill() {
   mqQItems = [];
   mqRenderQ();
   const btn = document.getElementById('mq-qfill-btn');
-  if (btn) btn.textContent = '▶ เริ่ม Producer เร็ว';
+  if (btn) btn.innerHTML = ic('play') + ' เริ่ม Producer เร็ว';
   const status = document.getElementById('mq-qfill-status');
   if (status) status.textContent = 'Queue ว่าง · Consumer หยุดรอ';
 }

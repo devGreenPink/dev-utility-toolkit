@@ -311,9 +311,9 @@
             <div class="mq-section">
               <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Message Lifecycle Animation: lifecycle ของ message</div>
               <div class="mq-anim-controls">
-                <button class="mq-anim-btn" onclick="mqRunAnim('lifecycle')">▶ เล่น Animation</button>
-                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('lifecycle')">↺ Reset</button>
-                <span class="mq-anim-step-label" id="mq-lifecycle-step">กด ▶ เพื่อเริ่ม</span>
+                <button class="mq-anim-btn" onclick="mqRunAnim('lifecycle')"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> เล่น Animation</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('lifecycle')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="mq-lifecycle-step">กดเล่นเพื่อเริ่ม</span>
               </div>
               <div class="mq-lifecycle-stage" id="mq-lifecycle-stage">
                 <div class="mq-lc-node mq-lc-producer" id="mq-lc-producer">
@@ -363,8 +363,8 @@
             <div class="mq-section">
               <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Queue Backpressure: เมื่อ Consumer ช้ากว่า Producer</div>
               <div class="mq-anim-controls">
-                <button class="mq-anim-btn" id="mq-qfill-btn" onclick="mqToggleQFill()">▶ เริ่ม Producer เร็ว</button>
-                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetQFill()">↺ Reset</button>
+                <button class="mq-anim-btn" id="mq-qfill-btn" onclick="mqToggleQFill()"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> เริ่ม Producer เร็ว</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetQFill()"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
                 <span class="mq-anim-step-label" id="mq-qfill-status">Queue ว่าง · Consumer หยุดรอ</span>
               </div>
               <div class="mq-qfill-stage">
@@ -724,7 +724,7 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
               <div class="mq-anim-controls">
                 <button class="mq-anim-btn" onclick="mqCacheAnim('hit')"><svg class="i t-green" aria-hidden="true"><use href="#i-circle-check"/></svg> Cache Hit</button>
                 <button class="mq-anim-btn" onclick="mqCacheAnim('miss')"><svg class="i t-red" aria-hidden="true"><use href="#i-circle-x"/></svg> Cache Miss</button>
-                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('cache')">↺ Reset</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('cache')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
                 <span class="mq-anim-step-label" id="mq-cache-step">เลือก Hit หรือ Miss เพื่อดู animation</span>
               </div>
               <div class="mq-cache-stage">
@@ -759,9 +759,9 @@ PERSIST key                          # ยกเลิก TTL</pre></div>
             <div class="mq-section">
               <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Redis Pub/Sub Animation</div>
               <div class="mq-anim-controls">
-                <button class="mq-anim-btn" onclick="mqRunAnim('pubsub')">▶ Publish Message</button>
-                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('pubsub')">↺ Reset</button>
-                <span class="mq-anim-step-label" id="mq-pubsub-step">กด ▶ เพื่อเริ่ม</span>
+                <button class="mq-anim-btn" onclick="mqRunAnim('pubsub')"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Publish Message</button>
+                <button class="mq-anim-btn mq-anim-reset" onclick="mqResetAnim('pubsub')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="mq-pubsub-step">กดเล่นเพื่อเริ่ม</span>
               </div>
               <div class="mq-pubsub-stage">
                 <div class="mq-ps-publisher" id="mq-ps-pub">

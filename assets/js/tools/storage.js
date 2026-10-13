@@ -170,7 +170,7 @@ function storCookieAnimate() {
   setTimeout(() => {
     if(status) status.textContent = 'Cookie ถูกส่งอัตโนมัติ: browser จัดการให้ทั้งหมด JS ไม่ต้องทำอะไรเลย';
     if(pktRes) pktRes.classList.remove('stor-ck-pkt-show');
-    btn.disabled = false; btn.textContent = '▶ Animate อีกครั้ง';
+    btn.disabled = false; btn.innerHTML = ic('play') + ' Animate อีกครั้ง';
     _storCkRunning = false;
   }, 3200);
 }

@@ -215,8 +215,8 @@ function buildTree(val,key,depth,isRoot){
   const isComplex=type==='object'||type==='array';
   const line=document.createElement('div');line.className='tree-line';
   if(isComplex){
-    const toggle=document.createElement('span');toggle.className='tree-toggle';toggle.textContent='▼';
-    toggle.onclick=function(){const ch=wrap.querySelector(':scope > .tree-children');const collapsed=ch.classList.toggle('collapsed');toggle.textContent=collapsed?'▶':'▼';};
+    const toggle=document.createElement('span');toggle.className='tree-toggle';toggle.innerHTML=ic('chevron-down');
+    toggle.onclick=function(){const ch=wrap.querySelector(':scope > .tree-children');toggle.classList.toggle('is-collapsed',ch.classList.toggle('collapsed'));};
     line.appendChild(toggle);
   }
   if(key!==null){const keyEl=document.createElement('span');keyEl.className='tree-key';keyEl.textContent=JSON.stringify(key)+':';line.appendChild(keyEl);}
@@ -246,8 +246,8 @@ function buildTree(val,key,depth,isRoot){
   }
   return wrap;
 }
-function jsonTreeExpandAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.remove('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.textContent='▼');}
-function jsonTreeCollapseAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.add('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.textContent='▶');}
+function jsonTreeExpandAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.remove('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.classList.remove('is-collapsed'));}
+function jsonTreeCollapseAll(){document.querySelectorAll('#json-tree-output .tree-children').forEach(el=>el.classList.add('collapsed'));document.querySelectorAll('#json-tree-output .tree-toggle').forEach(el=>el.classList.add('is-collapsed'));}
 
 // JSONPath
 function runJsonPath(){

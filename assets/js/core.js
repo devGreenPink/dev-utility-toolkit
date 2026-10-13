@@ -72,7 +72,6 @@ const PRESETS=[ // [id, name, swatch]
 const ACCENT_VARS=['--accent','--accent-fg','--on-accent','--accent-glow','--btn-primary-bg','--btn-primary-text'];
 const theme={id:'mac',appearance:'auto',accent:'blue'};
 const darkMQ=window.matchMedia('(prefers-color-scheme: dark)');
-const reduceMotionMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function loadTheme(){
   let t=null,ap=null,ac=null;
@@ -195,6 +194,9 @@ function syncSettingsUI(){
   document.querySelectorAll('.preset-opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.preset===theme.id)));
   document.getElementById('fx-switch')?.setAttribute('aria-checked',String(clickFx));
   document.getElementById('remember-switch')?.setAttribute('aria-checked',String(rememberInputs));
+  setSegmented('font-size-opt',textPref.size);
+  setSegmented('font-family-opt',textPref.font);
+  const fh=document.getElementById('font-hint');if(fh)fh.textContent=FONTS[textPref.font][2];
 }
 
 // ── POPOVERS ──
@@ -898,27 +900,46 @@ function initHistory(root){
   });
 }
 
-// ── EFFECTS ── one Settings switch for the click sparkle, the logo animation and UI transitions.
-// Unset = follow the OS reduce-motion preference; once the user flips the switch, their choice wins.
-const STORAGE_CLICKFX='esan-devtools-clickfx'; // '1' | '0' | unset
-let clickFx=!reduceMotionMQ.matches;
-try{const v=localStorage.getItem(STORAGE_CLICKFX);if(v!==null)clickFx=v!=='0';}catch(e){}
-function applyFx(){
-  let explicit=false;try{explicit=localStorage.getItem(STORAGE_CLICKFX)!==null;}catch(e){}
-  document.body.classList.toggle('fx-off',!clickFx);
-  document.body.classList.toggle('fx-on',clickFx&&explicit);
-}
+// ── EFFECTS ── one Settings switch for the click sparkle, the logo animation and UI transitions. On by default.
+const STORAGE_CLICKFX='esan-devtools-clickfx'; // '0' = off, anything else = on
+let clickFx=true;
+try{clickFx=localStorage.getItem(STORAGE_CLICKFX)!=='0';}catch(e){}
+function applyFx(){document.body.classList.toggle('fx-off',!clickFx);}
 applyFx();
-reduceMotionMQ.addEventListener('change',()=>{
-  let v=null;try{v=localStorage.getItem(STORAGE_CLICKFX);}catch(e){}
-  if(v===null){clickFx=!reduceMotionMQ.matches;applyFx();syncSettingsUI();}
-});
 function toggleClickFx(){
   clickFx=!clickFx;
   try{localStorage.setItem(STORAGE_CLICKFX,clickFx?'1':'0');}catch(e){}
   applyFx();
   syncSettingsUI();
   showToast(clickFx?'เปิดเอฟเฟกต์และแอนิเมชันแล้ว':'ปิดเอฟเฟกต์และแอนิเมชันแล้ว','info');
+}
+
+// ── TEXT ── Settings text size and font. The size scales the root, so everything sized in rem follows it.
+const STORAGE_FONTSIZE='esan-devtools-fontsize', STORAGE_FONT='esan-devtools-font';
+const FONT_SIZES={sm:'87.5%',md:'',lg:'112.5%',xl:'125%'};
+const FONTS={ // id: [--sans override ('' = the stylesheet's), Google Fonts stylesheet loaded on first use, hint]
+  system:['',null,'ตัวอักษรของระบบ ภาษาไทยใช้ IBM Plex Sans Thai'],
+  plex:["'IBM Plex Sans Thai', system-ui, sans-serif",null,'IBM Plex Sans Thai ทั้งไทยและอังกฤษ'],
+  noto:["Inter, 'Noto Sans Thai', system-ui, sans-serif",'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap','Inter สำหรับอังกฤษและตัวเลข, Noto Sans Thai สำหรับไทย โหลดจาก Google Fonts ครั้งแรกที่เลือก'],
+};
+const textPref={size:'md',font:'system'};
+try{
+  const sz=localStorage.getItem(STORAGE_FONTSIZE),f=localStorage.getItem(STORAGE_FONT);
+  if(Object.hasOwn(FONT_SIZES,sz))textPref.size=sz;
+  if(Object.hasOwn(FONTS,f))textPref.font=f;
+}catch(e){}
+function applyTextPref(){
+  const [stack,css]=FONTS[textPref.font];
+  document.documentElement.style.fontSize=FONT_SIZES[textPref.size];
+  if(css&&!document.querySelector(`link[href="${css}"]`))document.head.insertAdjacentHTML('beforeend',`<link rel="stylesheet" crossorigin href="${css}">`);
+  if(stack)document.body.style.setProperty('--sans',stack);else document.body.style.removeProperty('--sans');
+}
+applyTextPref();
+function setTextPref(key,val){
+  textPref[key]=val;
+  try{localStorage.setItem(key==='size'?STORAGE_FONTSIZE:STORAGE_FONT,val);}catch(e){}
+  applyTextPref();
+  syncSettingsUI();
 }
 
 // ── REMEMBERED INPUTS ── every tool's text fields survive a reload; secrets and search boxes never do

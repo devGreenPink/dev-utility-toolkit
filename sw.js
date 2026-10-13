@@ -50,7 +50,8 @@ const STATIC_ASSETS = [
   './assets/tabs/rxjs-tab.html',
   './assets/tabs/esan-agent-tab.html',
   './assets/tabs/angular-tab.html',
-  './assets/images/favicon.svg',
+  './assets/images/logo.png',
+  './assets/images/icon-192.png',
   './manifest.json',
 ];
 

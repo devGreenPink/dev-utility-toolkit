@@ -114,7 +114,7 @@ function renderRxjsOps(){
   <div class="rxjs-op-top">
     <span class="rxjs-op-name">${op.n}</span>
     <span class="rxjs-op-badge rxjs-badge-${op.c}">${op.c}</span>
-    <button class="rxjs-try-btn" onclick="rxjsTryOp('${op.n}')">▶ Try</button>
+    <button class="rxjs-try-btn" onclick="rxjsTryOp('${op.n}')">${ic('play')} Try</button>
   </div>
   <div class="rxjs-op-summary">${escHtml(op.s)}</div>
   <div class="rxjs-op-when"><span class="rxjs-when-ok">${ic('check')} ใช้เมื่อ</span>${op.w.map(w=>`<div class="rxjs-when-item">• ${escHtml(w)}</div>`).join('')}${op.a.length?`<span class="rxjs-when-no">${ic('x')} หลีกเลี่ยง</span>${op.a.map(a=>`<div class="rxjs-when-item rxjs-avoid">• ${escHtml(a)}</div>`).join('')}`:''}</div>
@@ -866,7 +866,7 @@ actions$.pipe(
 let rxjsPgActive=false,rxjsPgLogCount=0,rxjsPgStopHandle=null,rxjsPgInited=false,rxjsPgEditor=null,rxjsPgPending=null;
 const _origConsoleLog=console.log,_origConsoleWarn=console.warn,_origConsoleError=console.error;
 
-const RXJS_PG_DEFAULT=`// โหลดตัวอย่างจาก "ตัวอย่าง" ด้านบน หรือกด ▶ Try ที่ operator card
+const RXJS_PG_DEFAULT=`// โหลดตัวอย่างจาก "ตัวอย่าง" ด้านบน หรือกด Try ที่ operator card
 // Ctrl+Enter = Run
 
 of(1, 2, 3, 4, 5).pipe(
@@ -984,7 +984,7 @@ function rxjsRunCode(){
   if(out){out.innerHTML='';const div=document.createElement('div');div.className='rxjs-pg-log-divider';out.appendChild(div);}
   rxjsPgLogCount=0;
   rxjsPgActive=true;
-  rxjsPgSetStatus('▶ Running…',true);
+  rxjsPgSetStatus('กำลังรัน…',true);
 
   // auto-stop safety after 15 seconds
   rxjsPgStopHandle=setTimeout(()=>{
@@ -1030,7 +1030,7 @@ function rxjsRunCode(){
         rxjsPgActive=false;
         clearTimeout(rxjsPgStopHandle);
       }else if(rxjsPgActive){
-        rxjsPgSetStatus('▶ Running…',true);
+        rxjsPgSetStatus('กำลังรัน…',true);
       }
     },100);
 
@@ -1051,7 +1051,7 @@ function rxjsStopCode(){
 function rxjsClearOutput(){
   rxjsStopCode();
   const out=document.getElementById('rxjs-pg-output');
-  if(out){out.innerHTML='<div class="rxjs-pg-empty">กด ▶ Run เพื่อรันโค้ด</div>';}
+  if(out){out.innerHTML='<div class="rxjs-pg-empty">กด Run เพื่อรันโค้ด</div>';}
   rxjsPgLogCount=0;
   rxjsPgSetStatus('พร้อม',false);
   document.querySelectorAll('.rxjs-pg-preset-btn').forEach(b=>b.classList.remove('rxjs-pg-preset-active'));

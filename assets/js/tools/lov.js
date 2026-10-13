@@ -1166,13 +1166,13 @@ function lovEdRefreshPreview() {
     label = `ไฟล์: ${target}${note}`;
   }
   document.getElementById('lov-ed-file').textContent = label;
-  document.getElementById('lov-ed-dirty').textContent = _lovEdit.dirty ? '● ยังไม่บันทึก' : '';
+  document.getElementById('lov-ed-dirty').textContent = _lovEdit.dirty ? 'ยังไม่บันทึก' : '';
   highlightCode('#lov-tab pre.rxjs-code code');
 }
 
 function lovEdMarkDirty() {
   _lovEdit.dirty = true;
-  document.getElementById('lov-ed-dirty').textContent = '● ยังไม่บันทึก';
+  document.getElementById('lov-ed-dirty').textContent = 'ยังไม่บันทึก';
 }
 
 function lovEdOnInput(e) {
