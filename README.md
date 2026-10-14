@@ -5,7 +5,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-2.0-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-2.1-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
