@@ -39,6 +39,7 @@ const TAB_META = {
   'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
   'home-tab': { title: 'หน้าแรก', sub: 'วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด' },
   'esan-agent-tab': { title: 'ESAN AI AGENT', sub: 'Claude Code plugin · ติดตั้ง · อัปเดต · เปิดใช้งานที่ localhost:4567 บนเครื่องตัวเอง' },
+  'claude-patterns-tab': { title: 'Claude Code Patterns', sub: 'Plan → Design → Build · ไฟล์งาน 5 ชิ้น · RCTCF · plan mode · skill / hook · verifier' },
 };
 
 // inline SVG from the sprite in index.html

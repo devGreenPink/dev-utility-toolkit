@@ -10,7 +10,7 @@
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
 
-เครื่องมือ 38 อย่างใน 7 หมวด ทำงานบน client-side ทั้งหมด ไม่มี server ไม่มี API ของเราเอง ไม่มี tracking
+เครื่องมือ 39 อย่างใน 7 หมวด ทำงานบน client-side ทั้งหมด ไม่มี server ไม่มี API ของเราเอง ไม่มี tracking
 
 ---
 
@@ -127,6 +127,7 @@
 | เครื่องมือ | ทำอะไร |
 |---|---|
 | ESAN AI AGENT | คู่มือ plugin ออฟฟิศ 8 บิตที่แสดงทุก session ของ Claude Code บนเครื่อง ([`plugins/esan-office/README.md`](plugins/esan-office/README.md)) |
+| Claude Code Patterns | วิธีใช้ Claude Code กับงานทีมแบบ Plan → Design → Build: ไฟล์งาน 5 ชิ้น, prompt แบบ RCTCF, plan mode, skill / hook, verifier และร่องรอยตรวจสอบใน git |
 
 ---
 
@@ -151,6 +152,12 @@
 - เทียบอายุของ storage แต่ละแบบด้วย animation, playground ของ localStorage, CRUD ของ IndexedDB
 - cookie แต่ละ attribute (HttpOnly / Secure / SameSite Lax vs Strict), Cache API กับ Service Worker แบบ network-first / cache-first
 - ดูว่า storage ไหนโดน XSS ได้ และ decision tree ช่วยเลือก
+
+### Claude Code Patterns
+- แนวคิด AI-native SDLC: คอขวดย้ายไปขั้นที่ยังใช้คน, คนเขียนไม่อนุมัติงานตัวเอง, วงจร 3 ระดับ และ 12 play ของ Playbook
+- ไฟล์งาน 5 ชิ้น (CLAUDE.md → intent.md → spec.md → plan.md → โค้ด + test) แต่ละชิ้นมีหัวข้อ, ใครอนุมัติ และ template ที่กดคัดลอกได้ พร้อม animation ห่วงโซ่ commit
+- เทคนิค: prompt แบบ RCTCF, กฎควรอยู่ที่ CLAUDE.md / skill / hook, plan mode, verifier subagent, การดูแล context, โหมดสิทธิ์ และการกัน PII
+- ทีม: บทบาท, trailer ท้าย commit (`Refs:` / `Accepted-by:` / `Approved-by:`), Decision Register และตัวชี้วัดจาก git
 
 ### LOV Query Browser / Editor
 ดู แก้ สร้าง และลบ query-template (`*.lov.json`) ในโฟลเดอร์ของรีโปได้โดยตรง ไม่ต้องรัน `cdgs-template-designer`:
@@ -184,7 +191,7 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 cd dev-utility-toolkit
 python -m http.server 8080
 ```
-แล้วเปิด `http://localhost:8080` (หรือใช้ VS Code Live Server) ต้องเปิดผ่าน web server เพราะเครื่องมือขนาดใหญ่ 5 ตัว (MQ, Storage, RxJS, Angular, ESAN AI AGENT) โหลดแยกจาก `assets/tabs/` ซึ่งเปิดตรงจากไฟล์ (`file://`) ไม่ได้
+แล้วเปิด `http://localhost:8080` (หรือใช้ VS Code Live Server) ต้องเปิดผ่าน web server เพราะเครื่องมือขนาดใหญ่ 6 ตัว (MQ, Storage, RxJS, Angular, ESAN AI AGENT, Claude Code Patterns) โหลดแยกจาก `assets/tabs/` ซึ่งเปิดตรงจากไฟล์ (`file://`) ไม่ได้
 
 ### ติดตั้งเป็นแอป (PWA)
 - **Chrome / Edge**: กดไอคอนติดตั้งในแถบ URL

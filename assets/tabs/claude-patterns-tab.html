@@ -1,0 +1,1194 @@
+<!-- claude-patterns-tab: loaded into #claude-patterns-tab on first open (openTab in core.js) -->
+
+          <div class="section-header">
+            <div class="json-view-toggle" id="ccp-view" role="group" aria-label="หัวข้อ">
+              <button type="button" class="json-view-btn active" data-v="concept" aria-pressed="true" onclick="ccpView('concept')"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> แนวคิด</button>
+              <button type="button" class="json-view-btn" data-v="files" aria-pressed="false" onclick="ccpView('files')"><svg class="i" aria-hidden="true"><use href="#i-folder"/></svg> ไฟล์งาน 5 ชิ้น</button>
+              <button type="button" class="json-view-btn" data-v="tools" aria-pressed="false" onclick="ccpView('tools')"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg> เทคนิค</button>
+              <button type="button" class="json-view-btn" data-v="team" aria-pressed="false" onclick="ccpView('team')"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> ทีม &amp; Audit</button>
+            </div>
+          </div>
+
+          <div>
+
+          <!-- ═══ CONCEPT VIEW ═══ -->
+          <div id="ccp-v-concept">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> สั่งบรรทัดเดียว ได้อะไรกลับมา</div>
+              <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ตัวอย่าง: สั่ง "เพิ่ม validation ห้ามสั่งซื้อเกินสต็อก" บรรทัดเดียว Claude ทำเสร็จในไม่ถึงนาที test ผ่าน
+                แต่ตั้งชื่อ error code และกฎกรณีสั่งเท่ากับของที่เหลือพอดีเอง ไม่ถามก่อน และไม่มีไฟล์ไหนบันทึกว่าใครตัดสิน ลองซ้ำกี่รอบก็ได้ผลแบบเดียวกัน</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-pink)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg></div>
+                  <div class="mq-concept-name">ตีความเอง</div>
+                  <div class="mq-concept-desc">โจทย์คลุมเครือแต่ไม่ถาม ตั้งชื่อและกฎเอง<br><strong>แก้:</strong> plan mode + ให้ถามก่อน · ค้างไว้ใน Open questions</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></div>
+                  <div class="mq-concept-name">แก้เกินขอบเขต</div>
+                  <div class="mq-concept-desc">แตะไฟล์หรือ test ที่ไม่เกี่ยว<br><strong>แก้:</strong> Constraint ใน prompt + Files that change ใน plan.md</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-eye-off"/></svg></div>
+                  <div class="mq-concept-name">ไม่มีการตรวจ</div>
+                  <div class="mq-concept-desc">test ที่ Claude เขียนเองผ่าน แต่ไม่ตรง spec<br><strong>แก้:</strong> ตัวตรวจที่ Claude มองไม่เห็น + verifier subagent</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg></div>
+                  <div class="mq-concept-name">หลุด context</div>
+                  <div class="mq-concept-desc">ลืมข้อตกลงเมื่องานยาวหลายไฟล์<br><strong>แก้:</strong> <code>/context</code> · <code>/compact</code> · จดข้อตกลงลง plan.md</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg></div>
+                  <div class="mq-concept-name">ผิดรูปแบบ</div>
+                  <div class="mq-concept-desc">ขอแผนหรือ diff แต่ได้โค้ดมาเลย<br><strong>แก้:</strong> Format ใน prompt + template ของไฟล์งาน</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-fingerprint"/></svg></div>
+                  <div class="mq-concept-name">ไม่มีร่องรอยตรวจสอบ</div>
+                  <div class="mq-concept-desc">การตัดสินใจอยู่แค่ในแชต ปิด session แล้วหาย<br><strong>แก้:</strong> ไฟล์งานที่ commit + trailer บอกผู้อนุมัติ</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> AI-native SDLC: คอขวดย้ายที่ไปแล้ว</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg></span>
+                    <span class="mq-adv-title">คอขวดไม่ได้อยู่ที่การเขียนโค้ด</span>
+                    <span class="mq-badge mq-badge-warning">สำคัญ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>agent เขียนโค้ดเร็วขึ้นมาก แต่ขั้นก่อนและหลัง Build (รอ requirement, รอ review, รอ release) ยังเดินด้วยความเร็วของคน จึงกลายเป็นตัวกำหนดเวลาแทน</p>
+                    <p>อ่าน diff ทีละบรรทัดทันเมื่อคนเขียน แต่ไม่ทันเมื่อ agent เขียนเกือบทั้งหมด และถ้ายังรอคณะกรรมการรายสัปดาห์ ต้นทุน governance ยิ่งสูง</p>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> เร่งแค่ Build งานจะไปกองรอที่ review และ approval ต้องปรับทั้งวงจร</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg></span>
+                    <span class="mq-adv-title">Humans above the loop</span>
+                    <span class="mq-badge mq-badge-info">แนวคิด</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">แบบเดิม: เส้นตรง</div>
+                      <div class="mq-cp-flow">Plan → Design → Build → Test → Deploy → Maintain</div>
+                      <div class="mq-cp-when">ย้อนกลับครั้งหนึ่งต้องรอ release รอบใหม่ หน่วยเป็นสัปดาห์</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">แบบ AI-native: วงจร</div>
+                      <div class="mq-cp-flow">Plan ↻ Design ↻ Build ↻ Test ↻ Deploy ↻ Maintain</div>
+                      <div class="mq-cp-when">วนรอบใหม่ได้ในไม่กี่ชั่วโมง คนสั่งเริ่ม กำกับทิศ และวางกติกา โดยไม่ต้องกดอนุมัติทุกขั้น</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> เรื่องที่ต้องใช้วิจารณญาณ คนยังเป็นผู้ตัดสิน และต้องมีบันทึกว่าใครตัดสิน</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg></span>
+                    <span class="mq-adv-title">คนเขียนงาน ไม่อนุมัติงานตัวเอง</span>
+                    <span class="mq-badge mq-badge-success">กติกา</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>ขั้น</div><div>agent ทำ</div><div>คนตัดสิน</div></div>
+                      <div class="mq-dt-row"><div><strong>Plan</strong></div><div>ร่าง intent.md</div><div>PO อ่านแล้วรับเรื่อง</div></div>
+                      <div class="mq-dt-row"><div><strong>Design</strong></div><div>เขียน spec.md ตาม skill</div><div>PO อนุมัติ spec</div></div>
+                      <div class="mq-dt-row"><div><strong>Build</strong></div><div>plan.md + โค้ด + test</div><div>tech lead อนุมัติแผน · engineer กำกับและตรวจ</div></div>
+                      <div class="mq-dt-row"><div><strong>Deploy</strong></div><div>เตรียม release</div><div>release manager อนุมัติขึ้น production</div></div>
+                      <div class="mq-dt-row"><div><strong>Maintain</strong></div><div>เขียน intent ใหม่จาก incident</div><div>service owner คัดกรองว่าจะแก้เมื่อไร</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span>
+                    <span class="mq-adv-title">control เดิมยังอยู่ วิธีบังคับเปลี่ยน</span>
+                    <span class="mq-badge mq-badge-purple">Governance</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>เป้าหมายของ control เดิมยังเหมือนเดิม แต่บังคับด้วยกลไกที่ทำงานทุกครั้ง แทนการรอคนเซ็นเป็นรอบ ๆ</p>
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>control เดิม</div><div>ขั้น</div><div>แบบ AI-native</div></div>
+                      <div class="mq-dt-row"><div>BRD sign-off</div><div>Plan</div><div>intent.md + Accepted-by ใน commit</div></div>
+                      <div class="mq-dt-row"><div>PDPA review</div><div>Design</div><div>skill ของ DPO + สคริปต์สแกน PII</div></div>
+                      <div class="mq-dt-row"><div>code review</div><div>Build</div><div>agent review หลายชั้น + hook เป็นด่าน</div></div>
+                      <div class="mq-dt-row"><div>CAB / CHG</div><div>Deploy</div><div>ด่านอนุมัติที่ระบบบังคับก่อน release</div></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> ห่วงโซ่ไฟล์ที่ commit: ร่องรอยตรวจสอบ (audit trail)</div>
+              <div class="mq-anim-controls">
+                <button type="button" class="mq-anim-btn" onclick="ccpChain(true)"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> เล่น Animation</button>
+                <button type="button" class="mq-anim-btn mq-anim-reset" onclick="ccpChain(false)"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="ccp-chain-label" aria-live="polite">กดเล่นเพื่อเริ่ม</span>
+              </div>
+              <div class="mq-lifecycle-stage" id="ccp-chain">
+                <div class="mq-lc-node" style="border-top-color:var(--c-pink)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg></div><div class="mq-lc-label">intent.md</div><div class="mq-exv-nodelabel">Plan</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-yellow)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg></div><div class="mq-lc-label">spec.md</div><div class="mq-exv-nodelabel">Design</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-purple)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg></div><div class="mq-lc-label">plan.md</div><div class="mq-exv-nodelabel">Build</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-green)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg></div><div class="mq-lc-label">โค้ด + test</div><div class="mq-exv-nodelabel">Build</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-blue)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></div><div class="mq-lc-label">PR / release</div><div class="mq-exv-nodelabel">Deploy</div></div>
+              </div>
+              <div class="mq-lc-steps" id="ccp-chain-steps">
+                <div class="mq-lc-step">1. <strong>intent.md</strong> ผู้เสนอเรื่องเล่าปัญหา Claude ร่างตาม template → PO รับรอง · <code>Accepted-by</code></div>
+                <div class="mq-lc-step">2. <strong>spec.md</strong> Claude ร่าง requirement + design ตาม skill ของทีม → PO อนุมัติ · <code>Approved-by</code></div>
+                <div class="mq-lc-step">3. <strong>plan.md</strong> ร่างใน plan mode แล้วหยุดรอ → tech lead อนุมัติแผน · <code>Approved-by</code></div>
+                <div class="mq-lc-step">4. <strong>โค้ด + test</strong> ทำตามแผนทีละข้อ verifier ตรวจ → hook บังคับ <code>Refs: &lt;ticket&gt;</code> ทุก commit</div>
+                <div class="mq-lc-step">5. <strong>PR / release</strong> reviewer อ่านแผนก่อนดู diff → release manager อนุมัติ · production หลุดเกณฑ์เมื่อไร agent เขียน intent.md ใบใหม่ วนรอบต่อ</div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> วงจร 3 ระดับ: ยิ่งวงนอก ตัวตรวจผลยิ่งต้องอิสระจาก agent</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>วง</div><div>วนอะไร</div><div>ใครตรวจผล</div></div>
+                <div class="mq-dt-row"><div><strong>agentic loop</strong> (วงใน)</div><div>หา context → ลงมือ → ตรวจผล ทุก turn</div><div>โมเดลตัดสินเอง ถ้าไม่มีอะไรให้รันตรวจ คุณต้องตรวจเอง</div></div>
+                <div class="mq-dt-row"><div><strong>session loop</strong> (วงกลาง)</div><div>Plan → Implement → Verify ไม่เกิน N รอบ แล้วส่งให้คน</div><div>test, verifier subagent, Stop hook</div></div>
+                <div class="mq-dt-row"><div><strong>SDLC loop</strong> (วงนอก)</div><div>6 ขั้นต่อกันด้วยไฟล์ที่ commit</div><div>คนที่ด่านอนุมัติ, evals และเกณฑ์ใน production</div></div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> Claude Code ทำงานเป็นวงรอบ</div>
+              <div class="mq-adv-grid">
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></span>
+                    <span class="mq-adv-title">1 คำสั่ง = วนจนตัดสินเองว่าเสร็จ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">① หา context</div>
+                      <div class="mq-cp-flow">Read · Grep · Glob</div>
+                      <div class="mq-cp-when">อ่านไฟล์ ค้นโค้ด ยิ่งไม่มี CLAUDE.md บอกทาง ยิ่งต้องค้นเยอะ</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">② ลงมือ</div>
+                      <div class="mq-cp-flow">Edit · Write · Bash</div>
+                      <div class="mq-cp-when">แก้ไฟล์ รันคำสั่ง ทุก tool ต้องผ่านด่านสิทธิ์ (โหมด + rule ใน settings.json)</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">③ ตรวจผล</div>
+                      <div class="mq-cp-flow">Bash: &lt;คำสั่ง test&gt;</div>
+                      <div class="mq-cp-when">ไม่ผ่านก็วนใหม่ ตอบโดยไม่เรียก tool = จบรอบ</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg></span>
+                    <span class="mq-adv-title">คุณอยู่ในวงนี้ด้วย</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-ds-usecases">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> อนุมัติสิทธิ์ Yes / No · ตอบคำถามของ Claude · กด <kbd>Esc</kbd> แทรกกลางทาง</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg> Claude รู้แค่สิ่งที่อยู่ใน context สิ่งที่คุณไม่บอกและมันหาไม่เจอ ถือว่าไม่มีอยู่</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-flag"/></svg> Claude ตัดสินเองว่า "เสร็จ" ถ้าไม่มี test หรือเกณฑ์ที่รันตรวจได้ ก็ไม่มีอะไรมาค้าน</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> ถามคำถามสำรวจก่อนแก้ (ใน plan mode) จะได้คำตอบพร้อมชื่อไฟล์และเลขบรรทัด ใช้ต่อในขั้น Plan</div>
+                    </div>
+                    <div class="mq-code-snippet"><pre tabindex="0">อธิบายโครงสร้างโปรเจกต์นี้ และบอกว่า &lt;กฎ/feature X&gt; อยู่ที่ไหน
+flow ผ่านไฟล์ไหนบ้าง มี test ครอบไหม
+ถ้าจะเพิ่ม &lt;Y&gt; ต้องแตะไฟล์ไหน และต้องถามเจ้าของงานเรื่องอะไรก่อน
+ยังไม่ต้องแก้อะไร ตอบสั้น ๆ พร้อมชื่อไฟล์และบรรทัด</pre></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> 12 play ของ AI-Native SDLC Playbook</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-orange)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg></div>
+                  <div class="mq-concept-name">Capture intent <span class="mq-badge mq-badge-warning">Plan</span></div>
+                  <div class="mq-concept-desc">เก็บปัญหาด้วยคำของผู้เสนอใน intent.md · <strong>เริ่มได้เลย</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg></div>
+                  <div class="mq-concept-name">Requirements &amp; design <span class="mq-badge mq-badge-warning">Design</span></div>
+                  <div class="mq-concept-desc">requirement + design จบใน session เดียว ด้วย design prompt</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-orange)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg></div>
+                  <div class="mq-concept-name">CLAUDE.md <span class="mq-badge mq-badge-info">Build</span></div>
+                  <div class="mq-concept-desc">ไฟล์ที่ทุก session โหลด แทน wiki ที่ไม่มีใครอ่าน · <strong>เริ่มได้เลย</strong></div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></div>
+                  <div class="mq-concept-name">Skills <span class="mq-badge mq-badge-info">Build</span></div>
+                  <div class="mq-concept-desc">ความรู้และ policy ของทีมที่ Claude เปิดเมื่องานเกี่ยวข้อง</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg></div>
+                  <div class="mq-concept-name">Plan mode <span class="mq-badge mq-badge-info">Build</span></div>
+                  <div class="mq-concept-desc">เริ่มงานด้วยการถามและวางแผน ได้ plan.md ก่อนแตะโค้ด</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg></div>
+                  <div class="mq-concept-name">Subagents <span class="mq-badge mq-badge-info">Build</span></div>
+                  <div class="mq-concept-desc">agent ที่มี context ของตัวเอง เช่น verifier, researcher</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></div>
+                  <div class="mq-concept-name">Feedback loop <span class="mq-badge mq-badge-success">Build · Test</span></div>
+                  <div class="mq-concept-desc">ให้ Claude มีวิธีตรวจงานตัวเอง เช่น รัน test ก่อนบอกว่าเสร็จ</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg></div>
+                  <div class="mq-concept-name">Evals <span class="mq-badge mq-badge-success">Test</span></div>
+                  <div class="mq-concept-desc">ชุดวัดผลที่รันต่อเนื่องทุกครั้งที่แก้ ไม่ใช่ตรวจเป็นรอบ</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></div>
+                  <div class="mq-concept-name">Hooks <span class="mq-badge mq-badge-purple">Build · Deploy</span></div>
+                  <div class="mq-concept-desc">กติกาที่ระบบบังคับทุกครั้ง Claude เลี่ยงไม่ได้</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></div>
+                  <div class="mq-concept-name">PR review <span class="mq-badge mq-badge-purple">Deploy</span></div>
+                  <div class="mq-concept-desc">agent review หลายชั้นตาม REVIEW.md คนตัดสินที่ด่าน</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-workflow"/></svg></div>
+                  <div class="mq-concept-name">CI/CD <span class="mq-badge mq-badge-purple">Deploy</span></div>
+                  <div class="mq-concept-desc">รัน Claude แบบ headless ใน pipeline พร้อมด่านอนุมัติ</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></div>
+                  <div class="mq-concept-name">Closing the loop <span class="mq-badge mq-badge-danger">Maintain</span></div>
+                  <div class="mq-concept-desc">production หลุดเกณฑ์ → agent เขียน intent.md ใหม่ วงจรเริ่มรอบใหม่</div>
+                </div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> คอลัมน์บอกว่า play อยู่ขั้นไหน แต่ลำดับที่ควรเริ่มใช้ไม่ใช่ลำดับเดียวกัน · CLAUDE.md กับ Capture intent เริ่มได้ทันทีโดยไม่ต้องมี play อื่นก่อน ·
+                ทุก play เขียนด้วยโครงเดียวกัน 6 ส่วน: เดิม vs ใหม่ · เริ่มต้น · ขั้นตอน · หน้าตาไฟล์งาน · การกำกับดูแล · วัดผล</div>
+            </div>
+
+          </div><!-- /ccp-v-concept -->
+
+          <!-- ═══ FILES VIEW ═══ -->
+          <div id="ccp-v-files" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-folder"/></svg> ไฟล์งาน 5 ชิ้น: ชิ้นก่อนเป็นต้นทางของชิ้นถัดไป และตรวจย้อนได้จาก git</div>
+              <div class="json-view-toggle" id="ccp-file" role="group" aria-label="ไฟล์งาน" style="margin-bottom:14px">
+                <button type="button" class="json-view-btn active" data-v="claude" aria-pressed="true" onclick="ccpFile('claude')"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> CLAUDE.md</button>
+                <button type="button" class="json-view-btn" data-v="intent" aria-pressed="false" onclick="ccpFile('intent')"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg> intent.md</button>
+                <button type="button" class="json-view-btn" data-v="spec" aria-pressed="false" onclick="ccpFile('spec')"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg> spec.md</button>
+                <button type="button" class="json-view-btn" data-v="plan" aria-pressed="false" onclick="ccpFile('plan')"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> plan.md</button>
+                <button type="button" class="json-view-btn" data-v="code" aria-pressed="false" onclick="ccpFile('code')"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg> โค้ด + test</button>
+              </div>
+              <div>
+
+                <div class="mq-ds-panel" id="ccp-f-claude">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-blue)">CLAUDE.md</span>
+                    <span class="mq-badge mq-badge-info">โหลดทุก session</span>
+                  </div>
+                  <div class="mq-ds-desc">คู่มือไฟล์เดียวที่ root ของ repo Claude อ่านทั้งไฟล์ก่อนเริ่มงานทุก session ถ้าไม่มีไฟล์นี้ ความรู้ของทีมอยู่ในหัวคนกับ wiki ที่ Claude มองไม่เห็น มันจึงเดาเอง</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> เหมือนคู่มือวันแรกของพนักงานใหม่ ใส่เฉพาะสิ่งที่อ่านจากโค้ดไม่ออก ไม่เกิน 1 หน้า (~60 บรรทัด) ยิ่งยาวยิ่งกิน context</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg> <strong>Commands</strong>: คำสั่งที่ใช้จริง พร้อมผลที่ควรเห็น เช่น test ผ่านต้องขึ้น "N passed"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg> <strong>Conventions</strong>: กฎของทีมที่อ่านจากโค้ดไม่ออก เช่น ห้ามเรียก <code>datetime.now()</code> ตรง ๆ ให้ใช้ clock ที่ส่งเข้ามา</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-map-pin"/></svg> <strong>Architecture</strong>: 1–3 บรรทัดชี้จุดที่หายาก เช่น business rule ทั้งหมดอยู่ไฟล์ไหน</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> <strong>Things Claude gets wrong</strong>: Claude พลาดเรื่องเดิมครั้งที่ 2 เมื่อไร ให้เขียนวิธีที่ถูกลงตรงนี้ แทนการบอกซ้ำทุก session</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> <strong>Verifying your work</strong>: รัน test ก่อนรายงานว่าเสร็จ แล้วแปะผลดิบ · test พังให้แก้โค้ด ไม่แก้ test · requirement ขัดกับ test เดิม ให้เขียนไฟล์ escalation แล้วหยุด</div>
+                  </div>
+                  <div class="mq-cache-pattern">
+                    <div class="mq-cp-name">สร้างและดูแลทั้งทีม 4 ขั้น</div>
+                    <div class="mq-cp-flow">/init → อ่านทุกบรรทัด → ตัดเหลือ 1 หน้า → commit ที่ root → แก้ผ่าน PR</div>
+                    <div class="mq-cp-when">ร่างจาก <code>/init</code> มักเดาบางส่วนจากชื่อไฟล์อย่างเดียว ต้องอ่านทุกบรรทัดก่อน commit · ตั้ง CODEOWNERS ให้ tech lead อนุมัติการแก้</div>
+                  </div>
+                  <div class="mq-code-block">
+                    <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <pre class="mq-code" tabindex="0"><code># CLAUDE.md
+&lt;ระบบอะไร · ภาษา/เฟรมเวิร์ก · business rule อยู่ที่ไหน&gt;
+
+## Commands
+- Test: &lt;คำสั่ง test&gt;   (ผลปกติ: "N passed")
+
+## Conventions
+- &lt;กฎที่อ่านจากโค้ดไม่ออก&gt;
+- ห้ามเพิ่ม dependency โดยไม่ถาม · commit ต้องมี Refs:
+
+## Architecture
+- &lt;จุดที่หายาก 1–3 บรรทัด&gt;
+
+## Things Claude gets wrong
+- &lt;เรื่องที่พลาดซ้ำ&gt; → &lt;วิธีที่ถูก&gt;
+
+## Verifying your work
+- รัน test ก่อนรายงานว่าเสร็จ และแปะผลดิบ
+- test ไม่ผ่าน: แก้โค้ด ไม่แก้หรือลบ test
+- requirement ขัดกับ test เดิม: เขียน escalation แล้วหยุด</code></pre>
+                  </div>
+                  <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> วัดผล · ตัวชี้วัดนำ: Claude ทำผิดซ้ำเรื่องที่ไฟล์นี้ควรกันได้บ่อยแค่ไหน · ตัวชี้วัดตาม: คนใหม่ใช้เวลานานเท่าไรถึง PR แรกที่ merge</div>
+                </div>
+
+                <div class="mq-ds-panel mq-hidden" id="ccp-f-intent">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-pink)">intent.md</span>
+                    <span class="mq-badge mq-badge-danger">Plan · PO รับรอง</span>
+                  </div>
+                  <div class="mq-ds-desc">บอก "ปัญหา" และ "ผลที่อยากได้" ด้วยคำของคนที่เจอปัญหา ยังไม่ต้องมีวิธีแก้ เรื่องวิธีแก้ไปอยู่ใน spec.md และ plan.md</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg> เขียนครั้งเดียวแทนการส่งต่อหลายทอด (ประชุม → เอกสาร → user story → dev) ที่ห่างจากเจตนาเดิมไปเรื่อย ๆ จากหลายสัปดาห์เหลือไม่กี่ชั่วโมง</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> <strong>Problem</strong>: วันนี้ทำอะไรไม่ได้ ใครเจอ บ่อยแค่ไหน</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg> <strong>Proposed outcome</strong>: ดีขึ้นแล้วเป็นอย่างไร (ไม่ใช่วิธีแก้)</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> <strong>Affected users and systems</strong>: เขียนเป็นบทบาทและระบบ ไม่ใช่ชื่อคน</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> <strong>Constraints</strong>: PDPA, นโยบาย, สิ่งที่ห้ามเปลี่ยน</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg> <strong>Open questions</strong>: สิ่งที่ยังไม่ชัด รอ PO ตัดสิน</div>
+                  </div>
+                  <div class="mq-cache-pattern">
+                    <div class="mq-cp-name">ทำอย่างไร 5 ขั้น</div>
+                    <div class="mq-cp-flow">เล่าปัญหา → Claude ถามแบบนักวิเคราะห์ ≤ 5 ข้อ → ร่างตาม template → ผู้เสนอตรวจแก้ → commit (Status: proposed)</div>
+                    <div class="mq-cp-when">template ขององค์กรทำเป็น skill เช่น <code>/intent-interview</code> · PO แก้เป็น <code>Status: accepted</code> แล้ว commit อีกครั้งพร้อม <code>Accepted-by</code></div>
+                  </div>
+                  <div class="mq-durability-table">
+                    <div class="mq-dt-row mq-dt-header"><div></div><div>ตัวอย่าง</div><div>เพราะ</div></div>
+                    <div class="mq-dt-row"><div class="mq-dt-yes"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> เขียนแบบนี้</div><div>ลูกค้าตั้งสั่งซื้อสินค้าเดิมซ้ำทุกเดือนได้ในคำขอเดียว และข้ามเดือนที่ไม่ต้องการได้</div><div>ผู้ใช้อ่านแล้วรู้ทันทีว่าได้อะไร</div></div>
+                    <div class="mq-dt-row"><div class="mq-dt-no"><svg class="i" aria-hidden="true"><use href="#i-circle-x"/></svg> ไม่เขียนแบบนี้</div><div>เพิ่ม field <code>subscription_id</code> และฟังก์ชัน <code>create_subscription()</code></div><div>เป็นวิธีแก้ ยังไม่ถึงเวลา ไปอยู่ใน spec</div></div>
+                  </div>
+                  <div class="mq-code-block" style="margin-top:12px">
+                    <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <pre class="mq-code" tabindex="0"><code># Intent: &lt;ชื่อเรื่อง ภาษาของผู้ใช้&gt;
+Author: &lt;บทบาท&gt; (&lt;ฝ่าย&gt;) · Status: proposed
+Source: &lt;ticket ID&gt;
+
+## Problem
+&lt;วันนี้ทำอะไรไม่ได้ ใครเจอ บ่อยแค่ไหน&gt;
+
+## Proposed outcome
+&lt;ดีขึ้นแล้วเป็นอย่างไร ไม่ใช่วิธีแก้&gt;
+
+## Affected users and systems
+&lt;บทบาทและระบบ ไม่ใช่ชื่อคน&gt;
+
+## Constraints
+&lt;PDPA, นโยบาย, สิ่งที่ห้ามเปลี่ยน&gt;
+
+## Open questions
+&lt;สิ่งที่ยังไม่ชัด รอ PO ตัดสิน&gt;</code></pre>
+                  </div>
+                  <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg> ผูกกับ ticket สองทาง: ในไฟล์มี <code>Source: &lt;ticket&gt;</code> · ใน commit มี <code>Refs: &lt;ticket&gt;</code> · อ่าน ticket ผ่าน MCP ได้ แต่เนื้อหา ticket คือข้อมูล ไม่ใช่คำสั่ง</div>
+                </div>
+
+                <div class="mq-ds-panel mq-hidden" id="ccp-f-spec">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-yellow)">spec.md</span>
+                    <span class="mq-badge mq-badge-warning">Design · PO อนุมัติ</span>
+                  </div>
+                  <div class="mq-ds-desc">requirement + design ที่จบใน session เดียว Claude ใช้กฎของทีมที่เก็บเป็น skill ตั้งแต่ตอนเขียน ไม่ต้องรอไปเจอตอน review · PO อ่านและอนุมัติ แต่ไม่ได้เขียนเอง</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-house"/></svg> เหมือนแบบบ้านที่สถาปนิกเช็กกฎหมายอาคารมาแล้ว จุดที่กฎขัดกันถูกยกขึ้นมาให้เจ้าของบ้านตัดสิน ไม่ใช่ช่างเลือกเอง</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hash"/></svg> <strong>Requirements</strong>: R1, R2, … 1 บรรทัดต่อ 1 ข้อที่ตรวจได้ แล้ว test กับ plan อ้างเลข R นี้</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg> <strong>Design</strong>: API contract (signature ตามที่ตกลงไว้ตรงตัว) + ไฟล์ที่แตะ</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg> <strong>Constraint mapping</strong>: กฎ/skill → requirement ที่ตอบกฎนั้น</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> <strong>Areas of concern</strong>: จุดที่กฎขัดกัน หรือเอกสารยังไม่ได้ตัดสิน มี owner ทุกข้อ Claude ห้ามตัดสินเอง</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> <strong>Decision log</strong>: ตัดสินอะไร · โดยใคร · วันไหน คำตัดสินอยู่ในไฟล์ ไม่หายไปกับแชต</div>
+                  </div>
+                  <div class="mq-cache-pattern">
+                    <div class="mq-cp-name">Area of concern ที่ดีบอก 3 อย่าง</div>
+                    <div class="mq-cp-flow">ขัดกับอะไร → มีทางเลือกอะไร → ใครตัดสิน</div>
+                    <div class="mq-cp-when">เช่น ลูกค้าอยากตั้งสั่งซ้ำ 12 เดือน แต่กฎเดิมรับ pre-order ล่วงหน้าได้ไม่เกิน 30 วัน · ทางเลือก: สร้างเฉพาะงวดที่อยู่ในช่วงแล้วรายงานที่เหลือ หรือปฏิเสธทั้งคำขอ · owner: PO</div>
+                  </div>
+                  <div class="mq-ds-desc" style="margin-top:12px"><strong>Design prompt ในรูป RCTCF</strong>: ใช้ซ้ำได้ทั้งทีม</div>
+                  <div class="mq-code-block">
+                    <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <pre class="mq-code" tabindex="0"><code># design prompt
+Role:       tech lead + analyst ของทีม
+Context:    intent.md ที่ accepted แล้ว · codebase · สัญญา API · spec เดิม
+Task:       ร่าง requirement และ design spec ที่เข้ากับ codebase เดิม
+Constraint: ใช้ skill ของทีม (policy, security, UX) · ห้ามแก้โค้ดหรือ test
+            ตรวจทุก requirement กับกฎเดิม
+            เรื่องที่เอกสารไม่ได้ตัดสิน ห้ามตัดสินเอง
+            → เขียนเป็น Open questions หรือ Areas of concern
+Format:     ตาม spec.template ครบทุกหัวข้อ · Status: draft
+            Requirements R1..Rn อย่างน้อย 5 ข้อ บรรทัดละ 1 ข้อที่ตรวจได้
+            Areas of concern มี owner: &lt;บทบาท&gt; ทุกข้อ</code></pre>
+                  </div>
+                  <div class="mq-code-block" style="margin-top:10px">
+                    <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <pre class="mq-code" tabindex="0"><code># Spec: &lt;ชื่อเรื่อง&gt;
+Status: draft | approved
+Source: &lt;ticket&gt; · Intent: intent/&lt;topic&gt;/intent.md
+
+## Requirements
+R1 &lt;ตรวจได้ 1 ข้อต่อ 1 บรรทัด&gt;
+
+## Design
+&lt;API contract&gt; + &lt;ไฟล์ที่แตะ&gt;
+
+## Constraint mapping
+&lt;skill / policy&gt; -&gt; R&lt;n&gt;
+
+## Open questions
+
+## Areas of concern
+- &lt;ประเด็น&gt; · owner: &lt;บทบาท&gt;
+
+## Decision log
+- &lt;ตัดสินอะไร&gt; · โดย &lt;ใคร&gt; · &lt;วันที่&gt;</code></pre>
+                  </div>
+                  <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg> ใช้ design prompt ซ้ำได้ 3 ระดับ: วาง prompt เอง → ทำเป็น slash command ของทีม → CI รันเองเมื่อ intent ถูก merge (คนยังตรวจที่ด่านเหมือนเดิม)</div>
+                </div>
+
+                <div class="mq-ds-panel mq-hidden" id="ccp-f-plan">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-purple)">plan.md</span>
+                    <span class="mq-badge mq-badge-purple">Build · tech lead อนุมัติ</span>
+                  </div>
+                  <div class="mq-ds-desc">แผนที่ร่างใน plan mode ก่อนแตะโค้ด เกณฑ์จบคือ คนที่ไม่เคยเห็นแชตอ่านแผนอย่างเดียวแล้วลงมือต่อได้</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-map-pin"/></svg> เหมือนใบส่งเวรที่ส่งต่อกะได้ session ใหม่หรือเพื่อนร่วมทีมเริ่มจากไฟล์นี้ แทนความจำของ Claude</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-folder"/></svg> <strong>Files that change</strong>: path จริงทุกไฟล์ ทั้งไฟล์ใหม่และไฟล์ที่แก้ reviewer เห็นขอบเขตก่อนเห็น diff</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-hash"/></svg> <strong>Order of work</strong>: ข้อ 0 = "บันทึกแผนเป็น plan.md แล้วหยุดรอ" ข้อ 1, 2, … คือลำดับงานจริง (เขียน test ให้ red ก่อน)</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> <strong>Risks</strong>: คำตอบจาก 3 คำถามซักแผน: อะไรพังได้ · ขั้นไหนเสี่ยงที่สุด · ทางที่ไม่เลือกและเพราะอะไร</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> <strong>Proof</strong>: คำสั่งที่คุณรันเองได้ ไม่ใช่คำว่า "ผ่านแล้ว"</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg> ไม่เกิน ~40 บรรทัด ให้ reviewer อ่านจบในราว 2 นาที</div>
+                  </div>
+                  <div class="mq-durability-table">
+                    <div class="mq-dt-row mq-dt-header"><div></div><div>อยู่ที่ไหน</div><div>ผล</div></div>
+                    <div class="mq-dt-row"><div class="mq-dt-no"><svg class="i" aria-hidden="true"><use href="#i-circle-x"/></svg> แผนที่ plan mode เก็บเอง</div><div><code>~/.claude/plans/</code> ชื่อตั้งอัตโนมัติ</div><div>อยู่นอก repo ไม่ขึ้นใน PR คนในทีมหาไม่เจอ และถ้าไม่มีข้อ 0 พออนุมัติ Claude ก็ลงมือต่อทันที</div></div>
+                    <div class="mq-dt-row"><div class="mq-dt-yes"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> แผนที่ข้อ 0 เขียนลง repo</div><div><code>intent/&lt;slug&gt;/plan.md</code></div><div>commit พร้อม Approved-by · reviewer อ่านแผนก่อน แล้วตรวจว่า diff ตรงกับแผน</div></div>
+                  </div>
+                  <div class="mq-code-block" style="margin-top:12px">
+                    <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <pre class="mq-code" tabindex="0"><code># Plan: &lt;งาน&gt; (from intent/&lt;slug&gt;/spec.md)
+
+## Files that change
+- &lt;path จริงทุกไฟล์ ทั้งไฟล์ใหม่และไฟล์ที่แก้&gt;
+
+## Order of work
+0. บันทึกแผนนี้เป็น intent/&lt;slug&gt;/plan.md ตาม template
+   แล้วหยุดรอคำสั่ง ห้ามแก้ไฟล์อื่น
+1. เขียน test ตาม spec ทุกข้อ (ต้อง red ก่อน)
+2. …
+
+## Risks
+- อะไรพังได้ · ขั้นที่เสี่ยงที่สุด · ทางที่ไม่เลือก
+
+## Proof
+&lt;คำสั่ง test&gt;  → N passed</code></pre>
+                  </div>
+                  <div class="mq-cache-pattern" style="margin-top:12px">
+                    <div class="mq-cp-name">งานยาวเกิน 1 session: เริ่มจากไฟล์ ไม่ใช่ความจำ</div>
+                    <div class="mq-cp-flow">ติ๊ก [x] ใน Order of work + เขียน Progress note ก่อน /clear</div>
+                    <div class="mq-cp-when">session ใหม่สั่ง: "อ่าน @plan.md และ git log --oneline -5 แล้วทำข้อแรกที่ยังไม่ติ๊ก หยุดรอ review" · ถ้าลงมือจริงแล้วต้องทำต่างจากแผน ให้แก้ plan.md ใน commit เดียวกับโค้ด</div>
+                  </div>
+                </div>
+
+                <div class="mq-ds-panel mq-hidden" id="ccp-f-code">
+                  <div class="mq-ds-header">
+                    <span class="mq-ds-icon"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg></span>
+                    <span class="mq-ds-name" style="color:var(--c-green)">โค้ด + test</span>
+                    <span class="mq-badge mq-badge-success">Build · Refs บังคับ</span>
+                  </div>
+                  <div class="mq-ds-desc">Claude ทำตาม Order of work ทีละข้อ คุณอ่าน diff และรัน test เอง แล้วให้ verifier ที่ไม่ได้เขียนโค้ดตรวจเทียบ plan กับ spec ก่อน commit พร้อม trailer</div>
+                  <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> คำว่า "เสร็จ" ของ Claude ยังไม่ใช่หลักฐาน หลักฐานคือบรรทัด N passed ที่คุณรันเอง เช่น Claude สรุปว่าเพิ่ม test 14 เคส แต่นับจากไฟล์จริงได้ 10</div>
+                  <div class="mq-ds-usecases">
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg> <strong>ทีละข้อ</strong>: แบ่งงานให้เล็กพออ่าน diff ทัน diff ใหญ่กว่าที่คาด = หยุดถาม</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-x"/></svg> <strong>ห้ามแก้ test ให้ผ่าน</strong>: test เดิมล้มให้รายงานแล้วถาม ขัดกับ requirement ให้เขียน escalation แล้วหยุด</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> <strong>อ่านสถานะตามลำดับ</strong>: <code>git status --short</code> → <code>git diff</code> → <code>git log</code> · ไฟล์ใหม่ (<code>??</code>) ไม่ขึ้นใน git diff จนกว่าจะ add</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> <strong>verifier ก่อนบอกว่าเสร็จ</strong>: ผู้ตรวจที่เริ่มจาก context ใหม่ รายงานอย่างเดียว (ดูแท็บ เทคนิค)</div>
+                    <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> <strong>commit พร้อม Refs และผู้อนุมัติ</strong>: hook block ถ้าไม่มี Refs Claude อ่านข้อความแล้วลองใหม่เอง</div>
+                  </div>
+                  <div class="mq-cache-pattern">
+                    <div class="mq-cp-name">แก้ bug เริ่มจาก test ที่ fail</div>
+                    <div class="mq-cp-flow">เขียน test ที่ทำให้ bug เกิดซ้ำ → รันต้อง fail → commit test ก่อน → แก้โค้ด (ห้ามแก้ test) → รันต้องผ่าน</div>
+                    <div class="mq-cp-when">commit test ก่อนแก้ ทำให้ git บันทึกว่า test มีอยู่ก่อนโค้ดที่แก้ และ agent เขียนทับไม่ได้ จึงเป็นหลักฐานว่า bug หายจริง</div>
+                  </div>
+                  <div class="mq-durability-table">
+                    <div class="mq-dt-row mq-dt-header"><div>วิธีตรวจผล</div><div>ตัวอย่าง</div><div>น่าเชื่อถือ</div></div>
+                    <div class="mq-dt-row"><div><strong>Test</strong></div><div>รัน test แล้วอ่านบรรทัด N passed เอง</div><div class="mq-dt-yes">มากที่สุด</div></div>
+                    <div class="mq-dt-row"><div><strong>Lint / type</strong></div><div>ruff, mypy, eslint, tsc</div><div class="mq-dt-yes">มาก</div></div>
+                    <div class="mq-dt-row"><div><strong>อ่าน diff</strong></div><div>status → diff → log</div><div>ปานกลาง</div></div>
+                    <div class="mq-dt-row"><div><strong>Checklist ทีม</strong></div><div>CLAUDE.md หรือ skill เช่น logging, security</div><div>ปานกลาง</div></div>
+                    <div class="mq-dt-row"><div><strong>ตัวชี้วัด</strong></div><div>coverage, latency, ขนาด bundle</div><div class="mq-dt-no">น้อยสุด</div></div>
+                  </div>
+                  <div class="mq-code-block" style="margin-top:12px">
+                    <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                    <pre class="mq-code" tabindex="0"><code># ตรวจเองก่อน commit
+git status --short              # ?? = ไฟล์ใหม่ที่ยังไม่ track
+git add -A
+git diff --cached --stat        # เห็นครบ รวมไฟล์ใหม่
+&lt;คำสั่ง test&gt;                   # อ่านบรรทัด N passed เอง
+git commit -m "feat(x): &lt;สรุป&gt;" \
+  -m "Decisions: &lt;ข้อตกลงที่ใช้&gt;" \
+  --trailer "Refs: &lt;ticket&gt;" \
+  --trailer "Approved-by: &lt;ชื่อ&gt; (tech lead)"</code></pre>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /ccp-v-files -->
+
+          <!-- ═══ TOOLS VIEW ═══ -->
+          <div id="ccp-v-tools" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> Prompt: สั่งให้มีโครง</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg></span>
+                    <span class="mq-adv-title">RCTCF: prompt 5 ส่วน</span>
+                    <span class="mq-badge mq-badge-info">ทุกไฟล์งาน</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>ส่วน</div><div>คืออะไร</div><div>ตัวอย่าง</div></div>
+                      <div class="mq-dt-row"><div><strong>R</strong> Role</div><div>บทบาทที่ให้ Claude สวม</div><div>senior dev ของทีม ยึด CLAUDE.md</div></div>
+                      <div class="mq-dt-row"><div><strong>C</strong> Context</div><div>ข้อมูลที่ Claude หาเองไม่ได้</div><div>spec, ข้อตกลงฝั่ง product</div></div>
+                      <div class="mq-dt-row"><div><strong>T</strong> Task</div><div>ผลลัพธ์ที่ต้องได้</div><div>เพิ่มกฎ X ในฟังก์ชัน Y</div></div>
+                      <div class="mq-dt-row"><div><strong>C</strong> Constraint</div><div>ขอบเขต และสิ่งที่ห้าม</div><div>แก้เฉพาะไฟล์ A · ห้ามแก้ test เดิม · ไม่ชัดให้ถาม</div></div>
+                      <div class="mq-dt-row"><div><strong>F</strong> Format</div><div>หลักฐานที่ต้องส่งกลับ</div><div>เสนอแผนก่อน · ผล test ดิบ · ตาราง diff</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ส่วนที่ทีมมักลืมคือ Constraint (ขอบเขต) กับ Format (หลักฐาน) · ทุกไฟล์งานมี 5 ส่วนนี้เป็นหัวข้ออยู่แล้ว</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span>
+                    <span class="mq-adv-title">ตัวอย่าง: งาน feature 1 กฎ</span>
+                    <span class="mq-badge mq-badge-success">template</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>เทียบกับสั่งบรรทัดเดียว: ได้เห็นแผนและสมมติฐานก่อนแก้ ขอบเขตชัด และมีหลักฐานกลับมา</p>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># prompt แบบ RCTCF
+Role: senior developer ของทีม ยึด CLAUDE.md
+Context: requirement อยู่ใน &lt;spec&gt;
+  ข้อตกลง: &lt;กรณีขอบที่ตัดสินแล้ว&gt;
+Task: เพิ่มกฎ &lt;X&gt; ใน &lt;ฟังก์ชัน&gt;
+  โดย raise &lt;ERROR_CODE ตาม spec&gt;
+Constraint: แก้เฉพาะ &lt;ไฟล์&gt; + สร้าง test ใหม่ 1 ไฟล์
+  ห้ามแก้ test เดิม ห้ามเพิ่ม dependency
+  ถ้าไม่ชัดให้ถามก่อน
+Format: เสนอแผน 3–5 บรรทัดแล้วรอผมตอบ ok
+  จบด้วยผล test ดิบ
+  + ตาราง diff (ไฟล์ | บรรทัด | เหตุผล)</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg></span>
+                    <span class="mq-adv-title">template refactor · debug · test</span>
+                    <span class="mq-badge mq-badge-purple">ใช้บ่อย</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> refactor: behavior เท่าเดิม 100%</div>
+                      <div class="mq-cp-flow">รัน test (baseline) → เสนอขั้นตอน รอ ok → ทำทีละขั้น อ่าน diff → test ผ่านเท่าเดิม</div>
+                      <div class="mq-cp-when">ห้ามเปลี่ยน signature ที่ถูกเรียกจากไฟล์อื่น · ยังไม่มี test ให้ล็อก behavior เดิมด้วย characterization test ก่อน</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name"><svg class="i" aria-hidden="true"><use href="#i-bug"/></svg> debug: หาสาเหตุก่อนแก้</div>
+                      <div class="mq-cp-flow">สมมติฐาน → หลักฐาน → test ที่ fail → การแก้ → ผล test หลังแก้</div>
+                      <div class="mq-cp-when">ต้องอธิบาย root cause พร้อมหลักฐาน (บรรทัดโค้ด ค่าตัวแปร) และมี test ที่ทำให้ bug เกิดซ้ำก่อนลงมือ · ห้ามแก้หรือลบ test เดิม</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg> test: ห้ามแก้โค้ดให้ test ผ่าน</div>
+                      <div class="mq-cp-flow">happy path · boundary · error case · เคสที่เคยพลาด</div>
+                      <div class="mq-cp-when">test fail ต้องรายงานว่าเป็น bug หรือ test ผิด · ห้ามใช้ sleep หรือเรียก service จริง ใช้ fixture / mock</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-map-pin"/></svg></span>
+                    <span class="mq-adv-title">สิ่งที่พิมพ์ซ้ำทุกครั้ง ย้ายไปไว้ที่ถาวร</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>สิ่งที่สั่งบ่อย</div><div>ย้ายไป</div><div>เพราะ</div></div>
+                      <div class="mq-dt-row"><div>แก้เฉพาะไฟล์ที่ระบุ</div><div>prompt</div><div>ต่างกันทุกงาน</div></div>
+                      <div class="mq-dt-row"><div>ห้ามเปลี่ยน public API · ห้ามเพิ่ม dependency</div><div>CLAUDE.md</div><div>ใช้กับทุก session</div></div>
+                      <div class="mq-dt-row"><div>ห้ามแก้หรือลบ test เดิม</div><div>CLAUDE.md + hook</div><div>รับไม่ได้ถ้าพลาดแม้ครั้งเดียว</div></div>
+                      <div class="mq-dt-row"><div>เสนอแผนก่อน รอยืนยัน</div><div>plan mode</div><div>ระบบบังคับว่าแก้ไฟล์ไม่ได้</div></div>
+                      <div class="mq-dt-row"><div>รายงานผล test ดิบ ไม่สรุปเอง</div><div>CLAUDE.md</div><div>ใช้กับทุกงาน</div></div>
+                      <div class="mq-dt-row"><div>สรุป 3 บรรทัด: ทำอะไร เสี่ยงตรงไหน ตรวจอะไร</div><div>skill</div><div>ใช้เมื่องานตรงเท่านั้น</div></div>
+                      <div class="mq-dt-row"><div>JSON ตาม schema (งานอัตโนมัติ)</div><div><code>--json-schema</code></div><div>script อ่านผลต่อได้</div></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg> แนะนำ vs บังคับ: CLAUDE.md · Skill · Hook</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg></span>
+                    <span class="mq-adv-title">กฎข้อนี้ควรอยู่ที่ไหน</span>
+                    <span class="mq-badge mq-badge-warning">ต้องรู้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>ที่อยู่</div><div>ทำงานแบบ</div><div>ตัวอย่าง</div></div>
+                      <div class="mq-dt-row"><div><strong>CLAUDE.md</strong></div><div>โหลดทุก session · แนะนำ</div><div>คำสั่งรัน test · เรื่องที่ Claude พลาดซ้ำ 2 ครั้ง</div></div>
+                      <div class="mq-dt-row"><div><strong>Skill</strong></div><div>โหลดเมื่อเกี่ยวข้อง · แนะนำ</div><div>checklist API ยาว ๆ · รูปแบบข้อความ error ของทีม</div></div>
+                      <div class="mq-dt-row"><div><strong>Hook / permission</strong></div><div class="mq-dt-yes">ระบบบังคับทุกครั้ง</div><div>format หลังแก้ไฟล์ (PostToolUse) · บล็อก migration ที่ไม่มี change ticket (PreToolUse) · ห้าม push main (deny + branch protection)</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ถามตัวเอง: "ถ้า Claude ไม่ทำตามข้อนี้ 1 ครั้ง รับได้ไหม" ถ้ารับไม่ได้ ต้องมีตัวบังคับ ไม่ใช่แค่คำแนะนำ · กฎสำคัญอยู่ได้ 2 ที่ เช่น ห้ามแสดงชื่อผู้อื่นใน error: skill ช่วยให้พลาดน้อย ส่วน scan หรือ review จับที่หลุด</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></span>
+                    <span class="mq-adv-title">Skill: คู่มือที่ Claude เปิดเมื่อจำเป็น</span>
+                    <span class="mq-badge mq-badge-info">แนะนำ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>1 skill = 1 โฟลเดอร์ <code>.claude/skills/&lt;ชื่อ&gt;/SKILL.md</code> Claude เห็น <code>description</code> ตลอด และโหลดเนื้อหาเมื่อคำขอตรงกับ description</p>
+                    <div class="mq-ds-usecases">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg> 1 skill = 1 เจ้าของกฎ (DPO, UX lead, Security) เซ็นรับทุกครั้งที่แก้</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-git-compare"/></svg> กฎ 2 skill ขัดกัน → Claude ไม่เลือกเอง เขียนเป็น Areas of concern ให้ PO ตัดสินกับเจ้าของกฎ</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg> ทดสอบว่าถูกโหลดจริงด้วยคำถามหลายแบบ ทั้งไทยและอังกฤษ ใส่ keyword ไทยใน description ด้วย</div>
+                    </div>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>---
+name: team-policy
+description: "PDPA, audit and error-message policy.
+  Use when writing or reviewing user-facing error
+  messages or what to record on create/cancel.
+  Thai keywords - ข้อความ error, สั่งซื้อไม่ได้, ยกเลิก"
+---
+# Team policy (owner: DPO)
+1. PDPA: เก็บและแสดงให้น้อยที่สุด
+2. Errors: Error(code, message)
+3. Audit: บันทึก create / cancel / reject
+4. กฎขัดกัน: เขียนเป็น area of concern</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> skill เป็นแค่คำแนะนำ Claude อาจไม่ทำตาม กฎที่ห้ามพลาดต้องมี hook</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></span>
+                    <span class="mq-adv-title">Hook: ระบบตรวจทุกคำสั่ง</span>
+                    <span class="mq-badge mq-badge-danger">บังคับ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">ตัวอย่าง: linkage guard (PreToolUse)</div>
+                      <div class="mq-cp-flow">Claude สั่ง git commit → hook ดูว่ามี Refs: &lt;ticket&gt; ไหม</div>
+                      <div class="mq-cp-when">มี → exit 0 commit ได้ · ไม่มี → exit 2 block แล้วส่งข้อความบอกวิธีแก้กลับให้ Claude ซึ่งจะลองใหม่พร้อม <code>--trailer</code></div>
+                    </div>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>// .claude/settings.json
+"hooks": {
+  "PreToolUse": [{
+    "matcher": "Bash|PowerShell",
+    "hooks": [{
+      "type": "command",
+      "command": "python \"${CLAUDE_PROJECT_DIR}/.claude/hooks/linkage_guard.py\" || exit 2",
+      "timeout": 30
+    }]
+  }]
+}</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> <code>|| exit 2</code> = fail-closed: python หายหรือ hook พังก็ block ไว้ก่อน ไม่ปล่อยผ่าน · hook ของทีมเก็บใน <code>.claude/settings.json</code> ใน git · hook ที่ห้ามใครปิดอยู่ใน managed settings · พิมพ์ <code>/hooks</code> ดูว่าโหลดแล้ว</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></span>
+                    <span class="mq-adv-title">Skill vs Plugin ติดตั้งแล้วไปอยู่ไหน</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>ชนิด</div><div>ติดตั้งด้วย</div><div>ไฟล์ไปอยู่ที่</div></div>
+                      <div class="mq-dt-row"><div><strong>skill</strong></div><div><code>npx skills add</code> ใน terminal</div><div><code>.claude/skills/</code> ใน repo → commit ทันที ทั้งทีมได้ชุดเดียวกัน (ถ้ายังเป็น <code>??</code> แล้วมีคนรัน git clean จะหาย)</div></div>
+                      <div class="mq-dt-row"><div><strong>plugin</strong></div><div><code>/plugin install</code> ใน Claude</div><div>scope user → <code>~/.claude/</code> ใช้ได้ทุก repo เฉพาะคุณ · scope local → <code>settings.local.json</code> ไม่เข้า git</div></div>
+                    </div>
+                    <div class="mq-code-snippet"><pre tabindex="0">npx -y skills add &lt;owner/repo&gt; --skill &lt;ชื่อ&gt; -a claude-code -y
+/plugin install &lt;ชื่อ&gt;@&lt;marketplace&gt;</pre></div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> skill รันด้วยสิทธิ์เดียวกับ Claude ตรวจแหล่งที่มาและผ่าน security review ก่อนเข้า repo · ในแท็บ Discover ของ <code>/plugin</code> อย่ากด Space (= เลือกติดตั้ง)</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg> วางแผนก่อนลงมือ</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-map-pin"/></svg></span>
+                    <span class="mq-adv-title">เมื่อไรต้องวางแผน เมื่อไรข้ามได้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>เริ่มจากคำถามเดียว: <strong>อธิบาย diff ที่จะเกิดได้ในประโยคเดียวไหม</strong></p>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name" style="color:var(--c-green)"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> ข้ามได้</div>
+                      <div class="mq-cp-when">diff สั้น อธิบายได้ในประโยคเดียว (เช่น แก้ typo, กฎเดียว) · งานซ้ำที่มี skill รองรับแล้ว (skill คือแผนสำเร็จรูป)</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name" style="color:var(--c-yellow)"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> วางแผนก่อน</div>
+                      <div class="mq-cp-when">แตะหลายไฟล์ข้าม module · spec มาจาก Word หรือ ticket ที่ยังมีจุดไม่ชัด · codebase ไม่คุ้นหรือ legacy · งานที่องค์กรจัดว่าเสี่ยงสูง (tech lead อนุมัติแผน)</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> ซักแผน 3 คำถาม: อะไรพังได้บ้าง · ขั้นไหนเสี่ยงที่สุด · ทางเลือกที่ไม่เลือกและเพราะอะไร</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg></span>
+                    <span class="mq-adv-title">Plan mode: อนุมัติแผนให้ถูกตัวเลือก</span>
+                    <span class="mq-badge mq-badge-danger">พลาดบ่อย</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>เข้าได้ 2 ทาง: ใส่ flag ตอนเปิด หรือกด <kbd>Shift</kbd>+<kbd>Tab</kbd> จนแถบล่างขึ้น <code>plan mode on</code> · Claude อ่านไฟล์และถามได้ แต่แก้ไฟล์ไม่ได้จนกว่าจะอนุมัติ</p>
+                    <div class="mq-code-snippet"><pre tabindex="0">claude --permission-mode plan</pre></div>
+                    <div class="mq-durability-table" style="margin-top:10px">
+                      <div class="mq-dt-row mq-dt-header"><div>เมนูอนุมัติ</div><div>เลือก?</div><div>ผล</div></div>
+                      <div class="mq-dt-row"><div>Yes, and use auto mode</div><div class="mq-dt-no"><svg class="i" aria-hidden="true"><use href="#i-circle-x"/></svg> ไม่เลือก</div><div>Claude เริ่มแก้โค้ดต่อทันที ไม่ถามก่อน</div></div>
+                      <div class="mq-dt-row"><div>Yes, manually approve edits</div><div class="mq-dt-yes"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> เลือกข้อนี้</div><div>เขียน plan.md ตามข้อ 0 แล้วถามก่อนแก้ทุกไฟล์</div></div>
+                      <div class="mq-dt-row"><div>No, keep planning</div><div>รอบแรก</div><div>กลับไปซักและปรับแผนต่อ</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> <kbd>Ctrl</kbd>+<kbd>G</kbd> เปิดแผนแก้เองใน editor · ทดสอบแผน: เปิด session ใหม่ให้อ่านเฉพาะ plan.md แล้วถามว่าขาดอะไร 1 ข้อ</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg></span>
+                    <span class="mq-adv-title">plugin feature-dev 7 phase</span>
+                    <span class="mq-badge mq-badge-purple">ทางเลือก</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cp-flow">Discovery → Codebase Exploration → Clarifying Questions → Architecture Design <svg class="i" aria-hidden="true"><use href="#i-pause"/></svg> Implementation → Quality Review → Summary</div>
+                    <div class="mq-ds-usecases" style="margin-top:8px">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg> ส่ง subagent ช่วย: code-explorer, code-architect, code-reviewer</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-pause"/></svg> สั่งให้หยุดหลัง Phase 4 แล้วเขียนแนวทางที่เลือกลง plan.md ก่อนแตะโค้ด</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> repo เล็ก Claude อาจออกแบบเองโดยไม่ส่ง agent ต้องสั่งชื่อ agent ตรง ๆ</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg> ชื่อเต็ม <code>/feature-dev:feature-dev</code> (พิมพ์ <code>/feature</code> แล้วเลือกจากเมนู) · กิน token มากกว่า plan mode</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg></span>
+                    <span class="mq-adv-title">spec เป็นไฟล์ Word: แปลงก่อนให้อ่าน</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>Read tool เปิด <code>.docx</code> ไม่ได้ ถ้าไม่แปลงก่อน Claude จะลองผิดหลายทาง (และขอสิทธิ์ทุกครั้งในโหมด manual) แปลงเป็น markdown แล้วแนบด้วย <code>@</code></p>
+                    <div class="mq-code-snippet"><pre tabindex="0">pandoc spec.docx -t gfm -o my/spec.md</pre></div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> บน PowerShell อย่าใช้ <code>&gt;</code> redirect เพราะได้ไฟล์ UTF-16 ใช้ <code>-o</code> / <code>--out</code> · เขียนผลลง my/ อย่าทับไฟล์ต้นฉบับ</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> ตรวจงาน และดูแล context</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></span>
+                    <span class="mq-adv-title">verifier subagent: ตรวจแล้วรายงานอย่างเดียว</span>
+                    <span class="mq-badge mq-badge-success">Play 6</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">ไหลแบบนี้</div>
+                      <div class="mq-cp-flow">① ส่งงาน + plan + spec → ② verifier ตอบตาราง PASS / GAP + หลักฐาน → ③ session หลักแก้ GAP แล้วรัน test ซ้ำ</div>
+                      <div class="mq-cp-when">ไฟล์ที่อ่านและผล test อยู่ฝั่ง verifier session หลักได้แค่รายงานจึงไม่บวม · ผู้ตรวจไม่ได้เขียนโค้ดเอง จึงไม่ติดสมมติฐานเดียวกับคนเขียน</div>
+                    </div>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>---
+name: verifier
+description: Checks the change against plan.md and spec.md
+  before the session reports done. Report only.
+tools: Bash, Read, Grep, Glob
+---
+เริ่มจาก context ใหม่: เชื่อแค่ไฟล์และ output ของคำสั่ง
+ห้ามแก้ ห้าม commit
+1. อ่าน plan.md + spec.md ลิสต์ R1…Rn และขั้นในแผน
+2. git status --short แล้ว git diff --stat
+3. รัน test แล้วยกบรรทัด N passed มาตรงตัว
+4. ทุกข้อ: PASS พร้อมหลักฐาน (คำสั่ง → output หรือ file:line) หรือ GAP
+## Report | Item | PASS / GAP | Evidence |  … GAPs: n</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg> เรียกด้วย <code>@agent-verifier ตรวจ … รายงานอย่างเดียว ห้ามแก้</code> (<code>@verifier</code> เฉย ๆ คืออ้างไฟล์) · ไม่มี Edit/Write ใน tools จึงแก้ไฟล์ไม่ได้ตั้งแต่ต้น · subagent มาตรฐานอีก 2 แบบ: researcher (สำรวจแล้วส่งแค่สรุป), code simplifier (ตัดส่วนเกินหลังทำเสร็จ)</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg></span>
+                    <span class="mq-adv-title">context: ดูเป็นจำนวน tokens</span>
+                    <span class="mq-badge mq-badge-info">/context</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">/context</div>
+                      <div class="mq-cp-flow">system · tools · MCP · memory files · skills · messages</div>
+                      <div class="mq-cp-when">ดู tokens ของแถว Messages ไม่ต้องดู % (ไฟล์ที่อ่าน ผล test และ log สะสมอยู่ตรงนี้)</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">/compact เก็บ: &lt;สิ่งที่ต้องเก็บ&gt;</div>
+                      <div class="mq-cp-flow">/compact เก็บ: แผน, ไฟล์ที่แก้, test ที่ยังไม่ผ่าน, การตัดสินใจ</div>
+                      <div class="mq-cp-when">ย่อบทสนทนาเหลือแค่สรุป ใช้เมื่อ Messages เกินราว 100k tokens หรือ Claude เริ่มลืมข้อตกลง</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">/clear</div>
+                      <div class="mq-cp-flow">เปลี่ยนงาน เริ่ม context ใหม่</div>
+                      <div class="mq-cp-when">CLAUDE.md โหลดกลับมาเสมอ · ก่อน /clear ให้ Claude สรุปข้อตกลงลง plan.md</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-ruler"/></svg> กฎง่าย ๆ: 1 session ต่อ 1 งาน สิ่งที่ต้องจำข้าม session ให้เขียนไว้ใน plan.md เพราะ context ถูกย่อหรือล้างได้</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-bug"/></svg></span>
+                    <span class="mq-adv-title">หลุด context: สาเหตุ → ทางแก้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>สาเหตุ</div><div>อาการ</div><div>ทางแก้</div></div>
+                      <div class="mq-dt-row"><div>อ่านไฟล์ใหญ่ทั้งไฟล์ ทั้งที่ต้องการฟังก์ชันเดียว</div><div>ลืมข้อตกลงตอนต้น session</div><div>ชี้ไฟล์ด้วย <code>@path</code> หรือส่ง subagent อ่านแทน</div></div>
+                      <div class="mq-dt-row"><div>ผล test / log ยาวหลายพันบรรทัด</div><div>ตอบช้าลง คุณภาพตก</div><div><code>/compact เก็บ: …</code> บอกชัดว่าห้ามทิ้งอะไร</div></div>
+                      <div class="mq-dt-row"><div>หลายงานใน session เดียว</div><div>แก้ผิดไฟล์ ทำงานเดิมซ้ำ</div><div><code>/clear</code> แล้วเริ่มจาก plan.md</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-git-branch"/></svg></span>
+                    <span class="mq-adv-title">หลาย session พร้อมกันด้วย git worktree</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-snippet"><pre tabindex="0">claude -w order-docs --permission-mode acceptEdits
+git worktree list</pre></div>
+                    <div class="mq-ds-usecases" style="margin-top:10px">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-folder-open"/></svg> แต่ละ session มีโฟลเดอร์ใน <code>.claude/worktrees/</code> และ branch ของตัวเอง แตกจาก HEAD ในเครื่อง (venv / node_modules ไม่ตามไปด้วย)</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg> งานที่แตะไฟล์ชุดเดียวกัน = ทำต่อกันใน session เดียว</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> เริ่มที่ 2–3 session เพิ่มเฉพาะเมื่อ review ยังตามทัน</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> ยิ่งหลาย session ยิ่งต้องพึ่ง hook + permission ใน git เพราะนั่งดูทุกจอไม่ไหว</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> สิทธิ์ และความปลอดภัยของข้อมูล</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg></span>
+                    <span class="mq-adv-title">โหมดสิทธิ์ 6 แบบ: Claude ถามบ่อยแค่ไหน</span>
+                    <span class="mq-badge mq-badge-warning">--permission-mode</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>โหมด</div><div>ทำอะไร</div><div>ใช้เมื่อ</div></div>
+                      <div class="mq-dt-row"><div><code>plan</code></div><div>อ่านและสำรวจได้ แก้ไฟล์ไม่ได้จนอนุมัติแผน</div><div>สำรวจ repo · เขียน plan.md</div></div>
+                      <div class="mq-dt-row"><div><code>default</code> (manual)</div><div>ถามก่อนแก้ไฟล์และก่อนคำสั่ง shell ส่วนใหญ่</div><div>งานเสี่ยง อยากเห็นทุกขั้น</div></div>
+                      <div class="mq-dt-row"><div><code>acceptEdits</code></div><div>แก้ไฟล์ได้เลย คำสั่งอื่นยังถาม</div><div>งานทั่วไป คุณอ่าน diff ทุกขั้น</div></div>
+                      <div class="mq-dt-row"><div><code>auto</code></div><div>classifier ตรวจแต่ละ action แทนคุณ ถูก block ติดกัน 3 ครั้งหรือรวม 20 ครั้งจะกลับมาถาม</div><div>งาน routine ที่ guardrail ครบ</div></div>
+                      <div class="mq-dt-row"><div><code>dontAsk</code></div><div>ไม่ถาม tool ที่ไม่อยู่ใน allow list ถูกปฏิเสธ</div><div>script / CI คู่กับ <code>claude -p --allowedTools</code></div></div>
+                      <div class="mq-dt-row"><div><code>bypassPermissions</code></div><div class="mq-dt-no">ข้ามการถามทั้งหมด</div><div>container / VM ที่ทิ้งได้เท่านั้น (องค์กรปิดได้)</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg> <kbd>Shift</kbd>+<kbd>Tab</kbd> วนโหมด ดูแถบล่างทุกครั้งก่อนเริ่มงาน · ระบุ <code>--permission-mode</code> เองทุกครั้ง โดยเฉพาะ <code>claude -p</code> ใน script เพราะถ้าไม่ระบุอาจเริ่มที่ auto · องค์กรปิดโหมดได้ด้วย <code>disableAutoMode</code> / <code>disableBypassPermissionsMode</code></div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
+                    <span class="mq-adv-title">ใช้ auto mode เมื่อ guardrail พร้อม</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-ds-usecases">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> CLAUDE.md ที่ปรับแล้ว</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> skill ที่เก็บกฎของทีม</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> hook ที่ block คำสั่งอันตราย</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> test ที่ Claude รันเองได้</div>
+                    </div>
+                    <p>ครบแล้วใช้ auto เป็นค่าเริ่มต้นของงาน routine ได้ เหมาะกับงานที่ spec ชัด ผลกระทบแคบ และมี test ครอบ</p>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> งานของคนเปลี่ยน จากนั่งดู Claude แก้ทีละไฟล์ เป็นอ่าน diff, ผล test และรายงานหลังจบ session ยาว</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span>
+                    <span class="mq-adv-title">กัน PII 3 ชั้น</span>
+                    <span class="mq-badge mq-badge-danger">PDPA</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">ชั้น 1 · skill <span class="mq-badge mq-badge-info">แนะนำ</span></div>
+                      <div class="mq-cp-when">สั่งให้สรุปคนเป็นบทบาท ห้ามคัดลอกชื่อ เบอร์ อีเมลจาก ticket หรือแชต</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">ชั้น 2 · สคริปต์ scan <span class="mq-badge mq-badge-danger">บังคับ</span></div>
+                      <div class="mq-cp-when">pattern ตายตัว ได้ผลเดิมทุกครั้ง เจอเมื่อไรจบด้วย exit 1 · หาเบอร์มือถือ อีเมล เลขบัตรประชาชน 13 หลัก และคำนำหน้า + ชื่อ</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">ชั้น 3 · ด่านตรวจ / CI <span class="mq-badge mq-badge-danger">บังคับ</span></div>
+                      <div class="mq-cp-when">ไฟล์งานที่เจอ PII ไม่ผ่านด่าน ไม่ว่าร่างจาก Claude Code หรือ Claude.ai</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg></span>
+                    <span class="mq-adv-title">ข้อมูลระดับไหนใส่ใน prompt ได้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>ชั้นข้อมูล</div><div>ตัวอย่าง</div><div>ใส่ได้ไหม</div></div>
+                      <div class="mq-dt-row"><div><strong>public</strong></div><div>เอกสาร / โค้ด open source</div><div class="mq-dt-yes">ได้</div></div>
+                      <div class="mq-dt-row"><div><strong>internal</strong></div><div>repo ภายในที่ไม่มีข้อมูลลูกค้า</div><div>ผ่านบัญชีและเส้นทางที่องค์กรอนุมัติ</div></div>
+                      <div class="mq-dt-row"><div><strong>confidential</strong></div><div>โค้ดระบบลูกค้า สัญญา เอกสาร security</div><div>เส้นทางที่อนุมัติ + deny rule ตามชั้น</div></div>
+                      <div class="mq-dt-row"><div><strong>restricted</strong></div><div>ข้อมูลส่วนบุคคล, secret, credential</div><div class="mq-dt-no">ไม่เข้า prompt · แทนด้วยบทบาท · deny <code>.env*</code>, <code>secrets/**</code></div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> บัญชี Claude ส่วนตัว ห้ามนำโค้ดหรือข้อมูลลับของบริษัทเข้าโดยไม่ได้รับอนุมัติ · deny ยิ่งมาก Claude ยิ่งทำได้น้อย ตั้งให้พอดีกับชั้นข้อมูลของ repo</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-type"/></svg> PRIME เทียบกับ play ใน Playbook</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>PRIME</div><div>play</div><div>ใช้ทำอะไร</div></div>
+                <div class="mq-dt-row"><div><strong>P</strong> Prompt (RCTCF)</div><div>Requirements &amp; design</div><div>design prompt · ซักแผนก่อนลงมือ · ถามแบบนักวิเคราะห์</div></div>
+                <div class="mq-dt-row"><div><strong>R</strong> Reuse</div><div>CLAUDE.md · Skills</div><div>เก็บความรู้ขององค์กร · template ของ intent ทำเป็น skill</div></div>
+                <div class="mq-dt-row"><div><strong>I</strong> Implement</div><div>Feedback loop</div><div>ให้ Claude มีวงจรตรวจผลของตัวเอง</div></div>
+                <div class="mq-dt-row"><div><strong>M</strong> Mode: Plan</div><div>Plan mode</div><div>เริ่มทุกงานที่ไม่เล็กด้วย plan mode ได้ plan.md</div></div>
+                <div class="mq-dt-row"><div><strong>E</strong> Extend context</div><div>Subagents</div><div>subagent มี context ของตัวเอง · MCP ต่อแหล่งข้อมูลจริง · /compact</div></div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> PRIME ช่วยหาว่างานขาดอะไร ส่วน Playbook ให้คำที่องค์กรใช้ และบอกว่าผลต้องเก็บเป็นไฟล์ไหน</div>
+            </div>
+
+          </div><!-- /ccp-v-tools -->
+
+          <!-- ═══ TEAM VIEW ═══ -->
+          <div id="ccp-v-team" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> 8 บทบาทเมื่อ agent ทำงานให้</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>บทบาท</div><div>ในองค์กรคือ</div><div>หน้าที่</div></div>
+                <div class="mq-dt-row"><div><strong>Originator</strong></div><div>BA / หน่วยธุรกิจ</div><div>คุยกับ Claude จนได้ร่าง intent</div></div>
+                <div class="mq-dt-row"><div><strong>Product owner</strong></div><div>PO / เจ้าของระบบ</div><div>รับ intent และอนุมัติ spec แต่ไม่เขียน spec เอง</div></div>
+                <div class="mq-dt-row"><div><strong>Policy owner</strong></div><div>Security / DPO / UX lead</div><div>เป็นเจ้าของ skill และรับรองทุกครั้งที่แก้</div></div>
+                <div class="mq-dt-row"><div><strong>Tech lead</strong></div><div>tech lead / architect</div><div>อนุมัติ plan ที่เสี่ยงสูง เขียน REVIEW.md ดูแล CLAUDE.md</div></div>
+                <div class="mq-dt-row"><div><strong>Engineer</strong></div><div>developer</div><div>กำกับและรีวิวงานของ agent หลายตัว</div></div>
+                <div class="mq-dt-row"><div><strong>Platform engineer</strong></div><div>DevOps / platform</div><div>ดูแล hooks, evals และ CI ที่ระบบบังคับใช้</div></div>
+                <div class="mq-dt-row"><div><strong>Release manager</strong></div><div>change manager / CAB</div><div>อนุมัติขึ้น production</div></div>
+                <div class="mq-dt-row"><div><strong>Service owner</strong></div><div>เจ้าของ service</div><div>คัดกรอง intent ที่ agent เขียนจาก incident</div></div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> บรรทัดท้าย commit (trailer) บอกว่าใครตัดสิน</div>
+              <div class="mq-adv-grid">
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg></span>
+                    <span class="mq-adv-title">key ที่ใช้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>key</div><div>ใครลงชื่อ</div><div>ความหมาย</div></div>
+                      <div class="mq-dt-row"><div><code>Refs:</code></div><div>ทุก commit (hook บังคับ)</div><div>ticket หรือ requirement ต้นทางของงาน</div></div>
+                      <div class="mq-dt-row"><div><code>Accepted-by:</code></div><div>คนที่สอง ไม่ใช่คนเขียน</div><div>PO ยอมรับ intent.md</div></div>
+                      <div class="mq-dt-row"><div><code>Approved-by:</code></div><div>PO / tech lead / release manager</div><div>อนุมัติ spec, plan, guardrail, release</div></div>
+                      <div class="mq-dt-row"><div><code>Triaged-by:</code></div><div>service owner</div><div>คัดกรอง intent ที่ agent เขียนจาก incident</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ใส่ย่อหน้า <code>Decisions:</code> ใน commit ด้วย ใครถามว่า "ใครตัดสินเรื่องนี้" ก็ชี้ commit ได้เลย · ในองค์กรจริงลายเซ็นนี้คือ PR approval บน GitHub / GitLab</div>
+                  </div>
+                </div>
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg></span>
+                    <span class="mq-adv-title">เขียนและอ่านด้วย git อย่างเดียว</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># ลงชื่อผู้ตัดสินท้าย commit
+git commit -m "docs(intent): accept &lt;เรื่อง&gt;" \
+  --trailer "Refs: &lt;ticket&gt;" \
+  --trailer "Accepted-by: &lt;ชื่อ&gt; (PO)"
+
+# อ่านร่องรอยย้อนหลัง ใช้ได้ทุก repo
+git log --format="%h %s | %(trailers:key=Refs,valueonly) | %(trailers:key=Approved-by,valueonly)"</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ใช้ <code>--trailer</code> เสมอ ให้ git นับเป็น trailer แน่นอน · git เก่ากว่า 2.32 ไม่รู้จัก <code>--trailer</code> ใช้ <code>-m "Refs: …"</code> แทน</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> บังคับ Refs 3 ชั้นในองค์กรจริง</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg></div>
+                  <div class="mq-concept-name">Claude</div>
+                  <div class="mq-concept-desc">PreToolUse hook บล็อก commit ที่ไม่มี Refs ตั้งแต่ก่อนรันคำสั่ง</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg></div>
+                  <div class="mq-concept-name">คน</div>
+                  <div class="mq-concept-desc">commit-msg hook ของ git หรือ CI check จับ commit ที่คนทำเอง</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-git-branch"/></svg></div>
+                  <div class="mq-concept-name">merge</div>
+                  <div class="mq-concept-desc">branch protection + code owner (PR approval) ก่อนเข้า main</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-map-pin"/></svg> ไฟล์งานตัวจริงเก็บที่ไหน: เลือกได้ 3 แบบ</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-folder"/></svg></div>
+                  <div class="mq-concept-name">1 · repo เป็นตัวจริง</div>
+                  <div class="mq-concept-desc">ไฟล์ .md ใน commit คือบันทึกหลัก Jira แค่ลิงก์มา · เหมาะกับทีมที่ฝั่ง engineering นำ · คนที่ไม่ใช้ git ต้องมีช่องทางส่งร่างเข้า repo</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-database"/></svg></div>
+                  <div class="mq-concept-name">2 · ระบบเดิมเป็นตัวจริง</div>
+                  <div class="mq-concept-desc">Jira / ServiceNow เป็นบันทึกหลัก Claude อ่านต้น session แล้วเขียนผลกลับผ่าน MCP · เหมาะกับองค์กรที่ auditor ยอมรับระบบเดิมอยู่แล้ว · connector ที่เขียนกลับได้ต้องให้ admin เปิด</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-link"/></svg></div>
+                  <div class="mq-concept-name">3 · ผูกโยงสองทาง (ขั้นต่ำ)</div>
+                  <div class="mq-concept-desc">ไฟล์จด ticket ID (<code>Source:</code>) · commit มี <code>Refs:</code> · ticket จด commit SHA · เริ่มได้ทันที แต่มีตัวจริง 2 ที่ ต้องดูแลลิงก์ให้ครบทุกงาน</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg> Decision Register: 7 เรื่องที่หัวหน้าทีมต้องตัดสิน</div>
+              <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ยังไม่รู้คำตอบก็ได้ แต่ทุกข้อต้องมีเจ้าของและวันที่ (open → proposed → decided) ข้อที่ไม่มีเจ้าของ สุดท้าย Claude จะตัดสินแทนคุณ</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>ข้อ</div><div>ต้องตัดสินเรื่อง</div><div>ค่าแนะนำเริ่มต้น</div></div>
+                <div class="mq-dt-row"><div><strong>D1</strong> Plan</div><div>เก็บ intent ไว้ที่ไหน ผูกกับ ticket อย่างไร</div><div><code>intent/&lt;เรื่อง&gt;/</code> ใน repo · อ่าน ticket ผ่าน MCP · <code>Refs: &lt;ticket&gt;</code> ทุก commit</div></div>
+                <div class="mq-dt-row"><div><strong>D2</strong> Plan · Design</div><div>ใครรับรอง intent ใครอนุมัติ spec</div><div>PO รับรอง intent (คนที่สองลงชื่อจริง) · PO อนุมัติ spec</div></div>
+                <div class="mq-dt-row"><div><strong>D3</strong> Design</div><div>ใครเป็นเจ้าของกฎของ skill แต่ละตัว</div><div>1 skill = 1 เจ้าของ เช่น policy = DPO, ข้อความ = UX lead · กฎขัดกัน PO ตัดสินกับเจ้าของ</div></div>
+                <div class="mq-dt-row"><div><strong>D4</strong> Build</div><div>งานแบบไหนต้องมี plan.md ใครอนุมัติ</div><div>เกณฑ์ที่สังเกตได้ เช่น แตะเกิน 2 module หรือ spec มาจาก ticket · งานเสี่ยงสูง tech lead อนุมัติ</div></div>
+                <div class="mq-dt-row"><div><strong>D5</strong> ทุกขั้น</div><div>ใครดูแล CLAUDE.md พลาดซ้ำแล้วทำอย่างไร</div><div>tech lead เป็น code owner อนุมัติผ่าน PR · พลาดเรื่องเดิม 2 ครั้ง → แก้ CLAUDE.md</div></div>
+                <div class="mq-dt-row"><div><strong>D6</strong> Build</div><div>เปิด Claude ด้วยโหมดไหน เมื่อไรใช้ auto</div><div>ระบุโหมดทุกครั้งที่เปิด · auto เฉพาะงาน routine ที่มี test ครอบ</div></div>
+                <div class="mq-dt-row"><div><strong>D7</strong> Build</div><div>hook ไหนเก็บใน git ไหนอยู่ใน managed settings</div><div>hook ของทีมใน <code>.claude/settings.json</code> · hook ที่ห้ามใครปิดใน managed settings (Team / Enterprise)</div></div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> วัดผลจาก git ที่มีอยู่แล้ว</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>play</div><div>ตัวชี้วัดนำ (ขยับเร็ว ใช้ปรับทิศ)</div><div>ตัวชี้วัดตาม (ผลปลายทาง)</div></div>
+                <div class="mq-dt-row"><div><strong>intent.md</strong></div><div>เวลาจากคุยครั้งแรกถึง commit intent (หลายสัปดาห์ → หลักชั่วโมง)</div><div>สัดส่วน intent ที่ PO รับ · การแก้ intent หลัง spec commit แรก</div></div>
+                <div class="mq-dt-row"><div><strong>spec.md</strong></div><div>เวลาระหว่าง commit intent กับ spec ของงานเดียวกัน</div><div>spec ถูกแก้หลังมี plan.md แล้วกี่ครั้ง</div></div>
+                <div class="mq-dt-row"><div><strong>plan mode</strong></div><div>สัดส่วนงานที่ merge ได้ตั้งแต่รอบแรก · เวลาจากอนุมัติแผนถึง merge</div><div>รอบที่ต้องกลับมาแก้ต่องาน · diff ที่ merge ยังตรงกับ plan.md ไหม</div></div>
+                <div class="mq-dt-row"><div><strong>CLAUDE.md</strong></div><div>Claude ทำผิดซ้ำเรื่องที่ไฟล์นี้ควรกันได้บ่อยแค่ไหน</div><div>เวลาที่คนใหม่ใช้จนได้ PR แรกที่ merge</div></div>
+                <div class="mq-dt-row"><div><strong>skill</strong></div><div>เวลาจากเจ้าของ policy อนุมัติถึง skill ถูก merge</div><div>คอมเมนต์ใน PR ที่อ้าง policy นั้นลดจนเกือบ 0</div></div>
+                <div class="mq-dt-row"><div><strong>subagent</strong></div><div>จำนวน session พร้อมกันต่อคนที่ review ยังตามทัน</div><div>งานที่ merge ต่อคนต่อสัปดาห์ อ่านคู่กับงานที่ต้องแก้ซ้ำ</div></div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> เริ่มจากตัวชี้วัดนำ 1 ตัวที่นับจาก git ได้ · ระดับองค์กร (session พร้อมกัน, งานต่อคน) ต้องใช้ OpenTelemetry ของบัญชีองค์กร</div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg> นำไปใช้กับ repo ของทีม: ticket จริง 1 ใบ</div>
+              <div class="mq-lc-steps">
+                <div class="mq-lc-step"><strong>0.</strong> แตก branch <code>feature/&lt;ticket&gt;</code></div>
+                <div class="mq-lc-step"><strong>1. CLAUDE.md</strong>: <code>/init</code> แล้วตัดเหลือ 5 หัวข้อ ไม่เกิน 60 บรรทัด อ่านทุกบรรทัด</div>
+                <div class="mq-lc-step"><strong>2. intent.md</strong>: ปัญหาจริง 1 เรื่อง ไม่ใส่วิธีแก้ · scan ไม่เจอ PII</div>
+                <div class="mq-lc-step"><strong>3. spec.md</strong>: design prompt + skill ของทีม · spec Word แปลงเป็น markdown ก่อน</div>
+                <div class="mq-lc-step"><strong>4. plan.md</strong>: <code>claude --permission-mode plan</code> · ข้อ 0 เขียนแผนแล้วหยุด</div>
+                <div class="mq-lc-step"><strong>5. โค้ด + test</strong>: ทีละข้อของ Order of work · รัน test เอง</div>
+                <div class="mq-lc-step"><strong>6. verifier</strong>: <code>@agent-verifier</code> ตรวจเทียบแผนกับคำสั่ง test ของทีม</div>
+                <div class="mq-lc-step"><strong>7. commit</strong>: มี Refs + ชื่อผู้อนุมัติ · ไฟล์ใหม่ (<code>??</code>) ไม่ขึ้นใน diff ดูด้วย <code>git status --short</code></div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-circle-x"/></svg> ต้องใช้ network, DB, secret หรือไม่แน่ใจเรื่องชั้นข้อมูล → หยุด ทำบน repo ตัวอย่างก่อน · ห้าม push จนกว่าจะผ่านด่านของทีม</div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg> ต่อยอด: Test → Deploy → Maintain</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-pause"/></svg></div>
+                  <div class="mq-concept-name">Stop hook</div>
+                  <div class="mq-concept-desc">loop ที่หยุดเองได้: รัน test ก่อนให้จบ จำกัดรอบ และกันโกงตัวตรวจผล</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg></div>
+                  <div class="mq-concept-name">headless + evals</div>
+                  <div class="mq-concept-desc">รัน <code>claude -p</code> แบบไม่มีคนเฝ้า และรัน eval ทุกครั้งที่แก้</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg></div>
+                  <div class="mq-concept-name">ด่านอนุมัติ</div>
+                  <div class="mq-concept-desc">ขึ้น production ต้องมีคนอนุมัติ · review ตาม REVIEW.md ตอน PR</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></div>
+                  <div class="mq-concept-name">ปิด loop</div>
+                  <div class="mq-concept-desc">production หลุดเกณฑ์ → agent เขียน intent.md ใหม่ → service owner คัดกรอง</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /ccp-v-team -->
+
+          </div>
+        
