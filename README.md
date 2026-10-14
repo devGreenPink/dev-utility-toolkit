@@ -34,6 +34,16 @@
 
 ---
 
+## มีอะไรใหม่ใน v2.1
+
+- **เครื่องมือใหม่ Claude Code Patterns** (หมวด Claude Code) วิธีใช้ Claude Code กับงานทีมแบบ Plan → Design → Build แบ่งเป็น 4 หัวข้อ:
+  - **แนวคิด** AI-native SDLC, 6 แบบที่พลาดเมื่อสั่งบรรทัดเดียว, วงจร 3 ระดับ, 12 play ของ Playbook และ animation ห่วงโซ่ไฟล์ที่ commit
+  - **ไฟล์งาน 5 ชิ้น** CLAUDE.md → intent.md → spec.md → plan.md → โค้ด + test แต่ละชิ้นบอกหัวข้อที่ต้องมี ใครอนุมัติ และมี template กดคัดลอกได้
+  - **เทคนิค** prompt แบบ RCTCF, กฎควรอยู่ที่ CLAUDE.md / skill / hook, plan mode, verifier subagent, การดูแล context, โหมดสิทธิ์ และการกัน PII
+  - **ทีม & Audit** บทบาท, trailer ท้าย commit (`Refs:` / `Accepted-by:` / `Approved-by:`), Decision Register และตัวชี้วัดที่นับจาก git
+
+---
+
 ## มีอะไรใหม่ใน v2.0
 
 - **หน้าตาใหม่** ทุกเครื่องมือใช้ layout เดียวกัน: ช่องกรอกซ้าย ผลลัพธ์ขวา อัปเดตทันทีที่พิมพ์ ไม่ต้องกดปุ่มแปลง
