@@ -12,7 +12,7 @@ Live: https://devgreenpink.github.io/dev-utility-toolkit/
 
 Serve the folder over HTTP (VS Code Live Server, `python -m http.server`, or the `static-server` entry in
 `.claude/launch.json`). No build or install step needed. Opening `index.html` straight from disk works for most
-tools, but the six tabs fetched from `assets/tabs/` cannot load over `file://` and say so.
+tools, but the seven tabs fetched from `assets/tabs/` cannot load over `file://` and say so.
 The `static-server` entry in `.claude/launch.json` is `http.server` plus `Cache-Control: no-cache`: plain
 `python -m http.server` sends no cache header, so Chrome guesses a lifetime and keeps serving the old JS after
 an edit whenever the page is not going through the service worker.
@@ -110,7 +110,7 @@ Tool layout (every converter follows it):
 
 Expensive setup (highlight.js, big renders) goes in `TAB_INIT` next to `openTab`, not in the
 `DOMContentLoaded` init — it runs once on the tab's first open. The heaviest tabs (MQ, Storage, RxJS,
-ESAN AI AGENT, Angular, Claude Code Patterns) are not in `index.html` at all: `<div id="x-tab" class="tab-content" data-src="assets/tabs/x-tab.html">`
+ESAN AI AGENT, Angular, Claude Code Patterns, Claude Code Agentic & Security) are not in `index.html` at all: `<div id="x-tab" class="tab-content" data-src="assets/tabs/x-tab.html">`
 is fetched on first open (`loadTabHtml`), and `whenTab(id)` resolves once it is in the page. Cron ships inside
 `<template class="tab-lazy">` instead, because smart paste fills its input synchronously. Either way `tabReady`
 then runs `TAB_INIT`, `initRememberedInputs(tab)` and `initHistory(tab)`. Code for such a tab must not touch its

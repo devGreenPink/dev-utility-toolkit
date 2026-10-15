@@ -10,7 +10,7 @@
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
 
-เครื่องมือ 39 อย่างใน 7 หมวด ทำงานบน client-side ทั้งหมด ไม่มี server ไม่มี API ของเราเอง ไม่มี tracking
+เครื่องมือ 40 อย่างใน 7 หมวด ทำงานบน client-side ทั้งหมด ไม่มี server ไม่มี API ของเราเอง ไม่มี tracking
 
 ---
 
@@ -138,6 +138,7 @@
 |---|---|
 | ESAN AI AGENT | คู่มือ plugin ออฟฟิศ 8 บิตที่แสดงทุก session ของ Claude Code บนเครื่อง ([`plugins/esan-office/README.md`](plugins/esan-office/README.md)) |
 | Claude Code Patterns | วิธีใช้ Claude Code กับงานทีมแบบ Plan → Design → Build: ไฟล์งาน 5 ชิ้น, prompt แบบ RCTCF, plan mode, skill / hook, verifier และร่องรอยตรวจสอบใน git |
+| Claude Code Agentic & Security | ออกแบบ loop ที่คุมได้ (Plan → Execute → Verify → Retry), subagent / hook / headless, เชื่อมเครื่องมือทีมผ่าน MCP, guardrail 5 ชั้น และแผน 30 วัน |
 
 ---
 
@@ -168,6 +169,13 @@
 - ไฟล์งาน 5 ชิ้น (CLAUDE.md → intent.md → spec.md → plan.md → โค้ด + test) แต่ละชิ้นมีหัวข้อ, ใครอนุมัติ และ template ที่กดคัดลอกได้ พร้อม animation ห่วงโซ่ commit
 - เทคนิค: prompt แบบ RCTCF, กฎควรอยู่ที่ CLAUDE.md / skill / hook, plan mode, verifier subagent, การดูแล context, โหมดสิทธิ์ และการกัน PII
 - ทีม: บทบาท, trailer ท้าย commit (`Refs:` / `Accepted-by:` / `Approved-by:`), Decision Register และตัวชี้วัดจาก git
+
+### Claude Code Agentic & Security
+- Loop Engineering: 6 แบบที่พลาดเมื่อปล่อย agent ทำเอง, Plan → Execute → Verify → Retry พร้อม animation, กลยุทธ์ Verify, bounded retry และ loop policy
+- Workflow ของทีม: anatomy ของ subagent, event ของ hook และตัวอย่าง hook กันแก้ไฟล์, `claude -p` สำหรับ CI, ตัวอย่าง PR Review Agent / Auto Test Agent, Loop Canvas และ REVIEW.md
+- MCP: `claude mcp add`, `.mcp.json` กับสิทธิ์ของ MCP tool, สร้าง server ด้วย FastMCP และเลือกระหว่าง Claude API / Agent SDK / MCP
+- Security: ความเสี่ยงเมื่อ agent เข้าถึงระบบองค์กร, guardrail 5 ชั้น (modes, rules, hooks, sandbox, managed settings) และการทดสอบแบบ Red / Blue
+- Skill / plugin ของทีม และ template แผน 30 วัน
 
 ### LOV Query Browser / Editor
 ดู แก้ สร้าง และลบ query-template (`*.lov.json`) ในโฟลเดอร์ของรีโปได้โดยตรง ไม่ต้องรัน `cdgs-template-designer`:
@@ -201,7 +209,7 @@ git clone https://github.com/devgreenpink/dev-utility-toolkit
 cd dev-utility-toolkit
 python -m http.server 8080
 ```
-แล้วเปิด `http://localhost:8080` (หรือใช้ VS Code Live Server) ต้องเปิดผ่าน web server เพราะเครื่องมือขนาดใหญ่ 6 ตัว (MQ, Storage, RxJS, Angular, ESAN AI AGENT, Claude Code Patterns) โหลดแยกจาก `assets/tabs/` ซึ่งเปิดตรงจากไฟล์ (`file://`) ไม่ได้
+แล้วเปิด `http://localhost:8080` (หรือใช้ VS Code Live Server) ต้องเปิดผ่าน web server เพราะเครื่องมือขนาดใหญ่ 7 ตัว (MQ, Storage, RxJS, Angular, ESAN AI AGENT, Claude Code Patterns, Claude Code Agentic & Security) โหลดแยกจาก `assets/tabs/` ซึ่งเปิดตรงจากไฟล์ (`file://`) ไม่ได้
 
 ### ติดตั้งเป็นแอป (PWA)
 - **Chrome / Edge**: กดไอคอนติดตั้งในแถบ URL

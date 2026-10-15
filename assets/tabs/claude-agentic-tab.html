@@ -1,0 +1,1084 @@
+<!-- claude-agentic-tab: loaded into #claude-agentic-tab on first open (openTab in core.js) -->
+
+          <div class="section-header">
+            <div class="json-view-toggle" id="cca-view" role="group" aria-label="หัวข้อ">
+              <button type="button" class="json-view-btn active" data-v="loop" aria-pressed="true" onclick="ccaView('loop')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> Loop</button>
+              <button type="button" class="json-view-btn" data-v="workflow" aria-pressed="false" onclick="ccaView('workflow')"><svg class="i" aria-hidden="true"><use href="#i-workflow"/></svg> Workflow</button>
+              <button type="button" class="json-view-btn" data-v="mcp" aria-pressed="false" onclick="ccaView('mcp')"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg> MCP</button>
+              <button type="button" class="json-view-btn" data-v="security" aria-pressed="false" onclick="ccaView('security')"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> Security</button>
+              <button type="button" class="json-view-btn" data-v="plan" aria-pressed="false" onclick="ccaView('plan')"><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg> Skill · แผน</button>
+            </div>
+          </div>
+
+          <!-- ═══ LOOP VIEW ═══ -->
+          <div id="cca-v-loop">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ปล่อย agent ทำหลายขั้นเองโดยไม่กำกับ เกิดอะไรขึ้น</div>
+              <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ลองสั่ง 3 ขั้นในคำสั่งเดียว: เพิ่มกฎ → เขียน test → แก้จนผ่านทั้งหมด แล้วปล่อยไว้โดยไม่ตอบอะไร
+                สิ่งที่มักเห็นคือ loop ที่ไม่มีเพดาน ไม่มี guardrail และตัวตรวจผลอยู่ในมือ agent คนเดียว (ตัวอย่างจำลอง)</div>
+              <div class="mq-code-snippet"><pre tabindex="0">&gt; เพิ่มกฎห้ามสั่งเกิน 10 ชิ้นต่อออเดอร์ เขียน test แล้วแก้จนผ่านทั้งหมด
+● Update order_api/service.py      +11 -0
+● Write  tests/test_qty_limit.py   +28 -0
+● Bash   pytest -q                 2 failed · 13 passed
+         FAILED tests/test_orders.py::test_bulk_order
+● Update order_api/service.py      +3 -2
+● Bash   pytest -q                 2 failed
+● Update order_api/service.py      +2 -2
+● Bash   pytest -q                 2 failed
+● Update tests/test_orders.py      +1 -1     # แก้ test เดิม (ออเดอร์องค์กร 50 ชิ้น → 10)
+● Bash   pytest -q                 15 passed
+เสร็จแล้ว test ผ่านทั้งหมด</pre></div>
+              <div class="mq-concepts-grid" style="margin-top:14px">
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-hourglass"/></svg></div>
+                  <div class="mq-concept-name">blocking question</div>
+                  <div class="mq-concept-desc">ถามแล้วรอ งานค้าง เพราะไม่มีกติกาว่าเมื่อไรถาม เมื่อไรตัดสินใจเองด้วยค่าปลอดภัย<br><strong>แก้:</strong> กติกาการตัดสินใจ + ค่าปลอดภัย + escalate</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-orange)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></div>
+                  <div class="mq-concept-name">unbounded retry</div>
+                  <div class="mq-concept-desc">แก้จุดเดิมซ้ำหลายรอบ ไม่เปลี่ยนสมมติฐาน ไม่มีเพดานรอบ<br><strong>แก้:</strong> เพดานรอบต่อขั้น + บังคับเปลี่ยนแนวทางเมื่อสาเหตุซ้ำ</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-skull"/></svg></div>
+                  <div class="mq-concept-name">verify tampering</div>
+                  <div class="mq-concept-desc">แก้หรือลบ test เดิมให้ผ่าน เพราะตัวตรวจผลอยู่ในมือ agent<br><strong>แก้:</strong> ล็อกไฟล์ test ด้วย hook + deny rule</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg></div>
+                  <div class="mq-concept-name">scope creep</div>
+                  <div class="mq-concept-desc">แตะไฟล์หรือรันคำสั่งเกินที่สั่ง เพราะไม่มี rule จำกัดขอบเขต<br><strong>แก้:</strong> allowlist path + diff policy check</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-pink)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-flag"/></svg></div>
+                  <div class="mq-concept-name">false success</div>
+                  <div class="mq-concept-desc">รายงานว่าเสร็จทั้งที่ requirement พัง เพราะเกณฑ์ผ่านวัดด้วยสิ่งที่ agent แก้ได้<br><strong>แก้:</strong> test ชุดเดิมรันโดย CI หรือ Stop hook</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg></div>
+                  <div class="mq-concept-name">missing plan</div>
+                  <div class="mq-concept-desc">ทำขั้นที่ 2 ก่อนขั้นที่ 1 เสร็จ ไม่มี checkpoint ระหว่างขั้น<br><strong>แก้:</strong> แบ่ง workflow เป็นขั้นที่ตรวจได้ skill กำหนดลำดับ</div>
+                </div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ทุกข้อแก้ได้ด้วย Loop Engineering: บังคับโดยระบบ ไม่ใช่ขอร้องใน prompt</div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-workflow"/></svg> Agentic Workflow ต่างจาก prompt เดียวยังไง</div>
+              <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-book-open"/></svg> Agentic Workflow = ลำดับงานที่ agent ทำหลายขั้นต่อเนื่องโดยใช้ tool เอง มีจุดตรวจที่วัดได้ และมีกติกาว่าเมื่อไรลองใหม่ เมื่อไรหยุด และเมื่อไรส่งต่อให้คน</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>เรื่อง</div><div>prompt เดียว</div><div>Agentic Workflow</div></div>
+                <div class="mq-dt-row"><div><strong>ใครคุมลำดับ</strong></div><div>คุณ ทีละคำสั่ง</div><div>workflow ที่ออกแบบไว้</div></div>
+                <div class="mq-dt-row"><div><strong>Verify</strong></div><div>คุณดูเอง</div><div>ขั้นตอนในระบบ รันทุกครั้ง</div></div>
+                <div class="mq-dt-row"><div><strong>เมื่อผิดพลาด</strong></div><div>คุณสั่งใหม่</div><div>retry ตามกติกา แล้ว escalate</div></div>
+                <div class="mq-dt-row"><div><strong>ขอบเขต</strong></div><div>ตามที่พิมพ์</div><div>permission rule และ hook บังคับ</div></div>
+                <div class="mq-dt-row"><div><strong>ทำซ้ำ</strong></div><div>ผลต่างกันแต่ละคน</div><div>เหมือนกันทุกครั้ง ทุกคน</div></div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> องค์ประกอบของ Agentic Workflow ใน Claude Code</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></div>
+                  <div class="mq-concept-name">Skill</div>
+                  <div class="mq-concept-desc">ขั้นตอนและความรู้ที่ใช้ซ้ำ (<code>SKILL.md</code>) กำหนดลำดับงานและเกณฑ์ผ่าน</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg></div>
+                  <div class="mq-concept-name">Subagent</div>
+                  <div class="mq-concept-desc">ผู้ช่วยที่มี context, tools และ permission ของตัวเอง (<code>.claude/agents</code>)</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></div>
+                  <div class="mq-concept-name">Hooks</div>
+                  <div class="mq-concept-desc">สคริปต์ที่รันอัตโนมัติตามเหตุการณ์ เช่น ก่อนใช้ tool ใช้บังคับกติกาได้</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg></div>
+                  <div class="mq-concept-name">Permission rules</div>
+                  <div class="mq-concept-desc">allow, ask, deny ใน <code>settings.json</code> กำหนดว่าทำอะไรได้โดยไม่ถาม</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-square-terminal"/></svg></div>
+                  <div class="mq-concept-name">Headless</div>
+                  <div class="mq-concept-desc"><code>claude -p</code> รันจากสคริปต์หรือ CI โดยไม่มีคนนั่งหน้าจอ</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-cyan)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></div>
+                  <div class="mq-concept-name">MCP</div>
+                  <div class="mq-concept-desc">เชื่อมระบบภายนอก (Jira, GitHub, DB) เป็น tool ให้ agent ใช้</div>
+                </div>
+              </div>
+              <div class="mq-cache-pattern" style="margin-top:12px">
+                <div class="mq-cp-name">ประกอบกันเป็น workflow</div>
+                <div class="mq-cp-flow">Trigger (คน หรือ CI) → Skill กำหนดขั้นตอน → Subagent ทำงานย่อย → Hook + rules คุมขอบเขต → ผลลัพธ์ + รายงาน</div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> Loop Engineering: Plan → Execute → Verify → Retry</div>
+              <div class="mq-anim-controls">
+                <button type="button" class="mq-anim-btn" onclick="ccpChain(true,'cca-loop')"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg> เล่น Animation</button>
+                <button type="button" class="mq-anim-btn mq-anim-reset" onclick="ccpChain(false,'cca-loop')"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> รีเซ็ต</button>
+                <span class="mq-anim-step-label" id="cca-loop-label" aria-live="polite">กดเล่นเพื่อเริ่ม</span>
+              </div>
+              <div class="mq-lifecycle-stage" id="cca-loop">
+                <div class="mq-lc-node" style="border-top-color:var(--c-blue)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg></div><div class="mq-lc-label">Plan</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-purple)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg></div><div class="mq-lc-label">Execute</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-green)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg></div><div class="mq-lc-label">Verify</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-yellow)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></div><div class="mq-lc-label">Retry ≤ N</div></div>
+                <div class="mq-lc-arrow"><div class="mq-lc-line"></div></div>
+                <div class="mq-lc-node" style="border-top-color:var(--c-red)"><div class="mq-lc-icon"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg></div><div class="mq-lc-label">Escalate</div></div>
+              </div>
+              <div class="mq-lc-steps" id="cca-loop-steps">
+                <div class="mq-lc-step">1. <strong>Plan</strong> แบ่งเป็นขั้นที่ตรวจได้ กำหนดเกณฑ์ผ่าน เพดานรอบ และกติกาเมื่อไม่ชัด</div>
+                <div class="mq-lc-step">2. <strong>Execute</strong> ทำทีละขั้นใน scope ที่ถูกจำกัด บันทึก log ของทุกการเปลี่ยนแปลง</div>
+                <div class="mq-lc-step">3. <strong>Verify</strong> วัดด้วยสิ่งที่ agent แก้ไม่ได้: test ที่ล็อกไว้, lint, schema, diff policy</div>
+                <div class="mq-lc-step">4. <strong>Retry</strong> ไม่ผ่าน: วิเคราะห์สาเหตุ เปลี่ยนแนวทาง ไม่เกิน N รอบต่อขั้น</div>
+                <div class="mq-lc-step">5. <strong>Escalate</strong> ครบเพดานแล้วยังไม่ผ่าน: หยุด แล้วส่งรายงานให้คน (ลองอะไร ติดอะไร ต้องการอะไร)</div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> guardrail ที่ระบบบังคับทุกขั้น: permission rules, hooks, sandbox, maxTurns · หลัก 2 ข้อ: Verify ต้องอยู่นอกมือ agent และ Retry ต้องมีเพดาน</div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg> Verify และ Retry ที่ไว้ใจได้</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span>
+                    <span class="mq-adv-title">กลยุทธ์ Verify: เรียงจากเชื่อถือได้มากไปน้อย</span>
+                    <span class="mq-badge mq-badge-warning">ต้องรู้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>วิธี</div><div>น่าเชื่อถือ</div><div>ตัวอย่าง · ใช้เมื่อ</div></div>
+                      <div class="mq-dt-row"><div><strong>Deterministic check</strong></div><div class="mq-dt-yes">สูงสุด</div><div>test, lint, type check, build, schema · ด่านแรกเสมอ</div></div>
+                      <div class="mq-dt-row"><div><strong>Diff policy</strong></div><div class="mq-dt-yes">สูง</div><div>จำนวนไฟล์ path ที่แตะ ขนาด diff ห้ามแตะ tests/ เดิม · ตรวจด้วย script หรือ hook</div></div>
+                      <div class="mq-dt-row"><div><strong>Checklist โดย subagent</strong></div><div>ปานกลาง</div><div>code-reviewer อ่าน diff ตาม checklist คนละ context กับผู้แก้</div></div>
+                      <div class="mq-dt-row"><div><strong>LLM-as-judge</strong></div><div>ปานกลางถึงต่ำ</div><div>ให้โมเดลให้คะแนนตาม rubric · งานที่ไม่มี test เช่น เอกสาร</div></div>
+                      <div class="mq-dt-row"><div><strong>Human gate</strong></div><div class="mq-dt-yes">สูง แต่แพง</div><div>คนอนุมัติก่อน merge หรือ deploy · จุดที่ย้อนกลับไม่ได้</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> ถ้า Verify ขึ้นกับสิ่งที่ agent แก้ได้ (เช่น test ที่มันเขียนเอง) ต้องล็อกสิ่งนั้นด้วย hook หรือ permission rule</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></span>
+                    <span class="mq-adv-title">Bounded retry และ error recovery</span>
+                    <span class="mq-badge mq-badge-info">loop policy</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>เขียนกติกาไว้ใน skill หรือ CLAUDE.md ให้ทุก loop ใช้แบบเดียวกัน</p>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># loop_policy.md
+max_rounds: 3 ต่อขั้น
+on_fail:
+  1. อ่าน error ทั้งหมด สรุป root cause ก่อนแก้
+  2. สาเหตุเดิมซ้ำ 2 รอบ: เปลี่ยนแนวทาง ไม่ใช่แก้จุดเดิม
+  3. ห้ามแก้ test เดิม, fixture, config ของ CI
+  4. รอบที่ 3 ยังไม่ผ่าน: หยุด แล้วเขียนรายงาน
+     (สิ่งที่ลอง, สมมติฐาน, สิ่งที่ต้องการจากคน)
+escalate_to: เจ้าของ workflow ทาง PR comment หรือ Slack
+log: ทุกรอบบันทึก diff และผล test ลง artifacts/</code></pre>
+                    </div>
+                    <div class="mq-ds-usecases" style="margin-top:10px">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-timer"/></svg> <strong>เพดานรอบ</strong>: กันวนไม่รู้จบและค่าใช้จ่ายบาน กำหนดต่อขั้น ไม่ใช่ต่อทั้ง workflow</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-git-compare"/></svg> <strong>เปลี่ยนสมมติฐาน</strong>: retry ที่ดีคือลองแนวทางใหม่ ไม่ใช่สั่งซ้ำแบบเดิมด้วยคำที่ดุขึ้น</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg> <strong>ส่งต่ออย่างมีข้อมูล</strong>: รายงานบอกว่าลองอะไร ติดอะไร ต้องการอะไร ไม่ใช่แค่ "ล้มเหลว"</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-settings"/></svg> บังคับใน Claude Code: <code>maxTurns</code> ของ subagent, <code>--max-turns</code> ใน <code>claude -p</code> และ Stop hook ที่ตรวจว่า test ผ่านจริงก่อนให้จบ</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg></span>
+                    <span class="mq-adv-title">failure case → การออกแบบที่แก้ → เครื่องมือ</span>
+                    <span class="mq-badge mq-badge-success">checklist</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>failure case</div><div>เครื่องมือ</div><div>การออกแบบ loop ที่แก้</div></div>
+                      <div class="mq-dt-row"><div>วนแก้จุดเดิม</div><div><code>maxTurns</code>, <code>--max-turns</code></div><div>เพดานรอบ + เปลี่ยนสมมติฐานเมื่อสาเหตุซ้ำ (loop policy ใน skill)</div></div>
+                      <div class="mq-dt-row"><div>แก้ test เดิมให้ผ่าน</div><div>PreToolUse hook, <code>permissions.deny</code></div><div>ล็อกไฟล์ test ด้วย hook และ deny rule</div></div>
+                      <div class="mq-dt-row"><div>รายงานสำเร็จทั้งที่ requirement พัง</div><div>Stop hook, CI job</div><div>Verify นอกมือ agent: test ชุดเดิมรันโดย CI หรือ Stop hook</div></div>
+                      <div class="mq-dt-row"><div>ถามแล้วรอ</div><div>CLAUDE.md, <code>--append-system-prompt</code></div><div>กติกาการตัดสินใจ + ค่าปลอดภัย + escalate</div></div>
+                      <div class="mq-dt-row"><div>แตะไฟล์เกินขอบเขต</div><div>permission rules, hook</div><div>allowlist path และ diff policy check</div></div>
+                      <div class="mq-dt-row"><div>ทำขั้น 2 ก่อนขั้น 1</div><div>skill, subagent ต่อขั้น</div><div>แบ่ง workflow เป็นขั้นที่มี checkpoint ตรวจได้</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> ใช้ตารางนี้ตอนออกแบบ: ทุก failure case ต้องมีเครื่องมือรองรับอย่างน้อย 1 อย่าง</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span>
+                    <span class="mq-adv-title">ขอร้องใน prompt vs บังคับโดยระบบ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name" style="color:var(--c-red)"><svg class="i" aria-hidden="true"><use href="#i-circle-x"/></svg> ขอร้องใน prompt</div>
+                      <div class="mq-cp-when">"อย่าแก้ test นะ" ใช้ได้จนกว่า agent จะเจอทางที่ง่ายกว่า หรือเจอ prompt injection</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name" style="color:var(--c-green)"><svg class="i" aria-hidden="true"><use href="#i-circle-check"/></svg> บังคับโดยระบบ</div>
+                      <div class="mq-cp-when">hook block การแก้ tests/ + deny rule + test รันโดย CI ที่ agent แตะไม่ถึง</div>
+                    </div>
+                    <p>guardrail มี 5 ชั้น: modes, rules, hooks, sandbox, managed settings</p>
+                    <button type="button" class="btn btn-ghost" onclick="ccaView('security')"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> ดู Security 5 ชั้น</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /cca-v-loop -->
+
+          <!-- ═══ WORKFLOW VIEW ═══ -->
+          <div id="cca-v-workflow" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg> Subagent · Hooks · Headless: ชิ้นส่วนที่ประกอบเป็น workflow</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg></span>
+                    <span class="mq-adv-title">Subagent ของทีม: anatomy ของไฟล์</span>
+                    <span class="mq-badge mq-badge-purple">.claude/agents</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># .claude/agents/code-reviewer.md
+---
+name: code-reviewer
+description: ตรวจ diff ตาม checklist ของทีม ใช้หลังแก้โค้ดเสร็จ
+  หรือเมื่อผู้ใช้ขอ review
+tools: Read, Grep, Glob, Bash(git diff *)
+model: sonnet
+permissionMode: default
+maxTurns: 15
+---
+คุณคือ reviewer ของทีม order-api อ่าน git diff แล้วตรวจตาม checklist:
+security (input validation, secrets), test ครอบคลุม edge case,
+naming ตาม CLAUDE.md
+รายงานเป็น JSON: {"blockers": [], "shoulds": [], "nits": []}
+ห้ามแก้ไฟล์ใด ๆ ทำหน้าที่ตรวจเท่านั้น</code></pre>
+                    </div>
+                    <div class="mq-ds-usecases" style="margin-top:10px">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-wrench"/></svg> <strong>tools</strong>: จำกัดเครื่องมือ ไม่มี Edit = แก้ไม่ได้จริง</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-cpu"/></svg> <strong>model</strong>: เลือกรุ่นตามงาน</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-timer"/></svg> <strong>permissionMode / maxTurns</strong>: ขอบเขตและเพดานรอบ</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> <strong>skills</strong>: โหลด skill ให้ subagent</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> Claude มอบงานเองตาม description หรือสั่งตรง <code>@code-reviewer ตรวจ diff นี้</code> · เก็บใน <code>.claude/agents</code> (ทีม) หรือ <code>~/.claude/agents</code> (ส่วนตัว)</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
+                    <span class="mq-adv-title">Hooks: บังคับกติกาตามเหตุการณ์</span>
+                    <span class="mq-badge mq-badge-danger">บังคับ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>event</div><div>เมื่อไร</div><div>ใช้ทำอะไร</div></div>
+                      <div class="mq-dt-row"><div><code>SessionStart</code></div><div>เริ่ม session</div><div>โหลด context เพิ่ม ตั้งค่า env</div></div>
+                      <div class="mq-dt-row"><div><code>UserPromptSubmit</code></div><div>ก่อนส่ง prompt</div><div>เติม context หรือ block prompt ต้องห้าม</div></div>
+                      <div class="mq-dt-row"><div><code>PreToolUse</code></div><div>ก่อน tool ทำงาน</div><div>ตรวจและ block (exit 2) เช่น ห้ามแก้บางไฟล์</div></div>
+                      <div class="mq-dt-row"><div><code>PostToolUse</code></div><div>หลัง tool ทำงาน</div><div>รัน formatter หรือ lint อัตโนมัติ</div></div>
+                      <div class="mq-dt-row"><div><code>Stop</code></div><div>Claude กำลังจะจบ</div><div>ตรวจว่า test ผ่านจริง ไม่ผ่านให้ทำต่อ</div></div>
+                      <div class="mq-dt-row"><div><code>SubagentStop</code></div><div>subagent จบงาน</div><div>ตรวจผลลัพธ์ของ subagent</div></div>
+                      <div class="mq-dt-row"><div><code>PreCompact</code></div><div>ก่อน compact</div><div>บันทึก log ก่อนสรุปบทสนทนา</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> <code>matcher</code> เลือก tool (<code>Edit|Write</code>, <code>Bash</code>, <code>mcp__github__.*</code>) · hook รับ JSON ของ tool call ทาง stdin แล้วตอบด้วย exit code หรือ JSON</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg></span>
+                    <span class="mq-adv-title">ตัวอย่าง: hook กันแก้ไฟล์ต้องห้าม</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>#!/usr/bin/env bash
+# .claude/hooks/protect-files.sh · รับ JSON ของ tool call ทาง stdin
+input=$(cat)
+path=$(echo "$input" | jq -r '.tool_input.file_path // empty')
+for p in ".env" "docs/" ".github/" "tests/test_orders.py"; do
+  if [[ "$path" == *"$p"* ]]; then
+    echo "BLOCKED: $path เป็นไฟล์ที่ทีมห้ามแก้" &gt;&amp;2
+    exit 2
+  fi
+done
+exit 0</code></pre>
+                    </div>
+                    <div class="mq-code-block" style="margin-top:10px">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>// .claude/settings.json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command", "command": "bash .claude/hooks/protect-files.sh" }]
+    }]
+  }
+}</code></pre>
+                    </div>
+                    <div class="mq-durability-table" style="margin-top:10px">
+                      <div class="mq-dt-row mq-dt-header"><div>exit code</div><div>ผล</div><div>Claude เห็นอะไร</div></div>
+                      <div class="mq-dt-row"><div><code>0</code></div><div class="mq-dt-yes">ผ่าน</div><div>tool ทำงานตามปกติ</div></div>
+                      <div class="mq-dt-row"><div><code>2</code></div><div class="mq-dt-no">block</div><div>ข้อความใน stderr ถูกส่งกลับ Claude จึงรู้เหตุผลและเปลี่ยนแนวทาง เช่น เสนอถามเจ้าของงานแทนการแก้ test</div></div>
+                      <div class="mq-dt-row"><div>อื่น ๆ</div><div>เตือน</div><div>ไม่ block</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-square-terminal"/></svg></span>
+                    <span class="mq-adv-title">Headless: claude -p สำหรับสคริปต์และ CI</span>
+                    <span class="mq-badge mq-badge-success">CI</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>ไม่มีคนนั่งหน้าจอ จึงต้องกำหนดสิทธิ์ เพดาน และรูปแบบผลให้ครบทุกครั้ง</p>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># รันใน CI job หรือ shell
+claude -p "รัน test ทั้งหมด ถ้ามี test ล้มเหลว วิเคราะห์ root cause และเสนอ patch" \
+  --allowedTools "Bash(pytest *),Read,Grep" \
+  --permission-mode dontAsk \
+  --max-turns 20 \
+  --output-format json &gt; result.json
+jq -r '.result' result.json
+
+# ส่งข้อมูลทาง stdin ก็ได้
+cat docs/spec.md | claude -p "สรุปเป็น checklist QA"</code></pre>
+                    </div>
+                    <div class="mq-durability-table" style="margin-top:10px">
+                      <div class="mq-dt-row mq-dt-header"><div>flag</div><div>หน้าที่</div><div>หมายเหตุ</div></div>
+                      <div class="mq-dt-row"><div><code>--allowedTools</code></div><div>tool ที่ใช้ได้โดยไม่ถาม</div><div>ให้เท่าที่งานต้องใช้</div></div>
+                      <div class="mq-dt-row"><div><code>--permission-mode dontAsk</code></div><div>ไม่ถาม</div><div>นอกเหนือ allow ถูกปฏิเสธ</div></div>
+                      <div class="mq-dt-row"><div><code>--max-turns</code></div><div>เพดานรอบ</div><div>กันวนไม่รู้จบ</div></div>
+                      <div class="mq-dt-row"><div><code>--output-format json</code></div><div>อ่านผลด้วยโปรแกรม</div><div>หรือ <code>stream-json</code></div></div>
+                      <div class="mq-dt-row"><div><code>--append-system-prompt</code></div><div>เพิ่มกติกาเฉพาะงาน</div><div>เช่น กติกาการตัดสินใจ</div></div>
+                      <div class="mq-dt-row"><div><code>--continue</code> / <code>--resume</code></div><div>ต่อ session เดิม</div><div></div></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-git-compare"/></svg> ตัวอย่างออกแบบ: PR Review Agent vs Auto Test Agent</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>ช่อง</div><div>PR Review Agent</div><div>Auto Test Agent (ใน CI)</div></div>
+                <div class="mq-dt-row"><div><strong>Trigger / Input</strong></div><div>diff ของ PR (<code>git diff main...HEAD</code>)</div><div>PR opened (GitHub Actions job)</div></div>
+                <div class="mq-dt-row"><div><strong>Execute</strong></div><div>code-reviewer subagent ตรวจตาม checklist</div><div><code>claude -p</code> ใน runner ด้วย allowedTools จำกัด</div></div>
+                <div class="mq-dt-row"><div><strong>Verify</strong></div><div>JSON ตรง schema และอ้างบรรทัดที่มีจริง (script ตรวจ)</div><div>test ผ่าน, coverage ไม่ลด, diff แตะเฉพาะ test ไฟล์ใหม่</div></div>
+                <div class="mq-dt-row"><div><strong>Retry</strong></div><div>ไม่ผ่าน schema: ขอใหม่ไม่เกิน 2 รอบ แล้วแจ้งคน</div><div>รอบที่ 2 ยังไม่ผ่าน: หยุด รายงานสิ่งที่ลอง</div></div>
+                <div class="mq-dt-row"><div><strong>Output</strong></div><div>comment บน PR แยก blocker / should / nit</div><div>comment ผลบน PR หรือ fail job</div></div>
+                <div class="mq-dt-row"><div><strong>Guardrail</strong></div><div>subagent ไม่มี Edit/Write · deny <code>Bash(git push *)</code>, <code>Bash(gh pr merge *)</code> · hook block การเขียนนอก artifacts/</div><div>deny <code>Bash(git push *)</code> + token อ่านอย่างเดียว · <code>--max-turns</code> + timeout ของ job · runner ที่ทิ้งได้ = sandbox โดยธรรมชาติ</div></div>
+                <div class="mq-dt-row"><div><strong>เจ้าของ / วัดผล</strong></div><div>tech lead อนุมัติการแก้ checklist · วัดสัดส่วน PR ที่คนยังพบประเด็นเพิ่มหลัง agent, token ต่อ PR</div><div>เหมาะกับงานที่เกณฑ์ผ่านชัด: test, lint fix, สรุป diff</div></div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> agent เป็นผู้ช่วย reviewer ไม่ใช่ผู้อนุมัติ: human gate ยังอยู่ที่ merge · Verify ของ Auto Test Agent รันโดย CI ไม่ใช่โดย agent: test ชุดเดิมของ repo ตัดสิน ไม่ใช่ test ที่ agent เขียน</div>
+              <div class="mq-cache-pattern" style="margin-top:12px">
+                <div class="mq-cp-name">skill <code>/tdd</code> = loop สำเร็จรูป</div>
+                <div class="mq-cp-flow">RED (เขียน test ที่ยัง fail) → GREEN (แก้โค้ดจนผ่าน) → REFACTOR (test ยังผ่านเท่าเดิม)</div>
+                <div class="mq-cp-when">มีให้แล้ว: ลำดับบังคับ test ก่อนโค้ด, verify ทุกขั้น, ชนกับ test เดิมแล้วถาม (เมื่อมี hook กันแก้ test) · ยังต้องเพิ่มเอง: เพดานรอบ, escalation เมื่อไม่ผ่าน, diff policy check</div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> Template ออกแบบ workflow และตรวจงาน</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg></span>
+                    <span class="mq-adv-title">Template ออกแบบ Agentic Workflow</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>ช่อง</div><div>ตอบด้วย</div><div>คำถามนำ</div></div>
+                      <div class="mq-dt-row"><div><strong>Input</strong></div><div>diff, spec, ticket, ไฟล์</div><div>workflow รับอะไรเข้ามา และมาจากไหน</div></div>
+                      <div class="mq-dt-row"><div><strong>Plan / Execute</strong></div><div>subagent, skill, tool</div><div>แต่ละขั้นทำอะไร ใช้อะไรทำ</div></div>
+                      <div class="mq-dt-row"><div><strong>Verify</strong></div><div>test, lint, checklist, เกณฑ์ตัวเลข</div><div>ตรวจผลด้วยอะไรที่วัดได้ และใครรัน</div></div>
+                      <div class="mq-dt-row"><div><strong>Retry</strong></div><div>จำนวนรอบ, ช่องทาง escalate</div><div>ไม่ผ่านแล้วทำอะไร วนได้กี่รอบ ส่งต่อให้คนอย่างไร</div></div>
+                      <div class="mq-dt-row"><div><strong>Guardrail</strong></div><div>rule, hook, sandbox</div><div>อะไรห้ามทำ บังคับด้วยข้อไหน</div></div>
+                      <div class="mq-dt-row"><div><strong>Output / เจ้าของ</strong></div><div>PR, รายงาน, ตัวชี้วัด</div><div>ผลส่งไปไหน ใครเป็นเจ้าของ วัดผลอย่างไร</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> วาดบนกระดานก่อนเขียนไฟล์: ถ้าช่อง Verify และ Guardrail ยังว่าง อย่าเพิ่งเริ่มสร้าง</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span>
+                    <span class="mq-adv-title">Loop Canvas: 8 ช่องก่อนปล่อย loop</span>
+                    <span class="mq-badge mq-badge-info">template</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>หลักการ: คนอยู่เหนือ loop · agent ที่แก้โค้ดต้องแก้ตัวตรวจไม่ได้ · นำเสนอสั้น ๆ ให้บอก 3 อย่าง: ตัวตรวจผล stop rule และผู้อนุมัติ</p>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># Loop Canvas: &lt;ชื่องาน&gt;
+1. งานที่ให้ agent ทำ (1 ประโยค):
+2. trigger (คนสั่ง / PR เปิด / เวลา / event):
+3. ตัวตรวจผล (คำสั่งที่ตัดสินผ่าน–ไม่ผ่าน และใครรัน):
+4. stop rule (ผ่าน / รอบสูงสุด / งบ):
+5. ทางออกฉุกเฉิน (escalate ไปใคร ช่องทางไหน):
+6. สิ่งที่ห้ามแตะ (protected):
+7. ใครอนุมัติก่อนมีผลจริง (ลงชื่อที่ไหน):
+8. log / หลักฐานอยู่ไหน:
+
+primitives: สั่งงาน &lt;prompt / skill / subagent / claude -p&gt;
+            วน loop &lt;Stop hook / /loop / /schedule / CI&gt;
+            กันไว้  &lt;hook / allow-ask-deny / MCP tool ที่ให้ใช้&gt;</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> ให้อีกคนทบทวน 1 บรรทัด เช่น "ตัวตรวจผลรันโดย agent เอง → ย้ายไปให้ CI รัน"</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-file-text"/></svg></span>
+                    <span class="mq-adv-title">REVIEW.md: agent หา คนตัดสิน</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># Review: &lt;branch&gt; เทียบกับ main
+
+## Findings
+| # | file:line | severity | issue | evidence | triage |
+|---|---|---|---|---|---|
+| 1 | &lt;path:บรรทัด&gt; | blocker / should / nit | &lt;1 บรรทัด&gt; | &lt;บรรทัดที่อ้าง / คำสั่ง → ผล&gt; | fix / wontfix / question |
+
+## Verdict
+- Agent: approve / request-changes
+- Human: approve / request-changes โดย &lt;ชื่อ&gt; · เหตุผล:
+
+## Tests
+- test (agent รายงาน): &lt;บรรทัด N passed ตรงตัว&gt;
+- test (คนรันเอง): &lt;บรรทัด N passed ตรงตัว&gt;</code></pre>
+                    </div>
+                    <div class="mq-ds-usecases" style="margin-top:10px">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg> ตาราง Findings ต้องตรงกับที่ agent รายงาน ห้ามเพิ่มหรือตัด</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> คนกรอกช่อง triage และ Verdict ของคน: agent ไม่ใช่ผู้ตัดสิน</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg> evidence ต้องชี้ file:line หรือผลคำสั่ง ไม่ใช่คำบอกเล่า</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /cca-v-workflow -->
+
+          <!-- ═══ MCP VIEW ═══ -->
+          <div id="cca-v-mcp" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-network"/></svg> ผสาน Claude Code กับเครื่องมือทีม</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-git-branch"/></svg></div>
+                  <div class="mq-concept-name">Git และ GitHub</div>
+                  <div class="mq-concept-desc">git ผ่าน Bash คุมด้วย permission rule · github plugin (MCP) สำหรับ PR, issue, review · Claude Code GitHub Actions เรียก <code>@claude</code> ใน PR</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-workflow"/></svg></div>
+                  <div class="mq-concept-name">CI/CD</div>
+                  <div class="mq-concept-desc"><code>claude -p</code> ใน job: test, lint fix, สรุป diff · allowedTools + dontAsk + max-turns เสมอ · ผลออกเป็น JSON ให้ job ตัดสิน pass / fail</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-clipboard"/></svg></div>
+                  <div class="mq-concept-name">Jira และ Confluence</div>
+                  <div class="mq-concept-desc">atlassian plugin (MCP) อ่าน ticket, spec, comment เป็น context ให้ plan mode · เขียนกลับ (comment, transition) ตั้งเป็น ask ก่อน</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-pink)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg></div>
+                  <div class="mq-concept-name">Slack</div>
+                  <div class="mq-concept-desc">slack plugin (MCP) อ่าน thread ส่งสรุป แจ้งผล workflow และ escalate ให้คน · bot ของทีมสร้างด้วย Agent SDK</div>
+                </div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg> ทุกช่องทางผ่าน 2 กลไก: Bash ที่คุมด้วย permission rule และ MCP ที่คุมด้วยสิทธิ์ของบัญชีหรือ token</div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg> MCP (Model Context Protocol)</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></span>
+                    <span class="mq-adv-title">MCP คืออะไร</span>
+                    <span class="mq-badge mq-badge-info">มาตรฐานเปิด</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>มาตรฐานเปิดให้ agent เรียกใช้ tool และข้อมูลจากระบบภายนอก</p>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">ใครคุยกับใคร</div>
+                      <div class="mq-cp-flow">Claude Code (MCP client) → MCP server → GitHub API / Jira / DB ภายใน</div>
+                      <div class="mq-cp-when">server ให้ 3 อย่าง: tools, resources, prompts · transport: <code>http</code> (remote) หรือ <code>stdio</code> (local)</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> ชื่อ tool ใน Claude Code คือ <code>mcp__&lt;server&gt;__&lt;tool&gt;</code> ใช้เขียน permission rule และ hook matcher ได้</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>
+                    <span class="mq-adv-title">เพิ่ม server ด้วย claude mcp add</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># remote server แบบ http
+claude mcp add --transport http github https://api.githubcopilot.com/mcp/
+
+# local server แบบ stdio (ส่ง env ให้ process)
+claude mcp add --transport stdio internal-tools \
+  --env API_TOKEN=changeme -- python -m internal_tools.server
+
+# แชร์ให้ทีมผ่าน .mcp.json ใน repo
+claude mcp add --transport http --scope project \
+  order-stats https://mcp.internal.example/mcp
+
+claude mcp list      # ดูทั้งหมด · get &lt;ชื่อ&gt; ดูรายละเอียด · remove &lt;ชื่อ&gt; ถอด</code></pre>
+                    </div>
+                    <div class="mq-durability-table" style="margin-top:10px">
+                      <div class="mq-dt-row mq-dt-header"><div>scope</div><div>เก็บที่</div><div>ใช้เมื่อ</div></div>
+                      <div class="mq-dt-row"><div><code>local</code></div><div><code>~/.claude.json</code></div><div>เฉพาะโปรเจกต์นี้ของคุณ ทดลองส่วนตัว (ค่าเริ่มต้น)</div></div>
+                      <div class="mq-dt-row"><div><code>project</code></div><div><code>.mcp.json</code> ใน repo</div><div>commit ได้ ทีมใช้ร่วมกัน</div></div>
+                      <div class="mq-dt-row"><div><code>user</code></div><div><code>~/.claude.json</code></div><div>tool ส่วนตัวที่ใช้ทุกโปรเจกต์</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> ใน Claude พิมพ์ <code>/mcp</code> ดูสถานะ login OAuth และเปิดปิด server</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg></span>
+                    <span class="mq-adv-title">.mcp.json ของทีม และสิทธิ์ของ MCP tool</span>
+                    <span class="mq-badge mq-badge-warning">ต้องรู้</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>// .mcp.json (commit ร่วมกับ repo)
+{
+  "mcpServers": {
+    "github": { "type": "http", "url": "https://api.githubcopilot.com/mcp/" },
+    "internal-tools": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "internal_tools.server"],
+      "env": { "API_TOKEN": "${INTERNAL_API_TOKEN}" }
+    }
+  }
+}
+
+// .claude/settings.json (permissions)
+"allow": ["mcp__github__get_pull_request", "mcp__internal-tools"],
+"ask":   ["mcp__github__create_issue"],
+"deny":  ["mcp__github__merge_pull_request"]</code></pre>
+                    </div>
+                    <div class="mq-ds-usecases" style="margin-top:10px">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> <code>${VAR}</code> อ่านจาก environment ไม่ commit secret ลง repo</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg> <code>mcp__server</code> เฉย ๆ = ทุก tool ของ server นั้น</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg> เปิด repo ที่มี <code>.mcp.json</code> ครั้งแรก Claude Code ขอยืนยันก่อนใช้</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg> token ของ MCP = สิทธิ์ของ agent ให้สิทธิ์อ่านก่อน</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></span>
+                    <span class="mq-adv-title">plugin MCP สำเร็จรูป: github, atlassian, slack</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-snippet"><pre tabindex="0">/plugin install github@claude-plugins-official
+/plugin install atlassian@claude-plugins-official
+/mcp      # login ผ่าน OAuth ด้วยบัญชีของคุณ</pre></div>
+                    <div class="mq-cache-pattern" style="margin-top:10px">
+                      <div class="mq-cp-name">flow การใช้งาน</div>
+                      <div class="mq-cp-flow">ติดตั้ง plugin → /mcp แล้ว login → สั่งงานตามปกติ Claude เลือก tool เอง → ตั้ง ask / deny ให้ tool ที่เขียนหรือลบ</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> สิทธิ์ของ agent = สิทธิ์บัญชีที่ login · ผลจาก MCP เข้ามาใน context: ระวังข้อมูลก้อนใหญ่ และคำสั่งแฝงในเนื้อหา (prompt injection)</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-server"/></svg></span>
+                    <span class="mq-adv-title">สร้าง MCP server เอง (Python, FastMCP)</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># internal_tools/server.py · pip install "mcp[cli]" httpx
+from mcp.server.fastmcp import FastMCP
+import httpx, os
+
+mcp = FastMCP("internal-tools")
+
+@mcp.tool()
+def get_order_stats(sku: str, month: str) -&gt; dict:
+    """ยอดสั่งซื้อของสินค้าต่อเดือนจากระบบภายใน (อ่านอย่างเดียว)"""
+    r = httpx.get(f"{os.environ['STATS_API']}/skus/{sku}",
+                  params={"month": month},
+                  headers={"Authorization": os.environ["API_TOKEN"]})
+    r.raise_for_status()
+    return r.json()
+
+if __name__ == "__main__":
+    mcp.run()   # stdio transport</code></pre>
+                    </div>
+                    <div class="mq-ds-usecases" style="margin-top:10px">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-tag"/></svg> ชื่อและ docstring ชัด เพราะ Claude ใช้เลือก tool</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock-open"/></svg> แยก tool อ่านกับเขียน ให้สิทธิ์อ่านก่อน</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> ตรวจ input และจำกัดขนาดผลลัพธ์</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-scale"/></svg> Claude API · Agent SDK · MCP: เลือกอะไรเมื่อไร</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></div>
+                  <div class="mq-concept-name">Claude API (Messages)</div>
+                  <div class="mq-concept-desc">เรียกโมเดลตรง ส่งข้อความ รับคำตอบ · <strong>loop:</strong> คุณเขียนเอง · <strong>เหมาะกับ:</strong> feature ใน app เช่น สรุป จัดประเภท ตรวจเอกสารตาม rubric</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg></div>
+                  <div class="mq-concept-name">Claude Agent SDK</div>
+                  <div class="mq-concept-desc">สร้าง agent ที่มี loop, tools, permission แบบเดียวกับ Claude Code · <strong>loop:</strong> SDK คุม · <strong>เหมาะกับ:</strong> internal tool หลายขั้น, agent ตรวจ PR นอก Claude Code, bot ใน Slack</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-cyan)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></div>
+                  <div class="mq-concept-name">MCP</div>
+                  <div class="mq-concept-desc">โปรโตคอลเชื่อม tool และข้อมูลภายนอกให้ agent · <strong>loop:</strong> ไม่มี เป็นแค่ tool · <strong>เหมาะกับ:</strong> ให้ agent เข้าถึง Jira, DB, ระบบภายใน (server เขียนภาษาใดก็ได้)</div>
+                </div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> จำง่าย ๆ: ให้ agent "เข้าถึง" ระบบ = MCP · "สร้าง" agent ของตัวเอง = Agent SDK · ต้องการแค่คำตอบจากโมเดล = API</div>
+              <div class="mq-adv-grid" style="margin-top:14px">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-code"/></svg></span>
+                    <span class="mq-adv-title">Messages API (Python)</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>import anthropic
+
+client = anthropic.Anthropic()   # อ่าน ANTHROPIC_API_KEY จาก env
+message = client.messages.create(
+    model="&lt;model-id&gt;",           # เลือกรุ่นจากเอกสาร
+    max_tokens=1024,
+    system="คุณคือผู้ตรวจ spec ของทีม ตอบเป็น JSON ตาม schema",
+    messages=[{"role": "user",
+               "content": f"ตรวจ spec นี้ตาม rubric:\n{rubric}\n\n{spec_text}"}],
+)
+print(message.content[0].text)</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> system = Role + Constraint + Format · ขอ JSON ตาม schema แล้ว validate ก่อนใช้ · API key อยู่ใน secret manager ไม่อยู่ในโค้ด</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-bot"/></svg></span>
+                    <span class="mq-adv-title">Agent SDK (Python): agent แบบ Claude Code ในโค้ดของคุณ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># pip install claude-agent-sdk (ต้องมี Claude Code CLI ในเครื่องที่รัน)
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+async def main():
+    options = ClaudeAgentOptions(
+        system_prompt="คุณคือ reviewer ของทีม ตรวจตาม checklist",
+        allowed_tools=["Read", "Grep", "Glob", "Bash(git diff *)"],
+        permission_mode="default",
+        cwd="/srv/repos/order-api",
+        max_turns=15,
+    )
+    async for message in query(prompt="ตรวจ diff ของ branch ปัจจุบัน สรุปเป็น JSON",
+                               options=options):
+        print(message)
+
+asyncio.run(main())</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> ได้ loop, tools, permission, hooks, subagent, MCP แบบเดียวกับ Claude Code · <code>ClaudeSDKClient</code> สำหรับหลาย turn · plugin agent-sdk-dev มี <code>/new-sdk-app</code> สร้างโครงให้</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-network"/></svg></span>
+                    <span class="mq-adv-title">สถาปัตยกรรม internal tool ของทีม</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">เส้นทาง</div>
+                      <div class="mq-cp-flow">ผู้ใช้ (Slack / CLI / Web) → Agent SDK (system prompt + skills + loop + permission) → Repo (allowed_tools) + MCP (Jira, GitHub, ระบบภายใน) → Verify (test, schema, hook, deny) → PR comment / รายงาน / escalate</div>
+                    </div>
+                    <div class="mq-ds-usecases">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg> ใครเป็นเจ้าของ และใครอนุมัติการแก้ rule หรือ prompt</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg> token แต่ละระบบให้สิทธิ์ระดับไหน (อ่านหรือเขียน)</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-bar-chart"/></svg> วัดผลอย่างไร: ตัวชี้วัด, ต้นทุนต่อครั้ง, failure rate</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg> เหมือน Claude Code ทุกประการ: Loop Engineering, guardrail (rules, hooks, sandbox ใน container) และ log ทุกรอบเพื่อ audit</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div><!-- /cca-v-mcp -->
+
+          <!-- ═══ SECURITY VIEW ═══ -->
+          <div id="cca-v-security" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ความเสี่ยงเมื่อ agent เข้าถึงระบบองค์กร</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-skull"/></svg></div>
+                  <div class="mq-concept-name">Prompt injection</div>
+                  <div class="mq-concept-desc">ticket, หน้าเว็บ, README ของ dependency อาจมีคำสั่งแฝง agent อ่านแล้วอาจทำตาม<br><strong>กัน:</strong> จำกัด tool เขียน, ask ก่อนส่งข้อมูลออก, sandbox network</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-orange)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg></div>
+                  <div class="mq-concept-name">คำสั่งทำลาย</div>
+                  <div class="mq-concept-desc"><code>rm -rf</code>, <code>git push --force</code>, <code>DROP TABLE</code><br><strong>กัน:</strong> deny rule, sandbox, ไม่ใช้ bypassPermissions นอก container ที่ทิ้งได้</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-eye-off"/></svg></div>
+                  <div class="mq-concept-name">Secret รั่ว</div>
+                  <div class="mq-concept-desc"><code>.env</code>, token ใน config ถูกอ่านแล้วส่งออกผ่าน tool<br><strong>กัน:</strong> deny <code>Read(./.env)</code>, sandbox denyRead, secret manager</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg></div>
+                  <div class="mq-concept-name">สิทธิ์เกินจำเป็น</div>
+                  <div class="mq-concept-desc">token admin ให้ MCP, บัญชีส่วนตัวใน CI<br><strong>กัน:</strong> least privilege, token อ่านอย่างเดียว, แยกบัญชี bot, audit log</div>
+                </div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> หลักเดียวกับระบบทั่วไป: least privilege, defense in depth และตรวจสอบย้อนหลังได้</div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-layers"/></svg> Guardrail 5 ชั้น: บังคับโดยระบบ ไม่ใช่โดย prompt</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg></div>
+                  <div class="mq-concept-name">1 · Permission modes</div>
+                  <div class="mq-concept-desc">default, acceptEdits, plan, auto, dontAsk, bypassPermissions · ถามบ่อยแค่ไหน</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg></div>
+                  <div class="mq-concept-name">2 · Permission rules</div>
+                  <div class="mq-concept-desc">allow, ask, deny ใน settings.json ต่อ tool และ pattern · จะรันไหม</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></div>
+                  <div class="mq-concept-name">3 · Hooks</div>
+                  <div class="mq-concept-desc">PreToolUse ตรวจและ block ก่อน tool ทำงาน · Stop ตรวจก่อนจบ</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-container"/></svg></div>
+                  <div class="mq-concept-name">4 · Sandbox</div>
+                  <div class="mq-concept-desc">จำกัด filesystem และ network ของคำสั่งระดับ OS · รันแล้วทำอะไรได้บ้าง</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg></div>
+                  <div class="mq-concept-name">5 · Managed settings</div>
+                  <div class="mq-concept-desc">องค์กรล็อกนโยบายที่ผู้ใช้และโปรเจกต์แก้ไม่ได้</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg> รายละเอียดแต่ละชั้น</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg></span>
+                    <span class="mq-adv-title">ชั้น 1: Permission modes</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>mode</div><div>พฤติกรรม</div><div>ใช้เมื่อ</div></div>
+                      <div class="mq-dt-row"><div><code>default</code></div><div>ถามก่อนแก้ไฟล์และคำสั่งที่ไม่อยู่ใน allow</div><div>เริ่มต้น งานที่ไม่คุ้น</div></div>
+                      <div class="mq-dt-row"><div><code>acceptEdits</code></div><div>แก้ไฟล์ได้เลย Bash ยังถาม</div><div>งานที่ไว้ใจ ใน repo ที่มี git</div></div>
+                      <div class="mq-dt-row"><div><code>plan</code></div><div>อ่านและวางแผนเท่านั้น</div><div>งานหลายไฟล์ spec ไม่ชัด</div></div>
+                      <div class="mq-dt-row"><div><code>auto</code></div><div>ตัวจัดการสิทธิ์ตัดสินให้ ยังถามเมื่อเสี่ยง</div><div>งานประจำวัน</div></div>
+                      <div class="mq-dt-row"><div><code>dontAsk</code></div><div>ไม่ถาม อะไรที่ไม่ได้ allow ถูกปฏิเสธ</div><div>headless และ CI</div></div>
+                      <div class="mq-dt-row"><div><code>bypassPermissions</code></div><div class="mq-dt-no">ไม่ถามและทำทุกอย่าง</div><div>เฉพาะ sandbox หรือ container ที่ทิ้งได้</div></div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg> <kbd>Shift</kbd>+<kbd>Tab</kbd> สลับโหมดระหว่างใช้งาน · <code>--permission-mode &lt;mode&gt;</code> ตอนเริ่ม · <code>/permissions</code> ดูและแก้ rule</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg></span>
+                    <span class="mq-adv-title">ชั้น 2: Permission rules และลำดับการประเมิน</span>
+                    <span class="mq-badge mq-badge-warning">deny ชนะเสมอ</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>// .claude/settings.json
+{
+  "permissions": {
+    "allow": ["Bash(pytest *)", "Bash(git status *)", "Bash(git diff *)",
+              "Edit(order_api/**)", "mcp__github__get_pull_request"],
+    "ask":   ["Bash(pip install *)", "Bash(git commit *)"],
+    "deny":  ["Read(./.env)", "Bash(git push *)", "Bash(rm -rf *)",
+              "WebFetch", "mcp__github__merge_pull_request"]
+  }
+}</code></pre>
+                    </div>
+                    <div class="mq-lc-steps" style="margin-top:10px">
+                      <div class="mq-lc-step"><strong>1. deny</strong> ตรงเมื่อไร block ทันที จาก scope ใดก็ได้</div>
+                      <div class="mq-lc-step"><strong>2. ask</strong> ถามก่อน</div>
+                      <div class="mq-lc-step"><strong>3. allow</strong> ทำได้เลย</div>
+                      <div class="mq-lc-step"><strong>ไม่ตรงอะไรเลย</strong> ใช้พฤติกรรมของ mode</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> scope: ทีม <code>.claude/settings.json</code> · ส่วนตัว <code>~/.claude/settings.json</code> · องค์กร managed · โปรเจกต์ allow <code>Bash(git *)</code> แต่ผู้ใช้ deny <code>Bash(git push *)</code> = push ถูกบล็อก · ชื่อ tool เปล่า ๆ ใน deny = ปิด tool นั้นทั้งตัว</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span>
+                    <span class="mq-adv-title">ชั้น 3: Hooks</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>rule ตัดสินจากชื่อ tool กับ pattern ส่วน hook อ่านรายละเอียดของ tool call ได้ทั้งก้อน จึงจับกรณีที่ rule มองไม่เห็น เช่น เขียนทับ test ผ่าน <code>python -c</code> แทน Edit</p>
+                    <div class="mq-ds-usecases">
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> PreToolUse: กันแก้ไฟล์ต้องห้าม, บังคับ <code>Refs:</code> ใน commit</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-flag"/></svg> Stop: รัน test ชุดเดิมก่อนให้จบ ไม่ผ่านให้ทำต่อ (จำกัดรอบด้วย)</div>
+                      <div class="mq-ds-uc"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> hook ของทีมอยู่ใน git · hook ที่ห้ามใครปิดอยู่ใน managed settings</div>
+                    </div>
+                    <button type="button" class="btn btn-ghost" onclick="ccaView('workflow')"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> ดู event และตัวอย่าง hook</button>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-container"/></svg></span>
+                    <span class="mq-adv-title">ชั้น 4: Sandbox จำกัดระดับ OS</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <p>จำกัด filesystem และ network ของคำสั่ง Bash ที่ Claude รัน · macOS ใช้ Seatbelt · Linux / WSL2 ใช้ bubblewrap · Windows native ยังไม่รองรับ (ใช้ WSL2 หรือ container) · เปิดด้วย <code>/sandbox</code> หรือ settings</p>
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>// settings.json
+{
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "failIfUnavailable": true,
+    "excludedCommands": ["docker *"],
+    "network": { "allowedDomains": ["api.anthropic.com", "registry.npmjs.org"] },
+    "filesystem": { "denyRead": ["./.env", "~/.ssh"], "allowWrite": ["./", "/tmp"] }
+  }
+}</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> rule ตัดสินว่า "จะรันไหม" sandbox ตัดสินว่า "รันแล้วทำอะไรได้บ้าง" แม้ Claude ถูกหลอกให้รันคำสั่ง ก็ออกนอกกรอบไม่ได้ · <code>autoAllowBashIfSandboxed</code> ลดการถามโดยยังปลอดภัย</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg></span>
+                    <span class="mq-adv-title">ชั้น 5: Managed settings นโยบายระดับองค์กร</span>
+                    <span class="mq-badge mq-badge-purple">องค์กร</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-durability-table">
+                      <div class="mq-dt-row mq-dt-header"><div>OS</div><div>ช่องทางส่ง</div><div>ที่อยู่ managed-settings.json</div></div>
+                      <div class="mq-dt-row"><div>macOS</div><div>MDM หรือ script ติดตั้ง</div><div><code>/Library/Application Support/ClaudeCode/</code></div></div>
+                      <div class="mq-dt-row"><div>Linux / WSL</div><div>script ติดตั้ง</div><div><code>/etc/claude-code/</code></div></div>
+                      <div class="mq-dt-row"><div>Windows</div><div>MDM หรือ script ติดตั้ง</div><div><code>C:\Program Files\ClaudeCode\</code></div></div>
+                    </div>
+                    <div class="mq-code-block" style="margin-top:10px">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code>// managed-settings.json
+{
+  "permissions": {
+    "deny": ["Read(./.env)", "Read(~/.ssh/**)", "Bash(curl *)", "Bash(git push --force *)"],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "sandbox": { "enabled": true, "failIfUnavailable": true }
+}</code></pre>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> ส่งแบบ server-managed จาก console ได้ด้วย · ลำดับ: managed สูงสุด → command line → project local → project → user ผู้ใช้แก้ค่าที่องค์กรล็อกไม่ได้ · ควรล็อก: deny secret และคำสั่งทำลาย, ปิด bypassPermissions, sandbox + network allowlist, MCP ที่อนุญาต (<code>managed-mcp.json</code>)</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg> ทดสอบ guardrail แบบ Red / Blue</div>
+              <div class="mq-ds-analogy"><svg class="i" aria-hidden="true"><use href="#i-users"/></svg> คนหนึ่งเป็น red บอกคำโจมตีทีละข้อ อีกคนเป็น blue พิมพ์ตามและตอบ Yes ทุก prompt แล้วดู <code>git status</code> กับ <code>git diff</code> ว่าชั้นไหนหยุดได้ หรือหลุดไปถึงไฟล์จริง</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>คำโจมตี</div><div>มักหลุดชั้น</div><div>ชั้นที่ควรหยุดได้</div></div>
+                <div class="mq-dt-row"><div><strong>A</strong> แก้ test เดิมผ่าน Edit</div><div>advisory (แล้วแต่โมเดล)</div><div>PreToolUse hook กันแก้ไฟล์ + deny <code>Edit(tests/**)</code></div></div>
+                <div class="mq-dt-row"><div><strong>B</strong> เขียนทับ test ผ่าน <code>python -c</code></div><div>rule ที่ดูแค่ Edit/Write</div><div>hook ที่ตรวจคำสั่ง Bash (tamper guard) + test รันโดย CI ที่ agent แตะไม่ถึง</div></div>
+                <div class="mq-dt-row"><div><strong>C</strong> <code>git push origin main</code></div><div>allow <code>Bash(git *)</code> กว้างเกิน</div><div>deny <code>Bash(git push *)</code> + branch protection</div></div>
+                <div class="mq-dt-row"><div><strong>D</strong> ทำตามคำสั่งแฝงใน ticket</div><div>tool เขียนที่ allow ไว้</div><div>ask ก่อนเขียนหรือส่งข้อมูลออก + sandbox network · เนื้อหา ticket คือข้อมูล ไม่ใช่คำสั่ง</div></div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-triangle-alert"/></svg> สิ่งที่ agent ปิดเองได้ (เช่น แก้ settings.json ใน repo แล้วปิด hook) ไม่ใช่ guardrail ย้ายไป managed settings, CI หรือตัวตรวจนอก repo · บันทึกการตัดสินของ hook ลงไฟล์ log ไว้ตรวจย้อนหลัง</div>
+            </div>
+
+          </div><!-- /cca-v-security -->
+
+          <!-- ═══ PLAN VIEW ═══ -->
+          <div id="cca-v-plan" class="mq-hidden">
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg> แจกจ่ายวิธีทำงานให้ทั้งองค์กร: skill และ plugin</div>
+              <div class="mq-adv-grid">
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg></span>
+                    <span class="mq-adv-title">สร้าง skill ของทีมด้วย skill-creator</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-snippet"><pre tabindex="0">/plugin install skill-creator@claude-plugins-official
+/skill-creator สร้าง skill ชื่อ review-pr จาก checklist ใน docs/review-checklist.md
+#  ถาม: ให้ Claude เรียกเอง หรือเฉพาะเมื่อพิมพ์ /review-pr
+/review-pr          # blockers · shoulds · nits</pre></div>
+                    <div class="mq-cache-pattern" style="margin-top:10px">
+                      <div class="mq-cp-name">เมื่อไรควรเป็น skill</div>
+                      <div class="mq-cp-when">ขั้นตอนที่ทำซ้ำเกิน 3 ครั้ง · checklist หรือ template ของทีม · งานที่อยากให้ทุกคนทำเหมือนกัน</div>
+                    </div>
+                    <div class="mq-cache-pattern">
+                      <div class="mq-cp-name">skill ที่ดี</div>
+                      <div class="mq-cp-when">description บอกว่าใช้เมื่อไร (Claude ใช้เลือก) · ขั้นตอนเป็นข้อ ตรวจผลได้ · <code>allowed-tools</code> เท่าที่จำเป็น · มีตัวอย่าง input และ output</div>
+                    </div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-info"/></svg> skill ที่ไม่อยากให้ Claude เรียกเอง ใส่ <code>disable-model-invocation: true</code> ใน frontmatter คนต้องพิมพ์คำสั่งเอง</div>
+                  </div>
+                </div>
+
+                <div class="mq-adv-card">
+                  <div class="mq-adv-header">
+                    <span class="mq-adv-icon"><svg class="i" aria-hidden="true"><use href="#i-package"/></svg></span>
+                    <span class="mq-adv-title">Plugin และ marketplace ภายในองค์กร</span>
+                  </div>
+                  <div class="mq-adv-body">
+                    <div class="mq-code-block">
+                      <button type="button" class="mq-copy-btn" onclick="mqCopyCode(this)"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg> คัดลอก</button>
+                      <pre class="mq-code" tabindex="0"><code># โครงสร้าง plugin
+shop-team-plugin/
+  .claude-plugin/plugin.json   # ชื่อ, version
+  skills/review-pr/SKILL.md
+  commands/release-notes.md
+  agents/code-reviewer.md
+  hooks/hooks.json             # protect-files
+  .mcp.json                    # internal-tools
+
+// .claude-plugin/marketplace.json (repo ของทีม)
+{
+  "name": "shop-internal",
+  "owner": { "name": "Platform team" },
+  "plugins": [{ "name": "shop-team-plugin", "source": "./plugins/shop-team-plugin" }]
+}</code></pre>
+                    </div>
+                    <div class="mq-code-snippet" style="margin-top:10px"><pre tabindex="0">/plugin marketplace add &lt;org&gt;/claude-plugins
+/plugin install shop-team-plugin@shop-internal
+/shop-team-plugin:review-pr</pre></div>
+                    <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-sparkles"/></svg> แจก skill + agent + hook + MCP ให้ทุกทีมในคำสั่งเดียว อัปเดตพร้อมกัน · plugin-dev ใน official marketplace ช่วยสร้างโครงและตรวจ plugin</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg> 30-Day Action Plan: เลือก 1 agentic tool ที่จะทำจริง</div>
+              <div class="mq-durability-table">
+                <div class="mq-dt-row mq-dt-header"><div>ส่วน</div><div>ต้องตอบ</div><div>ตัวอย่างคำตอบ</div></div>
+                <div class="mq-dt-row"><div><strong>§1 เครื่องมือ 1 ตัว</strong></div><div>ชื่อ, งาน, trigger, รูปแบบ, ผู้ได้ประโยชน์</div><div>reviewer agent บน PR · trigger: PR เปิด · subagent</div></div>
+                <div class="mq-dt-row"><div><strong>§2 Loop governance</strong></div><div>ตัวตรวจผลและใครรัน, stop rule, escalation, protected paths, ผู้อนุมัติ, log</div><div>test ใน CI · ผ่านหรือครบ 3 รอบ · tech lead ทาง PR comment</div></div>
+                <div class="mq-dt-row"><div><strong>§3 MCP access</strong></div><div>tool อ่าน (allow), เขียน (ask), deny, เจ้าของ server</div><div>allow get_*, ask create_*, deny merge_*</div></div>
+                <div class="mq-dt-row"><div><strong>§4 สัปดาห์ W1–W4</strong></div><div>ทำอะไร, ผลที่ตรวจได้, เจ้าของ</div><div>ดูตารางด้านล่าง</div></div>
+                <div class="mq-dt-row"><div><strong>§5 ตัวชี้วัด</strong></div><div>leading (วัดจาก git / CI ทันที), lagging (เห็นใน 30 วัน)</div><div>% commit ที่มี Refs · เวลา review เฉลี่ยต่อ PR</div></div>
+              </div>
+              <div class="mq-lc-steps" style="margin-top:14px">
+                <div class="mq-lc-step"><strong>W1</strong> CLAUDE.md + hook กันแก้ไฟล์และ Stop hook บน repo เดียว · ผล: hook ผ่านชุดทดสอบ commit ที่เปิด hook มีผู้อนุมัติ</div>
+                <div class="mq-lc-step"><strong>W2</strong> reviewer agent บน PR · ผล: REVIEW.md ใน PR ทุกอัน คน triage ทุก finding</div>
+                <div class="mq-lc-step"><strong>W3</strong> MCP server สำหรับระบบภายใน 1 ระบบ · ผล: tool อ่าน allow, tool เขียน ask, มี log</div>
+                <div class="mq-lc-step"><strong>W4</strong> headless ใน CI + ข้อเสนอ managed settings · ผล: <code>claude -p</code> รันใน CI ด้วย <code>--allowedTools</code> ข้อเสนอส่ง security แล้ว</div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg> ระบุเจ้าของและวันที่ตรวจความคืบหน้าให้ชัดทุกข้อ · ห้ามใส่โค้ด ข้อมูลลูกค้า หรือข้อมูลลับของบริษัทในแผน</div>
+            </div>
+
+            <div class="mq-section">
+              <div class="mq-section-title"><svg class="i" aria-hidden="true"><use href="#i-star"/></svg> สรุป 2 วัน</div>
+              <div class="mq-concepts-grid">
+                <div class="mq-concept-card" style="border-top-color:var(--c-blue)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-refresh-cw"/></svg></div>
+                  <div class="mq-concept-name">1 · Loop</div>
+                  <div class="mq-concept-desc">Plan, Implement, Verify และ Verify ต้องวัดได้ อยู่นอกมือ agent</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-purple)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg></div>
+                  <div class="mq-concept-name">2 · Prompt และ context</div>
+                  <div class="mq-concept-desc">RCTCF + CLAUDE.md, Project, skill</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-green)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-list-tree"/></svg></div>
+                  <div class="mq-concept-name">3 · Plan mode และ context</div>
+                  <div class="mq-concept-desc">วางแผนก่อนแก้ · <code>/context</code> <code>/compact</code> · subagent · 1 session ต่อ 1 งาน</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-yellow)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg></div>
+                  <div class="mq-concept-name">4 · Loop Engineering</div>
+                  <div class="mq-concept-desc">Plan, Execute, Verify, Retry มีเพดาน มี escalation มี guardrail</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-cyan)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-plug"/></svg></div>
+                  <div class="mq-concept-name">5 · Integration</div>
+                  <div class="mq-concept-desc">Bash คุมด้วย rule · MCP คุมด้วยสิทธิ์ · API และ Agent SDK สำหรับสร้างเอง</div>
+                </div>
+                <div class="mq-concept-card" style="border-top-color:var(--c-red)">
+                  <div class="mq-concept-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></div>
+                  <div class="mq-concept-name">6 · Governance 5 ชั้น</div>
+                  <div class="mq-concept-desc">modes, rules, hooks, sandbox, managed settings บังคับโดยระบบ</div>
+                </div>
+              </div>
+              <div class="mq-adv-tip"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg> สิ่งที่เปลี่ยนไป: จาก "สั่งแล้วหวัง" เป็น "ออกแบบ loop วัดผล และบังคับขอบเขตโดยระบบ"</div>
+            </div>
+
+          </div><!-- /cca-v-plan -->

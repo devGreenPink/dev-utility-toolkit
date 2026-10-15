@@ -52,6 +52,7 @@ const STATIC_ASSETS = [
   './assets/tabs/esan-agent-tab.html',
   './assets/tabs/angular-tab.html',
   './assets/tabs/claude-patterns-tab.html',
+  './assets/tabs/claude-agentic-tab.html',
   './assets/images/logo.png',
   './assets/images/icon-192.png',
   './manifest.json',
