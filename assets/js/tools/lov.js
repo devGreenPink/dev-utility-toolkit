@@ -691,8 +691,9 @@ function lovMockRand(person, key) {
   return (h >>> 0) / 4294967296;
 }
 
-// Jackson's default for a java.util.Date in Quarkus (not checked against a live backend)
-const lovMockDate = iso => `${iso}T00:00:00.000+00:00`;
+// A `Date` column is a java.util.Date, written as yyyy-MM-dd'T'HH:mm:ss.SSSXXX in the JVM zone, which every
+// deployment sets to Asia/Bangkok: 8.x by JSON-B (FwJsonbConfigCustomizer), 10.1.0 by Jackson (DateTypeFormatModule)
+const lovMockDate = iso => `${iso}T00:00:00.000+07:00`;
 
 function lovMockValue(key, col, person, n) {
   const type = String(col.type || 'String');

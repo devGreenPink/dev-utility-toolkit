@@ -398,9 +398,9 @@ t('lov: mock response fills columns from Mock Data Generator people', () => {
   assert.deepEqual([a.userId, b.userId], [1, 2]);
   assert.deepEqual([a.USER_NAME, a.firstName, a.lastName], ['มิกซ์ อินฟินิตลูป', 'มิกซ์', 'อินฟินิตลูป']);
   assert.deepEqual([a.email, a.mobileNo, a.citizenId, a.provinceName, a.zipCode], [p.email, p.phone, p.id, p.province, p.zip]);
-  assert.deepEqual([a.birthDate, a.dob, a.age, a.salary], ['1990-03-14T00:00:00.000+00:00', '14/03/2533', 36, 45000]);
+  assert.deepEqual([a.birthDate, a.dob, a.age, a.salary], ['1990-03-14T00:00:00.000+07:00', '14/03/2533', 36, 45000]);
   // no matching field: by type, the same for the same person on every call
-  assert.match(a.createDate, /^\d{4}-\d{2}-\d{2}T00:00:00\.000\+00:00$/);
+  assert.match(a.createDate, /^\d{4}-\d{2}-\d{2}T00:00:00\.000\+07:00$/);
   assert.ok(Number.isInteger(a.total) && a.total >= 1 && a.total <= 1000);
   assert.ok(typeof a.amount === 'number' && Math.round(a.amount * 100) === a.amount * 100);
   assert.equal(typeof a.active, 'boolean');
