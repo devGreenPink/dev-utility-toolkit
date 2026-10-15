@@ -1,4 +1,4 @@
-const CACHE = 'esan-devtools-v2.1';
+const CACHE = 'esan-devtools-v2.2';
 // CDN files: every URL pins an exact version, so this cache can outlive app releases (fonts' CSS is re-checked)
 const CDN_CACHE = 'esan-devtools-cdn';
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
