@@ -74,6 +74,8 @@ The app is a single HTML page with a few companion files:
     `spDetect`); an image goes to the QR reader; the image color picker's own drop zone wins because it
     calls `preventDefault`. Smart paste also takes a curl command (offers its token / JSON body / URL),
     a HAR file (summary of failed and slow requests) and XML (converted to JSON).
+  - `tools/changelog.js` — `CHANGELOG` (one entry per version, newest first) rendered by the "อัปเดต" tab
+    (nav item under หน้าแรก, outside the groups) and `clHomeLine()` on the home tab. See Versioning below.
   - `tools/qr.js` — QR reader (BarcodeDetector, else jsQR from jsDelivr via `loadLib('jsqr')`); `emvInfo`
     splits PromptPay / Thai QR payment payloads and checks their CRC (`crc16`).
   - `init.js` — the `DOMContentLoaded` init; loads last.
@@ -164,6 +166,12 @@ for the app version. After every push to `main`, `.github/workflows/static.yml`'
 that badge and auto-creates a matching git tag + GitHub release (skips silently if the tag already
 exists — merges that don't bump the version don't fail the build). When bumping the version, keep
 these in sync manually:
+- a new entry on top of `CHANGELOG` in `assets/js/tools/changelog.js` — **every bump, whoever makes it**:
+  `{v, date, items}` with `date` = the release day `YYYY-MM-DD` in Asia/Bangkok (`TZ=Asia/Bangkok date +%F`)
+  and Thai, user-facing bullets (an item is a string or `[text, ...sub-bullets]`; `code` and **bold** render).
+  It feeds the "อัปเดต" tab and the "อัปเดตล่าสุด" line on the home tab. Use the same bullets for the
+  "มีอะไรใหม่ใน vX" section at the top of `README.md`. `tests/tools.test.mjs` fails when `CHANGELOG[0].v`
+  is not the `.app-version` (CI shows it red, but `static.yml` deploys without waiting for tests)
 - `.app-version` in `index.html`
 - `CACHE` constant in `sw.js` (e.g. `esan-devtools-v14`) — bump it on every release: changing
   `sw.js` is what makes browsers install the new worker, and the new name drops the old offline copy

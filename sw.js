@@ -44,6 +44,7 @@ const STATIC_ASSETS = [
   './assets/js/tools/qr.js',
   './assets/js/tools/ngrx.js',
   './assets/js/tools/claude-patterns.js',
+  './assets/js/tools/changelog.js',
   './assets/js/tools/home.js',
   './assets/js/init.js',
   './assets/tabs/mq-tab.html',

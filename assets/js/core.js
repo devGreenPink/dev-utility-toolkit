@@ -38,6 +38,7 @@ const TAB_META = {
   'jenkins-tab': { title: 'Jenkins CI/CD', sub: 'Jenkinsfile ทีละบรรทัด · shared library · CD แบบ GitOps · แก้ปัญหา pipeline' },
   'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
   'home-tab': { title: 'หน้าแรก', sub: 'วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด' },
+  'changelog-tab': { title: 'อัปเดต', sub: 'แต่ละรุ่นออกวันไหน และมีอะไรใหม่' },
   'esan-agent-tab': { title: 'ESAN AI AGENT', sub: 'Claude Code plugin · ติดตั้ง · อัปเดต · เปิดใช้งานที่ localhost:4567 บนเครื่องตัวเอง' },
   'claude-patterns-tab': { title: 'Claude Code Patterns', sub: 'Plan → Design → Build · ไฟล์งาน 5 ชิ้น · RCTCF · plan mode · skill / hook · verifier' },
   'claude-agentic-tab': { title: 'Claude Code Agentic & Security', sub: 'Loop Engineering · subagent / hook / headless · MCP · guardrail 5 ชั้น · แผน 30 วัน' },
@@ -484,6 +485,7 @@ const TAB_INIT={
   'base64-tab':()=>setSegmented('b64-mode',_b64Mode),
   'url-tab':()=>setSegmented('url-dir',_urlMode),
   'props-tab':()=>pySetDir(recallOpt('py-dir','p2y')),
+  'changelog-tab':()=>clRender(),
 };
 function openTab(evt,id){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));

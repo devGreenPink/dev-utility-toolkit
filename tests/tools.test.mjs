@@ -8,7 +8,7 @@ import { webcrypto } from 'node:crypto'; // global `crypto` only from Node 19
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, setTimeout, clearTimeout, crypto: webcrypto });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular', 'mock-data', 'lov']) {
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular', 'mock-data', 'lov', 'changelog']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -417,5 +417,27 @@ t('lov: a save runs the syncs still waiting, opening another file drops them', (
   assert.deepEqual(run(`(() => { const hits = []; lovLater('a', () => hits.push('a1')); lovLater('b', () => hits.push('b')); lovLater('a', () => hits.push('a2')); lovFlushLater(true); return [hits, Object.keys(_lovTimers).length]; })()`), [['a2', 'b'], 0]);
   assert.deepEqual(run(`(() => { const hits = []; lovLater('a', () => hits.push('a')); lovFlushLater(false); return [hits, Object.keys(_lovTimers).length]; })()`), [[], 0]);
 });
+
+// ── CHANGELOG ── a version bump without its entry fails here (same regex as the tag job in static.yml)
+t('changelog: newest entry is the .app-version in index.html', () => {
+  const ver = readFileSync(`${root}index.html`, 'utf8').match(/class="app-version">v([0-9][0-9.]*)</)[1];
+  assert.equal(run('CHANGELOG[0].v'), ver, `index.html is v${ver}: add an entry on top of CHANGELOG in changelog.js`);
+});
+t('changelog: unique versions, newest first, real dates, no empty items', () => {
+  const log = run('CHANGELOG'), num = v => v.split('.').map(Number);
+  assert.equal(new Set(log.map(e => e.v)).size, log.length);
+  log.forEach((e, i) => {
+    assert.match(e.date, /^\d{4}-\d{2}-\d{2}$/, e.v);
+    assert.equal(new Date(e.date + 'T00:00:00Z').toISOString().slice(0, 10), e.date, e.v);
+    assert.ok(e.items.length && e.items.flat().every(s => typeof s === 'string' && s.trim()), e.v);
+    const prev = log[i - 1];
+    if (prev) {
+      assert.ok(prev.date >= e.date, `${prev.v} is dated before ${e.v}`);
+      const [a, b] = [num(prev.v), num(e.v)];
+      assert.ok(a[0] > b[0] || (a[0] === b[0] && a[1] > b[1]), `${prev.v} is listed above ${e.v}`);
+    }
+  });
+});
+t('changelog: Thai date from the ISO day, no UTC shift', () => assert.equal(run(`clDate('2026-10-15')`), '15 ตุลาคม 2569'));
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

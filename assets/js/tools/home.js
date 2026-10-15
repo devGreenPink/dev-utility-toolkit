@@ -172,6 +172,7 @@ function homeRender(){
   if(!rec)return;
   let seen=false;try{seen=localStorage.getItem(STORAGE_TIPS)==='1';}catch(e){}
   document.getElementById('home-tips').hidden=seen;
+  clHomeLine();
   const recent=recentTabs().map(homeToolRow).filter(Boolean);
   rec.innerHTML=recent.length?recent.join(''):'<div class="home-empty">ยังไม่มี เครื่องมือที่เปิดจะขึ้นที่นี่</div>';
   const favs=(typeof favorites!=='undefined'?favorites:[]).map(homeToolRow).filter(Boolean);

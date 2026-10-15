@@ -3855,6 +3855,31 @@
     .home-tips-list li > .i.t-yellow { color: var(--c-yellow); }
     .home-tips-list kbd { flex-shrink: 0; }
 
+    /* ── CHANGELOG ── the latest-release line on home, and the อัปเดต tab (CHANGELOG in changelog.js) */
+    .home-news {
+      appearance: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; width: 100%; margin-bottom: 14px;
+      padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-dim); font-family: var(--sans); font-size: .8rem; text-align: left; cursor: pointer;
+      transition: border-color var(--dur-fast);
+    }
+    .home-news:hover { border-color: var(--accent); }
+    .home-news:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .home-news > .i { color: var(--accent-fg); }
+    .home-news b { color: var(--text); }
+    .home-news-go { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; color: var(--accent-fg); }
+    .cl-list { max-width: 880px; }
+    .cl-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0 0 10px; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .cl-v { font-family: var(--mono); }
+    .cl-head time { font-size: .8rem; font-weight: 400; color: var(--text-muted); }
+    .cl-new { align-self: center; padding: 0 8px; border: 1px solid var(--accent-fg); border-radius: 999px; font-size: .68rem; font-weight: 500; color: var(--accent-fg); }
+    .cl-items { margin: 0; padding-left: 1.2em; font-size: .84rem; line-height: 1.65; color: var(--text-dim); }
+    .cl-items li + li { margin-top: 4px; }
+    .cl-items ul { margin: 4px 0 0; padding-left: 1.2em; }
+    .cl-items b { color: var(--text); }
+    .cl-items code { font-family: var(--mono); font-size: .78rem; padding: 1px 4px; border-radius: 3px; background: var(--surface2); color: var(--text); overflow-wrap: anywhere; }
+    .cl-older { margin: 4px 0 0; font-size: .78rem; color: var(--text-muted); }
+    .cl-older a { color: var(--accent-fg); }
+
     /* smart paste: HAR summary */
     .sp-har { display: grid; gap: 4px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface2); font-size: .78rem; color: var(--text-dim); }
     .sp-har ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; }

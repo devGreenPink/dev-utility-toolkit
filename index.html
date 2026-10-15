@@ -237,6 +237,9 @@
         <div class="nav-item nav-home active" aria-current="page" data-tab="home-tab" data-no-fav role="button" tabindex="0" onclick="openTab(event, 'home-tab')">
           <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-house"/></svg></span><span class="nav-label">หน้าแรก</span>
         </div>
+        <div class="nav-item" data-tab="changelog-tab" data-no-fav role="button" tabindex="0" onclick="openTab(event, 'changelog-tab')">
+          <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-megaphone"/></svg></span><span class="nav-label">อัปเดต</span>
+        </div>
         <div class="nav-fav-section" id="nav-fav-section" style="display: none">
           <div class="nav-section-label nav-fav-label">
             <span><svg class="i i-fill" aria-hidden="true"><use href="#i-star"/></svg> รายการโปรด</span>
@@ -525,6 +528,7 @@
               <button type="button" class="rxjs-chip" onclick="spTry('1234567890121')">เลข 13 หลัก</button>
             </div>
           </section>
+          <button type="button" class="home-news" id="home-news" onclick="openTab(null,'changelog-tab')"></button>
           <section class="card home-tips" id="home-tips" aria-labelledby="home-tips-h" hidden>
             <div class="home-tips-head">
               <h2 class="card-title" id="home-tips-h"><svg class="i" aria-hidden="true"><use href="#i-lightbulb"/></svg>เคล็ดลับที่ช่วยให้ใช้เร็วขึ้น</h2>
@@ -557,6 +561,11 @@
             <span><kbd class="home-mod">Ctrl</kbd><kbd>Enter</kbd> รันเครื่องมือที่เปิดอยู่</span>
             <span><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg>ข้อมูลอยู่ในเครื่องนี้เท่านั้น</span>
           </footer>
+        </div>
+
+        <!-- CHANGELOG -->
+        <div id="changelog-tab" class="tab-content">
+          <div id="cl-list" class="cl-list"></div>
         </div>
 
         <!-- MOCK DATA -->
@@ -2513,6 +2522,7 @@
     <script defer src="assets/js/tools/qr.js"></script>
     <script defer src="assets/js/tools/ngrx.js"></script>
     <script defer src="assets/js/tools/claude-patterns.js"></script>
+    <script defer src="assets/js/tools/changelog.js"></script>
     <script defer src="assets/js/tools/home.js"></script>
     <script defer src="assets/js/init.js"></script>
   </body>
