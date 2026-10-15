@@ -5,7 +5,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-2.3-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-2.4-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -31,6 +31,13 @@
 | Dockerfile, Jenkinsfile | Docker & K8s / Jenkins CI/CD |
 
 ลากไฟล์มาวางที่ไหนก็ได้ในหน้า ระบบดูจากชื่อไฟล์และเนื้อหาแล้วเปิดเครื่องมือให้ รูปภาพจะไปที่ QR Code Reader
+
+---
+
+## มีอะไรใหม่ใน v2.4
+
+- **หน้าอัปเดตใหม่** (เมนู "อัปเดต" ใต้หน้าแรก) บอกว่าแต่ละรุ่นออกวันไหน และมีอะไรเปลี่ยนบ้าง
+- หน้าแรกบอกรุ่นล่าสุดพร้อมวันที่ กดแล้วเปิดหน้าอัปเดต
 
 ---
 

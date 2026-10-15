@@ -4,6 +4,10 @@
 // date = release day YYYY-MM-DD (Asia/Bangkok). An item is a string, or [text, ...sub-bullets].
 // `code` and **bold** are rendered; everything else is escaped.
 const CHANGELOG=[
+  {v:'2.4',date:'2026-10-15',items:[
+    '**หน้าอัปเดตใหม่** (เมนู "อัปเดต" ใต้หน้าแรก) บอกว่าแต่ละรุ่นออกวันไหน และมีอะไรเปลี่ยนบ้าง',
+    'หน้าแรกบอกรุ่นล่าสุดพร้อมวันที่ กดแล้วเปิดหน้าอัปเดต',
+  ]},
   {v:'2.3',date:'2026-10-15',items:[
     ['**LOV Query Browser จำลอง response ได้**: ทุก query ทั้งในรายการและหน้าแก้ไขมีกล่อง "ตัวอย่าง response" แสดง `{ results, paginator }` 10 แถวจาก Mock Data Generator',
       'คอลัมน์จับคู่ตามชื่อ (email, phone, citizenId, birthDate, provinceName, salary, USER_NAME, ...) ที่เหลือสุ่มตาม type',
