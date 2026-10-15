@@ -5,7 +5,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-2.2-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-2.3-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -31,6 +31,17 @@
 | Dockerfile, Jenkinsfile | Docker & K8s / Jenkins CI/CD |
 
 ลากไฟล์มาวางที่ไหนก็ได้ในหน้า ระบบดูจากชื่อไฟล์และเนื้อหาแล้วเปิดเครื่องมือให้ รูปภาพจะไปที่ QR Code Reader
+
+---
+
+## มีอะไรใหม่ใน v2.3
+
+- **LOV Query Browser จำลอง response ได้**: ทุก query ทั้งในรายการและหน้าแก้ไขมีกล่อง "ตัวอย่าง response" แสดง `{ results, paginator }` 10 แถวจาก Mock Data Generator
+  - คอลัมน์จับคู่ตามชื่อ (email, phone, citizenId, birthDate, provinceName, salary, USER_NAME, ...) ที่เหลือสุ่มตาม type
+  - วันที่ออกมาแบบเดียวกับ backend (`2025-03-14T00:00:00.000+07:00`)
+  - กดสุ่มใหม่ได้ และส่งต่อไป JSON → Type เพื่อทำ interface ฝั่ง UI
+- LOV ค้นหาจากชื่อตาราง / คอลัมน์ใน SQL ได้ พิมพ์ค้นหาแล้ว query ที่เปิดดูอยู่ไม่ปิด และไม่หน่วงแม้โฟลเดอร์มีไฟล์เยอะ
+- LOV editor กด Ctrl+S ทันทีหลังพิมพ์แล้วไฟล์ไม่มี `:{{ name | Type }}` ค้างหรือขาด parameter อีก บันทึกแล้วหน้าจอและ cursor อยู่ที่เดิม
 
 ---
 
