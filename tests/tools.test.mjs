@@ -4,10 +4,11 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto'; // global `crypto` only from Node 19
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, setTimeout, clearTimeout });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular', 'lov']) {
+const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, setTimeout, clearTimeout, crypto: webcrypto });
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular', 'mock-data', 'lov']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -379,6 +380,38 @@ t('lov: an untouched file saves back byte for byte, search covers the SQL', () =
 t('lov: params follow the SQL but declared ones are only removed by hand', () => {
   const list = run(`lovSyncParams([{ name: 'kept', orig: { type: 'Long' }, type: 'Long' }, { name: 'stale', orig: {}, type: 'Any' }], ['a = :{{ added | Date }} and b = :user.name'])`);
   assert.deepEqual(list.map(p => `${p.name}:${p.type}`), ['kept:Long', 'added:Date']);
+});
+t('lov: mock response fills columns from Mock Data Generator people', () => {
+  const json = { select: {
+    userId: { type: 'Long' }, USER_NAME: { type: 'String' }, firstName: {}, lastName: {}, email: { type: 'String' }, mobileNo: { type: 'String' },
+    citizenId: { type: 'String' }, birthDate: { type: 'Date' }, dob: { type: 'String' }, age: { type: 'Integer' }, provinceName: { type: 'String' },
+    zipCode: { type: 'String' }, salary: { type: 'BigDecimal' }, createDate: { type: 'Date' }, amount: { type: 'BigDecimal' },
+    total: { type: 'Long' }, active: { type: 'Boolean' }, remark: { type: 'String' },
+  } };
+  const p = { id: '1101700230708', name: 'มิกซ์ อินฟินิตลูป', nickname: 'n', gender: 'ชาย', phone: '081-234-5678', email: 'a.b1@devmail.io', uuid: 'u-1',
+    dob: '14/03/2533', dobIso: '1990-03-14', age: 36, province: 'ขอนแก่น', zip: '40000', company: 'บริษัท ไทยเดฟ จำกัด', juristicId: '0-1055-56000-01-3', job: 'Tech Lead', salary: 45000 };
+  const code = `lovMockResponse(${JSON.stringify(json)}, ${JSON.stringify([p, { ...p, uuid: 'u-2' }])})`;
+  const res = run(code);
+  assert.deepEqual(res.paginator, { offset: 0, limit: 2, count: 2 });
+  const [a, b] = res.results;
+  assert.deepEqual(Object.keys(a), Object.keys(json.select));
+  assert.deepEqual([a.userId, b.userId], [1, 2]);
+  assert.deepEqual([a.USER_NAME, a.firstName, a.lastName], ['มิกซ์ อินฟินิตลูป', 'มิกซ์', 'อินฟินิตลูป']);
+  assert.deepEqual([a.email, a.mobileNo, a.citizenId, a.provinceName, a.zipCode], [p.email, p.phone, p.id, p.province, p.zip]);
+  assert.deepEqual([a.birthDate, a.dob, a.age, a.salary], ['1990-03-14T00:00:00.000+00:00', '14/03/2533', 36, 45000]);
+  // no matching field: by type, the same for the same person on every call
+  assert.match(a.createDate, /^\d{4}-\d{2}-\d{2}T00:00:00\.000\+00:00$/);
+  assert.ok(Number.isInteger(a.total) && a.total >= 1 && a.total <= 1000);
+  assert.ok(typeof a.amount === 'number' && Math.round(a.amount * 100) === a.amount * 100);
+  assert.equal(typeof a.active, 'boolean');
+  assert.deepEqual([a.remark, b.remark], ['remark-1', 'remark-2']);
+  assert.deepEqual(run(code), res);
+});
+t('lov: every mock field the columns map to exists in genOneMock()', () => {
+  assert.deepEqual(run(`(() => { const p = genOneMock(); return LOV_MOCK_FIELDS.map(f => f[1]).filter(f => !['firstName', 'lastName'].includes(f) && !(f in p)); })()`), []);
+  const rows = run(`lovMockResponse({ select: { email: {}, birthDate: { type: 'Date' } } }, lovMockPeople(3)).results`);
+  assert.equal(rows.length, 3);
+  rows.forEach(r => { assert.match(r.email, /@/); assert.match(r.birthDate, /^\d{4}-\d{2}-\d{2}T/); });
 });
 t('lov: a save runs the syncs still waiting, opening another file drops them', () => {
   assert.deepEqual(run(`(() => { const hits = []; lovLater('a', () => hits.push('a1')); lovLater('b', () => hits.push('b')); lovLater('a', () => hits.push('a2')); lovFlushLater(true); return [hits, Object.keys(_lovTimers).length]; })()`), [['a2', 'b'], 0]);

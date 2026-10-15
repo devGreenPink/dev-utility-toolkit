@@ -4,7 +4,7 @@ let _lovFiles = [];
 let _lovSkipped = 0;
 let _lovCanWrite = false;
 let _lovRecent = []; // folders opened before, most recent first: { label, handle, path?, lastOpened }
-let _lovEdit = null; // open editor: { entry (null = new file), model, dirty, showPaste, pasteSql, saving }
+let _lovEdit = null; // open editor: { entry (null = new file), model, dirty, showPaste, pasteSql, saving, people (mock rows) }
 let _lovFormat = 'v8'; // template-query version of the open folder (LOV_FORMATS key)
 const LOV_RECENT_MAX = 10;
 
@@ -658,6 +658,105 @@ function lovPreviewHtml(id, built) {
     + lovSqlBlockHtml('ตัวอย่าง request', lovRequestExample(id, built), [], lovRouteNote(), 'plaintext');
 }
 
+// ── LOV mock response ── what GET .../<id> would return, filled from Mock Data Generator people (genOneMock)
+// Both versions answer { results, paginator: { offset, limit, count } } with one key per select column.
+// [words of the column id, genOneMock field]; first match wins, so the specific ones come before `name`
+const LOV_MOCK_FIELDS = [
+  [/ e?mail /, 'email'],
+  [/ (phone|tel|mobile|fax) /, 'phone'],
+  [/ juristic | tax (id|no) /, 'juristicId'],
+  [/ (citizen|idcard|pid|iden) | id card | card (id|no) /, 'id'],
+  [/ [gu]uid /, 'uuid'],
+  [/ (birth|birthday|birthdate|dob) /, 'dob'],
+  [/ age /, 'age'],
+  [/ (gender|sex) /, 'gender'],
+  [/ nick(name)? /, 'nickname'],
+  [/ province /, 'province'],
+  [/ (zip|postcode|postal) /, 'zip'],
+  [/ (company|org|organization|agency) /, 'company'],
+  [/ (job|position|occupation) /, 'job'],
+  [/ (salary|income) /, 'salary'],
+  [/ (first name|firstname|fname) /, 'firstName'],
+  [/ (last name|lastname|lname|surname) /, 'lastName'],
+  [/ name /, 'name'],
+];
+
+// "USER_NAME" / "userName" → " user name "
+const lovMockWords = key => ' ' + String(key).replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).join(' ') + ' ';
+
+// Same person + column → same number in [0, 1), so the editor preview doesn't reshuffle on every keystroke
+function lovMockRand(person, key) {
+  let h = 2166136261;
+  for (const ch of `${person.uuid}|${key}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  return (h >>> 0) / 4294967296;
+}
+
+// Jackson's default for a java.util.Date in Quarkus (not checked against a live backend)
+const lovMockDate = iso => `${iso}T00:00:00.000+00:00`;
+
+function lovMockValue(key, col, person, n) {
+  const type = String(col.type || 'String');
+  const isInt = /^(Long|Integer|Int|Short|BigInteger)$/i.test(type), isDec = /^(BigDecimal|Double|Float|Number)$/i.test(type);
+  const isDate = /date|time/i.test(type), isBool = /^bool/i.test(type);
+  const words = lovMockWords(key);
+  const field = (LOV_MOCK_FIELDS.find(([re]) => re.test(words)) || [])[1];
+  const rand = lovMockRand(person, key);
+  if (isDate) return lovMockDate(field === 'dob' ? person.dobIso : new Date(Date.now() - rand * 730 * 864e5).toISOString().slice(0, 10));
+  if (field && !isBool) {
+    const [first, ...last] = String(person.name).split(' ');
+    const v = field === 'firstName' ? first : field === 'lastName' ? last.join(' ') : person[field];
+    if (!isInt && !isDec) return String(v);
+    const num = typeof v === 'number' ? v : Number(String(v).replace(/\D/g, ''));
+    if (String(v).replace(/\D/g, '') !== '' && Number.isFinite(num)) return num;
+  }
+  if (isBool) return rand < 0.5;
+  if (isInt) return / (id|ref|no|seq|key) /.test(words) ? n : 1 + Math.floor(rand * 1000);
+  if (isDec) return Math.round(rand * 10000000) / 100;
+  return `${key}-${n}`;
+}
+
+function lovMockResponse(json, people) {
+  const select = (json && json.select && typeof json.select === 'object') ? Object.entries(json.select) : [];
+  const results = people.map((p, i) => Object.fromEntries(select.map(([key, c]) =>
+    [key, lovMockValue(key, (c && typeof c === 'object') ? c : {}, p, i + 1)])));
+  return { results, paginator: { offset: 0, limit: people.length, count: people.length } };
+}
+
+const lovMockPeople = (n = 10) => Array.from({ length: n }, () => genOneMock());
+
+function lovMockHtml(resp) {
+  return `<div class="lov-mock">
+      <div class="lov-sql-label-row field-head">
+        <span class="field-head-l">
+          <span class="lov-sql-label">ตัวอย่าง response (ข้อมูลจำลอง)</span>
+          <span class="lov-params-note">${resp.results.length} แถวจาก Mock Data Generator · จับคู่ตามชื่อคอลัมน์</span>
+        </span>
+        <span class="field-acts">
+          <button type="button" class="field-act" onclick="lovMockReroll(this)">${ic('dices')} สุ่มใหม่</button>
+          <button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendText(this, this.closest('.lov-mock').querySelector('code').textContent, [])">${ic('arrow-right')} ส่งต่อ</button>
+        </span>
+      </div>
+      <div class="rxjs-code-block">
+        <button class="rxjs-copy-btn" onclick="lovCopyBlock(this)">${ic('copy')} คัดลอก</button>
+        <pre class="rxjs-code"><code class="language-json">${escHtml(JSON.stringify(resp, null, 2))}</code></pre>
+      </div>
+    </div>`;
+}
+
+// A new set of people for this one block: the editor keeps it while typing, a list row just redraws its block
+function lovMockReroll(btn) {
+  if (_lovEdit && btn.closest('#lov-editor')) {
+    _lovEdit.people = lovMockPeople();
+    lovEdRefreshPreview();
+    return;
+  }
+  const acc = btn.closest('.rxjs-acc');
+  const entry = acc && lovFindEntry(acc.dataset.file);
+  if (!entry) return;
+  btn.closest('.lov-mock').outerHTML = lovMockHtml(lovMockResponse(entry.json, lovMockPeople()));
+  highlightCode(`#${acc.id} pre.rxjs-code code`);
+}
+
 const lovAttr = s => escHtml(s == null ? '' : String(s)).replace(/"/g, '&quot;');
 const lovHtml = s => escHtml(s == null ? '' : String(s));
 
@@ -700,7 +799,8 @@ function lovToggleAcc(btn, i) {
         <button class="btn btn-danger" data-file="${file}" onclick="lovDeleteFile(this.dataset.file)">${ic('trash')} ลบ</button>
         ${entry.designerFormat ? '' : '<span class="lov-note">ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer: บันทึกครั้งแรกจะจัดรูปแบบใหม่ทั้งไฟล์</span>'}
       </div>
-      ${lovPreviewHtml(entry.id, entry.built)}`;
+      ${lovPreviewHtml(entry.id, entry.built)}
+      ${lovMockHtml(lovMockResponse(entry.json, lovMockPeople()))}`;
     highlightCode(`#lov-acc-${i} pre.rxjs-code code`);
   }
   rxjsToggleAcc(btn);
@@ -1176,7 +1276,9 @@ function lovEdRefreshPreview() {
   const { model: m, entry } = _lovEdit;
   const json = lovJsonFromModel(m);
   const built = lovBuildSql(json);
-  document.getElementById('lov-ed-preview').innerHTML = lovPreviewHtml(m.id || '<id>', built);
+  if (!_lovEdit.people) _lovEdit.people = lovMockPeople();
+  document.getElementById('lov-ed-preview').innerHTML = lovPreviewHtml(m.id || '<id>', built)
+    + lovMockHtml(lovMockResponse(json, _lovEdit.people));
   document.getElementById('lov-ed-json').innerHTML = lovSqlBlockHtml('', lovJacksonStringify(json, '\n'), [], '', 'json');
   let label;
   if (!lovIdOk(m.id)) {
@@ -1320,6 +1422,7 @@ function lovOpenEditor(entry, keepScroll) {
   _lovEdit = {
     entry, model: lovModelFromJson(entry ? entry.json : lovNewTemplate()),
     dirty: false, showPaste: !entry, pasteSql: '', saving: false,
+    people: keepScroll && _lovEdit ? _lovEdit.people : null, // mock response rows stay the same across a save
   };
   lovShowEditor(true);
   lovRenderEditor();
