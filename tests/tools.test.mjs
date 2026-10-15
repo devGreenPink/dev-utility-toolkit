@@ -6,8 +6,8 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular']) {
+const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, setTimeout, clearTimeout });
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular', 'lov']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -329,6 +329,60 @@ t('cron: Quartz keeps a seconds field, weekday names and one ?', () => {
   assert.deepEqual(run(`cronToQuartz('0 0 1 * *')`), { expr: '0 0 0 1 * ?', dropped: false });
   assert.deepEqual(run(`cronToQuartz('0 0 15 * 1')`), { expr: '0 0 0 15 * ?', dropped: true });
   assert.equal(run(`cronToQuartz('bad')`), null);
+});
+
+// ── LOV (.lov.json) ── what the editor writes into the repo
+t('lov: parameters from SQL, `:{{ name | Type }}` shorthand and `::cast`', () => {
+  assert.deepEqual(run(`lovFindParameter("a = :{{ x | Long }} and b = :y and c::int and d = :user.name")`), {
+    sql: 'a = :x and b = :y and c::int and d = :user.name',
+    parameter: { x: { type: 'Long' }, y: { type: 'Any' }, 'user.name': { type: 'Any' } },
+  });
+});
+t('lov: paste SQL → LOV parts', () => {
+  const sql = `-- list users
+SELECT DISTINCT U.USER_ID, U.USER_NAME AS userName, TO_CHAR(U.CREATE_DATE, 'YYYY') "FY", U.CREATE_DATE
+FROM USERS U /* main */ JOIN ORG O ON O.ID = U.ORG_ID
+WHERE U.ORG_ID = :{{ orgId | Long }} AND U.D > CAST(:since AS DATE)
+GROUP BY U.USER_ID HAVING COUNT(*) > 1
+ORDER BY 2 DESC, O.NAME;`;
+  const l = run(`lovTransformLov(${JSON.stringify(sql)}, 'v8')`);
+  assert.equal(l.distinct, true);
+  assert.deepEqual(Object.keys(l.select), ['userId', 'userName', 'FY', 'createDate']);
+  assert.deepEqual([l.select.userId.type, l.select.userId.filter], ['Long', 'String.Equal']);
+  assert.deepEqual([l.select.createDate.type, l.select.FY.sql], ['Date', "TO_CHAR(U.CREATE_DATE, 'YYYY')"]);
+  // ORDER BY 2 lands on the second column, an expression that is no column becomes a query-level order
+  assert.deepEqual(l.select.userName.order, { type: 'DESC', use: 'auto', prio: 100 });
+  assert.deepEqual(l.order, { order2: { sql: 'O.NAME', type: 'ASC', use: 'auto', prio: 101 } });
+  assert.match(l.from, /^USERS U\s+JOIN ORG O ON O\.ID = U\.ORG_ID$/);
+  assert.equal(l.where.main, 'U.ORG_ID = :orgId AND U.D > CAST(:since AS DATE)');
+  assert.equal(l.groupByAndHaving, 'GROUP BY U.USER_ID\nHAVING COUNT(*) > 1');
+  assert.deepEqual(l.parameter, { orgId: { type: 'Long' }, since: { type: 'Any' } });
+});
+t('lov: version and file name', () => {
+  assert.deepEqual(run(`[lovFileFormat({select:{a:{order:{piority:1,use:'auto'}}}}), lovFileFormat({order:{o:{priority:1,use:'AUTO'}}}), lovFileFormat({publicApi:false}), lovFileFormat({id:'x'})]`), ['v8', 'v10', 'v10', null]);
+  assert.equal(run(`lovIdToFileName('getFooBar', 'v8')`), 'get.foo.bar.lov.json');
+  assert.equal(run(`lovIdToFileName('getFooBar', 'v10')`), 'getFooBar.lov.json');
+});
+t('lov: an untouched file saves back byte for byte, search covers the SQL', () => {
+  const json = {
+    id: 'getOrders', description: 'คำสั่งซื้อ "ล่าสุด"', type: 'SimpleLovContainer', autoDeclare: true, unitName: 'dlpw', custom: [1, 'a'],
+    select: { orderId: { order: { type: 'ASC', use: 'optional', piority: 100 }, sql: 'O.ORDER_ID', type: 'Long', search: false, filter: 'String.Equal' } },
+    from: 'ORDERS O', where: { main: 'O.SHOP = :shop', alternate: { byNo: { sql: 'O.NO = :no', parameter: { no: { type: 'String' } } } } },
+    groupByAndHaving: null, order: { latest: { sql: 'O.CREATED', type: 'DESC', use: 'auto', piority: 1 } }, parameter: { shop: { type: 'Long' } },
+  };
+  const raw = run(`lovJacksonStringify(${JSON.stringify(json)}, '\\r\\n')`) + '\r\n';
+  const e = run(`(() => { const e = lovMakeEntry('get.orders.lov.json', null, ${JSON.stringify(raw)}, 0); return { designerFormat: e.designerFormat, eol: e.eol, search: e.search }; })()`);
+  assert.deepEqual([e.designerFormat, e.eol], [true, '\r\n']);
+  assert.ok(e.search.includes('orders o') && e.search.includes('o.no = :no'), 'table and alternate SQL are searchable');
+  assert.deepEqual(run(`lovJsonFromModel(lovModelFromJson(${JSON.stringify(json)}, 'v8'))`), json);
+});
+t('lov: params follow the SQL but declared ones are only removed by hand', () => {
+  const list = run(`lovSyncParams([{ name: 'kept', orig: { type: 'Long' }, type: 'Long' }, { name: 'stale', orig: {}, type: 'Any' }], ['a = :{{ added | Date }} and b = :user.name'])`);
+  assert.deepEqual(list.map(p => `${p.name}:${p.type}`), ['kept:Long', 'added:Date']);
+});
+t('lov: a save runs the syncs still waiting, opening another file drops them', () => {
+  assert.deepEqual(run(`(() => { const hits = []; lovLater('a', () => hits.push('a1')); lovLater('b', () => hits.push('b')); lovLater('a', () => hits.push('a2')); lovFlushLater(true); return [hits, Object.keys(_lovTimers).length]; })()`), [['a2', 'b'], 0]);
+  assert.deepEqual(run(`(() => { const hits = []; lovLater('a', () => hits.push('a')); lovFlushLater(false); return [hits, Object.keys(_lovTimers).length]; })()`), [[], 0]);
 });
 
 console.log(`${passed} passed${process.exitCode ? ', some failed' : ''}`);

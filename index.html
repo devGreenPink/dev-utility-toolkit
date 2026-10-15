@@ -2222,12 +2222,12 @@
               <div class="card-title"><svg class="i" aria-hidden="true"><use href="#i-folder-open"/></svg> เริ่มใช้งาน</div>
               <ol>
                 <li>กด <b>เลือกโฟลเดอร์</b> แล้วเลือกโฟลเดอร์ที่เก็บไฟล์ <code>.lov.json</code> ของ service เช่น <code>src/main/resources/queries</code></li>
-                <li>ค้นหา query ด้วย id, ชื่อไฟล์ หรือ description แล้วกดเพื่อดู SQL ที่ประกอบแล้ว พร้อม copy</li>
+                <li>ค้นหา query ด้วย id, ชื่อไฟล์, description หรือชื่อตารางใน SQL แล้วกดเพื่อดู SQL ที่ประกอบแล้ว พร้อม copy</li>
                 <li>กด <b>แก้ไข</b> เพื่อแก้ในฟอร์ม แล้วบันทึกด้วย <b>Ctrl+S</b> ไฟล์ถูกเขียนลงเครื่องโดยตรง (Chrome / Edge)</li>
               </ol>
             </section>
             <div id="lov-browse">
-              <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="lov-search" placeholder="ค้นหาด้วย id, ชื่อไฟล์ หรือ description" aria-label="ค้นหา query template" oninput="lovFilter(this.value)" disabled /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="document.getElementById('lov-search').value='';lovFilter('');document.getElementById('lov-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+              <div class="search-field"><svg class="i search-field-ic" aria-hidden="true"><use href="#i-search"/></svg><input type="text" id="lov-search" placeholder="ค้นหาด้วย id, ชื่อไฟล์, description หรือชื่อตาราง / คอลัมน์ใน SQL" aria-label="ค้นหา query template" oninput="lovFilter(this.value)" disabled /><button type="button" class="search-clear" aria-label="ล้างคำค้นหา" title="ล้างคำค้นหา" onclick="document.getElementById('lov-search').value='';lovFilter('');document.getElementById('lov-search').focus()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
               <div id="lov-list" class="rxjs-acc-group"></div>
               <div id="lov-empty" class="lov-empty" style="display:none;">ไม่พบไฟล์ JSON ในโฟลเดอร์นี้</div>
             </div>

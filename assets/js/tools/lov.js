@@ -307,7 +307,7 @@ function lovClearView(msg) {
   if (search) { search.value = ''; search.disabled = true; }
   ['lov-refresh-btn', 'lov-rename-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = 'none'; });
   document.getElementById('lov-intro')?.removeAttribute('hidden');
-  lovRenderList([]);
+  lovRenderList();
   lovRenderRecent();
 }
 
@@ -365,6 +365,8 @@ function lovMakeEntry(fileName, handle, raw, lastModified) {
     id: json.id || '(no id)', description: json.description,
     designerFormat: lovJacksonStringify(json, eol) === raw.replace(/\r?\n$/, ''),
     built: lovBuildSql(json),
+    // What the search box matches: id, file name, description and the whole file (table / column names in the SQL)
+    search: [json.id, fileName, typeof json.description === 'string' ? json.description : '', raw].join('\n').toLowerCase(),
   };
 }
 
@@ -402,7 +404,7 @@ async function lovLoadFiles() {
   if (search) search.disabled = false;
   ['lov-refresh-btn', 'lov-rename-btn', 'lov-forget-btn', 'lov-new-btn'].forEach(id => { document.getElementById(id).style.display = ''; });
   document.getElementById('lov-intro')?.setAttribute('hidden', '');
-  lovFilter(search ? search.value : '');
+  lovRenderList();
 }
 
 // 8.x spells it `piority`, 10.1.0 `priority`
@@ -659,50 +661,63 @@ function lovPreviewHtml(id, built) {
 const lovAttr = s => escHtml(s == null ? '' : String(s)).replace(/"/g, '&quot;');
 const lovHtml = s => escHtml(s == null ? '' : String(s));
 
-function lovRenderList(files) {
+// Built once per folder load; search only hides rows (lovFilter), so a row stays open while the query changes.
+// A row's SQL preview is drawn on its first open, and rows open before a reload/save are opened again.
+function lovRenderList() {
   const container = document.getElementById('lov-list');
-  const empty = document.getElementById('lov-empty');
+  const wasOpen = new Set([...container.querySelectorAll('.rxjs-acc-open')].map(b => b.parentElement.dataset.file));
   container.innerHTML = '';
-  if (!files.length) {
-    empty.textContent = _lovFiles.length ? 'ไม่พบ query ที่ตรงกับคำค้น' : 'ไม่พบไฟล์ JSON ในโฟลเดอร์นี้';
-    empty.style.display = _lovDirHandle ? '' : 'none';
-    return;
-  }
-  empty.style.display = 'none';
-  for (const entry of files) {
+  _lovFiles.forEach((entry, i) => {
     const acc = document.createElement('div');
     acc.className = 'rxjs-acc';
-    const file = lovAttr(entry.fileName);
+    acc.id = `lov-acc-${i}`;
+    acc.dataset.file = entry.fileName;
     // Only a file that isn't the folder's version gets its own badge
     const fileFmt = lovFileFormat(entry.json);
     const odd = fileFmt && fileFmt !== _lovFormat ? ' ' + lovVersionBadge(fileFmt, ' lov-ver-odd') : '';
-    acc.innerHTML = `<button class="rxjs-acc-hd" onclick="rxjsToggleAcc(this)">
+    acc.innerHTML = `<button class="rxjs-acc-hd" aria-expanded="false" onclick="lovToggleAcc(this, ${i})">
       <span class="lov-acc-title">
         <span>${lovHtml(entry.id)} <span class="lov-acc-file">(${lovHtml(entry.fileName)})</span>${odd}</span>
         ${entry.description ? `<span class="lov-acc-desc">${lovHtml(entry.description)}</span>` : ''}
       </span>
       <span class="rxjs-acc-chevron">›</span>
     </button>
-    <div class="rxjs-acc-bd" style="display:none;">
-      <div class="toolbar lov-acc-actions">
+    <div class="rxjs-acc-bd" style="display:none;"></div>`;
+    container.appendChild(acc);
+    if (wasOpen.has(entry.fileName)) lovToggleAcc(acc.firstElementChild, i);
+  });
+  lovFilter(document.getElementById('lov-search').value);
+}
+
+function lovToggleAcc(btn, i) {
+  const entry = _lovFiles[i];
+  const body = btn.nextElementSibling;
+  if (entry && !body.hasChildNodes()) {
+    const file = lovAttr(entry.fileName);
+    body.innerHTML = `<div class="toolbar lov-acc-actions">
         <button class="btn btn-ghost" data-file="${file}" onclick="lovEditFile(this.dataset.file)">${ic('pencil')} แก้ไข</button>
         <button class="btn btn-ghost" data-file="${file}" onclick="lovCopyJson(this.dataset.file)">${ic('copy')} คัดลอก JSON</button>
         <button class="btn btn-danger" data-file="${file}" onclick="lovDeleteFile(this.dataset.file)">${ic('trash')} ลบ</button>
         ${entry.designerFormat ? '' : '<span class="lov-note">ไฟล์นี้ไม่ได้จัดรูปแบบแบบ designer: บันทึกครั้งแรกจะจัดรูปแบบใหม่ทั้งไฟล์</span>'}
       </div>
-      ${lovPreviewHtml(entry.id, entry.built)}
-    </div>`;
-    container.appendChild(acc);
+      ${lovPreviewHtml(entry.id, entry.built)}`;
+    highlightCode(`#lov-acc-${i} pre.rxjs-code code`);
   }
-  highlightCode('#lov-tab pre.rxjs-code code');
+  rxjsToggleAcc(btn);
 }
 
 function lovFilter(q) {
   const query = (q || '').trim().toLowerCase();
-  const filtered = !query ? _lovFiles : _lovFiles.filter(f =>
-    (f.id || '').toLowerCase().includes(query) || f.fileName.toLowerCase().includes(query)
-    || (typeof f.description === 'string' && f.description.toLowerCase().includes(query)));
-  lovRenderList(filtered);
+  const rows = document.getElementById('lov-list').children;
+  let shown = 0;
+  _lovFiles.forEach((f, i) => {
+    const hit = !query || f.search.includes(query);
+    if (rows[i]) rows[i].hidden = !hit;
+    if (hit) shown++;
+  });
+  const empty = document.getElementById('lov-empty');
+  empty.textContent = _lovFiles.length ? 'ไม่พบ query ที่ตรงกับคำค้น' : 'ไม่พบไฟล์ JSON ในโฟลเดอร์นี้';
+  empty.style.display = _lovDirHandle && !shown ? '' : 'none';
 }
 
 function lovFindEntry(fileName) {
@@ -946,8 +961,16 @@ const lovOrderUses = f => [[f.optional, f.optional], [f.auto, f.auto]];
 const _lovTimers = {};
 
 function lovLater(key, fn, ms = 600) {
-  clearTimeout(_lovTimers[key]);
-  _lovTimers[key] = setTimeout(fn, ms);
+  clearTimeout(_lovTimers[key]?.t);
+  _lovTimers[key] = { fn, t: setTimeout(() => { delete _lovTimers[key]; fn(); }, ms) };
+}
+
+// Runs (or with run = false drops) what lovLater still has waiting: a Ctrl+S right after typing would
+// otherwise save before the param / column id sync, leaving `:{{ name | Type }}` in the file
+function lovFlushLater(run) {
+  const pending = Object.values(_lovTimers);
+  Object.keys(_lovTimers).forEach(k => delete _lovTimers[k]);
+  pending.forEach(({ fn, t }) => { clearTimeout(t); if (run) fn(); });
 }
 
 function lovOptions(values, current) {
@@ -1167,7 +1190,7 @@ function lovEdRefreshPreview() {
   }
   document.getElementById('lov-ed-file').textContent = label;
   document.getElementById('lov-ed-dirty').textContent = _lovEdit.dirty ? 'ยังไม่บันทึก' : '';
-  highlightCode('#lov-tab pre.rxjs-code code');
+  highlightCode('#lov-editor pre.rxjs-code code');
 }
 
 function lovEdMarkDirty() {
@@ -1291,14 +1314,36 @@ function lovShowEditor(show) {
   document.getElementById('lov-toolbar').style.display = show ? 'none' : '';
 }
 
-function lovOpenEditor(entry) {
+// keepScroll: reopened after a save, so stay where the user was instead of jumping to the top
+function lovOpenEditor(entry, keepScroll) {
+  lovFlushLater(false); // a sync still waiting from the previous file would edit this one's params
   _lovEdit = {
     entry, model: lovModelFromJson(entry ? entry.json : lovNewTemplate()),
     dirty: false, showPaste: !entry, pasteSql: '', saving: false,
   };
   lovShowEditor(true);
   lovRenderEditor();
-  scrollToTop();
+  if (!keepScroll) scrollToTop();
+}
+
+// The focused editor field as a selector that finds the same field after the editor is drawn again
+function lovEdFocusSpot() {
+  const el = document.activeElement;
+  if (!el || !el.dataset || !el.dataset.f || !el.closest('#lov-editor')) return null;
+  const row = el.closest('[data-sec]');
+  const at = row ? ['sec', 'i', 'j'].filter(k => k in row.dataset).map(k => `[data-${k}="${row.dataset[k]}"]`).join('') + ' ' : '';
+  return { sel: el.id ? `#${el.id}` : `#lov-editor ${at}[data-f="${el.dataset.f}"]`, start: el.selectionStart, end: el.selectionEnd,
+    top: el.getBoundingClientRect().top };
+}
+
+// Puts the cursor back and scrolls so the field sits where it was (warnings above it may have come or gone)
+function lovEdRestoreFocus(spot) {
+  const el = spot && document.querySelector(spot.sel);
+  if (!el) return;
+  el.focus({ preventScroll: true });
+  if (typeof spot.start === 'number') el.setSelectionRange(spot.start, spot.end);
+  const area = document.querySelector('.content-area');
+  if (area) area.scrollTop += el.getBoundingClientRect().top - spot.top;
 }
 
 // Returns false when the user keeps unsaved changes; force skips the question
@@ -1376,6 +1421,8 @@ function lovShowErrors(errs) {
 async function lovSaveEditor() {
   const ed = _lovEdit;
   if (!ed || ed.saving) return;
+  const spot = lovEdFocusSpot(); // before the flush, which may redraw the field
+  lovFlushLater(true);
   const { model: m, entry } = ed;
   const errs = lovValidate(m, entry);
   lovShowErrors(errs);
@@ -1404,7 +1451,7 @@ async function lovSaveEditor() {
     ed.dirty = false;
     await lovLoadFiles();
     const saved = _lovFiles.find(f => f.fileName.toLowerCase() === target.toLowerCase());
-    if (saved) lovOpenEditor(saved); else lovCloseEditor(true);
+    if (saved) { lovOpenEditor(saved, true); lovEdRestoreFocus(spot); } else lovCloseEditor(true);
     showToast(`บันทึก ${target} แล้ว`);
   } catch (err) {
     showToast('บันทึกไม่สำเร็จ','err');

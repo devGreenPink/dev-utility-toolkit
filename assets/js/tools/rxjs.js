@@ -717,6 +717,7 @@ function rxjsToggleAcc(btn){
   const open=body.style.display!=='none';
   body.style.display=open?'none':'block';
   btn.classList.toggle('rxjs-acc-open',!open);
+  btn.setAttribute('aria-expanded',String(!open));
   if(!open){
     // animate marble dots on open
     body.querySelectorAll('.rxjs-marble').forEach((m,mi)=>{
