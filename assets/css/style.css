@@ -3920,6 +3920,9 @@
     .qr-empty > .i { width: 40px; height: 40px; color: var(--accent-fg); }
     .qr-empty-sub { font-size: .76rem; color: var(--text-muted); }
     .qr-out { min-height: 80px; white-space: pre-wrap; word-break: break-all; }
+    .qr-ctl { display: inline-block; margin: 0 2px; padding: 0 4px; border-radius: 4px; font-size: .72em; line-height: 1.5; vertical-align: 1px;
+      color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); }
+    .qr-kind { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .qr-link { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; font-size: .82rem; color: var(--text-dim); }
     .qr-link b { color: var(--text); }
     .qr-link .btn { margin-left: auto; }

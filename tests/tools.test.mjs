@@ -258,6 +258,33 @@ t('PromptPay QR: fields, phone number, amount and CRC', () => {
   assert.equal(run(`emvInfo('https://shop.example.com')`), null);
   assert.equal(run(`emvParse('0002ABC')`), null);
 });
+t('barcode: GS1 check digit and format names', () => {
+  for (const ok of ['4006381333931', '96385074', '036000291452', '8851234567898']) assert.equal(run(`gtinCheck('${ok}')`), true, ok);
+  assert.equal(run(`gtinCheck('4006381333932')`), false);
+  for (const no of ['12345', 'ABC12345', '']) assert.equal(run(`gtinCheck('${no}')`), null, no);
+  assert.equal(run(`codeName('ean_13')`), 'EAN-13');        // BarcodeDetector
+  assert.equal(run(`codeName('CODE_128')`), 'Code 128');    // ZXing
+  assert.equal(run(`codeName('PDF_417')`), 'PDF417');
+  assert.equal(run(`codeName('something_new')`), 'something_new');
+});
+t('barcode: Thai bill payment fields, amount from satang, tax ID check', () => {
+  const bill = s => run(`billInfo(${JSON.stringify(s)})`);
+  const b = bill('|010556123456000\rINV2026001\r0812345678\r150050'); // made-up tax ID with a valid check digit
+  assert.deepEqual(b, { taxId: '0105561234560', suffix: '00', ref1: 'INV2026001', ref2: '0812345678', satang: '150050', amount: '1,500.50', taxOk: true });
+  assert.equal(bill('|010556123456000\rINV1\r\r0').amount, '');           // 0 = the payer types the amount
+  assert.equal(bill('|010556123456000\rINV1\r\r0').ref2, '');
+  assert.equal(bill('|010556123456000\nINV1\nX\n100\n').amount, '1.00'); // LF and a trailing break too
+  assert.equal(bill('|010556123456100\rINV1\rX\r100').taxOk, false);
+  for (const no of ['8851234567898', '|0105561234560\rINV1\rX\r100', 'hello']) assert.equal(bill(no), null, no);
+});
+t('barcode: UTF-8 bytes read as Latin-1 are repaired, other text is left alone', () => {
+  const utf8 = Buffer.from('SHOP-42 ข้อมูล', 'utf8');
+  for (const enc of ['latin1', 'windows-1252']) { // browsers decode "iso-8859-1" as windows-1252: 0x82 is ‚ (U+201A)
+    const wrong = enc === 'latin1' ? utf8.toString('latin1') : new TextDecoder('windows-1252').decode(utf8);
+    assert.equal(run(`qrUtf8(${JSON.stringify(wrong)})`), 'SHOP-42 ข้อมูล', enc);
+  }
+  for (const keep of ['café', 'ข้อมูล', '“quoted” €5', 'ORDER 42', '']) assert.equal(run(`qrUtf8(${JSON.stringify(keep)})`), keep, keep);
+});
 
 
 // ── DIAGRAMS (refdocs dgShow data) ── well formed, and every q finds at least one card of its own tab

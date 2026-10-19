@@ -34,7 +34,7 @@ const TAB_META = {
   'ngrx-tab': { title: 'NgRx / Redux', sub: 'Action · Reducer · Selector · Effect แบบเห็นภาพทีละขั้น' },
   'k8sref-tab': { title: 'Docker & K8s', sub: 'ไฟล์ตัวอย่างอ่านทีละบรรทัด · mount ไฟล์ · Helm · ArgoCD · แก้ปัญหา Pod' },
   'gateway-tab': { title: 'Request Path', sub: 'Browser → Load Balancer → Kong → Service → Pod · nginx' },
-  'qr-tab': { title: 'QR Code Reader', sub: 'อ่าน QR จากรูป คลิปบอร์ด หรือกล้อง · แยกฟิลด์ PromptPay / Thai QR พร้อมตรวจ CRC' },
+  'qr-tab': { title: 'QR & Barcode Reader', sub: 'อ่าน QR และ barcode (EAN · UPC · Code 128 · Code 39 …) จากรูป คลิปบอร์ด หรือกล้อง · แยกฟิลด์ PromptPay / Thai QR พร้อมตรวจ CRC' },
   'jenkins-tab': { title: 'Jenkins CI/CD', sub: 'Jenkinsfile ทีละบรรทัด · shared library · CD แบบ GitOps · แก้ปัญหา pipeline' },
   'clicheat-tab': { title: 'CLI Cheatsheets', sub: 'คำสั่ง Docker · DB2 CLP · Maven · pnpm ที่ใช้บ่อย' },
   'home-tab': { title: 'หน้าแรก', sub: 'วางอะไรก็ได้ แล้วจะเปิดเครื่องมือที่ใช่ให้ · เครื่องมือล่าสุด · รายการโปรด' },
@@ -802,6 +802,7 @@ const LIBS={ // the first file is the core; the rest need it and load after it i
   hljs:['highlight.js/11.9.0/highlight.min.js',...['typescript','java','properties','sql','nginx','dockerfile','groovy'].map(l=>`highlight.js/11.9.0/languages/${l}.min.js`)],
   diff:['jsdiff/5.1.0/diff.min.js'],
   jsqr:['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'], // not on cdnjs
+  zxing:['https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js'], // barcodes; not on cdnjs
   rxjs:['rxjs/7.8.1/rxjs.umd.min.js'],
   codemirror:['codemirror/5.65.16/codemirror.min.js','codemirror/5.65.16/codemirror.min.css','codemirror/5.65.16/theme/dracula.min.css',
     'codemirror/5.65.16/mode/javascript/javascript.min.js','codemirror/5.65.16/addon/edit/closebrackets.min.js',

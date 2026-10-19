@@ -4,6 +4,14 @@
 // date = release day YYYY-MM-DD (Asia/Bangkok). An item is a string, or [text, ...sub-bullets].
 // `code` and **bold** are rendered; everything else is escaped.
 const CHANGELOG=[
+  {v:'2.5',date:'2026-10-19',items:[
+    ['**QR Code Reader อ่าน barcode ได้แล้ว** (เปลี่ยนชื่อเป็น QR & Barcode Reader): EAN-13 / EAN-8 / UPC / Code 128 / Code 39 / ITF / Codabar / Data Matrix / PDF417 จากรูป คลิปบอร์ด หรือกล้อง',
+      'บอกชนิดของ code ที่อ่านได้ และตรวจ check digit ของ EAN / UPC',
+      '**barcode ชำระบิลข้ามธนาคาร** แยกเลขผู้เสียภาษี (ตรวจ check digit), Suffix, Ref 1, Ref 2 และจำนวนเงินจากสตางค์เป็นบาท',
+      'ข้อมูลที่คั่นด้วย CR ขึ้นบรรทัดใหม่บนจอ ส่วนปุ่มคัดลอกยังให้ข้อความตรงตาม barcode ทุกตัว อักขระควบคุมอื่น (เช่น GS ของ GS1) แสดงเป็นป้ายชื่อ ไม่หายไปเฉยๆ',
+      'ภาษาไทยใน Data Matrix / PDF417 ไม่เพี้ยน',
+      'ใช้ได้บน Windows ด้วย: ถ้าเบราว์เซอร์ไม่มี BarcodeDetector จะโหลด ZXing มาอ่านแทนเมื่อใช้ครั้งแรก อ่าน barcode ที่วางแนวตั้งได้'],
+  ]},
   {v:'2.4',date:'2026-10-15',items:[
     '**หน้าอัปเดตใหม่** (เมนู "อัปเดต" ใต้หน้าแรก) บอกว่าแต่ละรุ่นออกวันไหน และมีอะไรเปลี่ยนบ้าง',
     'หน้าแรกบอกรุ่นล่าสุดพร้อมวันที่ กดแล้วเปิดหน้าอัปเดต',

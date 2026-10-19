@@ -217,7 +217,7 @@
           </div>
           <div>
             <div class="app-name">อีสาน Dev Tools</div>
-            <div class="app-version">v2.4</div>
+            <div class="app-version">v2.5</div>
           </div>
         </div>
       </div>
@@ -297,7 +297,7 @@
               <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-id-card"/></svg></span> JWT Decoder
             </div>
             <div class="nav-item" data-tab="qr-tab" onclick="openTab(event, 'qr-tab')">
-              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-qr-code"/></svg></span> QR Code Reader
+              <span class="nav-icon"><svg class="i" aria-hidden="true"><use href="#i-qr-code"/></svg></span> QR &amp; Barcode Reader
             </div>
           </div></div>
         </div>
@@ -1669,12 +1669,12 @@
               <div class="field-head"><span class="field-label">รูป / กล้อง</span><span class="field-acts"><button type="button" class="field-act" onclick="qrClear()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้าง</button></span></div>
               <div class="qr-stage" id="qr-stage" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="qrDrop(event)">
                 <video id="qr-video" playsinline muted hidden aria-label="ภาพจากกล้อง"></video>
-                <canvas id="qr-preview" width="0" height="0" hidden role="img" aria-label="รูปที่ใช้อ่าน QR"></canvas>
-                <div class="qr-empty" id="qr-empty"><svg class="i" aria-hidden="true"><use href="#i-qr-code"/></svg><span>ลากรูปที่มี QR code มาวางที่นี่ วางด้วย Ctrl+V หรือเปิดกล้อง</span><span class="qr-empty-sub">อ่าน PromptPay / Thai QR ได้: แยกเบอร์ เลขประจำตัว จำนวนเงิน และตรวจ CRC ให้</span></div>
+                <canvas id="qr-preview" width="0" height="0" hidden role="img" aria-label="รูปที่ใช้อ่าน QR / barcode"></canvas>
+                <div class="qr-empty" id="qr-empty"><svg class="i" aria-hidden="true"><use href="#i-qr-code"/></svg><span>ลากรูปที่มี QR code หรือ barcode มาวางที่นี่ วางด้วย Ctrl+V หรือเปิดกล้อง</span><span class="qr-empty-sub">barcode: EAN-13 / EAN-8 / UPC / Code 128 / Code 39 / ITF และอื่นๆ ตรวจ check digit ให้ · PromptPay / Thai QR: แยกเบอร์ เลขประจำตัว จำนวนเงิน และตรวจ CRC</span></div>
               </div>
             </div>
             <div>
-              <div class="field-head"><span class="field-label">ข้อความใน QR</span><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="sendTo(this,'qr-output',[])"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="copyElText('qr-output')"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
+              <div class="field-head"><span class="field-label">ข้อความที่อ่านได้</span><span class="field-acts"><button type="button" class="field-act" aria-haspopup="true" aria-expanded="false" onclick="qrSend(this)"><svg class="i" aria-hidden="true"><use href="#i-arrow-right"/></svg>ส่งต่อ</button><button type="button" class="field-act" onclick="qrCopy()"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>คัดลอก</button></span></div>
               <div id="qr-output" class="output-mono qr-out" data-empty="ข้อความที่อ่านได้จะขึ้นที่นี่" aria-live="polite"></div>
               <div id="qr-error" class="tool-error-text" style="display: none" role="alert"></div>
               <div id="qr-extra"></div>
