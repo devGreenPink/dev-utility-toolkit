@@ -5,7 +5,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-2.4-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-2.5-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -30,7 +30,18 @@
 | ไฟล์ HAR | สรุป request ที่ล้มเหลวและช้า |
 | Dockerfile, Jenkinsfile | Docker & K8s / Jenkins CI/CD |
 
-ลากไฟล์มาวางที่ไหนก็ได้ในหน้า ระบบดูจากชื่อไฟล์และเนื้อหาแล้วเปิดเครื่องมือให้ รูปภาพจะไปที่ QR Code Reader
+ลากไฟล์มาวางที่ไหนก็ได้ในหน้า ระบบดูจากชื่อไฟล์และเนื้อหาแล้วเปิดเครื่องมือให้ รูปภาพจะไปที่ QR & Barcode Reader
+
+---
+
+## มีอะไรใหม่ใน v2.5
+
+- **QR Code Reader อ่าน barcode ได้แล้ว** (เปลี่ยนชื่อเป็น QR & Barcode Reader): EAN-13 / EAN-8 / UPC / Code 128 / Code 39 / ITF / Codabar / Data Matrix / PDF417 จากรูป คลิปบอร์ด หรือกล้อง
+  - บอกชนิดของ code ที่อ่านได้ และตรวจ check digit ของ EAN / UPC
+  - **barcode ชำระบิลข้ามธนาคาร** แยกเลขผู้เสียภาษี (ตรวจ check digit), Suffix, Ref 1, Ref 2 และจำนวนเงินจากสตางค์เป็นบาท
+  - ข้อมูลที่คั่นด้วย CR ขึ้นบรรทัดใหม่บนจอ ส่วนปุ่มคัดลอกยังให้ข้อความตรงตาม barcode อักขระควบคุมอื่น (เช่น GS ของ GS1) แสดงเป็นป้ายชื่อ
+  - ภาษาไทยใน Data Matrix / PDF417 ไม่เพี้ยน
+  - ใช้ได้บน Windows ด้วย: ถ้าเบราว์เซอร์ไม่มี BarcodeDetector จะโหลด ZXing มาอ่านแทนเมื่อใช้ครั้งแรก อ่าน barcode ที่วางแนวตั้งได้
 
 ---
 
@@ -122,7 +133,7 @@
 | พ.ศ. · เลขบัตร · บาท | แปลง พ.ศ./ค.ศ., ตรวจเลขบัตร 13 หลัก, จำนวนเงินเป็นตัวอักษร (BAHTTEXT) |
 | Hash Generator | SHA-1 / SHA-256 / SHA-512 ด้วย Web Crypto API |
 | JWT Decoder | decode (ภาษาไทยใน payload, ตัด `Bearer ` ให้, นับถอยหลัง exp) + สร้าง JWT HS256 |
-| QR Code Reader | อ่าน QR จากรูป คลิปบอร์ด หรือกล้อง, แยกฟิลด์ PromptPay / Thai QR และตรวจ CRC |
+| QR & Barcode Reader | อ่าน QR และ barcode (EAN / UPC / Code 128 / Code 39 ...) จากรูป คลิปบอร์ด หรือกล้อง, ตรวจ check digit, แยกช่อง barcode ชำระบิล, แยกฟิลด์ PromptPay / Thai QR และตรวจ CRC |
 
 ### ฐานข้อมูล
 | เครื่องมือ | ทำอะไร |
@@ -281,11 +292,11 @@ Service Worker ดึงไฟล์ของแอปจากเน็ตก�
 ## Privacy
 
 - ข้อมูลที่กรอกประมวลผลในเบราว์เซอร์เท่านั้น ไม่ส่งไปที่ไหน
-- สิ่งที่โหลดจากภายนอกมีแค่ไฟล์ library (cdnjs, jsDelivr สำหรับ jsQR) และฟอนต์ (Google Fonts) ไม่มีข้อมูลของคุณติดไปด้วย
+- สิ่งที่โหลดจากภายนอกมีแค่ไฟล์ library (cdnjs, jsDelivr สำหรับ jsQR และ ZXing) และฟอนต์ (Google Fonts) ไม่มีข้อมูลของคุณติดไปด้วย
 - ไม่มี analytics / tracking / cookie
 - ข้อมูลที่จำไว้อยู่ใน `localStorage` ของเครื่องนี้ ไม่จำ JWT และ Secret
 - ลิงก์แชร์เก็บข้อมูลไว้หลัง `#` ของ URL ซึ่งเบราว์เซอร์ไม่ส่งไป server และไม่ใส่ JWT / secret
-- กล้องของ QR Code Reader อ่านภาพในเครื่อง ไม่อัปโหลด
+- กล้องของ QR & Barcode Reader อ่านภาพในเครื่อง ไม่อัปโหลด
 
 ---
 
@@ -295,7 +306,7 @@ Service Worker ดึงไฟล์ของแอปจากเน็ตก�
 HTML + CSS + Vanilla JavaScript (no build step, no framework)
 ├── Web Crypto API         Hash (SHA-1/256/512), UUID v4, JWT HS256
 ├── Canvas / EyeDropper    Color Picker, ดูดสีจากรูปและหน้าจอ
-├── BarcodeDetector        QR Code Reader (ใช้ jsQR 1.4.0 แทนเมื่อเบราว์เซอร์ไม่มี)
+├── BarcodeDetector        QR & Barcode Reader (ไม่มีก็ใช้ jsQR 1.4.0 อ่าน QR และ ZXing 0.21.3 อ่าน barcode)
 ├── File System Access API LOV Query Browser: อ่าน / เขียนโฟลเดอร์ (Chromium)
 ├── IndexedDB              LOV Query Browser: จำโฟลเดอร์ที่เคยเปิด
 ├── Service Worker         PWA, network-first + เก็บ library จาก CDN ไว้ใช้ offline
@@ -323,7 +334,7 @@ npm ci
 npx playwright install chromium
 node run.mjs
 ```
-ทดสอบในเบราว์เซอร์จริง (Playwright + axe-core): เปิดทุกเครื่องมือไม่มี error, WCAG 2.2 AA ทุกหน้าทั้งธีมเริ่มต้น (Dracula) โหมดสว่าง มืด และจอมือถือ, ไม่ล้นจอที่ 375px, smart paste, จำข้อมูล, ลิงก์แชร์, ลากไฟล์, ส่งต่อ / ประวัติ, QR และ offline
+ทดสอบในเบราว์เซอร์จริง (Playwright + axe-core): เปิดทุกเครื่องมือไม่มี error, WCAG 2.2 AA ทุกหน้าทั้งธีมเริ่มต้น (Dracula) โหมดสว่าง มืด และจอมือถือ, ไม่ล้นจอที่ 375px, smart paste, จำข้อมูล, ลิงก์แชร์, ลากไฟล์, ส่งต่อ / ประวัติ, QR, barcode และ offline
 
 GitHub Actions รันทั้งสองชุดทุก push และ pull request ส่วน push เข้า `main` จะ deploy ขึ้น GitHub Pages และสร้าง release ตามเลขเวอร์ชันใน `index.html` เอง
 

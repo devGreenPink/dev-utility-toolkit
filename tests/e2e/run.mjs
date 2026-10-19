@@ -223,6 +223,38 @@ await check('QR: a PromptPay code is read, split and its CRC checked', async () 
   expect((await page.textContent('.qr-emv-head')).includes('CRC ถูกต้อง'), 'CRC');
   noErrors(page);
 });
+await check('Barcode: an EAN-13 is read with its type and check digit', async () => {
+  const page = await newPage();
+  await page.addScriptTag({ url: 'https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js' }); // test-only generator
+  const png = await page.evaluate(() => {
+    const b = document.createElement('canvas');
+    JsBarcode(b, '885123456789', { format: 'EAN13' }); // adds the check digit: 8851234567898
+    const c = document.createElement('canvas'); c.width = b.height; c.height = b.width; // upright, as a portrait photo
+    const x = c.getContext('2d'); x.translate(c.width, 0); x.rotate(Math.PI / 2); x.drawImage(b, 0, 0);
+    return c.toDataURL('image/png').split(',')[1];
+  });
+  await page.evaluate(b64 => {
+    const dt = new DataTransfer(); dt.items.add(new File([Uint8Array.from(atob(b64), c => c.charCodeAt(0))], 'barcode.png', { type: 'image/png' }));
+    for (const ev of ['dragenter', 'dragover', 'drop']) document.body.dispatchEvent(new DragEvent(ev, { bubbles: true, cancelable: true, dataTransfer: dt }));
+  }, png);
+  await page.waitForFunction(() => document.querySelector('.qr-kind'), null, { timeout: 15000 });
+  expect((await page.textContent('#qr-output')) === '8851234567898', 'barcode value');
+  const kind = await page.textContent('.qr-kind');
+  expect(kind.includes('EAN-13') && kind.includes('check digit ถูกต้อง'), 'type and check digit: ' + kind);
+  // Thai bill payment: fields split by CR show on their own lines, are split into a table, and copy keeps the CRs
+  const bill = '|010556123456000\rINV2026001\r0812345678\r150050';
+  const png2 = await page.evaluate(v => { const c = document.createElement('canvas'); JsBarcode(c, v, { format: 'CODE128' }); return c.toDataURL('image/png').split(',')[1]; }, bill);
+  await page.evaluate(b64 => {
+    const dt = new DataTransfer(); dt.items.add(new File([Uint8Array.from(atob(b64), c => c.charCodeAt(0))], 'bill.png', { type: 'image/png' }));
+    for (const ev of ['dragenter', 'dragover', 'drop']) document.body.dispatchEvent(new DragEvent(ev, { bubbles: true, cancelable: true, dataTransfer: dt }));
+  }, png2);
+  await page.waitForFunction(() => document.querySelector('.qr-emv-sum'), null, { timeout: 15000 });
+  expect((await page.$eval('#qr-output', e => e.innerText.split('\n').length)) === 4, 'one line per field');
+  expect((await page.textContent('.qr-emv-sum')).includes('1,500.50'), 'amount in baht');
+  await page.click('#qr-tab .field-act:has-text("คัดลอก")');
+  expect((await page.evaluate(() => navigator.clipboard.readText())).includes('\r'), 'copy keeps the CRs');
+  noErrors(page);
+});
 await check('offline: after one online visit every library still loads', async () => {
   const ctx = await browser.newContext();
   const page = await ctx.newPage();

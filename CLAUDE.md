@@ -19,7 +19,7 @@ an edit whenever the page is not going through the service worker.
 
 `node tests/tools.test.mjs` self-checks the pure converters and parsers (BAHTTEXT / Thai ID in
 `thai-tools.js`, `json2type.js`, `props-yaml.js`, `stacktrace.js`, smart paste / share link / file drop in
-`home.js`, curl / HAR / XML parsing, EMVCo QR parsing in `qr.js`, and the
+`home.js`, curl / HAR / XML parsing, EMVCo QR parsing, the GS1 check digit and bill payment barcodes in `qr.js`, and the
 explorer data in `k8s-ref.js` / `jenkins.js`) by loading the tool files into one
 `vm` context, the same way the page loads them. Keep new parsing logic in pure functions so it can be
 covered there.
@@ -27,7 +27,7 @@ covered there.
 `tests/e2e/run.mjs` is the browser suite (Playwright + axe-core, the only npm dependencies, scoped to `tests/e2e/`):
 every tab without errors, axe WCAG 2.2 AA on every tab in the default Dracula theme, light, dark and at phone width (375 px), no sideways scroll at 375 px, and the
 features that only exist in a page (smart paste, remembered inputs, share link, file drop, send to / history,
-Ctrl+K paste, QR, offline). It serves the repo itself on a free port.
+Ctrl+K paste, QR, barcode, offline). It serves the repo itself on a free port.
 `cd tests/e2e && npm ci && npx playwright install chromium && node run.mjs`. `.github/workflows/test.yml` runs
 both suites on every push and pull request (deploy in `static.yml` is separate and does not wait for it).
 
@@ -76,8 +76,13 @@ The app is a single HTML page with a few companion files:
     a HAR file (summary of failed and slow requests) and XML (converted to JSON).
   - `tools/changelog.js` — `CHANGELOG` (one entry per version, newest first) rendered by the "อัปเดต" tab
     (nav item under หน้าแรก, outside the groups) and `clHomeLine()` on the home tab. See Versioning below.
-  - `tools/qr.js` — QR reader (BarcodeDetector, else jsQR from jsDelivr via `loadLib('jsqr')`); `emvInfo`
-    splits PromptPay / Thai QR payment payloads and checks their CRC (`crc16`).
+  - `tools/qr.js` — QR and barcode reader: BarcodeDetector with every format it supports (absent on Windows / Linux
+    desktop), else jsQR (`loadLib('jsqr')`) for QR, then ZXing (`loadLib('zxing')`) for barcodes; `qrDecodeSource`
+    returns `{text, format}` and `codeName` prints the format. `emvInfo` splits PromptPay / Thai QR payment payloads
+    and checks their CRC (`crc16`); `gtinCheck` checks an EAN / UPC check digit; `billInfo` splits a Thai bill payment
+    barcode (`|<tax id><suffix>` CR ref 1 CR ref 2 CR satang). `qrUtf8` repairs UTF-8 text a decoder read as
+    windows-1252. The output shows CRs as line breaks and other control characters as chips (`qrVisible`), while
+    copy uses the exact text (`_qrText`).
   - `init.js` — the `DOMContentLoaded` init; loads last.
   - A file's top-level code may only *call* functions from files loaded before it (calls inside functions/handlers are fine — they run after every file has loaded). A new file goes in both `index.html` and `sw.js` `STATIC_ASSETS`.
 - `assets/css/style.css` — all styles via CSS custom properties (`--accent`, `--surface`, etc.).
@@ -191,6 +196,7 @@ idle `precacheLibs()` asks it to fetch all of `LIBS`, so every tool works offlin
 - **RxJS 7.8.1** — RxJS Playground runtime
 - **jsdiff 5.1.0** (`diff.min.js` from cdnjs) — Text/JSON diff
 - **jsQR 1.4.0** (jsDelivr; not on cdnjs — `LIBS` takes a full URL) — QR reader when the browser has no BarcodeDetector
+- **ZXing `@zxing/library` 0.21.3** (jsDelivr UMD, `window.ZXing`) — barcodes when BarcodeDetector is missing or finds nothing
 - **Google Fonts** — IBM Plex Sans Thai, JetBrains Mono
 - **Web Crypto API** — Hash generation (`crypto.subtle`), UUID v4 (`crypto.randomUUID`)
 - **Canvas API** — Color Picker SV square, hue/alpha sliders, image color picker loupe
