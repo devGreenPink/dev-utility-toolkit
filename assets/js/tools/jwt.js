@@ -75,6 +75,80 @@ function decodeJWT_UI(){
 }
 function clearJWT(){document.getElementById('jwt-input').value='';document.getElementById('jwt-result').innerHTML='';_jwtHeader=null;_jwtPayload=null;}
 
+// ── JWT COMPARE ── one numbered box per token; the table's columns carry the box number
+// objects become one row per key; arrays stay one value, so an extra role does not shift every row after it
+function jwtFlatten(v,path,out){
+  if(v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length)Object.keys(v).forEach(k=>jwtFlatten(v[k],[...path,k],out));
+  else out.push([path,JSON.stringify(v)]);
+  return out;
+}
+// list: the boxes' text; empty boxes are left out but the others keep their box number n.
+// vals[i]: the claim as JSON (so null ≠ missing and 1 ≠ "1"), null when column i lacks it or did not decode;
+// diff[i]: differs from the baseline, the first column that decoded
+function jwtCompare(list){
+  const cols=list.map((s,i)=>({n:i+1,tok:s.trim().replace(/^bearer\s+/i,'').replace(/\s+/g,'')})).filter(c=>c.tok).map(({n,tok})=>{
+    const p=tok.split('.');
+    try{
+      if(p.length!==3||!p[0]||!p[1])throw new Error('ไม่ใช่ JWT (ต้องมี 3 ส่วน header.payload.signature)');
+      return {n,claims:new Map([...jwtFlatten(b64urlDecode(p[0]),['header'],[]),...jwtFlatten(b64urlDecode(p[1]),['payload'],[]),[['signature'],JSON.stringify(p[2])]]
+        .map(([path,v])=>[path.join('\0'),[path,v]]))};
+    }catch(e){return {n,error:e.message};}
+  });
+  const base=cols.findIndex(c=>c.claims),seen=new Map();
+  cols.forEach(c=>c.claims&&c.claims.forEach(([path],k)=>{if(!seen.has(k))seen.set(k,path);}));
+  const group=path=>['header','payload','signature'].indexOf(path[0]);
+  const rows=[...seen].sort((a,b)=>group(a[1])-group(b[1])).map(([k,path])=>{
+    const vals=cols.map(c=>c.claims&&c.claims.has(k)?c.claims.get(k)[1]:null);
+    const diff=cols.map((c,i)=>!!c.claims&&i!==base&&vals[i]!==vals[base]);
+    return {path,vals,diff,same:!diff.some(Boolean)};
+  });
+  return {cols:cols.map(c=>c.error?{n:c.n,error:c.error}:{n:c.n}),base,rows};
+}
+function jwtCmpValue(json,key){
+  const v=JSON.parse(json);
+  let s=typeof v==='string'?v:json;
+  if(typeof v==='number'&&/^payload\.(iat|exp|nbf|auth_time)$/.test(key))s+=' ('+new Date(v*1000).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})+')';
+  return escHtml(s);
+}
+// the boxes have no id on purpose: remembered inputs, history and share links only take fields with an id
+function jwtCmpBoxes(){return Array.from(document.querySelectorAll('#jwt-cmp-boxes textarea'));}
+function jwtCmpRender(vals){
+  document.getElementById('jwt-cmp-boxes').innerHTML=vals.map((v,i)=>`<div class="jwt-cmp-box">
+    <div class="field-head"><span class="field-label" id="jwt-cmp-l${i+1}">Token #${i+1}</span><span class="field-acts">${vals.length>2
+      ?`<button type="button" class="field-act" aria-label="ลบช่อง Token #${i+1}" onclick="jwtCmpRemove(${i})">${ic('trash')}ลบช่อง</button>`:''}<button type="button" class="field-act" aria-label="ล้าง Token #${i+1}" onclick="jwtCmpClear(${i})">${ic('x')}ล้าง</button></span></div>
+    <textarea rows="3" spellcheck="false" aria-labelledby="jwt-cmp-l${i+1}" placeholder="eyJhbGciOi..." oninput="jwtCompareUI()"></textarea>
+    <div class="jwt-cmp-status"></div></div>`).join('');
+  jwtCmpBoxes().forEach((el,i)=>{el.value=vals[i];});
+  jwtCompareUI();
+}
+function jwtCmpAdd(){jwtCmpRender([...jwtCmpBoxes().map(el=>el.value),'']);jwtCmpBoxes().at(-1).focus();}
+function jwtCmpRemove(i){const v=jwtCmpBoxes().map(el=>el.value);v.splice(i,1);jwtCmpRender(v);}
+function jwtCmpClear(i){const el=jwtCmpBoxes()[i];el.value='';el.focus();jwtCompareUI();}
+function clearJwtCompare(){jwtCmpRender(['','']);}
+function jwtCompareUI(){
+  const out=document.getElementById('jwt-cmp-result');
+  const r=jwtCompare(jwtCmpBoxes().map(el=>el.value));
+  const ready=r.cols.length>=2&&r.base>=0,b=ready?r.cols[r.base].n:0;
+  const status=document.querySelectorAll('#jwt-cmp-boxes .jwt-cmp-status');
+  status.forEach(el=>{el.textContent='';el.classList.remove('is-bad');});
+  r.cols.forEach((c,i)=>{
+    const el=status[c.n-1];
+    if(c.error){el.innerHTML=`${ic('triangle-alert')} ${escHtml(c.error)}`;el.classList.add('is-bad');}
+    else if(ready){const k=r.rows.filter(x=>x.diff[i]).length;el.textContent=i===r.base?'ตัวตั้ง: ช่องอื่นเทียบกับช่องนี้':k?`ต่างจาก Token #${b} ${k} รายการ`:`ตรงกับ Token #${b} ทุกรายการ`;}
+  });
+  if(!ready){out.innerHTML=`<p class="jwt-cmp-sum">${r.cols.length>=2?'ยังไม่มี token ที่ถอดได้':'กรอก token อย่างน้อย 2 ช่อง แล้วผลเทียบจะขึ้นที่นี่'}</p>`;return;}
+  const nDiff=r.rows.filter(x=>!x.same).length,only=document.getElementById('jwt-cmp-only').checked;
+  const rows=only?r.rows.filter(x=>!x.same):r.rows;
+  const head=r.cols.map((c,i)=>`<th scope="col">Token #${c.n}${i===r.base?' <span class="jwt-cmp-note">ตัวตั้ง</span>':''}${c.error?' <span class="jwt-cmp-bad">ถอดไม่ได้</span>':''}</th>`).join('');
+  const body=rows.map(x=>{
+    const key=x.path.join('.');
+    return `<tr${x.same?'':' class="is-diff"'}><th scope="row">${escHtml(key)}${x.same?'':' <span class="jwt-cmp-badge">ต่าง</span>'}</th>${x.vals.map((v,i)=>
+      `<td${x.diff[i]?' class="is-changed"':''}>${r.cols[i].error?'':v==null?'<span class="jwt-cmp-none">ไม่มี</span>':jwtCmpValue(v,key)}</td>`).join('')}</tr>`;
+  }).join('');
+  out.innerHTML=`<p class="jwt-cmp-sum">เทียบ ${r.cols.length} token · ${nDiff?`ต่างกัน <b>${nDiff}</b> จาก ${r.rows.length} รายการ เทียบกับ Token #${b}`:'ทุกรายการตรงกัน'}</p>`
+    +(rows.length?`<div class="jwt-cmp-table" tabindex="0" role="region" aria-label="ผลเปรียบเทียบ JWT"><table><thead><tr><th scope="col">claim</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`:'');
+}
+
 // ── JWT ENCODER ──
 function b64urlEncodeBytes(bytes) {
   let s = '';

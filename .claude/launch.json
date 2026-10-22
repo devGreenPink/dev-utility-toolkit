@@ -4,7 +4,7 @@
     {
       "name": "static-server",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-c", "import http.server as h\nclass H(h.SimpleHTTPRequestHandler):\n    def end_headers(self):\n        self.send_header('Cache-Control', 'no-cache')  # plain http.server sends none, so Chrome guesses a lifetime and serves stale JS after an edit\n        super().end_headers()\nh.ThreadingHTTPServer(('', 8080), H).serve_forever()"],
+      "runtimeArgs": ["-c", "import os, http.server as h\nclass H(h.SimpleHTTPRequestHandler):\n    def end_headers(self):\n        self.send_header('Cache-Control', 'no-cache')  # plain http.server sends none, so Chrome guesses a lifetime and serves stale JS after an edit\n        super().end_headers()\nh.ThreadingHTTPServer(('', int(os.environ.get('PORT', 8080))), H).serve_forever()  # the preview passes PORT when 8080 is taken"],
       "port": 8080
     },
     {

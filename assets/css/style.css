@@ -3793,7 +3793,30 @@
     .diff-stats { gap: 12px; font-family: var(--mono); font-size: .76rem; }
     .diff-result { min-height: 80px; color: var(--text); white-space: pre-wrap; }
     .diff-result:empty::before { content: 'พิมพ์หรือวางข้อความทั้งสองฝั่ง แล้วความแตกต่างจะขึ้นที่นี่'; color: var(--text-muted); font-family: var(--sans); }
-    .jwt-enc { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .jwt-enc, .jwt-cmp { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .jwt-cmp .section-header { margin-bottom: 6px; }
+    .jwt-cmp .card-title { margin-bottom: 0; }
+    .jwt-cmp-boxes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); gap: 12px; }
+    .jwt-cmp-status { min-height: 1.2em; margin-top: 4px; font-size: .74rem; color: var(--text-dim); }
+    .jwt-cmp-status.is-bad { color: var(--danger); }
+    .jwt-cmp-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .jwt-cmp-result { margin-top: 14px; }
+    .jwt-cmp-sum { font-size: .78rem; color: var(--text-dim); margin: 0 0 8px; }
+    .jwt-cmp-sum b { color: var(--text); }
+    .jwt-cmp-table { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .jwt-cmp-table:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .jwt-cmp-table table { inline-size: 100%; border-collapse: collapse; font-family: var(--mono); font-size: .76rem; }
+    .jwt-cmp-table th, .jwt-cmp-table td { padding: 6px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; min-inline-size: 9rem; }
+    .jwt-cmp-table tr:last-child > * { border-bottom: 0; }
+    .jwt-cmp-table thead th { font-family: var(--sans); font-weight: 600; color: var(--text-dim); background: var(--surface2); }
+    .jwt-cmp-table tbody th { font-weight: 400; color: var(--text-dim); }
+    .jwt-cmp-table tr.is-diff { background: color-mix(in srgb, var(--c-yellow) 10%, transparent); }
+    .jwt-cmp-table tr.is-diff > th { color: var(--text); }
+    .jwt-cmp-table td.is-changed { background: color-mix(in srgb, var(--c-red) 18%, transparent); color: var(--text); font-weight: 600; }
+    .jwt-cmp-badge { font-family: var(--sans); font-size: .66rem; font-weight: 600; padding: 1px 6px; border-radius: 10px; border: 1px solid currentColor; color: var(--text); white-space: nowrap; }
+    .jwt-cmp-note { font-weight: 400; color: var(--text-dim); }
+    .jwt-cmp-bad { display: block; font-weight: 400; color: var(--danger); }
+    .jwt-cmp-none { font-family: var(--sans); font-style: italic; color: var(--text-dim); }
     .jwt-enc-out { color: var(--accent2); }
 
     /* search box with an inline clear that shows only when there is something to clear */

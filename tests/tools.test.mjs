@@ -7,8 +7,9 @@ import assert from 'node:assert/strict';
 import { webcrypto } from 'node:crypto'; // global `crypto` only from Node 19
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, setTimeout, clearTimeout, crypto: webcrypto });
-for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular', 'mock-data', 'lov', 'changelog']) {
+const ctx = vm.createContext({ console, Intl, BigInt, atob, btoa, TextDecoder, TextEncoder, URLSearchParams, setTimeout, clearTimeout, crypto: webcrypto,
+  debounced: f => f }); // core.js is not loaded; jwt.js wires its encoder with it at load
+for (const f of ['refdocs', 'db2-errors', 'java-exceptions', 'java-internals', 'thai-tools', 'json2type', 'props-yaml', 'stacktrace', 'home', 'k8s-ref', 'jenkins', 'gateway', 'qr', 'cron', 'sql-ref', 'ngrx', 'http-status', 'cheatsheets', 'angular', 'mock-data', 'lov', 'changelog', 'jwt']) {
   vm.runInContext(readFileSync(`${root}assets/js/tools/${f}.js`, 'utf8'), ctx, { filename: f + '.js' });
 }
 // JSON round-trip brings values into this realm so deepEqual compares structure, not prototypes
@@ -443,6 +444,45 @@ t('lov: every mock field the columns map to exists in genOneMock()', () => {
 t('lov: a save runs the syncs still waiting, opening another file drops them', () => {
   assert.deepEqual(run(`(() => { const hits = []; lovLater('a', () => hits.push('a1')); lovLater('b', () => hits.push('b')); lovLater('a', () => hits.push('a2')); lovFlushLater(true); return [hits, Object.keys(_lovTimers).length]; })()`), [['a2', 'b'], 0]);
   assert.deepEqual(run(`(() => { const hits = []; lovLater('a', () => hits.push('a')); lovFlushLater(false); return [hits, Object.keys(_lovTimers).length]; })()`), [[], 0]);
+});
+
+// ── JWT COMPARE ── one box per token, one row per claim; baseline = first token that decoded
+const jwt = (h, p, sig = 'sig') => [h, p].map(o => Buffer.from(JSON.stringify(o)).toString('base64url')).join('.') + '.' + sig;
+const cmp = (...boxes) => run(`jwtCompare(${JSON.stringify(boxes)})`);
+const row = (r, key) => r.rows.find(x => x.path.join('.') === key);
+t('jwt compare: identical tokens; Bearer, line breaks and empty boxes ignored, box numbers kept', () => {
+  const a = jwt({ alg: 'HS256' }, { sub: 'somchai', role: 'admin' });
+  const r = cmp('Bearer ' + a, '', '  ' + a.slice(0, 20) + '\n' + a.slice(20) + '\n');
+  assert.deepEqual(r.cols.map(c => c.n), [1, 3]);
+  assert.equal(r.base, 0);
+  assert.deepEqual(r.rows.map(x => x.path.join('.')), ['header.alg', 'payload.sub', 'payload.role', 'signature']);
+  assert.ok(r.rows.every(x => x.same && !x.diff.some(Boolean)));
+});
+t('jwt compare: changed, missing, null, 1 vs "1", nested objects, arrays as one value', () => {
+  const r = cmp(
+    jwt({ alg: 'HS256' }, { role: 'admin', n: 1, x: null, ra: { roles: ['a', 'b'] }, e: {} }),
+    jwt({ alg: 'HS256' }, { role: 'user', n: '1', ra: { roles: ['a', 'b'] }, e: {}, extra: true }),
+    jwt({ alg: 'RS256' }, { role: 'admin', n: 1, x: null, ra: { roles: ['b', 'a'] }, e: {} }, 'sig'));
+  assert.deepEqual(row(r, 'payload.role').diff, [false, true, false]);
+  assert.deepEqual(row(r, 'payload.n').vals, ['1', '"1"', '1']);
+  assert.deepEqual(row(r, 'payload.x').vals, ['null', null, 'null']);
+  assert.equal(row(r, 'payload.x').same, false);
+  assert.deepEqual(row(r, 'payload.ra.roles').diff, [false, false, true]);
+  assert.deepEqual(row(r, 'payload.e').vals, ['{}', '{}', '{}']);
+  assert.deepEqual(row(r, 'payload.extra').vals, [null, 'true', null]);
+  assert.deepEqual(row(r, 'header.alg').diff, [false, false, true]);
+  assert.equal(row(r, 'signature').same, true);
+  assert.equal(r.rows.at(-1).path[0], 'signature');
+  assert.ok(r.rows.findIndex(x => x.path[0] === 'payload') > r.rows.findIndex(x => x.path[0] === 'header'));
+});
+t('jwt compare: a bad token is reported and the next good one is the baseline', () => {
+  const r = cmp('not-a-jwt', jwt({ alg: 'HS256' }, { sub: 'a' }), jwt({ alg: 'HS256' }, { sub: 'b' }));
+  assert.match(r.cols[0].error, /3 ส่วน/);
+  assert.equal(r.base, 1);
+  assert.deepEqual(row(r, 'payload.sub').vals, [null, '"a"', '"b"']);
+  assert.deepEqual(row(r, 'payload.sub').diff, [false, false, true]);
+  assert.equal(row(r, 'header.alg').same, true);
+  assert.equal(cmp('x.y', 'a.b.c').base, -1);
 });
 
 // ── CHANGELOG ── a version bump without its entry fails here (same regex as the tag job in static.yml)

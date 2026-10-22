@@ -1631,6 +1631,19 @@
             </div>
           </div>
 
+          <section class="jwt-cmp" aria-labelledby="jwt-cmp-h">
+            <div class="section-header">
+              <div class="card-title" id="jwt-cmp-h"><svg class="i" aria-hidden="true"><use href="#i-git-compare"/></svg> เปรียบเทียบ JWT</div>
+              <label class="mode-label"><input type="checkbox" id="jwt-cmp-only" onchange="jwtCompareUI()" /> เฉพาะที่ต่าง</label>
+            </div>
+            <div id="jwt-cmp-boxes" class="jwt-cmp-boxes"></div>
+            <div class="jwt-cmp-acts">
+              <button type="button" class="btn btn-ghost" onclick="jwtCmpAdd()"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>เพิ่มช่อง</button>
+              <button type="button" class="btn btn-ghost" onclick="clearJwtCompare()"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>ล้างทุกช่อง</button>
+            </div>
+            <div id="jwt-cmp-result" class="jwt-cmp-result"></div>
+          </section>
+
           <section class="jwt-enc" aria-labelledby="jwt-enc-h">
             <div class="card-title" id="jwt-enc-h"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> สร้าง JWT (HS256)</div>
             <div class="grid-2">

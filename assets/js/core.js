@@ -463,6 +463,7 @@ const TAB_INIT={
   'rxjs-tab':()=>{initRxjs();loadLib('rxjs');},
   'angular-tab':()=>loadLib('hljs').then(()=>{initAngular();highlightCode('#angular-tab pre.rxjs-code code');}),
   'compare-tab':()=>loadLib('diff'),
+  'jwt-tab':()=>jwtCmpRender(['','']),
   'mq-tab':()=>highlightCode('#mq-tab pre.mq-code code'),
   'storage-tab':()=>{storIdbRender();storXssRender();storDtInit();storLocalRefresh();storInitHljs();},
   'cron-tab':()=>cronInit(),

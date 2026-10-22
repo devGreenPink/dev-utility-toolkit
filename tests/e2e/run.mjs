@@ -119,10 +119,13 @@ await check('inputs are remembered across a reload; JWT and secrets never are', 
   const page = await newPage();
   await open(page, 'base64-tab'); await page.fill('#b64-input', 'hello');
   await open(page, 'jwt-tab'); await page.fill('#jwt-input', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ4In0.abc');
+  await page.locator('#jwt-cmp-boxes textarea').first().fill('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbXAifQ.cmp');
   await page.waitForTimeout(500); await page.reload(); await page.waitForTimeout(500);
   expect(await page.$eval('#b64-input', e => e.value) === 'hello', 'base64 input not restored');
   const keys = await page.evaluate(() => Object.keys(localStorage).join(' '));
   expect(!/jwt-input|k8s-input|jwt-enc-secret/.test(keys), 'a secret field was stored: ' + keys);
+  // the compare boxes have no id, which is what keeps them out of storage
+  expect(!(await page.evaluate(() => JSON.stringify(localStorage))).includes('eyJzdWIiOiJjbXAifQ'), 'a JWT compare box was stored');
 });
 await check('live converters: Base64, URL, K8s Secret, SQL, Diff, JWT encoder', async () => {
   const page = await newPage();
@@ -142,6 +145,42 @@ await check('live converters: Base64, URL, K8s Secret, SQL, Diff, JWT encoder', 
   await page.waitForTimeout(600);
   expect((await page.textContent('#jwt-enc-output')).startsWith('eyJ'), 'jwt encode');
   noErrors(page);
+});
+// the table only exists once tokens are in, so the every-tab axe and 375 px sweeps never see it
+await check('JWT compare: numbered boxes, highlights what differs, axe clean in dark / light, fits at 375 px', async () => {
+  const tok = p => 'eyJhbGciOiJIUzI1NiJ9.' + Buffer.from(JSON.stringify(p)).toString('base64url') + '.sig';
+  const iss = 'https://auth.example.com/realms/shop/protocol/openid-connect';
+  const toks = [tok({ sub: 'somchai', role: 'admin', iss, exp: 1767225600 }), tok({ sub: 'somchai', role: 'user', iss, exp: 1767225600 }),
+    'Bearer ' + tok({ sub: 'somchai', role: 'admin', exp: 1767225600, aud: ['order-api', 'shop'] })];
+  const heads = page => page.$$eval('#jwt-cmp-result thead th', els => els.map(e => e.firstChild.textContent.trim()).join());
+  for (const [theme, scheme, width] of [[null, 'dark', 1440], ['mac', 'light', 1440], [null, 'dark', 375]]) {
+    const page = await newPage({ theme, colorScheme: scheme, reducedMotion: 'reduce', viewport: { width, height: 812 } });
+    await open(page, 'jwt-tab');
+    const boxes = page.locator('#jwt-cmp-boxes textarea');
+    expect(await boxes.count() === 2, 'does not start with 2 boxes');
+    await page.click('#jwt-tab button:has-text("เพิ่มช่อง")');
+    for (let i = 0; i < 3; i++) await boxes.nth(i).fill(toks[i]);
+    expect(await heads(page) === 'claim,Token #1,Token #2,Token #3', 'column headers: ' + await heads(page));
+    const diff = await page.$$eval('#jwt-cmp-result tr.is-diff > th', els => els.map(e => e.firstChild.textContent.trim()));
+    expect(diff.join() === 'payload.role,payload.iss,payload.aud', `${width}px ${theme}: rows marked ${diff}`);
+    expect(await page.$$eval('#jwt-cmp-result td.is-changed', els => els.length) === 3, 'changed cells');
+    const status = await page.$$eval('#jwt-cmp-boxes .jwt-cmp-status', els => els.map(e => e.textContent));
+    expect(status[1] === 'ต่างจาก Token #1 1 รายการ' && status[2] === 'ต่างจาก Token #1 2 รายการ', 'box status: ' + status);
+    await page.addScriptTag({ content: AXE });
+    const v = await page.evaluate(async () => (await axe.run({ include: ['#jwt-cmp-h', '.jwt-cmp'] },
+      { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } })).violations
+      .map(x => `${x.id}: ${x.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')}`));
+    expect(!v.length, `${width}px ${theme}: ${v.join(' | ')}`);
+    const over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(over <= 1, `${width}px: page scrolls sideways +${over}px`);
+    await page.check('#jwt-cmp-only');
+    expect(await page.$$eval('#jwt-cmp-result tbody tr', els => els.length) === 3, 'เฉพาะที่ต่าง still shows equal rows');
+    // removing a box renumbers the rest; each token moves with its box
+    await page.click('#jwt-cmp-boxes button[aria-label="ลบช่อง Token #2"]');
+    expect(await boxes.count() === 2 && await boxes.nth(1).inputValue() === toks[2], 'remove box');
+    expect(await heads(page) === 'claim,Token #1,Token #2', 'headers after remove: ' + await heads(page));
+    noErrors(page);
+  }
 });
 await check('copy: the button says คัดลอกแล้ว and the clipboard holds the value', async () => {
   const page = await newPage();
