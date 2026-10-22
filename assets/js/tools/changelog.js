@@ -4,6 +4,9 @@
 // date = release day YYYY-MM-DD (Asia/Bangkok). An item is a string, or [text, ...sub-bullets].
 // `code` and **bold** are rendered; everything else is escaped.
 const CHANGELOG=[
+  {v:'2.9',date:'2026-10-22',items:[
+    '**เปรียบเทียบ JWT สลับดูแบบ Raw ได้**: ปุ่ม "อ่านง่าย | Raw" ข้าง "เฉพาะที่ต่าง" แบบ Raw แสดงค่าเป็น JSON ตรงตาม token (เช่น `["user","admin"]`, `1767225600`) และยังไฮไลต์ช่องที่ต่างเหมือนเดิม',
+  ]},
   {v:'2.8',date:'2026-10-22',items:[
     ['**เปรียบเทียบ JWT แสดงรายการ (array) บรรทัดละตัว** เช่น `realm_access.roles` ไม่เป็นข้อความยาวก้อนเดียวอีก',
       'ในช่องที่ต่างจากตัวตั้ง ตัวที่เพิ่มมาขึ้นเป็น **+** ตัวหนา พื้นเขียว ตัวที่หายไปขึ้นต่อท้ายเป็น **−** ขีดฆ่า เห็นทันทีว่า role ไหนต่าง',
