@@ -4,6 +4,13 @@
 // date = release day YYYY-MM-DD (Asia/Bangkok). An item is a string, or [text, ...sub-bullets].
 // `code` and **bold** are rendered; everything else is escaped.
 const CHANGELOG=[
+  {v:'2.6',date:'2026-10-22',items:[
+    ['**JWT Decoder เปรียบเทียบ token ได้แล้ว** (ส่วน "เปรียบเทียบ JWT" ในแท็บ JWT): วาง token ช่องละตัว Token #1, #2, ... เริ่มที่ 2 ช่อง กดเพิ่มหรือลบช่องได้',
+      'ตารางแถวละ claim คอลัมน์ละช่อง หัวคอลัมน์ใช้เลขเดียวกับช่อง รายการที่ไม่ตรงกันมีป้าย "ต่าง" และช่องที่ต่างจากตัวตั้งถูกไฮไลต์',
+      'ติ๊ก "เฉพาะที่ต่าง" เพื่อซ่อนรายการที่ตรงกันทุกตัว',
+      'ใต้แต่ละช่องบอกว่าต่างจากตัวตั้งกี่รายการ หรือถอด token ไม่ได้เพราะอะไร',
+      '`exp` / `iat` / `nbf` แสดงวันที่ด้วย และ token ในช่องเปรียบเทียบไม่ถูกจำหรือใส่ในลิงก์แชร์'],
+  ]},
   {v:'2.5',date:'2026-10-19',items:[
     ['**QR Code Reader อ่าน barcode ได้แล้ว** (เปลี่ยนชื่อเป็น QR & Barcode Reader): EAN-13 / EAN-8 / UPC / Code 128 / Code 39 / ITF / Codabar / Data Matrix / PDF417 จากรูป คลิปบอร์ด หรือกล้อง',
       'บอกชนิดของ code ที่อ่านได้ และตรวจ check digit ของ EAN / UPC',

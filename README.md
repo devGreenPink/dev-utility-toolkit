@@ -5,7 +5,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-2.5-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-2.6-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -31,6 +31,16 @@
 | Dockerfile, Jenkinsfile | Docker & K8s / Jenkins CI/CD |
 
 ลากไฟล์มาวางที่ไหนก็ได้ในหน้า ระบบดูจากชื่อไฟล์และเนื้อหาแล้วเปิดเครื่องมือให้ รูปภาพจะไปที่ QR & Barcode Reader
+
+---
+
+## มีอะไรใหม่ใน v2.6
+
+- **JWT Decoder เปรียบเทียบ token ได้แล้ว** (ส่วน "เปรียบเทียบ JWT" ในแท็บ JWT): วาง token ช่องละตัว Token #1, #2, ... เริ่มที่ 2 ช่อง กดเพิ่มหรือลบช่องได้
+  - ตารางแถวละ claim คอลัมน์ละช่อง หัวคอลัมน์ใช้เลขเดียวกับช่อง รายการที่ไม่ตรงกันมีป้าย "ต่าง" และช่องที่ต่างจากตัวตั้งถูกไฮไลต์
+  - ติ๊ก "เฉพาะที่ต่าง" เพื่อซ่อนรายการที่ตรงกันทุกตัว
+  - ใต้แต่ละช่องบอกว่าต่างจากตัวตั้งกี่รายการ หรือถอด token ไม่ได้เพราะอะไร
+  - `exp` / `iat` / `nbf` แสดงวันที่ด้วย และ token ในช่องเปรียบเทียบไม่ถูกจำหรือใส่ในลิงก์แชร์
 
 ---
 
