@@ -4,6 +4,9 @@
 // date = release day YYYY-MM-DD (Asia/Bangkok). An item is a string, or [text, ...sub-bullets].
 // `code` and **bold** are rendered; everything else is escaped.
 const CHANGELOG=[
+  {v:'2.7',date:'2026-10-22',items:[
+    '**เปรียบเทียบ JWT แยกเป็นกลุ่ม HEADER / PAYLOAD / SIGNATURE**: ชื่อ claim สั้นลง (`role` แทน `payload.role`) หัวกลุ่มบอกว่าต่างกี่รายการ และเมื่อติ๊ก "เฉพาะที่ต่าง" กลุ่มที่ไม่มีอะไรต่างจะถูกซ่อน',
+  ]},
   {v:'2.6',date:'2026-10-22',items:[
     ['**JWT Decoder เปรียบเทียบ token ได้แล้ว** (ส่วน "เปรียบเทียบ JWT" ในแท็บ JWT): วาง token ช่องละตัว Token #1, #2, ... เริ่มที่ 2 ช่อง กดเพิ่มหรือลบช่องได้',
       'ตารางแถวละ claim คอลัมน์ละช่อง หัวคอลัมน์ใช้เลขเดียวกับช่อง รายการที่ไม่ตรงกันมีป้าย "ต่าง" และช่องที่ต่างจากตัวตั้งถูกไฮไลต์',

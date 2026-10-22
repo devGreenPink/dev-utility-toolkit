@@ -5,7 +5,7 @@
 > **Developer toolkit สำหรับนักพัฒนาไทย** — ใช้งานได้ทันทีในเบราว์เซอร์ ไม่ต้องติดตั้ง ไม่ส่งข้อมูลออกไปไหน
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-6366f1?style=flat-square&logo=github)](https://devgreenpink.github.io/dev-utility-toolkit/)
-[![Version](https://img.shields.io/badge/version-2.6-34d399?style=flat-square)]()
+[![Version](https://img.shields.io/badge/version-2.7-34d399?style=flat-square)]()
 [![PWA](https://img.shields.io/badge/PWA-Installable-f472b6?style=flat-square)]()
 [![No Backend](https://img.shields.io/badge/No-Backend%20Required-22d3ee?style=flat-square)]()
 [![Offline Ready](https://img.shields.io/badge/Offline-Ready-fbbf24?style=flat-square)]()
@@ -31,6 +31,12 @@
 | Dockerfile, Jenkinsfile | Docker & K8s / Jenkins CI/CD |
 
 ลากไฟล์มาวางที่ไหนก็ได้ในหน้า ระบบดูจากชื่อไฟล์และเนื้อหาแล้วเปิดเครื่องมือให้ รูปภาพจะไปที่ QR & Barcode Reader
+
+---
+
+## มีอะไรใหม่ใน v2.7
+
+- **เปรียบเทียบ JWT แยกเป็นกลุ่ม HEADER / PAYLOAD / SIGNATURE**: ชื่อ claim สั้นลง (`role` แทน `payload.role`) หัวกลุ่มบอกว่าต่างกี่รายการ และเมื่อติ๊ก "เฉพาะที่ต่าง" กลุ่มที่ไม่มีอะไรต่างจะถูกซ่อน
 
 ---
 
