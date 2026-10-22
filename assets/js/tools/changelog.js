@@ -4,6 +4,11 @@
 // date = release day YYYY-MM-DD (Asia/Bangkok). An item is a string, or [text, ...sub-bullets].
 // `code` and **bold** are rendered; everything else is escaped.
 const CHANGELOG=[
+  {v:'2.8',date:'2026-10-22',items:[
+    ['**เปรียบเทียบ JWT แสดงรายการ (array) บรรทัดละตัว** เช่น `realm_access.roles` ไม่เป็นข้อความยาวก้อนเดียวอีก',
+      'ในช่องที่ต่างจากตัวตั้ง ตัวที่เพิ่มมาขึ้นเป็น **+** ตัวหนา พื้นเขียว ตัวที่หายไปขึ้นต่อท้ายเป็น **−** ขีดฆ่า เห็นทันทีว่า role ไหนต่าง',
+      'รายการเหมือนกันแต่เรียงต่างกัน มีหมายเหตุ "ลำดับต่าง"'],
+  ]},
   {v:'2.7',date:'2026-10-22',items:[
     '**เปรียบเทียบ JWT แยกเป็นกลุ่ม HEADER / PAYLOAD / SIGNATURE**: ชื่อ claim สั้นลง (`role` แทน `payload.role`) หัวกลุ่มบอกว่าต่างกี่รายการ และเมื่อติ๊ก "เฉพาะที่ต่าง" กลุ่มที่ไม่มีอะไรต่างจะถูกซ่อน',
   ]},
