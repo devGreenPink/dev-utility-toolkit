@@ -3807,9 +3807,10 @@
     .jwt-cmp-table:focus-visible { outline: none; box-shadow: var(--focus-ring); }
     .jwt-cmp-table table { inline-size: 100%; border-collapse: collapse; font-family: var(--mono); font-size: .76rem; }
     .jwt-cmp-table th, .jwt-cmp-table td { padding: 6px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; min-inline-size: 9rem; }
-    .jwt-cmp-table tr:last-child > * { border-bottom: 0; }
+    .jwt-cmp-table tbody:last-child tr:last-child > * { border-bottom: 0; }
     .jwt-cmp-table thead th { font-family: var(--sans); font-weight: 600; color: var(--text-dim); background: var(--surface2); }
     .jwt-cmp-table tbody th { font-weight: 400; color: var(--text-dim); }
+    .jwt-cmp-table tr.jwt-cmp-group > th { padding-top: 10px; font-size: .68rem; letter-spacing: .08em; color: var(--accent-fg); background: var(--surface2); }
     .jwt-cmp-table tr.is-diff { background: color-mix(in srgb, var(--c-yellow) 10%, transparent); }
     .jwt-cmp-table tr.is-diff > th { color: var(--text); }
     .jwt-cmp-table td.is-changed { background: color-mix(in srgb, var(--c-red) 18%, transparent); color: var(--text); font-weight: 600; }

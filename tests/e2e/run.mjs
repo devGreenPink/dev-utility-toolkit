@@ -162,7 +162,9 @@ await check('JWT compare: numbered boxes, highlights what differs, axe clean in 
     for (let i = 0; i < 3; i++) await boxes.nth(i).fill(toks[i]);
     expect(await heads(page) === 'claim,Token #1,Token #2,Token #3', 'column headers: ' + await heads(page));
     const diff = await page.$$eval('#jwt-cmp-result tr.is-diff > th', els => els.map(e => e.firstChild.textContent.trim()));
-    expect(diff.join() === 'payload.role,payload.iss,payload.aud', `${width}px ${theme}: rows marked ${diff}`);
+    expect(diff.join() === 'role,iss,aud', `${width}px ${theme}: rows marked ${diff}`);
+    const groups = await page.$$eval('#jwt-cmp-result tr.jwt-cmp-group > th', els => els.map(e => e.textContent));
+    expect(groups.join() === 'HEADER,PAYLOAD ต่าง 3,SIGNATURE', 'group rows: ' + groups);
     expect(await page.$$eval('#jwt-cmp-result td.is-changed', els => els.length) === 3, 'changed cells');
     const status = await page.$$eval('#jwt-cmp-boxes .jwt-cmp-status', els => els.map(e => e.textContent));
     expect(status[1] === 'ต่างจาก Token #1 1 รายการ' && status[2] === 'ต่างจาก Token #1 2 รายการ', 'box status: ' + status);
@@ -174,7 +176,8 @@ await check('JWT compare: numbered boxes, highlights what differs, axe clean in 
     const over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     expect(over <= 1, `${width}px: page scrolls sideways +${over}px`);
     await page.check('#jwt-cmp-only');
-    expect(await page.$$eval('#jwt-cmp-result tbody tr', els => els.length) === 3, 'เฉพาะที่ต่าง still shows equal rows');
+    expect(await page.$$eval('#jwt-cmp-result tbody tr', els => els.map(e => e.className).join()) === 'jwt-cmp-group,is-diff,is-diff,is-diff',
+      'เฉพาะที่ต่าง should leave the PAYLOAD group with its 3 rows');
     // removing a box renumbers the rest; each token moves with its box
     await page.click('#jwt-cmp-boxes button[aria-label="ลบช่อง Token #2"]');
     expect(await boxes.count() === 2 && await boxes.nth(1).inputValue() === toks[2], 'remove box');

@@ -140,13 +140,17 @@ function jwtCompareUI(){
   const nDiff=r.rows.filter(x=>!x.same).length,only=document.getElementById('jwt-cmp-only').checked;
   const rows=only?r.rows.filter(x=>!x.same):r.rows;
   const head=r.cols.map((c,i)=>`<th scope="col">Token #${c.n}${i===r.base?' <span class="jwt-cmp-note">ตัวตั้ง</span>':''}${c.error?' <span class="jwt-cmp-bad">ถอดไม่ได้</span>':''}</th>`).join('');
-  const body=rows.map(x=>{
-    const key=x.path.join('.');
-    return `<tr${x.same?'':' class="is-diff"'}><th scope="row">${escHtml(key)}${x.same?'':' <span class="jwt-cmp-badge">ต่าง</span>'}</th>${x.vals.map((v,i)=>
-      `<td${x.diff[i]?' class="is-changed"':''}>${r.cols[i].error?'':v==null?'<span class="jwt-cmp-none">ไม่มี</span>':jwtCmpValue(v,key)}</td>`).join('')}</tr>`;
+  // one tbody per part, named in its first row, so claims show without a header. / payload. prefix
+  const body=['header','payload','signature'].map(g=>{
+    const part=rows.filter(x=>x.path[0]===g),nd=part.filter(x=>!x.same).length;
+    return part.length?`<tbody><tr class="jwt-cmp-group"><th scope="rowgroup" colspan="${r.cols.length+1}">${g.toUpperCase()}${nd?` <span class="jwt-cmp-badge">ต่าง ${nd}</span>`:''}</th></tr>${part.map(x=>{
+      const key=x.path.join('.');
+      return `<tr${x.same?'':' class="is-diff"'}><th scope="row">${escHtml(x.path.slice(1).join('.')||g)}${x.same?'':' <span class="jwt-cmp-badge">ต่าง</span>'}</th>${x.vals.map((v,i)=>
+        `<td${x.diff[i]?' class="is-changed"':''}>${r.cols[i].error?'':v==null?'<span class="jwt-cmp-none">ไม่มี</span>':jwtCmpValue(v,key)}</td>`).join('')}</tr>`;
+    }).join('')}</tbody>`:'';
   }).join('');
   out.innerHTML=`<p class="jwt-cmp-sum">เทียบ ${r.cols.length} token · ${nDiff?`ต่างกัน <b>${nDiff}</b> จาก ${r.rows.length} รายการ เทียบกับ Token #${b}`:'ทุกรายการตรงกัน'}</p>`
-    +(rows.length?`<div class="jwt-cmp-table" tabindex="0" role="region" aria-label="ผลเปรียบเทียบ JWT"><table><thead><tr><th scope="col">claim</th>${head}</tr></thead><tbody>${body}</tbody></table></div>`:'');
+    +(rows.length?`<div class="jwt-cmp-table" tabindex="0" role="region" aria-label="ผลเปรียบเทียบ JWT"><table><thead><tr><th scope="col">claim</th>${head}</tr></thead>${body}</table></div>`:'');
 }
 
 // ── JWT ENCODER ──
