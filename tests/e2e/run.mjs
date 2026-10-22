@@ -174,6 +174,14 @@ await check('JWT compare: numbered boxes, highlights what differs, axe clean in 
       return { lines: td[0].querySelectorAll('li').length, ins: txt(td[1], 'ins'), del: txt(td[1], 'del'), order: td[2].textContent.includes('ลำดับต่าง') };
     });
     expect(roles.lines === 3 && roles.ins === 'reporter' && roles.del === 'admin,auditor' && roles.order, 'array items: ' + JSON.stringify(roles));
+    const rolesCell = () => page.evaluate(() => { const td = [...document.querySelectorAll('#jwt-cmp-result tr.is-diff')]
+      .find(r => r.querySelector('th').firstChild.textContent.trim() === 'realm_access.roles').querySelectorAll('td')[1];
+      return { text: td.textContent, lis: td.querySelectorAll('li').length, changed: td.classList.contains('is-changed') }; });
+    await page.click('#jwt-cmp-view [data-v="raw"]');
+    const raw = await rolesCell();
+    expect(raw.text === '["user","reporter"]' && !raw.lis && raw.changed, 'raw view: ' + JSON.stringify(raw));
+    await page.click('#jwt-cmp-view [data-v="nice"]');
+    expect((await rolesCell()).lis === 4, 'back to the readable view'); // user, + reporter, − admin, − auditor
     const status = await page.$$eval('#jwt-cmp-boxes .jwt-cmp-status', els => els.map(e => e.textContent));
     expect(status[1] === 'ต่างจาก Token #1 2 รายการ' && status[2] === 'ต่างจาก Token #1 3 รายการ', 'box status: ' + status);
     await page.addScriptTag({ content: AXE });

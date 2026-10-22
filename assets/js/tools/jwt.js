@@ -132,6 +132,9 @@ function jwtCmpRender(vals){
   jwtCmpBoxes().forEach((el,i)=>{el.value=vals[i];});
   jwtCompareUI();
 }
+// 'nice': arrays as lines, dates beside timestamps; 'raw': each value as the token's JSON
+let _jwtCmpView='nice';
+function jwtCmpSetView(v){_jwtCmpView=v;setSegmented('jwt-cmp-view',v);jwtCompareUI();}
 function jwtCmpAdd(){jwtCmpRender([...jwtCmpBoxes().map(el=>el.value),'']);jwtCmpBoxes().at(-1).focus();}
 function jwtCmpRemove(i){const v=jwtCmpBoxes().map(el=>el.value);v.splice(i,1);jwtCmpRender(v);}
 function jwtCmpClear(i){const el=jwtCmpBoxes()[i];el.value='';el.focus();jwtCompareUI();}
@@ -157,7 +160,7 @@ function jwtCompareUI(){
     return part.length?`<tbody><tr class="jwt-cmp-group"><th scope="rowgroup" colspan="${r.cols.length+1}">${g.toUpperCase()}${nd?` <span class="jwt-cmp-badge">ต่าง ${nd}</span>`:''}</th></tr>${part.map(x=>{
       const key=x.path.join('.');
       return `<tr${x.same?'':' class="is-diff"'}><th scope="row">${escHtml(x.path.slice(1).join('.')||g)}${x.same?'':' <span class="jwt-cmp-badge">ต่าง</span>'}</th>${x.vals.map((v,i)=>
-        `<td${x.diff[i]?' class="is-changed"':''}>${r.cols[i].error?'':v==null?'<span class="jwt-cmp-none">ไม่มี</span>':jwtCmpValue(v,key,x.diff[i]?x.vals[r.base]:null)}</td>`).join('')}</tr>`;
+        `<td${x.diff[i]?' class="is-changed"':''}>${r.cols[i].error?'':v==null?'<span class="jwt-cmp-none">ไม่มี</span>':_jwtCmpView==='raw'?escHtml(v):jwtCmpValue(v,key,x.diff[i]?x.vals[r.base]:null)}</td>`).join('')}</tr>`;
     }).join('')}</tbody>`:'';
   }).join('');
   out.innerHTML=`<p class="jwt-cmp-sum">เทียบ ${r.cols.length} token · ${nDiff?`ต่างกัน <b>${nDiff}</b> จาก ${r.rows.length} รายการ เทียบกับ Token #${b}`:'ทุกรายการตรงกัน'}</p>`

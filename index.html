@@ -1634,7 +1634,13 @@
           <section class="jwt-cmp" aria-labelledby="jwt-cmp-h">
             <div class="section-header">
               <div class="card-title" id="jwt-cmp-h"><svg class="i" aria-hidden="true"><use href="#i-git-compare"/></svg> เปรียบเทียบ JWT</div>
-              <label class="mode-label"><input type="checkbox" id="jwt-cmp-only" onchange="jwtCompareUI()" /> เฉพาะที่ต่าง</label>
+              <div class="toolbar">
+                <div class="json-view-toggle" id="jwt-cmp-view" role="group" aria-label="รูปแบบค่าในตาราง">
+                  <button type="button" class="json-view-btn active" data-v="nice" aria-pressed="true" onclick="jwtCmpSetView('nice')">อ่านง่าย</button>
+                  <button type="button" class="json-view-btn" data-v="raw" aria-pressed="false" onclick="jwtCmpSetView('raw')"><svg class="i" aria-hidden="true"><use href="#i-braces"/></svg> Raw</button>
+                </div>
+                <label class="mode-label"><input type="checkbox" id="jwt-cmp-only" onchange="jwtCompareUI()" /> เฉพาะที่ต่าง</label>
+              </div>
             </div>
             <div id="jwt-cmp-boxes" class="jwt-cmp-boxes"></div>
             <div class="jwt-cmp-acts">
