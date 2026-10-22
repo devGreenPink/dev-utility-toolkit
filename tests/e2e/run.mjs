@@ -150,8 +150,9 @@ await check('live converters: Base64, URL, K8s Secret, SQL, Diff, JWT encoder', 
 await check('JWT compare: numbered boxes, highlights what differs, axe clean in dark / light, fits at 375 px', async () => {
   const tok = p => 'eyJhbGciOiJIUzI1NiJ9.' + Buffer.from(JSON.stringify(p)).toString('base64url') + '.sig';
   const iss = 'https://auth.example.com/realms/shop/protocol/openid-connect';
-  const toks = [tok({ sub: 'somchai', role: 'admin', iss, exp: 1767225600 }), tok({ sub: 'somchai', role: 'user', iss, exp: 1767225600 }),
-    'Bearer ' + tok({ sub: 'somchai', role: 'admin', exp: 1767225600, aud: ['order-api', 'shop'] })];
+  const toks = [tok({ sub: 'somchai', role: 'admin', iss, exp: 1767225600, realm_access: { roles: ['user', 'admin', 'auditor'] } }),
+    tok({ sub: 'somchai', role: 'user', iss, exp: 1767225600, realm_access: { roles: ['user', 'reporter'] } }),
+    'Bearer ' + tok({ sub: 'somchai', role: 'admin', exp: 1767225600, realm_access: { roles: ['admin', 'user', 'auditor'] }, aud: ['order-api', 'shop'] })];
   const heads = page => page.$$eval('#jwt-cmp-result thead th', els => els.map(e => e.firstChild.textContent.trim()).join());
   for (const [theme, scheme, width] of [[null, 'dark', 1440], ['mac', 'light', 1440], [null, 'dark', 375]]) {
     const page = await newPage({ theme, colorScheme: scheme, reducedMotion: 'reduce', viewport: { width, height: 812 } });
@@ -162,12 +163,19 @@ await check('JWT compare: numbered boxes, highlights what differs, axe clean in 
     for (let i = 0; i < 3; i++) await boxes.nth(i).fill(toks[i]);
     expect(await heads(page) === 'claim,Token #1,Token #2,Token #3', 'column headers: ' + await heads(page));
     const diff = await page.$$eval('#jwt-cmp-result tr.is-diff > th', els => els.map(e => e.firstChild.textContent.trim()));
-    expect(diff.join() === 'role,iss,aud', `${width}px ${theme}: rows marked ${diff}`);
+    expect(diff.join() === 'role,iss,realm_access.roles,aud', `${width}px ${theme}: rows marked ${diff}`);
     const groups = await page.$$eval('#jwt-cmp-result tr.jwt-cmp-group > th', els => els.map(e => e.textContent));
-    expect(groups.join() === 'HEADER,PAYLOAD ต่าง 3,SIGNATURE', 'group rows: ' + groups);
-    expect(await page.$$eval('#jwt-cmp-result td.is-changed', els => els.length) === 3, 'changed cells');
+    expect(groups.join() === 'HEADER,PAYLOAD ต่าง 4,SIGNATURE', 'group rows: ' + groups);
+    expect(await page.$$eval('#jwt-cmp-result td.is-changed', els => els.length) === 5, 'changed cells');
+    // arrays: one item per line; against the baseline, extra items are <ins>, missing ones <del>, same items reordered get a note
+    const roles = await page.evaluate(() => {
+      const tr = [...document.querySelectorAll('#jwt-cmp-result tr.is-diff')].find(r => r.querySelector('th').firstChild.textContent.trim() === 'realm_access.roles');
+      const td = tr.querySelectorAll('td'), txt = (el, sel) => [...el.querySelectorAll(sel)].map(e => e.textContent).join();
+      return { lines: td[0].querySelectorAll('li').length, ins: txt(td[1], 'ins'), del: txt(td[1], 'del'), order: td[2].textContent.includes('ลำดับต่าง') };
+    });
+    expect(roles.lines === 3 && roles.ins === 'reporter' && roles.del === 'admin,auditor' && roles.order, 'array items: ' + JSON.stringify(roles));
     const status = await page.$$eval('#jwt-cmp-boxes .jwt-cmp-status', els => els.map(e => e.textContent));
-    expect(status[1] === 'ต่างจาก Token #1 1 รายการ' && status[2] === 'ต่างจาก Token #1 2 รายการ', 'box status: ' + status);
+    expect(status[1] === 'ต่างจาก Token #1 2 รายการ' && status[2] === 'ต่างจาก Token #1 3 รายการ', 'box status: ' + status);
     await page.addScriptTag({ content: AXE });
     const v = await page.evaluate(async () => (await axe.run({ include: ['#jwt-cmp-h', '.jwt-cmp'] },
       { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } })).violations
@@ -176,8 +184,8 @@ await check('JWT compare: numbered boxes, highlights what differs, axe clean in 
     const over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     expect(over <= 1, `${width}px: page scrolls sideways +${over}px`);
     await page.check('#jwt-cmp-only');
-    expect(await page.$$eval('#jwt-cmp-result tbody tr', els => els.map(e => e.className).join()) === 'jwt-cmp-group,is-diff,is-diff,is-diff',
-      'เฉพาะที่ต่าง should leave the PAYLOAD group with its 3 rows');
+    expect(await page.$$eval('#jwt-cmp-result tbody tr', els => els.map(e => e.className).join()) === 'jwt-cmp-group,is-diff,is-diff,is-diff,is-diff',
+      'เฉพาะที่ต่าง should leave the PAYLOAD group with its 4 rows');
     // removing a box renumbers the rest; each token moves with its box
     await page.click('#jwt-cmp-boxes button[aria-label="ลบช่อง Token #2"]');
     expect(await boxes.count() === 2 && await boxes.nth(1).inputValue() === toks[2], 'remove box');

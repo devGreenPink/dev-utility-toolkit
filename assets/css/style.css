@@ -3816,6 +3816,12 @@
     .jwt-cmp-table td.is-changed { background: color-mix(in srgb, var(--c-red) 18%, transparent); color: var(--text); font-weight: 600; }
     .jwt-cmp-badge { font-family: var(--sans); font-size: .66rem; font-weight: 600; padding: 1px 6px; border-radius: 10px; border: 1px solid currentColor; color: var(--text); white-space: nowrap; }
     .jwt-cmp-note { font-weight: 400; color: var(--text-dim); }
+    .jwt-cmp-list { margin: 0; padding: 0; list-style: none; }
+    .jwt-cmp-table td.is-changed .jwt-cmp-list { font-weight: 400; }
+    .jwt-cmp-list ins { text-decoration: none; font-weight: 700; background: color-mix(in srgb, var(--c-green) 24%, transparent); border-radius: 2px; padding: 0 3px; }
+    .jwt-cmp-list ins::before { content: '+ '; }
+    .jwt-cmp-list del { color: var(--text-dim); }
+    .jwt-cmp-list del::before { content: '− '; }
     .jwt-cmp-bad { display: block; font-weight: 400; color: var(--danger); }
     .jwt-cmp-none { font-family: var(--sans); font-style: italic; color: var(--text-dim); }
     .jwt-enc-out { color: var(--accent2); }

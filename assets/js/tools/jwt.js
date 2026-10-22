@@ -104,8 +104,19 @@ function jwtCompare(list){
   });
   return {cols:cols.map(c=>c.error?{n:c.n,error:c.error}:{n:c.n}),base,rows};
 }
-function jwtCmpValue(json,key){
+// baseJson: the baseline's value, given only for a cell that differs from it
+function jwtCmpValue(json,key,baseJson){
   const v=JSON.parse(json);
+  if(Array.isArray(v)&&v.length){
+    // one item per line; against a baseline array, its extra items are <ins> and the ones it lacks <del>
+    const item=x=>typeof x==='string'?x:JSON.stringify(x),own=v.map(item);
+    const b=baseJson&&Array.isArray(JSON.parse(baseJson))?JSON.parse(baseJson).map(item):null;
+    const lines=own.map(s=>b&&!b.includes(s)?`<ins>${escHtml(s)}</ins>`:escHtml(s));
+    const gone=b?b.filter(s=>!own.includes(s)):[];
+    gone.forEach(s=>lines.push(`<del>${escHtml(s)}</del>`));
+    return `<ul class="jwt-cmp-list">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>`
+      +(b&&!gone.length&&own.every(s=>b.includes(s))?'<span class="jwt-cmp-note">ลำดับต่าง</span>':'');
+  }
   let s=typeof v==='string'?v:json;
   if(typeof v==='number'&&/^payload\.(iat|exp|nbf|auth_time)$/.test(key))s+=' ('+new Date(v*1000).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})+')';
   return escHtml(s);
@@ -146,7 +157,7 @@ function jwtCompareUI(){
     return part.length?`<tbody><tr class="jwt-cmp-group"><th scope="rowgroup" colspan="${r.cols.length+1}">${g.toUpperCase()}${nd?` <span class="jwt-cmp-badge">ต่าง ${nd}</span>`:''}</th></tr>${part.map(x=>{
       const key=x.path.join('.');
       return `<tr${x.same?'':' class="is-diff"'}><th scope="row">${escHtml(x.path.slice(1).join('.')||g)}${x.same?'':' <span class="jwt-cmp-badge">ต่าง</span>'}</th>${x.vals.map((v,i)=>
-        `<td${x.diff[i]?' class="is-changed"':''}>${r.cols[i].error?'':v==null?'<span class="jwt-cmp-none">ไม่มี</span>':jwtCmpValue(v,key)}</td>`).join('')}</tr>`;
+        `<td${x.diff[i]?' class="is-changed"':''}>${r.cols[i].error?'':v==null?'<span class="jwt-cmp-none">ไม่มี</span>':jwtCmpValue(v,key,x.diff[i]?x.vals[r.base]:null)}</td>`).join('')}</tr>`;
     }).join('')}</tbody>`:'';
   }).join('');
   out.innerHTML=`<p class="jwt-cmp-sum">เทียบ ${r.cols.length} token · ${nDiff?`ต่างกัน <b>${nDiff}</b> จาก ${r.rows.length} รายการ เทียบกับ Token #${b}`:'ทุกรายการตรงกัน'}</p>`
